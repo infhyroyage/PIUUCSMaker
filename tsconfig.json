@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": "./",
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "lib": ["ES5", "ES6", "DOM"],
+    "module": "commonJs",
+    "sourceMap": true,
+    "strict": true,
+    "target": "es5"
+  }
+}
