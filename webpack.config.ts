@@ -1,13 +1,10 @@
 import path from "path";
 import { Configuration } from "webpack";
+import TerserPlugin from "terser-webpack-plugin";
 
 const config: Configuration = {
   context: path.join(__dirname, "src"),
   entry: "./index.tsx",
-  output: {
-    path: path.join(__dirname, "public"),
-    filename: "bundle.js",
-  },
   module: {
     rules: [
       {
@@ -16,11 +13,20 @@ const config: Configuration = {
       },
     ],
   },
-  mode: "development",
+  optimization: {
+    minimizer: [
+      new TerserPlugin({
+        extractComments: false,
+      }),
+    ],
+  },
+  output: {
+    filename: "bundle.js",
+    path: path.join(__dirname, "public"),
+  },
   resolve: {
     extensions: [".ts", ".tsx", ".js", ".jsx"],
   },
-  devtool: "inline-source-map",
 };
 
 export default config;
