@@ -1,11 +1,15 @@
-import React from "react";
-import { Button } from "@mui/material";
-import { RecoilRoot } from "recoil";
+import React, { useEffect, useMemo } from "react";
+import { Button, CssBaseline, ThemeProvider, createTheme } from "@mui/material";
+import { useRecoilState } from "recoil";
 import { analyzeUCSFile } from "./service/ucs";
 import SystemErrorSnackbar from "./components/SystemErrorSnackbar";
 import UserErrorSnackbar from "./components/UserErrorSnackbar";
+import { isDarkModeState } from "./service/atoms";
+import TopBar from "./components/TopBar";
 
 function App() {
+  const [isDarkMode, setIsDarkMode] = useRecoilState<boolean>(isDarkModeState);
+
   const handleUploadUCS = (event: React.ChangeEvent<HTMLInputElement>) => {
     // UCSファイルを何もアップロードしなかった場合はNOP
     const fileList: FileList | null = event.target.files;
@@ -24,8 +28,26 @@ function App() {
     reader.readAsText(fileList[0]);
   };
 
+  const theme = useMemo(
+    () =>
+      createTheme({
+        palette: {
+          mode: isDarkMode ? "dark" : "light",
+        },
+      }),
+    [isDarkMode]
+  );
+
+  useEffect(
+    () =>
+      setIsDarkMode(window.matchMedia("(prefers-color-scheme: dark)").matches),
+    [setIsDarkMode]
+  );
+
   return (
-    <RecoilRoot>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <TopBar />
       <Button variant="contained" component="label">
         ucsファイルをアップロード
         <input
@@ -37,7 +59,7 @@ function App() {
       </Button>
       <UserErrorSnackbar />
       <SystemErrorSnackbar />
-    </RecoilRoot>
+    </ThemeProvider>
   );
 }
 
