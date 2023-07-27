@@ -3,8 +3,7 @@ import { Configuration } from "webpack";
 import TerserPlugin from "terser-webpack-plugin";
 
 const config: Configuration = {
-  context: path.join(__dirname, "src"),
-  entry: "./index.tsx",
+  entry: "./src/index.tsx",
   module: {
     rules: [
       {
