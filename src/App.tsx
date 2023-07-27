@@ -1,32 +1,28 @@
-import React, { useEffect, useMemo } from "react";
-import { Button, CssBaseline, ThemeProvider, createTheme } from "@mui/material";
-import { useRecoilState } from "recoil";
-import { analyzeUCSFile } from "./service/ucs";
+import { useEffect, useMemo, useState } from "react";
+import {
+  AppBar,
+  Box,
+  CssBaseline,
+  LinearProgress,
+  Switch,
+  ThemeProvider,
+  Toolbar,
+  Tooltip,
+  Typography,
+  createTheme,
+} from "@mui/material";
 import SystemErrorSnackbar from "./components/SystemErrorSnackbar";
 import UserErrorSnackbar from "./components/UserErrorSnackbar";
-import { isDarkModeState } from "./service/atoms";
-import TopBar from "./components/TopBar";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+import LightModeIcon from "@mui/icons-material/LightMode";
+import { useRecoilValue } from "recoil";
+import UploadRequest from "./components/UploadRequest";
+import { isShownTopBarProgressState, topBarTitleState } from "./service/atoms";
 
 function App() {
-  const [isDarkMode, setIsDarkMode] = useRecoilState<boolean>(isDarkModeState);
-
-  const handleUploadUCS = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // UCSファイルを何もアップロードしなかった場合はNOP
-    const fileList: FileList | null = event.target.files;
-    if (!fileList || fileList.length === 0) return;
-
-    const reader: FileReader = new FileReader();
-    reader.onload = () => {
-      // アップロードしたUCSがstring型だとみなされない場合はアップロードエラー
-      if (typeof reader.result === "string") {
-        analyzeUCSFile(reader.result);
-      } else {
-        // TODO
-        console.error(typeof reader.result);
-      }
-    };
-    reader.readAsText(fileList[0]);
-  };
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
+  const topBarTitle = useRecoilValue<string>(topBarTitleState);
+  const isShownProgress = useRecoilValue<boolean>(isShownTopBarProgressState);
 
   const theme = useMemo(
     () =>
@@ -47,16 +43,47 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <TopBar />
-      <Button variant="contained" component="label">
-        ucsファイルをアップロード
-        <input
-          type="file"
-          accept=".ucs"
-          style={{ display: "none" }}
-          onChange={handleUploadUCS}
+      <AppBar position="sticky" sx={{ height: "64px" }}>
+        <Toolbar sx={{ height: "100%" }}>
+          <Typography variant="h6" sx={{ flexGrow: 1 }}>
+            {topBarTitle}
+          </Typography>
+          <Tooltip title={isDarkMode ? "ダーク" : "ライト"}>
+            <Switch
+              checked={isDarkMode}
+              onChange={() => setIsDarkMode(!isDarkMode)}
+              icon={<LightModeIcon sx={{ color: "white" }} />}
+              checkedIcon={<DarkModeIcon sx={{ color: "white" }} />}
+              sx={{
+                width: 58,
+                height: 38,
+                padding: 0,
+                "& .MuiSwitch-switchBase": {
+                  padding: 0,
+                  margin: "7px",
+                },
+                "& .MuiSwitch-track": {
+                  borderRadius: 38 / 2,
+                },
+              }}
+            />
+          </Tooltip>
+        </Toolbar>
+      </AppBar>
+      {isShownProgress ? (
+        <LinearProgress />
+      ) : (
+        <Box
+          sx={{
+            position: "relative",
+            overflow: "hidden",
+            display: "block",
+            height: "4px",
+            zIndex: "0",
+          }}
         />
-      </Button>
+      )}
+      <UploadRequest />
       <UserErrorSnackbar />
       <SystemErrorSnackbar />
     </ThemeProvider>

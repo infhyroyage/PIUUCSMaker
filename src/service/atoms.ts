@@ -1,10 +1,5 @@
 import { atom } from "recoil";
 
-export const isDarkModeState = atom<boolean>({
-  key: "isDarkMode",
-  default: false,
-});
-
 export const isShownSystemErrorSnackbarState = atom<boolean>({
   key: "isShownSystemErrorSnackbar",
   default: false,
