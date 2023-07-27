@@ -1,6 +1,9 @@
 import React from "react";
-import { Typography, Button } from "@mui/material";
+import { Button } from "@mui/material";
+import { RecoilRoot } from "recoil";
 import { analyzeUCSFile } from "./service/ucs";
+import SystemErrorSnackbar from "./components/SystemErrorSnackbar";
+import UserErrorSnackbar from "./components/UserErrorSnackbar";
 
 function App() {
   const handleUploadUCS = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -22,12 +25,9 @@ function App() {
   };
 
   return (
-    <>
-      <Typography variant="h5" gutterBottom>
-        ファイルアップロード
-      </Typography>
+    <RecoilRoot>
       <Button variant="contained" component="label">
-        ucsファイルを選択
+        ucsファイルをアップロード
         <input
           type="file"
           accept=".ucs"
@@ -35,7 +35,9 @@ function App() {
           onChange={handleUploadUCS}
         />
       </Button>
-    </>
+      <UserErrorSnackbar />
+      <SystemErrorSnackbar />
+    </RecoilRoot>
   );
 }
 
