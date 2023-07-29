@@ -3,6 +3,7 @@ import { useSetRecoilState } from "recoil";
 import {
   isShownSystemErrorSnackbarState,
   topBarTitleState,
+  userErrorMessageState,
 } from "../service/atoms";
 import { useState, useTransition } from "react";
 import { Block, Chart, Note } from "../types/ucs";
@@ -42,6 +43,7 @@ const validateAndLoadUCS = (content: string): Chart => {
 function Chart() {
   const [chart, setChart] = useState<Chart | undefined>(undefined);
   const setTopBarTitle = useSetRecoilState<string>(topBarTitleState);
+  const setUserErrorMessage = useSetRecoilState<string>(userErrorMessageState);
   const setIsShownSystemErrorSnackbar = useSetRecoilState<boolean>(
     isShownSystemErrorSnackbarState
   );
@@ -53,6 +55,15 @@ function Chart() {
     const fileList: FileList | null = event.target.files;
     if (!fileList || fileList.length === 0) return;
 
+    // 拡張子チェック
+    const splitedName: string[] = fileList[0].name.split(".");
+    const extension: string | undefined = splitedName.pop();
+    if (extension !== "ucs") {
+      setUserErrorMessage("拡張子がucsではありません");
+      return;
+    }
+
+    const fileName: string = splitedName.join(".");
     const reader: FileReader = new FileReader();
     reader.onload = () => {
       // 内部矛盾チェック
@@ -63,8 +74,8 @@ function Chart() {
       }
       const content: string = reader.result;
 
-      // TODO: 譜面以外のDOMを高優先度で再レンダリング
-      setTopBarTitle("TODO");
+      // 譜面以外のDOMを高優先度で再レンダリング
+      setTopBarTitle(fileName);
 
       // 譜面のDOMを低優先度で再レンダリング
       startTransition(() => {
