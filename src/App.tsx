@@ -1,9 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   AppBar,
-  Box,
   CssBaseline,
-  LinearProgress,
   Switch,
   ThemeProvider,
   Toolbar,
@@ -16,13 +14,12 @@ import UserErrorSnackbar from "./components/UserErrorSnackbar";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import { useRecoilValue } from "recoil";
-import UploadRequest from "./components/UploadRequest";
-import { isShownTopBarProgressState, topBarTitleState } from "./service/atoms";
+import Chart from "./components/Chart";
+import { topBarTitleState } from "./service/atoms";
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
   const topBarTitle = useRecoilValue<string>(topBarTitleState);
-  const isShownProgress = useRecoilValue<boolean>(isShownTopBarProgressState);
 
   const theme = useMemo(
     () =>
@@ -70,20 +67,7 @@ function App() {
           </Tooltip>
         </Toolbar>
       </AppBar>
-      {isShownProgress ? (
-        <LinearProgress />
-      ) : (
-        <Box
-          sx={{
-            position: "relative",
-            overflow: "hidden",
-            display: "block",
-            height: "4px",
-            zIndex: "0",
-          }}
-        />
-      )}
-      <UploadRequest />
+      <Chart />
       <UserErrorSnackbar />
       <SystemErrorSnackbar />
     </ThemeProvider>

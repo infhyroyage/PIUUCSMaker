@@ -2,7 +2,7 @@ import { Box, Button } from "@mui/material";
 import { useSetRecoilState } from "recoil";
 import {
   isShownSystemErrorSnackbarState,
-  isShownTopBarProgressState,
+  topBarTitleState,
 } from "../service/atoms";
 import { useState, useTransition } from "react";
 import { Block, Chart, Note } from "../types/ucs";
@@ -39,11 +39,9 @@ const validateAndLoadUCS = (content: string): Chart => {
   };
 };
 
-function UploadRequest() {
+function Chart() {
   const [chart, setChart] = useState<Chart | undefined>(undefined);
-  const setIsShownProgress = useSetRecoilState<boolean>(
-    isShownTopBarProgressState
-  );
+  const setTopBarTitle = useSetRecoilState<string>(topBarTitleState);
   const setIsShownSystemErrorSnackbar = useSetRecoilState<boolean>(
     isShownSystemErrorSnackbarState
   );
@@ -65,13 +63,12 @@ function UploadRequest() {
       }
       const content: string = reader.result;
 
-      // 譜面以外のDOMを高優先度で再レンダリング
-      setIsShownProgress(true);
+      // TODO: 譜面以外のDOMを高優先度で再レンダリング
+      setTopBarTitle("TODO");
 
       // 譜面のDOMを低優先度で再レンダリング
       startTransition(() => {
         setChart(validateAndLoadUCS(content));
-        setIsShownProgress(false);
       });
     };
     reader.readAsText(fileList[0]);
@@ -102,4 +99,4 @@ function UploadRequest() {
   );
 }
 
-export default UploadRequest;
+export default Chart;

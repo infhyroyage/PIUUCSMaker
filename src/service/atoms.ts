@@ -5,11 +5,6 @@ export const isShownSystemErrorSnackbarState = atom<boolean>({
   default: false,
 });
 
-export const isShownTopBarProgressState = atom<boolean>({
-  key: "isShownTopBarProgress",
-  default: false,
-});
-
 export const topBarTitleState = atom<string>({
   key: "topBarTitle",
   default: "PIU UCS Maker",
