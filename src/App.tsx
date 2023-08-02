@@ -14,7 +14,7 @@ import UserErrorSnackbar from "./components/UserErrorSnackbar";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import { useRecoilValue } from "recoil";
-import Chart from "./components/Chart";
+import WorkSpace from "./components/WorkSpace";
 import { topBarTitleState } from "./service/atoms";
 
 function App() {
@@ -67,7 +67,7 @@ function App() {
           </Tooltip>
         </Toolbar>
       </AppBar>
-      <Chart />
+      <WorkSpace />
       <UserErrorSnackbar />
       <SystemErrorSnackbar />
     </ThemeProvider>

@@ -4,7 +4,7 @@
 export type Note = {
   /**
    * 単ノート/ホールドの列インデックス
-   * Single譜面の場合は左下から5〜9、Double譜面の場合は1P左下から0〜9
+   * Single譜面の場合は左下から0〜4、Double譜面の場合は1P左下から0〜9
    */
   column: number;
 
@@ -66,11 +66,6 @@ export type Block = {
    * 行数
    */
   length: number;
-
-  /**
-   * 単ノート/ホールドの集合
-   */
-  notes: Note[];
 };
 
 /**
@@ -93,4 +88,9 @@ export type Chart = {
    * 譜面のブロックの集合
    */
   blocks: Block[];
+
+  /**
+   * 単ノート/ホールドの集合
+   */
+  notes: Note[];
 };
