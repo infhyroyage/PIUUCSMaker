@@ -7,6 +7,10 @@ const config: Configuration = {
   module: {
     rules: [
       {
+        test: /\.png?$/,
+        use: "file-loader",
+      },
+      {
         test: /\.tsx?$/,
         use: "ts-loader",
       },
