@@ -17,6 +17,19 @@ import { useRecoilValue } from "recoil";
 import WorkSpace from "./components/WorkSpace";
 import { topBarTitleState } from "./service/atoms";
 
+// MUIコンポーネントおz-indexのデフォルト値
+// https://mui.com/material-ui/customization/z-index
+const MUI_DEFAULT_Z_INDEX: Record<string, number> = {
+  mobileStepper: 1000,
+  fab: 1050,
+  speedDial: 1050,
+  appBar: 1100,
+  drawer: 1200,
+  modal: 1300,
+  snackbar: 1400,
+  tooltip: 1500,
+};
+
 function App() {
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
   const topBarTitle = useRecoilValue<string>(topBarTitleState);
@@ -27,6 +40,14 @@ function App() {
         palette: {
           mode: isDarkMode ? "dark" : "light",
         },
+        // MUIコンポーネントおz-indexのデフォルト値を一律で1000倍にする
+        zIndex: Object.keys(MUI_DEFAULT_Z_INDEX).reduce(
+          (accumulator: Record<string, number>, key: string) => {
+            accumulator[key] = MUI_DEFAULT_Z_INDEX[key] * 1000;
+            return accumulator;
+          },
+          {}
+        ),
       }),
     [isDarkMode]
   );
