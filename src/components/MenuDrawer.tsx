@@ -21,60 +21,74 @@ import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { zoomIdxState } from "../service/atoms";
 import { useRecoilState } from "recoil";
 import { ZOOM_VALUES } from "../service/zoom";
+import useOpenFile from "../hooks/useOpenFile";
 // import PauseIcon from '@mui/icons-material/Pause';
 
 const OPENED_DRAWER_WIDTH = 200;
 
 type MenuListItem = {
   label: string;
-  icon: React.ElementType;
+  children: React.ReactNode;
   onClick: React.MouseEventHandler<HTMLDivElement>;
   disabled?: boolean;
 };
 function MenuDrawer({ isOpenedDrawer }: MenuDrawerProps) {
   const [zoomIdx, setZoomIdx] = useRecoilState<number>(zoomIdxState);
 
+  const { isOpeningFile, handleOpenFile } = useOpenFile();
+
   const menuListItems: MenuListItem[][] = useMemo(
     () => [
       [
         {
           label: "New UCS",
-          icon: AddIcon,
+          children: <AddIcon />,
           onClick: () => alert("TODO"),
         },
         {
           label: "Open UCS File",
-          icon: FileOpenIcon,
+          children: (
+            <FileOpenIcon>
+              {" "}
+              <input
+                type="file"
+                accept=".ucs"
+                style={{ display: "none" }}
+                onChange={handleOpenFile}
+              />
+            </FileOpenIcon>
+          ),
           onClick: () => alert("TODO"),
+          disabled: isOpeningFile,
         },
         {
           label: "Save As",
-          icon: SaveAsIcon,
+          children: <SaveAsIcon />,
           onClick: () => alert("TODO"),
         },
       ],
       [
         {
           label: "Undo",
-          icon: UndoIcon,
+          children: <UndoIcon />,
           onClick: () => alert("TODO"),
         },
         {
           label: "Redo",
-          icon: RedoIcon,
+          children: <RedoIcon />,
           onClick: () => alert("TODO"),
         },
       ],
       [
         {
           label: "Zoom In",
-          icon: ZoomInIcon,
+          children: <ZoomInIcon />,
           onClick: () => setZoomIdx(zoomIdx + 1),
           disabled: zoomIdx === ZOOM_VALUES.length - 1,
         },
         {
           label: "Zoom Out",
-          icon: ZoomOutIcon,
+          children: <ZoomOutIcon />,
           onClick: () => setZoomIdx(zoomIdx - 1),
           disabled: zoomIdx === 0,
         },
@@ -82,7 +96,7 @@ function MenuDrawer({ isOpenedDrawer }: MenuDrawerProps) {
       [
         {
           label: "Play",
-          icon: PlayArrowIcon,
+          children: <PlayArrowIcon />,
           onClick: () => alert("TODO"),
         },
       ],
@@ -139,7 +153,7 @@ function MenuDrawer({ isOpenedDrawer }: MenuDrawerProps) {
                       justifyContent: "center",
                     }}
                   >
-                    <item.icon />
+                    {item.children}
                   </ListItemIcon>
                   {isOpenedDrawer && (
                     <ListItemText primary={item.label} sx={{ opacity: 1 }} />

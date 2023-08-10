@@ -1,11 +1,14 @@
 import { Chart } from "../types/ucs";
-import UploadRequest from "./UploadRequest";
-import { useState } from "react";
+import Ready from "./Ready";
 import ChartBlock from "./ChartBlock";
+import { useRecoilValue } from "recoil";
+import { chartState } from "../service/atoms";
 // import Note0 from "../images/note0.png";
 
 function WorkSpace() {
-  const [chart, setChart] = useState<Chart | undefined>(undefined);
+  const chart: Chart | undefined = useRecoilValue<Chart | undefined>(
+    chartState
+  );
 
   return chart ? (
     <div
@@ -32,7 +35,7 @@ function WorkSpace() {
       ))}
     </div>
   ) : (
-    <UploadRequest setChart={setChart} />
+    <Ready />
   );
 }
 

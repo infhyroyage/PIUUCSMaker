@@ -1,4 +1,10 @@
 import { atom } from "recoil";
+import { Chart } from "../types/ucs";
+
+export const chartState = atom<Chart | undefined>({
+  key: "chartState",
+  default: undefined,
+});
 
 export const isShownSystemErrorSnackbarState = atom<boolean>({
   key: "isShownSystemErrorSnackbar",

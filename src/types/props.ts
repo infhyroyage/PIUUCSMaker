@@ -1,5 +1,3 @@
-import { Chart } from "./ucs";
-
 export type ChartBlockProps = {
   chartLength: 5 | 10;
   isEvenIdx: boolean;
@@ -15,8 +13,4 @@ export type ChartBlockRectangleProps = {
 
 export type MenuDrawerProps = {
   isOpenedDrawer: boolean;
-};
-
-export type UploadRequestProps = {
-  setChart: React.Dispatch<React.SetStateAction<Chart | undefined>>;
 };

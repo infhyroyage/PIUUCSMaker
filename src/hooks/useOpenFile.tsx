@@ -1,13 +1,12 @@
-import { Box, Button } from "@mui/material";
-import { UploadRequestProps } from "../types/props";
-import { Block, Chart } from "../types/ucs";
+import { useTransition } from "react";
 import { useSetRecoilState } from "recoil";
+import { Block, Chart } from "../types/ucs";
 import {
+  chartState,
   isShownSystemErrorSnackbarState,
   topBarTitleState,
   userErrorMessageState,
 } from "../service/atoms";
-import { useTransition } from "react";
 
 const validateAndLoadUCS = (content: string): Chart | string => {
   // ucsファイルの改行コードがCRLF形式かのチェック
@@ -256,8 +255,9 @@ const validateAndLoadUCS = (content: string): Chart | string => {
   return chart;
 };
 
-function UploadRequest({ setChart }: UploadRequestProps) {
+function useOpenFile() {
   const setTopBarTitle = useSetRecoilState<string>(topBarTitleState);
+  const setChart = useSetRecoilState<Chart | undefined>(chartState);
   const setUserErrorMessage = useSetRecoilState<string>(userErrorMessageState);
   const setIsShownSystemErrorSnackbar = useSetRecoilState<boolean>(
     isShownSystemErrorSnackbarState
@@ -265,7 +265,7 @@ function UploadRequest({ setChart }: UploadRequestProps) {
 
   const [isPending, startTransition] = useTransition();
 
-  const handleUploadUCS = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleOpenFile = (event: React.ChangeEvent<HTMLInputElement>) => {
     // UCSファイルを何もアップロードしなかった場合はNOP
     const fileList: FileList | null = event.target.files;
     if (!fileList || fileList.length === 0) return;
@@ -305,24 +305,7 @@ function UploadRequest({ setChart }: UploadRequestProps) {
     reader.readAsText(fileList[0]);
   };
 
-  return (
-    <Box
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
-      height="100vh"
-    >
-      <Button variant="contained" component="label" disabled={isPending}>
-        {isPending ? "読み込み中..." : "ucsファイルをアップロード"}
-        <input
-          type="file"
-          accept=".ucs"
-          style={{ display: "none" }}
-          onChange={handleUploadUCS}
-        />
-      </Button>
-    </Box>
-  );
+  return { isOpeningFile: isPending, handleOpenFile };
 }
 
-export default UploadRequest;
+export default useOpenFile;
