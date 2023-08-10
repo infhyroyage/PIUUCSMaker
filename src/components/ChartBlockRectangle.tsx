@@ -1,18 +1,32 @@
-import { memo } from "react";
+import { memo, useMemo } from "react";
 import { ChartBlockRectangleProps } from "../types/props";
 import useChartSizes from "../hooks/useChartSizes";
+import { useRecoilValue } from "recoil";
+import { zoomIdxState } from "../service/atoms";
+import { ZOOM_VALUES } from "../service/zoom";
 
-function ChartBlockRectangle({ blockLength }: ChartBlockRectangleProps) {
+function ChartBlockRectangle({
+  isEvenIdx,
+  blockLength,
+  split,
+}: ChartBlockRectangleProps) {
+  const zoomIdx: number = useRecoilValue<number>(zoomIdxState);
+
   // 単ノートの1辺、枠線のサイズを取得
   const { noteSize, borderSize } = useChartSizes();
+
+  const blockHeight: number = useMemo(
+    () => (2.0 * noteSize * ZOOM_VALUES[zoomIdx] * blockLength) / split,
+    [blockLength, noteSize, split, zoomIdx]
+  );
 
   return (
     <span
       style={{
         display: "inline-block",
         width: `${noteSize}px`,
-        height: `${noteSize * blockLength}px`, // TODO: 倍率に応じて計算
-        backgroundColor: "red", // TODO: 奇数番目/偶数番目で色分け
+        height: `${blockHeight}px`,
+        backgroundColor: isEvenIdx ? "#ffffaa" : "#aaffff",
         marginRight: `${borderSize}px`,
         marginBottom: `${borderSize}px`,
         lineHeight: 0,
