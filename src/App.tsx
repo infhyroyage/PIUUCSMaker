@@ -2,13 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import {
   AppBar,
   CssBaseline,
-  Divider,
-  Drawer,
   IconButton,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemText,
   Switch,
   ThemeProvider,
   Toolbar,
@@ -24,8 +18,7 @@ import { useRecoilValue } from "recoil";
 import WorkSpace from "./components/WorkSpace";
 import { topBarTitleState } from "./service/atoms";
 import MenuIcon from "@mui/icons-material/Menu";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import MailIcon from "@mui/icons-material/Mail";
+import MenuDrawer from "./components/MenuDrawer";
 
 // MUIコンポーネントのz-indexのデフォルト値
 // https://mui.com/material-ui/customization/z-index
@@ -41,7 +34,7 @@ const MUI_DEFAULT_Z_INDEX: Record<string, number> = {
 };
 
 function App() {
-  const [open, setOpen] = useState<boolean>(false);
+  const [isOpenedDrawer, setIsOpenedDrawer] = useState<boolean>(false);
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
   const topBarTitle = useRecoilValue<string>(topBarTitleState);
 
@@ -79,7 +72,7 @@ function App() {
         <Toolbar sx={{ height: "100%" }}>
           <IconButton
             color="inherit"
-            onClick={() => setOpen(!open)}
+            onClick={() => setIsOpenedDrawer(!isOpenedDrawer)}
             edge="start"
             sx={{ marginRight: 4 }}
           >
@@ -110,87 +103,7 @@ function App() {
           </Tooltip>
         </Toolbar>
       </AppBar>
-      <Drawer
-        variant="permanent"
-        open={open}
-        PaperProps={{ sx: { marginTop: "64px" } }}
-        sx={{
-          width: open ? "240px" : "64px",
-          transition: theme.transitions.create("width", {
-            easing: theme.transitions.easing.sharp,
-            duration: open
-              ? theme.transitions.duration.enteringScreen
-              : theme.transitions.duration.leavingScreen,
-          }),
-          flexShrink: 0,
-          whiteSpace: "nowrap",
-          boxSizing: "border-box",
-          overflowX: "hidden",
-          "& .MuiDrawer-paper": {
-            width: open ? "240px" : "64px",
-            transition: theme.transitions.create("width", {
-              easing: theme.transitions.easing.sharp,
-              duration: open
-                ? theme.transitions.duration.enteringScreen
-                : theme.transitions.duration.leavingScreen,
-            }),
-          },
-        }}
-      >
-        <List>
-          {["Inbox", "Starred", "Send email", "Drafts"].map((text) => (
-            <ListItem key={text} disablePadding sx={{ display: "block" }}>
-              <ListItemButton
-                sx={{
-                  minHeight: 48,
-                  justifyContent: open ? "initial" : "center",
-                  px: 2.5,
-                }}
-              >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : "auto",
-                    justifyContent: "center",
-                  }}
-                >
-                  <MailIcon />
-                </ListItemIcon>
-                {open && (
-                  <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
-                )}
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-        <Divider />
-        <List>
-          {["All mail", "Trash", "Spam"].map((text) => (
-            <ListItem key={text} disablePadding sx={{ display: "block" }}>
-              <ListItemButton
-                sx={{
-                  minHeight: 48,
-                  justifyContent: open ? "initial" : "center",
-                  px: 2.5,
-                }}
-              >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : "auto",
-                    justifyContent: "center",
-                  }}
-                >
-                  <MailIcon />
-                </ListItemIcon>
-                {open && (
-                  <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
-                )}
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-      </Drawer>
+      <MenuDrawer isOpenedDrawer={isOpenedDrawer} />
       <WorkSpace />
       <UserErrorSnackbar />
       <SystemErrorSnackbar />
