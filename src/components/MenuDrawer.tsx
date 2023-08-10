@@ -1,4 +1,4 @@
-import React, { memo, useMemo } from "react";
+import { memo, useMemo } from "react";
 import {
   Divider,
   Drawer,
@@ -26,83 +26,26 @@ import useOpenFile from "../hooks/useOpenFile";
 
 const OPENED_DRAWER_WIDTH = 200;
 
-type MenuListItem = {
-  label: string;
-  children: React.ReactNode;
-  onClick: React.MouseEventHandler<HTMLDivElement>;
-  disabled?: boolean;
-};
 function MenuDrawer({ isOpenedDrawer }: MenuDrawerProps) {
   const [zoomIdx, setZoomIdx] = useRecoilState<number>(zoomIdxState);
 
   const { isOpeningFile, handleOpenFile } = useOpenFile();
 
-  const menuListItems: MenuListItem[][] = useMemo(
-    () => [
-      [
-        {
-          label: "New UCS",
-          children: <AddIcon />,
-          onClick: () => alert("TODO"),
-        },
-        {
-          label: "Open UCS File",
-          children: (
-            <FileOpenIcon>
-              {" "}
-              <input
-                type="file"
-                accept=".ucs"
-                style={{ display: "none" }}
-                onChange={handleOpenFile}
-              />
-            </FileOpenIcon>
-          ),
-          onClick: () => alert("TODO"),
-          disabled: isOpeningFile,
-        },
-        {
-          label: "Save As",
-          children: <SaveAsIcon />,
-          onClick: () => alert("TODO"),
-        },
-      ],
-      [
-        {
-          label: "Undo",
-          children: <UndoIcon />,
-          onClick: () => alert("TODO"),
-        },
-        {
-          label: "Redo",
-          children: <RedoIcon />,
-          onClick: () => alert("TODO"),
-        },
-      ],
-      [
-        {
-          label: "Zoom In",
-          children: <ZoomInIcon />,
-          onClick: () => setZoomIdx(zoomIdx + 1),
-          disabled: zoomIdx === ZOOM_VALUES.length - 1,
-        },
-        {
-          label: "Zoom Out",
-          children: <ZoomOutIcon />,
-          onClick: () => setZoomIdx(zoomIdx - 1),
-          disabled: zoomIdx === 0,
-        },
-      ],
-      [
-        {
-          label: "Play",
-          children: <PlayArrowIcon />,
-          onClick: () => alert("TODO"),
-        },
-      ],
-    ],
-    [zoomIdx]
-  );
+  const listItemButtonSX = useMemo(() => {
+    return {
+      justifyContent: isOpenedDrawer ? "initial" : "center",
+      minHeight: 48,
+      px: 2.5,
+    };
+  }, [isOpenedDrawer]);
+
+  const listItemIconSX = useMemo(() => {
+    return {
+      justifyContent: "center",
+      minWidth: 0,
+      mr: isOpenedDrawer ? 3 : "auto",
+    };
+  }, [isOpenedDrawer]);
 
   return (
     <Drawer
@@ -132,39 +75,117 @@ function MenuDrawer({ isOpenedDrawer }: MenuDrawerProps) {
         },
       })}
     >
-      {menuListItems.map((listItems: MenuListItem[], i: number) => (
-        <React.Fragment key={i}>
-          <List>
-            {listItems.map((item: MenuListItem, j: number) => (
-              <ListItem key={j} disablePadding sx={{ display: "block" }}>
-                <ListItemButton
-                  onClick={item.onClick}
-                  disabled={item.disabled}
-                  sx={{
-                    minHeight: 48,
-                    justifyContent: isOpenedDrawer ? "initial" : "center",
-                    px: 2.5,
-                  }}
-                >
-                  <ListItemIcon
-                    sx={{
-                      minWidth: 0,
-                      mr: isOpenedDrawer ? 3 : "auto",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {item.children}
-                  </ListItemIcon>
-                  {isOpenedDrawer && (
-                    <ListItemText primary={item.label} sx={{ opacity: 1 }} />
-                  )}
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
-          {i !== menuListItems.length - 1 && <Divider />}
-        </React.Fragment>
-      ))}
+      <List>
+        <ListItem disablePadding sx={{ display: "block" }}>
+          <ListItemButton onClick={() => alert("TODO")} sx={listItemButtonSX}>
+            <ListItemIcon sx={listItemIconSX}>
+              <AddIcon />
+            </ListItemIcon>
+            {isOpenedDrawer && (
+              <ListItemText primary="New UCS" sx={{ opacity: 1 }} />
+            )}
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding sx={{ display: "block" }}>
+          <ListItemButton
+            component="label"
+            htmlFor="upload"
+            disabled={isOpeningFile}
+            sx={listItemButtonSX}
+          >
+            <input
+              id="upload"
+              type="file"
+              accept=".ucs"
+              style={{ display: "none" }}
+              onChange={handleOpenFile}
+            />
+            <ListItemIcon sx={listItemIconSX}>
+              <FileOpenIcon />
+            </ListItemIcon>
+            {isOpenedDrawer && (
+              <ListItemText primary="Open UCS File" sx={{ opacity: 1 }} />
+            )}
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding sx={{ display: "block" }}>
+          <ListItemButton onClick={() => alert("TODO")} sx={listItemButtonSX}>
+            <ListItemIcon sx={listItemIconSX}>
+              <SaveAsIcon />
+            </ListItemIcon>
+            {isOpenedDrawer && (
+              <ListItemText primary="Save As" sx={{ opacity: 1 }} />
+            )}
+          </ListItemButton>
+        </ListItem>
+      </List>
+      <Divider />
+      <List>
+        <ListItem disablePadding sx={{ display: "block" }}>
+          <ListItemButton onClick={() => alert("TODO")} sx={listItemButtonSX}>
+            <ListItemIcon sx={listItemIconSX}>
+              <UndoIcon />
+            </ListItemIcon>
+            {isOpenedDrawer && (
+              <ListItemText primary="Undo" sx={{ opacity: 1 }} />
+            )}
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding sx={{ display: "block" }}>
+          <ListItemButton onClick={() => alert("TODO")} sx={listItemButtonSX}>
+            <ListItemIcon sx={listItemIconSX}>
+              <RedoIcon />
+            </ListItemIcon>
+            {isOpenedDrawer && (
+              <ListItemText primary="Redo" sx={{ opacity: 1 }} />
+            )}
+          </ListItemButton>
+        </ListItem>
+      </List>
+      <Divider />
+      <List>
+        <ListItem disablePadding sx={{ display: "block" }}>
+          <ListItemButton
+            onClick={() => setZoomIdx(zoomIdx + 1)}
+            disabled={zoomIdx === ZOOM_VALUES.length - 1}
+            sx={listItemButtonSX}
+          >
+            <ListItemIcon sx={listItemIconSX}>
+              <ZoomInIcon />
+            </ListItemIcon>
+            {isOpenedDrawer && (
+              <ListItemText primary="Zoom In" sx={{ opacity: 1 }} />
+            )}
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding sx={{ display: "block" }}>
+          <ListItemButton
+            onClick={() => setZoomIdx(zoomIdx - 1)}
+            disabled={zoomIdx === 0}
+            sx={listItemButtonSX}
+          >
+            <ListItemIcon sx={listItemIconSX}>
+              <ZoomOutIcon />
+            </ListItemIcon>
+            {isOpenedDrawer && (
+              <ListItemText primary="Zoom Out" sx={{ opacity: 1 }} />
+            )}
+          </ListItemButton>
+        </ListItem>
+      </List>
+      <Divider />
+      <List>
+        <ListItem disablePadding sx={{ display: "block" }}>
+          <ListItemButton onClick={() => alert("TODO")} sx={listItemButtonSX}>
+            <ListItemIcon sx={listItemIconSX}>
+              <PlayArrowIcon />
+            </ListItemIcon>
+            {isOpenedDrawer && (
+              <ListItemText primary="Play" sx={{ opacity: 1 }} />
+            )}
+          </ListItemButton>
+        </ListItem>
+      </List>
     </Drawer>
   );
 }
