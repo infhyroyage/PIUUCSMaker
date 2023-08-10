@@ -11,6 +11,11 @@ export const topBarTitleState = atom<string>({
 });
 
 export const userErrorMessageState = atom<string>({
-  key: "userErrorMessageState",
+  key: "userErrorMessage",
   default: "",
+});
+
+export const zoomIdxState = atom<number>({
+  key: "zoomIdx",
+  default: 0,
 });

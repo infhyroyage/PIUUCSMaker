@@ -18,6 +18,9 @@ import RedoIcon from "@mui/icons-material/Redo";
 import ZoomInIcon from "@mui/icons-material/ZoomIn";
 import ZoomOutIcon from "@mui/icons-material/ZoomOut";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import { zoomIdxState } from "../service/atoms";
+import { useRecoilState } from "recoil";
+import { ZOOM_VALUES } from "../service/zoom";
 // import PauseIcon from '@mui/icons-material/Pause';
 
 const OPENED_DRAWER_WIDTH = 200;
@@ -26,8 +29,11 @@ type MenuListItem = {
   label: string;
   icon: React.ElementType;
   onClick: React.MouseEventHandler<HTMLDivElement>;
+  disabled?: boolean;
 };
 function MenuDrawer({ isOpenedDrawer }: MenuDrawerProps) {
+  const [zoomIdx, setZoomIdx] = useRecoilState<number>(zoomIdxState);
+
   const menuListItems: MenuListItem[][] = useMemo(
     () => [
       [
@@ -63,12 +69,14 @@ function MenuDrawer({ isOpenedDrawer }: MenuDrawerProps) {
         {
           label: "Zoom In",
           icon: ZoomInIcon,
-          onClick: () => alert("TODO"),
+          onClick: () => setZoomIdx(zoomIdx + 1),
+          disabled: zoomIdx === ZOOM_VALUES.length - 1,
         },
         {
           label: "Zoom Out",
           icon: ZoomOutIcon,
-          onClick: () => alert("TODO"),
+          onClick: () => setZoomIdx(zoomIdx - 1),
+          disabled: zoomIdx === 0,
         },
       ],
       [
@@ -79,7 +87,7 @@ function MenuDrawer({ isOpenedDrawer }: MenuDrawerProps) {
         },
       ],
     ],
-    []
+    [zoomIdx]
   );
 
   return (
@@ -117,6 +125,7 @@ function MenuDrawer({ isOpenedDrawer }: MenuDrawerProps) {
               <ListItem key={j} disablePadding sx={{ display: "block" }}>
                 <ListItemButton
                   onClick={item.onClick}
+                  disabled={item.disabled}
                   sx={{
                     minHeight: 48,
                     justifyContent: isOpenedDrawer ? "initial" : "center",

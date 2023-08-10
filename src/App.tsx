@@ -2,11 +2,14 @@ import { useEffect, useMemo, useState } from "react";
 import {
   AppBar,
   CssBaseline,
+  FormControl,
   IconButton,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
   Switch,
   ThemeProvider,
   Toolbar,
-  Tooltip,
   Typography,
   createTheme,
 } from "@mui/material";
@@ -14,11 +17,12 @@ import SystemErrorSnackbar from "./components/SystemErrorSnackbar";
 import UserErrorSnackbar from "./components/UserErrorSnackbar";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import WorkSpace from "./components/WorkSpace";
-import { topBarTitleState } from "./service/atoms";
+import { topBarTitleState, zoomIdxState } from "./service/atoms";
 import MenuIcon from "@mui/icons-material/Menu";
 import MenuDrawer from "./components/MenuDrawer";
+import { ZOOM_VALUES } from "./service/zoom";
 
 // MUIコンポーネントのz-indexのデフォルト値
 // https://mui.com/material-ui/customization/z-index
@@ -37,6 +41,7 @@ function App() {
   const [isOpenedDrawer, setIsOpenedDrawer] = useState<boolean>(false);
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
   const topBarTitle = useRecoilValue<string>(topBarTitleState);
+  const [zoomIdx, setZoomIdx] = useRecoilState<number>(zoomIdxState);
 
   const theme = useMemo(
     () =>
@@ -74,33 +79,45 @@ function App() {
             color="inherit"
             onClick={() => setIsOpenedDrawer(!isOpenedDrawer)}
             edge="start"
-            sx={{ marginRight: 4 }}
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div" flexGrow={1}>
+          <Typography variant="h6" noWrap component="div" flexGrow={1} ml={4}>
             {topBarTitle}
           </Typography>
-          <Tooltip title={isDarkMode ? "ダーク" : "ライト"}>
-            <Switch
-              checked={isDarkMode}
-              onChange={() => setIsDarkMode(!isDarkMode)}
-              icon={<LightModeIcon sx={{ color: "white" }} />}
-              checkedIcon={<DarkModeIcon sx={{ color: "white" }} />}
-              sx={{
-                width: 58,
-                height: 38,
+          <FormControl size="small" sx={{ marginRight: 4 }}>
+            <Select
+              value={`${zoomIdx}`}
+              onChange={(event: SelectChangeEvent) =>
+                setZoomIdx(Number(event.target.value))
+              }
+            >
+              {ZOOM_VALUES.map((zoomValue: number, idx: number) => (
+                <MenuItem
+                  key={idx}
+                  value={`${idx}`}
+                >{`${zoomValue}x`}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <Switch
+            checked={isDarkMode}
+            onChange={() => setIsDarkMode(!isDarkMode)}
+            icon={<LightModeIcon sx={{ color: "white" }} />}
+            checkedIcon={<DarkModeIcon sx={{ color: "white" }} />}
+            sx={{
+              width: 58,
+              height: 38,
+              padding: 0,
+              "& .MuiSwitch-switchBase": {
                 padding: 0,
-                "& .MuiSwitch-switchBase": {
-                  padding: 0,
-                  margin: "7px",
-                },
-                "& .MuiSwitch-track": {
-                  borderRadius: 38 / 2,
-                },
-              }}
-            />
-          </Tooltip>
+                margin: "7px",
+              },
+              "& .MuiSwitch-track": {
+                borderRadius: 38 / 2,
+              },
+            }}
+          />
         </Toolbar>
       </AppBar>
       <MenuDrawer isOpenedDrawer={isOpenedDrawer} />
