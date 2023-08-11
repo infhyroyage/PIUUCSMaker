@@ -6,6 +6,11 @@ export const chartState = atom<Chart | undefined>({
   default: undefined,
 });
 
+export const isOpenedNewFileDialogState = atom<boolean>({
+  key: "isOpenedNewFileDialog",
+  default: false,
+});
+
 export const isShownSystemErrorSnackbarState = atom<boolean>({
   key: "isShownSystemErrorSnackbar",
   default: false,

@@ -23,6 +23,7 @@ import { topBarTitleState, zoomIdxState } from "./service/atoms";
 import MenuIcon from "@mui/icons-material/Menu";
 import MenuDrawer from "./components/MenuDrawer";
 import { ZOOM_VALUES } from "./service/zoom";
+import NewFileDialog from "./components/NewFileDialog";
 
 // MUIコンポーネントのz-indexのデフォルト値
 // https://mui.com/material-ui/customization/z-index
@@ -122,6 +123,7 @@ function App() {
       </AppBar>
       <MenuDrawer isOpenedDrawer={isOpenedDrawer} />
       <WorkSpace />
+      <NewFileDialog />
       <UserErrorSnackbar />
       <SystemErrorSnackbar />
     </ThemeProvider>

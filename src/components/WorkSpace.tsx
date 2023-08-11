@@ -1,5 +1,5 @@
 import { Chart } from "../types/ucs";
-import Ready from "./Ready";
+import ReadyFile from "./ReadyFile";
 import ChartBlock from "./ChartBlock";
 import { useRecoilValue } from "recoil";
 import { chartState } from "../service/atoms";
@@ -35,7 +35,7 @@ function WorkSpace() {
       ))}
     </div>
   ) : (
-    <Ready />
+    <ReadyFile />
   );
 }
 

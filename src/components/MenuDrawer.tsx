@@ -18,8 +18,8 @@ import RedoIcon from "@mui/icons-material/Redo";
 import ZoomInIcon from "@mui/icons-material/ZoomIn";
 import ZoomOutIcon from "@mui/icons-material/ZoomOut";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import { zoomIdxState } from "../service/atoms";
-import { useRecoilState } from "recoil";
+import { isOpenedNewFileDialogState, zoomIdxState } from "../service/atoms";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import { ZOOM_VALUES } from "../service/zoom";
 import useOpenFile from "../hooks/useOpenFile";
 // import PauseIcon from '@mui/icons-material/Pause';
@@ -28,6 +28,9 @@ const OPENED_DRAWER_WIDTH = 200;
 
 function MenuDrawer({ isOpenedDrawer }: MenuDrawerProps) {
   const [zoomIdx, setZoomIdx] = useRecoilState<number>(zoomIdxState);
+  const setIsOpenedNewChartDialog = useSetRecoilState<boolean>(
+    isOpenedNewFileDialogState
+  );
 
   const { isOpeningFile, handleOpenFile } = useOpenFile();
 
@@ -77,12 +80,15 @@ function MenuDrawer({ isOpenedDrawer }: MenuDrawerProps) {
     >
       <List>
         <ListItem disablePadding sx={{ display: "block" }}>
-          <ListItemButton onClick={() => alert("TODO")} sx={listItemButtonSX}>
+          <ListItemButton
+            onClick={() => setIsOpenedNewChartDialog(true)}
+            sx={listItemButtonSX}
+          >
             <ListItemIcon sx={listItemIconSX}>
               <AddIcon />
             </ListItemIcon>
             {isOpenedDrawer && (
-              <ListItemText primary="New UCS" sx={{ opacity: 1 }} />
+              <ListItemText primary="New UCS File" sx={{ opacity: 1 }} />
             )}
           </ListItemButton>
         </ListItem>
