@@ -289,15 +289,12 @@ function useOpenFile() {
       }
       const content: string = reader.result;
 
-      // 譜面以外のDOMを高優先度で再レンダリング
-      setTopBarTitle(fileName);
-
-      // 譜面のDOMを低優先度で再レンダリング
       startTransition(() => {
         const result: Chart | string = validateAndLoadUCS(content);
         if (typeof result === "string") {
           setUserErrorMessage(result);
         } else {
+          setTopBarTitle(fileName);
           setChart(result);
         }
       });
