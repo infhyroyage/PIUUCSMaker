@@ -17,6 +17,7 @@ function WorkSpace() {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
+        flexGrow: 1,
       }}
     >
       {chart.blocks.map((block, idx) => (

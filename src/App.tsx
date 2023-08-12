@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   AppBar,
+  Box,
   CssBaseline,
   FormControl,
   IconButton,
@@ -121,8 +122,10 @@ function App() {
           />
         </Toolbar>
       </AppBar>
-      <MenuDrawer isOpenedDrawer={isOpenedDrawer} />
-      <WorkSpace />
+      <Box sx={{ display: "flex" }}>
+        <MenuDrawer isOpenedDrawer={isOpenedDrawer} />
+        <WorkSpace />
+      </Box>
       <NewFileDialog />
       <UserErrorSnackbar />
       <SystemErrorSnackbar />

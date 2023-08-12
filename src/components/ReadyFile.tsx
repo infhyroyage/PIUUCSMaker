@@ -17,6 +17,7 @@ function ReadyFile() {
       alignItems="center"
       height="100vh"
       spacing={3}
+      sx={{ flexGrow: 1 }}
     >
       <Button
         variant="contained"
