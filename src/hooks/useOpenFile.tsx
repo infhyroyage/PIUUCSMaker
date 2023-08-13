@@ -1,6 +1,6 @@
 import { useTransition } from "react";
 import { useSetRecoilState } from "recoil";
-import { Block, Chart } from "../types/ucs";
+import { Block, Chart, Note } from "../types/ucs";
 import {
   chartState,
   isShownSystemErrorSnackbarState,
@@ -48,7 +48,6 @@ const validateAndLoadUCS = (content: string): Chart | string => {
       line
     ),
     blocks: [],
-    notes: [],
   };
 
   // 解析中の譜面のブロックの初期化
@@ -63,8 +62,12 @@ const validateAndLoadUCS = (content: string): Chart | string => {
   // * 中抜きホールドの中間にかぶせる終点の行インデックスの配列
   let startHolds: number[] = Array(chart.length).fill(0);
   let startHollows: number[] = Array(chart.length).fill(0);
-  let hollowStartLists: number[][] = Array(chart.length).fill([]);
-  let hollowGoalLists: number[][] = Array(chart.length).fill([]);
+  let hollowStartLists: number[][] = Array(chart.length)
+    .fill(0)
+    .map<number[]>(() => []);
+  let hollowGoalLists: number[][] = Array(chart.length)
+    .fill(0)
+    .map<number[]>(() => []);
 
   // 2行しか記載していないかのチェック
   rowNum++;
@@ -142,7 +145,16 @@ const validateAndLoadUCS = (content: string): Chart | string => {
       }
 
       // 譜面のブロック追加
-      currentBlock = { bpm, delay, beat, split, length: rowNum };
+      currentBlock = {
+        bpm,
+        delay,
+        beat,
+        split,
+        length: rowNum,
+        notes: Array(chart.length)
+          .fill(0)
+          .map<Note[]>(() => []),
+      };
 
       rowNum++;
       line = lines.shift();
@@ -165,8 +177,7 @@ const validateAndLoadUCS = (content: string): Chart | string => {
           }
 
           // 単ノート追加
-          chart.notes.push({
-            column,
+          currentBlock?.notes[column].push({
             start: accumulatedRow,
             goal: accumulatedRow,
             hollowStarts: [],
@@ -213,8 +224,7 @@ const validateAndLoadUCS = (content: string): Chart | string => {
           }
 
           // ホールド/中抜きホールド追加
-          chart.notes.push({
-            column,
+          currentBlock?.notes[column].push({
             start: startHolds[column],
             goal: accumulatedRow,
             hollowStarts: hollowStartLists[column],

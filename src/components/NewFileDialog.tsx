@@ -18,7 +18,7 @@ import {
 } from "../service/atoms";
 import { useState, useTransition } from "react";
 import { NewFileDialogForm } from "../types/form";
-import { Chart } from "../types/ucs";
+import { Chart, Note } from "../types/ucs";
 
 const validateAndLoadUCS = (form: NewFileDialogForm): Chart | string => {
   // UCSファイル名のチェック
@@ -100,9 +100,11 @@ const validateAndLoadUCS = (form: NewFileDialogForm): Chart | string => {
         beat,
         split,
         length: blockLength,
+        notes: Array(chartLength)
+          .fill(0)
+          .map<Note[]>(() => []),
       },
     ],
-    notes: [],
   };
 };
 
