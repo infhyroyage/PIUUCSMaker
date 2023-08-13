@@ -54,19 +54,18 @@ const validateAndLoadUCS = (content: string): Chart | string => {
   let currentBlock: Block | undefined = undefined;
   // 譜面のブロックの行インデックスの総和の初期化
   let accumulatedRow: number = 0;
-  let oldAccumulatedRow: number = 0;
   // 各列の以下の一時変数を初期化
   // * ホールドの始点の行インデックス
   // * 中抜きホールドの中間にかぶせる始点の一時情報
   // * 中抜きホールドの中間にかぶせる始点の行インデックスの配列
   // * 中抜きホールドの中間にかぶせる終点の行インデックスの配列
-  let startHolds: number[] = Array(chart.length).fill(0);
-  let startHollows: number[] = Array(chart.length).fill(0);
+  let startHolds: number[] = Array(chart.length).fill(-1);
+  let startHollows: number[] = Array(chart.length).fill(-1);
   let hollowStartLists: number[][] = Array(chart.length)
-    .fill(0)
+    .fill(null)
     .map<number[]>(() => []);
   let hollowGoalLists: number[][] = Array(chart.length)
-    .fill(0)
+    .fill(null)
     .map<number[]>(() => []);
 
   // 2行しか記載していないかのチェック
@@ -84,16 +83,17 @@ const validateAndLoadUCS = (content: string): Chart | string => {
 
     // 譜面のブロックのヘッダー部のチェック・取得
     if (line[0] === ":") {
-      // 2個目以降の譜面のブロックのヘッダーに到達した場合、前の譜面のブロックの行数が0になっていないかどうかチェック
-      if (accumulatedRow > 0 && accumulatedRow - oldAccumulatedRow == 0) {
-        return `ucsファイルの${rowNum}行目が不正です`;
-      }
-
-      // 譜面のブロックの行数を更新して格納
+      // 1個目の譜面のブロックのヘッダーの場合はスキップ
       if (!!currentBlock) {
-        currentBlock.length = accumulatedRow - oldAccumulatedRow;
-        oldAccumulatedRow = accumulatedRow;
+        // 前の譜面のブロックの行数が0になっていないかどうかチェック
+        if (accumulatedRow === 0) {
+          return `ucsファイルの${rowNum}行目が不正です`;
+        }
+
+        // 譜面のブロックの行数を更新して格納
+        currentBlock.length = accumulatedRow;
         chart.blocks.push(currentBlock);
+        accumulatedRow = 0;
       }
 
       // 譜面のブロックのBPM値のチェック・取得
@@ -167,12 +167,11 @@ const validateAndLoadUCS = (content: string): Chart | string => {
     }
 
     // 単ノート/(中抜き)ホールドの情報を解析し、そのインスタンスを追加
-    accumulatedRow++;
     for (let column: number = 0; column < chart.length; column++) {
       switch (line[column]) {
         case "X":
           // 不正なホールドの記述かのチェック
-          if (startHolds[column] > 0 || startHollows[column] > 0) {
+          if (startHolds[column] > -1 || startHollows[column] > -1) {
             return `ucsファイルの${rowNum}行目が不正です`;
           }
 
@@ -187,7 +186,7 @@ const validateAndLoadUCS = (content: string): Chart | string => {
           break;
         case "M":
           // 不正なホールドの記述かのチェック
-          if (startHolds[column] > 0 || startHollows[column] > 0) {
+          if (startHolds[column] > -1 || startHollows[column] > -1) {
             return `ucsファイルの${rowNum}行目が不正です`;
           }
 
@@ -197,19 +196,19 @@ const validateAndLoadUCS = (content: string): Chart | string => {
           break;
         case "H":
           // 不正なホールドの記述かのチェック
-          if (startHolds[column] == 0) {
+          if (startHolds[column] === -1) {
             return `ucsファイルの${rowNum}行目が不正です`;
           }
 
           // 中抜きホールド判定
-          if (startHollows[column] == 0) {
+          if (startHollows[column] === -1) {
             startHollows[column] = accumulatedRow;
           }
 
           break;
         case "W":
           // 不正なホールドの記述かのチェック
-          if (startHolds[column] == 0) {
+          if (startHolds[column] === -1) {
             return `ucsファイルの${rowNum}行目が不正です`;
           }
 
@@ -217,7 +216,7 @@ const validateAndLoadUCS = (content: string): Chart | string => {
           if (
             hollowStartLists[column].length > 0 &&
             hollowGoalLists[column].length > 0 &&
-            startHollows[column] != 0
+            startHollows[column] !== -1
           ) {
             hollowStartLists[column].push(startHollows[column]);
             hollowGoalLists[column].push(accumulatedRow + 1);
@@ -231,18 +230,18 @@ const validateAndLoadUCS = (content: string): Chart | string => {
             hollowGoals: hollowGoalLists[column],
           });
 
-          startHolds[column] = 0;
-          startHollows[column] = 0;
+          startHolds[column] = -1;
+          startHollows[column] = -1;
           hollowStartLists[column].length = 0;
           hollowGoalLists[column].length = 0;
 
           break;
         case ".":
           // 中抜きホールド判定
-          if (startHollows[column] > 0) {
+          if (startHollows[column] > -1) {
             hollowStartLists[column].push(startHollows[column]);
             hollowGoalLists[column].push(accumulatedRow);
-            startHollows[column] = 0;
+            startHollows[column] = -1;
           }
 
           break;
@@ -252,6 +251,7 @@ const validateAndLoadUCS = (content: string): Chart | string => {
     }
 
     rowNum++;
+    accumulatedRow++;
     line = lines.shift();
   }
 
@@ -259,7 +259,7 @@ const validateAndLoadUCS = (content: string): Chart | string => {
   if (!currentBlock) {
     return `ucsファイルの${rowNum}行目が不正です`;
   }
-  currentBlock.length = accumulatedRow - oldAccumulatedRow;
+  currentBlock.length = accumulatedRow;
   chart.blocks.push(currentBlock);
 
   return chart;
