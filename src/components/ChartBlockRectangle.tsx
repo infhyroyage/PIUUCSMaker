@@ -95,8 +95,9 @@ function ChartBlockRectangle({
                 (2.0 *
                   noteSize *
                   ZOOM_VALUES[zoomIdx] *
-                  (note.start - accumulatedBlockLength + 0.5)) /
-                  split -
+                  (note.start - accumulatedBlockLength)) /
+                  split +
+                noteSize * 0.5 -
                 offset
               }px`,
               zIndex: (note.start + 1) * 10 + 1,
