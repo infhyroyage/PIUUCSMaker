@@ -15,23 +15,23 @@ const validateAndLoadUCS = (content: string): Chart | string => {
   }
 
   const lines: string[] = content.split("\r\n");
-  let rowNum: number = 0;
+  let fileLinesNum: number = 0;
   let line: string | undefined = "";
 
   // 1行目のチェック
-  rowNum++;
+  fileLinesNum++;
   line = lines.shift();
   if (!line) {
-    return `ucsファイルの${rowNum}行目以降が記載されていません`;
+    return `ucsファイルの${fileLinesNum}行目以降が記載されていません`;
   } else if (line !== ":Format=1") {
-    return `ucsファイルの${rowNum}行目が不正です`;
+    return `ucsファイルの${fileLinesNum}行目が不正です`;
   }
 
   // 譜面形式(2行目)のチェック・取得
-  rowNum++;
+  fileLinesNum++;
   line = lines.shift();
   if (!line) {
-    return `ucsファイルの${rowNum}行目以降が記載されていません`;
+    return `ucsファイルの${fileLinesNum}行目以降が記載されていません`;
   } else if (
     ![
       ":Mode=Single",
@@ -40,145 +40,158 @@ const validateAndLoadUCS = (content: string): Chart | string => {
       ":Mode=D-Performance",
     ].includes(line)
   ) {
-    return `ucsファイルの${rowNum}行目が不正です`;
+    return `ucsファイルの${fileLinesNum}行目が不正です`;
   }
+  const chartLength: 5 | 10 = [":Mode=Single", ":Mode=S-Performance"].includes(
+    line
+  )
+    ? 5
+    : 10;
   const chart: Chart = {
-    length: [":Mode=Single", ":Mode=S-Performance"].includes(line) ? 5 : 10,
+    length: chartLength,
     isPerformance: [":Mode=S-Performance", ":Mode=D-Performance"].includes(
       line
     ),
     blocks: [],
   };
 
-  // 解析中の譜面のブロックの初期化
-  let currentBlock: Block | undefined = undefined;
-  // 譜面のブロックの行インデックスの総和の初期化
-  let accumulatedRow: number = 0;
-  // 各列の以下の一時変数を初期化
-  // * ホールドの始点の行インデックス
-  // * 中抜きホールドの中間にかぶせる始点の一時情報
-  // * 中抜きホールドの中間にかぶせる始点の行インデックスの配列
-  // * 中抜きホールドの中間にかぶせる終点の行インデックスの配列
-  let startHolds: number[] = Array(chart.length).fill(-1);
-  let startHollows: number[] = Array(chart.length).fill(-1);
-  let hollowStartLists: number[][] = Array(chart.length)
+  /*
+   * 各列の以下の一時変数を初期化
+   * * 譜面のブロック
+   * * 譜面のブロックの行数
+   * * 譜面全体での行インデックス
+   * * ホールドの始点の行インデックス
+   * * 中抜きホールドの中間にかぶせる始点の一時情報
+   * * 中抜きホールドの中間にかぶせる始点の行インデックスの配列
+   * * 中抜きホールドの中間にかぶせる終点の行インデックスの配列
+   */
+  let block: Block | undefined = undefined;
+  let blockLength: number = 0;
+  let rowIdx: number = 0;
+  let startHolds: number[] = Array(chartLength).fill(-1);
+  let startHollows: number[] = Array(chartLength).fill(-1);
+  let hollowStartLists: number[][] = Array(chartLength)
     .fill(null)
     .map<number[]>(() => []);
-  let hollowGoalLists: number[][] = Array(chart.length)
+  let hollowGoalLists: number[][] = Array(chartLength)
     .fill(null)
     .map<number[]>(() => []);
 
   // 2行しか記載していないかのチェック
-  rowNum++;
+  fileLinesNum++;
   line = lines.shift();
   if (!line) {
-    return `ucsファイルの${rowNum}行目以降が記載されていません`;
+    return `ucsファイルの${fileLinesNum}行目以降が記載されていません`;
   }
 
   while (!!line) {
     // 改行のみではないかのチェック
     if (line.length === 0) {
-      return `ucsファイルの${rowNum}行目が不正です`;
+      return `ucsファイルの${fileLinesNum}行目が不正です`;
     }
 
     // 譜面のブロックのヘッダー部のチェック・取得
     if (line[0] === ":") {
-      // 1個目の譜面のブロックのヘッダーの場合はスキップ
-      if (!!currentBlock) {
-        // 前の譜面のブロックの行数が0になっていないかどうかチェック
-        if (accumulatedRow === 0) {
-          return `ucsファイルの${rowNum}行目が不正です`;
+      if (!!block) {
+        // 直前の譜面のブロックの行数が0になっていないかどうかチェック
+        if (blockLength === 0) {
+          return `ucsファイルの${fileLinesNum}行目が不正です`;
         }
 
         // 譜面のブロックの行数を更新して格納
-        currentBlock.length = accumulatedRow;
-        chart.blocks.push(currentBlock);
-        accumulatedRow = 0;
+        block.length = blockLength;
+        chart.blocks.push(block);
+        blockLength = 0;
       }
 
       // 譜面のブロックのBPM値のチェック・取得
       if (line.substring(0, 5) !== ":BPM=") {
-        return `ucsファイルの${rowNum}行目が不正です`;
+        return `ucsファイルの${fileLinesNum}行目が不正です`;
       }
       const bpm: number = Number(line.substring(5));
       if (Number.isNaN(bpm)) {
-        return `ucsファイルの${rowNum}行目が不正です`;
+        return `ucsファイルの${fileLinesNum}行目が不正です`;
       }
 
       // 譜面のブロックのDelay値のチェック・取得
-      rowNum++;
+      fileLinesNum++;
       line = lines.shift();
       if (!line) {
-        return `ucsファイルの${rowNum}行目以降が記載されていません`;
+        return `ucsファイルの${fileLinesNum}行目以降が記載されていません`;
       } else if (line.substring(0, 7) !== ":Delay=") {
-        return `ucsファイルの${rowNum}行目が不正です`;
+        return `ucsファイルの${fileLinesNum}行目が不正です`;
       }
       const delay: number = Number(line.substring(7));
       if (Number.isNaN(delay)) {
-        return `ucsファイルの${rowNum}行目が不正です`;
+        return `ucsファイルの${fileLinesNum}行目が不正です`;
       }
 
       // 譜面のブロックのBeat値のチェック・取得
-      rowNum++;
+      fileLinesNum++;
       line = lines.shift();
       if (!line) {
-        return `ucsファイルの${rowNum}行目以降が記載されていません`;
+        return `ucsファイルの${fileLinesNum}行目以降が記載されていません`;
       } else if (line.substring(0, 6) !== ":Beat=") {
-        return `ucsファイルの${rowNum}行目が不正です`;
+        return `ucsファイルの${fileLinesNum}行目が不正です`;
       }
       const beat: number = Number(line.substring(6));
       if (Number.isNaN(beat)) {
-        return `ucsファイルの${rowNum}行目が不正です`;
+        return `ucsファイルの${fileLinesNum}行目が不正です`;
       }
 
       // 譜面のブロックのSplit値のチェック・取得
-      rowNum++;
+      fileLinesNum++;
       line = lines.shift();
       if (!line) {
-        return `ucsファイルの${rowNum}行目以降が記載されていません`;
+        return `ucsファイルの${fileLinesNum}行目以降が記載されていません`;
       } else if (line.substring(0, 7) !== ":Split=") {
-        return `ucsファイルの${rowNum}行目が不正です`;
+        return `ucsファイルの${fileLinesNum}行目が不正です`;
       }
       const split: number = Number(line.substring(7));
       if (Number.isNaN(split)) {
-        return `ucsファイルの${rowNum}行目が不正です`;
+        return `ucsファイルの${fileLinesNum}行目が不正です`;
       }
 
-      // 譜面のブロック追加
-      currentBlock = {
+      // 新たな譜面のブロックの解析開始
+      block = {
         bpm,
         delay,
         beat,
         split,
-        length: rowNum,
-        notes: Array(chart.length)
-          .fill(0)
+        length: 0,
+        notes: Array(chartLength)
+          .fill(null)
           .map<Note[]>(() => []),
       };
 
-      rowNum++;
+      fileLinesNum++;
       line = lines.shift();
       continue;
     }
 
-    // 譜面のブロックのヘッダー部以外の列数をチェック
-    if (line.length !== chart.length) {
-      return `ucsファイルの${rowNum}行目が不正です`;
+    // 1個目の譜面のブロックのヘッダー部のチェック
+    if (!block) {
+      return `ucsファイルの${fileLinesNum}行目が不正です`;
     }
 
-    // 単ノート/(中抜き)ホールドの情報を解析し、そのインスタンスを追加
-    for (let column: number = 0; column < chart.length; column++) {
+    // 譜面のブロックのヘッダー部以外の列数をチェック
+    if (line.length !== chartLength) {
+      return `ucsファイルの${fileLinesNum}行目が不正です`;
+    }
+
+    // 単ノート/ホールド/中抜きホールドの情報を解析し、そのインスタンスを追加
+    for (let column: number = 0; column < chartLength; column++) {
       switch (line[column]) {
         case "X":
           // 不正なホールドの記述かのチェック
           if (startHolds[column] > -1 || startHollows[column] > -1) {
-            return `ucsファイルの${rowNum}行目が不正です`;
+            return `ucsファイルの${fileLinesNum}行目が不正です`;
           }
 
           // 単ノート追加
-          currentBlock?.notes[column].push({
-            start: accumulatedRow,
-            goal: accumulatedRow,
+          block.notes[column].push({
+            start: rowIdx,
+            goal: rowIdx,
             hollowStarts: [],
             hollowGoals: [],
           });
@@ -187,29 +200,29 @@ const validateAndLoadUCS = (content: string): Chart | string => {
         case "M":
           // 不正なホールドの記述かのチェック
           if (startHolds[column] > -1 || startHollows[column] > -1) {
-            return `ucsファイルの${rowNum}行目が不正です`;
+            return `ucsファイルの${fileLinesNum}行目が不正です`;
           }
 
-          startHolds[column] = accumulatedRow;
-          startHollows[column] = accumulatedRow;
+          startHolds[column] = rowIdx;
+          startHollows[column] = rowIdx;
 
           break;
         case "H":
           // 不正なホールドの記述かのチェック
           if (startHolds[column] === -1) {
-            return `ucsファイルの${rowNum}行目が不正です`;
+            return `ucsファイルの${fileLinesNum}行目が不正です`;
           }
 
           // 中抜きホールド判定
           if (startHollows[column] === -1) {
-            startHollows[column] = accumulatedRow;
+            startHollows[column] = rowIdx;
           }
 
           break;
         case "W":
           // 不正なホールドの記述かのチェック
           if (startHolds[column] === -1) {
-            return `ucsファイルの${rowNum}行目が不正です`;
+            return `ucsファイルの${fileLinesNum}行目が不正です`;
           }
 
           // 中抜きホールド判定
@@ -219,13 +232,13 @@ const validateAndLoadUCS = (content: string): Chart | string => {
             startHollows[column] !== -1
           ) {
             hollowStartLists[column].push(startHollows[column]);
-            hollowGoalLists[column].push(accumulatedRow + 1);
+            hollowGoalLists[column].push(rowIdx);
           }
 
           // ホールド/中抜きホールド追加
-          currentBlock?.notes[column].push({
+          block.notes[column].push({
             start: startHolds[column],
-            goal: accumulatedRow,
+            goal: rowIdx,
             hollowStarts: hollowStartLists[column],
             hollowGoals: hollowGoalLists[column],
           });
@@ -240,27 +253,28 @@ const validateAndLoadUCS = (content: string): Chart | string => {
           // 中抜きホールド判定
           if (startHollows[column] > -1) {
             hollowStartLists[column].push(startHollows[column]);
-            hollowGoalLists[column].push(accumulatedRow);
+            hollowGoalLists[column].push(rowIdx - 1);
             startHollows[column] = -1;
           }
 
           break;
         default:
-          return `ucsファイルの${rowNum}行目が不正です`;
+          return `ucsファイルの${fileLinesNum}行目が不正です`;
       }
     }
 
-    rowNum++;
-    accumulatedRow++;
+    fileLinesNum++;
+    blockLength++;
+    rowIdx++;
     line = lines.shift();
   }
 
   // 最後のブロックをリストに格納
-  if (!currentBlock) {
-    return `ucsファイルの${rowNum}行目が不正です`;
+  if (!block) {
+    return `ucsファイルの${fileLinesNum}行目が不正です`;
   }
-  currentBlock.length = accumulatedRow;
-  chart.blocks.push(currentBlock);
+  block.length = blockLength;
+  chart.blocks.push(block);
 
   return chart;
 };

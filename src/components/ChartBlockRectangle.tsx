@@ -44,6 +44,36 @@ function ChartBlockRectangle({
     }
   }, [column]);
 
+  let offset: number = 0;
+  const imgs: React.ReactNode = notes.reduce(
+    (prev: React.ReactNode[], note: Note) => {
+      const top: number =
+        (2.0 *
+          noteSize *
+          ZOOM_VALUES[zoomIdx] *
+          (note.start - accumulatedBlockLength)) /
+          split -
+        offset;
+      prev.push(
+        <img
+          key={note.start}
+          src={imgSrc}
+          alt={`note${column % 5}`}
+          width={noteSize}
+          height={noteSize}
+          style={{
+            position: "relative",
+            top: `${top}px`,
+            zIndex: (note.start + 1) * 10,
+          }}
+        />
+      );
+      offset = offset + noteSize;
+      return prev;
+    },
+    []
+  );
+
   return (
     <span
       style={{
@@ -56,23 +86,7 @@ function ChartBlockRectangle({
         zIndex: 1,
       }}
     >
-      {notes.map((note: Note, idx: number) => (
-        <img
-          key={note.start}
-          src={imgSrc}
-          alt={`note${column % 5}`}
-          width={noteSize}
-          height={noteSize}
-          style={{
-            position: "relative",
-            top: `${
-              (2.0 * noteSize * ZOOM_VALUES[zoomIdx] * (note.start - idx)) /
-              split
-            }px`,
-            zIndex: (accumulatedBlockLength + note.start + 1) * 10,
-          }}
-        />
-      ))}
+      {imgs}
     </span>
   );
 }

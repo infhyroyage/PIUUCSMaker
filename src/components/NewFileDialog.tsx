@@ -101,7 +101,7 @@ const validateAndLoadUCS = (form: NewFileDialogForm): Chart | string => {
         split,
         length: blockLength,
         notes: Array(chartLength)
-          .fill(0)
+          .fill(null)
           .map<Note[]>(() => []),
       },
     ],
