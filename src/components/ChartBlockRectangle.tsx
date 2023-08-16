@@ -1,4 +1,4 @@
-import { memo, useMemo } from "react";
+import { memo, useMemo, useState } from "react";
 import { ChartBlockRectangleProps } from "../types/props";
 import Note0 from "../images/note0.png";
 import Note1 from "../images/note1.png";
@@ -18,14 +18,35 @@ import { ZOOM_VALUES } from "../service/zoom";
 function ChartBlockRectangle({
   column,
   isEvenIdx,
+  blockLength,
   noteSize,
   borderSize,
   accumulatedBlockLength,
   split,
   notes,
 }: ChartBlockRectangleProps) {
+  const [isHovered, setIsHovered] = useState<boolean>(false);
+  const [indicatorTop, setIndicatorTop] = useState<number>(0);
   const zoomIdx: number = useRecoilValue<number>(zoomIdxState);
 
+  const onMouseMove = (event: React.MouseEvent<HTMLSpanElement>) => {
+    // 譜面のブロックのマウスホバーした際に、マウスの行インデックスの場所にインディケーターを表示
+    // 譜面のブロックのマウスホバーが外れた際に、インディケーターを非表示
+    const y: number = Math.floor(
+      event.clientY - event.currentTarget.getBoundingClientRect().top
+    );
+    const blockHeight: number =
+      (2.0 * noteSize * ZOOM_VALUES[zoomIdx] * blockLength) / split;
+    if (y < blockHeight) {
+      const distance: number = (2.0 * noteSize * ZOOM_VALUES[zoomIdx]) / split;
+      setIndicatorTop(y - (y % distance));
+      setIsHovered(true);
+    } else {
+      setIsHovered(false);
+    }
+  };
+
+  // 単ノート・ホールドの画像ファイルのバイナリデータを取得
   const imgSrc: { note?: string; hold?: string } = useMemo(() => {
     switch (column % 5) {
       case 0:
@@ -49,7 +70,7 @@ function ChartBlockRectangle({
     }
   }, [column]);
 
-  let offset: number = 0;
+  let offset: number = isHovered ? noteSize : 0;
   const imgs: React.ReactNode = notes.reduce(
     (prev: React.ReactNode[], note: Note) => {
       // 単ノート/ホールド/中抜きホールドの始点
@@ -139,14 +160,31 @@ function ChartBlockRectangle({
   return (
     <span
       style={{
-        display: "inline-block",
+        display: "block",
         width: `${noteSize}px`,
         height: "100%",
-        backgroundColor: isEvenIdx ? "#ffffaa" : "#aaffff",
+        backgroundColor: isEvenIdx
+          ? "rgb(255, 255, 170)"
+          : "rgb(170, 255, 255)",
         marginRight: `${borderSize}px`,
         lineHeight: 0,
       }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onMouseMove={onMouseMove}
     >
+      {isHovered && (
+        <span
+          style={{
+            display: "block",
+            position: "relative",
+            top: `${indicatorTop}px`,
+            width: `${noteSize}px`,
+            height: `${noteSize}px`,
+            backgroundColor: "rgba(170, 170, 170, 0.5)",
+          }}
+        />
+      )}
       {imgs}
     </span>
   );

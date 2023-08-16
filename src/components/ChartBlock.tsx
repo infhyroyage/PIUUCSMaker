@@ -16,7 +16,7 @@ function ChartBlock({
 }: ChartBlockProps) {
   const zoomIdx: number = useRecoilValue<number>(zoomIdxState);
 
-  // 単ノートの1辺、枠線のサイズ、譜面のブロックの縦のサイズを取得
+  // 単ノートの1辺、枠線のサイズを取得
   const { noteSize, borderSize } = useChartSizes();
 
   /**
@@ -42,6 +42,7 @@ function ChartBlock({
           key={column}
           column={column}
           isEvenIdx={isEvenIdx}
+          blockLength={blockLength}
           noteSize={noteSize}
           borderSize={borderSize}
           accumulatedBlockLength={accumulatedBlockLength}

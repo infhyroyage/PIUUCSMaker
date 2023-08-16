@@ -12,6 +12,7 @@ export type ChartBlockProps = {
 export type ChartBlockRectangleProps = {
   column: number;
   isEvenIdx: boolean;
+  blockLength: number;
   noteSize: number;
   borderSize: number;
   accumulatedBlockLength: number;
