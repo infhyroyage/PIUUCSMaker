@@ -14,11 +14,12 @@ import { Note } from "../types/ucs";
 import { useRecoilValue } from "recoil";
 import { zoomIdxState } from "../service/atoms";
 import { ZOOM_VALUES } from "../service/zoom";
+import ChartBorderLine from "./ChartBorderLine";
 
 function ChartBlockRectangle({
   column,
   isEvenIdx,
-  blockLength,
+  blockHeight,
   noteSize,
   borderSize,
   accumulatedBlockLength,
@@ -35,11 +36,10 @@ function ChartBlockRectangle({
     const y: number = Math.floor(
       event.clientY - event.currentTarget.getBoundingClientRect().top
     );
-    const blockHeight: number =
-      (2.0 * noteSize * ZOOM_VALUES[zoomIdx] * blockLength) / split;
     if (y < blockHeight) {
       const distance: number = (2.0 * noteSize * ZOOM_VALUES[zoomIdx]) / split;
-      setIndicatorTop(y - (y % distance));
+      const indicatorTopOffset: number = borderSize;
+      setIndicatorTop(y - (y % distance) - indicatorTopOffset);
       setIsHovered(true);
     } else {
       setIsHovered(false);
@@ -70,7 +70,7 @@ function ChartBlockRectangle({
     }
   }, [column]);
 
-  let offset: number = isHovered ? noteSize : 0;
+  let imgTopOffset: number = borderSize + (isHovered ? noteSize : 0);
   const imgs: React.ReactNode = notes.reduce(
     (prev: React.ReactNode[], note: Note) => {
       // 単ノート/ホールド/中抜きホールドの始点
@@ -89,13 +89,13 @@ function ChartBlockRectangle({
                 ZOOM_VALUES[zoomIdx] *
                 (note.start - accumulatedBlockLength)) /
                 split -
-              offset
+              imgTopOffset
             }px`,
             zIndex: (note.start + 1) * 10,
           }}
         />
       );
-      offset = offset + noteSize;
+      imgTopOffset = imgTopOffset + noteSize;
 
       if (note.start !== note.goal) {
         // ホールド/中抜きホールド
@@ -119,13 +119,13 @@ function ChartBlockRectangle({
                   (note.start - accumulatedBlockLength)) /
                   split +
                 noteSize * 0.5 -
-                offset
+                imgTopOffset
               }px`,
               zIndex: (note.start + 1) * 10 + 1,
             }}
           />
         );
-        offset = offset + holdHeight;
+        imgTopOffset = imgTopOffset + holdHeight;
 
         // ホールド/中抜きホールドの終点
         prev.push(
@@ -143,13 +143,13 @@ function ChartBlockRectangle({
                   ZOOM_VALUES[zoomIdx] *
                   (note.goal - accumulatedBlockLength)) /
                   split -
-                offset
+                imgTopOffset
               }px`,
               zIndex: (note.start + 1) * 10 + 2,
             }}
           />
         );
-        offset = offset + noteSize;
+        imgTopOffset = imgTopOffset + noteSize;
       }
 
       return prev;
@@ -162,17 +162,24 @@ function ChartBlockRectangle({
       style={{
         display: "block",
         width: `${noteSize}px`,
-        height: "100%",
+        height: `${blockHeight}px`,
         backgroundColor: isEvenIdx
           ? "rgb(255, 255, 170)"
           : "rgb(170, 255, 255)",
-        marginRight: `${borderSize}px`,
         lineHeight: 0,
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onMouseMove={onMouseMove}
     >
+      <ChartBorderLine
+        style={{
+          position: "relative",
+          top: `${blockHeight - borderSize}px`,
+          width: `${noteSize}px`,
+          height: `${borderSize}px`,
+        }}
+      />
       {isHovered && (
         <span
           style={{

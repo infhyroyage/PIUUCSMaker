@@ -12,12 +12,16 @@ export type ChartBlockProps = {
 export type ChartBlockRectangleProps = {
   column: number;
   isEvenIdx: boolean;
-  blockLength: number;
+  blockHeight: number;
   noteSize: number;
   borderSize: number;
   accumulatedBlockLength: number;
   split: number;
   notes: Note[];
+};
+
+export type ChartBorderLineProps = {
+  style: React.CSSProperties;
 };
 
 export type MenuDrawerProps = {

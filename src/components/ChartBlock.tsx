@@ -1,10 +1,11 @@
-import { memo, useMemo } from "react";
+import React, { memo, useMemo } from "react";
 import { ChartBlockProps } from "../types/props";
 import ChartBlockRectangle from "./ChartBlockRectangle";
 import useChartSizes from "../hooks/useChartSizes";
 import { ZOOM_VALUES } from "../service/zoom";
 import { useRecoilValue } from "recoil";
 import { zoomIdxState } from "../service/atoms";
+import ChartBorderLine from "./ChartBorderLine";
 
 function ChartBlock({
   chartLength,
@@ -34,21 +35,35 @@ function ChartBlock({
         display: "flex",
         lineHeight: 0,
         height: `${blockHeight}px`,
-        marginBottom: `${borderSize}px`,
       }}
     >
       {[...Array(chartLength)].map((_, column: number) => (
-        <ChartBlockRectangle
-          key={column}
-          column={column}
-          isEvenIdx={isEvenIdx}
-          blockLength={blockLength}
-          noteSize={noteSize}
-          borderSize={borderSize}
-          accumulatedBlockLength={accumulatedBlockLength}
-          split={split}
-          notes={notes[column]}
-        />
+        <React.Fragment key={column}>
+          <ChartBorderLine
+            style={{
+              width: `${borderSize}px`,
+              height: `${blockHeight}px`,
+            }}
+          />
+          <ChartBlockRectangle
+            column={column}
+            isEvenIdx={isEvenIdx}
+            blockHeight={blockHeight}
+            noteSize={noteSize}
+            borderSize={borderSize}
+            accumulatedBlockLength={accumulatedBlockLength}
+            split={split}
+            notes={notes[column]}
+          />
+          {column + 1 === chartLength && (
+            <ChartBorderLine
+              style={{
+                width: `${borderSize}px`,
+                height: `${blockHeight}px`,
+              }}
+            />
+          )}
+        </React.Fragment>
       ))}
     </div>
   );
