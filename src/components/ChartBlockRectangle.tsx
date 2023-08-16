@@ -16,6 +16,10 @@ import { zoomIdxState } from "../service/atoms";
 import { ZOOM_VALUES } from "../service/zoom";
 import ChartBorderLine from "./ChartBorderLine";
 
+// 単ノート・ホールドの画像ファイルのバイナリデータ
+const NOTE_SRCS: string[] = [Note0, Note1, Note2, Note3, Note4];
+const HOLD_SRCS: string[] = [Hold0, Hold1, Hold2, Hold3, Hold4];
+
 function ChartBlockRectangle({
   column,
   isEvenIdx,
@@ -46,38 +50,14 @@ function ChartBlockRectangle({
     }
   };
 
-  // 単ノート・ホールドの画像ファイルのバイナリデータを取得
-  const imgSrc: { note?: string; hold?: string } = useMemo(() => {
-    switch (column % 5) {
-      case 0:
-        // 単ノート(左下)
-        return { note: Note0, hold: Hold0 };
-      case 1:
-        // 単ノート(左上)
-        return { note: Note1, hold: Hold1 };
-      case 2:
-        // 単ノート(中央)
-        return { note: Note2, hold: Hold2 };
-      case 3:
-        // 単ノート(右上)
-        return { note: Note3, hold: Hold3 };
-      case 4:
-        // 単ノート(右下)
-        return { note: Note4, hold: Hold4 };
-      default:
-        // 内部矛盾
-        return {};
-    }
-  }, [column]);
-
-  let imgTopOffset: number = borderSize + (isHovered ? noteSize : 0);
-  const imgs: React.ReactNode = notes.reduce(
-    (prev: React.ReactNode[], note: Note) => {
+  const imgs: React.ReactNode[] = useMemo(() => {
+    let imgTopOffset: number = borderSize + (isHovered ? noteSize : 0);
+    return notes.reduce((prev: React.ReactNode[], note: Note) => {
       // 単ノート/ホールド/中抜きホールドの始点
       prev.push(
         <img
           key={note.start}
-          src={imgSrc.note}
+          src={NOTE_SRCS[column % 5]}
           alt={`note${column % 5}`}
           width={noteSize}
           height={noteSize}
@@ -106,7 +86,7 @@ function ChartBlockRectangle({
         prev.push(
           <img
             key={(note.start + note.goal) / 2}
-            src={imgSrc.hold}
+            src={HOLD_SRCS[column % 5]}
             alt={`hold${column % 5}`}
             width={noteSize}
             height={holdHeight}
@@ -131,7 +111,7 @@ function ChartBlockRectangle({
         prev.push(
           <img
             key={note.goal}
-            src={imgSrc.note}
+            src={NOTE_SRCS[column % 5]}
             alt={`note${column % 5}`}
             width={noteSize}
             height={noteSize}
@@ -153,9 +133,17 @@ function ChartBlockRectangle({
       }
 
       return prev;
-    },
-    []
-  );
+    }, []);
+  }, [
+    borderSize,
+    isHovered,
+    noteSize,
+    notes,
+    column,
+    accumulatedBlockLength,
+    split,
+    zoomIdx,
+  ]);
 
   return (
     <span
