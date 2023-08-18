@@ -6,33 +6,29 @@ import { chartState } from "../service/atoms";
 import { useMemo } from "react";
 
 function WorkSpace() {
-  const chart: Chart | undefined = useRecoilValue<Chart | undefined>(
-    chartState
-  );
+  const chart: Chart | null = useRecoilValue<Chart | null>(chartState);
 
   const chartBlocks: React.ReactNode[] = useMemo(() => {
-    if (chart) {
-      let accumulatedBlockLength: number = 0;
-      return chart.blocks.reduce(
-        (prev: React.ReactNode[], block: Block, idx: number) => {
-          prev.push(
-            <ChartBlock
-              key={idx}
-              chartLength={chart.length}
-              blockIdx={idx}
-              blockLength={block.length}
-              accumulatedBlockLength={accumulatedBlockLength}
-              split={block.split}
-            />
-          );
-          accumulatedBlockLength = accumulatedBlockLength + block.length;
-          return prev;
-        },
-        []
-      );
-    } else {
-      return [];
-    }
+    if (chart === null) return [];
+
+    let accumulatedBlockLength: number = 0;
+    return chart.blocks.reduce(
+      (prev: React.ReactNode[], block: Block, idx: number) => {
+        prev.push(
+          <ChartBlock
+            key={idx}
+            chartLength={chart.length}
+            blockIdx={idx}
+            blockLength={block.length}
+            accumulatedBlockLength={accumulatedBlockLength}
+            split={block.split}
+          />
+        );
+        accumulatedBlockLength = accumulatedBlockLength + block.length;
+        return prev;
+      },
+      []
+    );
   }, [chart]);
 
   return chartBlocks.length > 0 ? (

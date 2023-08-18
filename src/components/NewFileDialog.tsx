@@ -118,7 +118,7 @@ function NewFileDialog() {
     rowLength: "50",
     split: "2",
   });
-  const setChart = useSetRecoilState<Chart | undefined>(chartState);
+  const setChart = useSetRecoilState<Chart | null>(chartState);
   const [isOpenedNewFileDialog, setIsOpenedNewFileDialog] =
     useRecoilState<boolean>(isOpenedNewFileDialogState);
   const setTopBarTitle = useSetRecoilState<string>(topBarTitleState);
@@ -129,6 +129,7 @@ function NewFileDialog() {
     startTransition(() => {
       const result: Chart | string = validateAndLoadUCS(form);
       if (typeof result === "string") {
+        // TODO: テキストフィールドにエラーを表示
       } else {
         setTopBarTitle(form.fileName);
         setChart(result);

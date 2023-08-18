@@ -18,12 +18,10 @@ function ChartBlockRectangle({
   noteSize,
   borderSize,
 }: ChartBlockRectangleProps) {
-  // インディケーターを表示する場合はtop値、表示しない場合はundefined
-  const [indicatorTop, setIndicatorTop] = useState<number | undefined>(
-    undefined
-  );
+  // インディケーターを表示する場合はそのtop値、表示しない場合はnull
+  const [indicatorTop, setIndicatorTop] = useState<number | null>(null);
   const [mouseDownRowIdx, setMouseDownRowIdx] = useState<number | null>(null);
-  const chart = useRecoilValue<Chart | undefined>(chartState);
+  const chart: Chart | null = useRecoilValue<Chart | null>(chartState);
   const zoomIdx: number = useRecoilValue<number>(zoomIdxState);
 
   const theme: Theme = useTheme();
@@ -41,13 +39,13 @@ function ChartBlockRectangle({
       const indicatorTopOffset: number = borderSize;
       setIndicatorTop(y - (y % distance) - indicatorTopOffset);
     } else {
-      setIndicatorTop(undefined);
+      setIndicatorTop(null);
     }
   };
 
   const onMouseDown = () => {
     // 押下した瞬間にインディケーターが非表示である場合はNOP
-    if (typeof indicatorTop === "undefined") return;
+    if (indicatorTop === null) return;
 
     // 押下した譜面全体での行インデックスを保持
     const indicatorTopOffset: number = borderSize;
@@ -60,7 +58,7 @@ function ChartBlockRectangle({
 
   const onMouseUp = () => {
     // 押下を離した瞬間にインディケーターが非表示である/押下した譜面全体での行インデックスが初期値の場合はNOP
-    if (typeof indicatorTop === "undefined" || mouseDownRowIdx === null) return;
+    if (indicatorTop === null || mouseDownRowIdx === null) return;
 
     // 押下を離した瞬間での譜面全体での行インデックスmouseUpRowIdxを取得
     const indicatorTopOffset: number = borderSize;
@@ -77,10 +75,10 @@ function ChartBlockRectangle({
   };
 
   const imgs: React.ReactNode[] = useMemo(() => {
-    if (!chart) return [];
+    if (chart === null) return [];
 
     let imgTopOffset: number =
-      borderSize + (typeof indicatorTop === "undefined" ? 0 : noteSize);
+      borderSize + (indicatorTop === null ? 0 : noteSize);
     return chart.blocks[blockIdx].notes[column].reduce(
       (prev: React.ReactNode[], note: Note) => {
         // 単ノート/ホールド/中抜きホールドの始点
@@ -188,7 +186,7 @@ function ChartBlockRectangle({
           blockIdx % 2 === 0 ? "rgb(255, 255, 170)" : "rgb(170, 255, 255)",
         lineHeight: 0,
       }}
-      onMouseLeave={() => setIndicatorTop(undefined)}
+      onMouseLeave={() => setIndicatorTop(null)}
       onMouseMove={onMouseMove}
     >
       <ChartBorderLine
@@ -199,7 +197,7 @@ function ChartBlockRectangle({
           height: `${borderSize}px`,
         }}
       />
-      {typeof indicatorTop !== "undefined" && (
+      {indicatorTop !== null && (
         <span
           style={{
             display: "block",

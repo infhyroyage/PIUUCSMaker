@@ -65,7 +65,7 @@ const validateAndLoadUCS = (content: string): Chart | string => {
    * * 中抜きホールドの中間にかぶせる始点の行インデックスの配列
    * * 中抜きホールドの中間にかぶせる終点の行インデックスの配列
    */
-  let block: Block | undefined = undefined;
+  let block: Block | null = null;
   let blockLength: number = 0;
   let rowIdx: number = 0;
   let startHolds: number[] = Array(chartLength).fill(-1);
@@ -92,7 +92,7 @@ const validateAndLoadUCS = (content: string): Chart | string => {
 
     // 譜面のブロックのヘッダー部のチェック・取得
     if (line[0] === ":") {
-      if (!!block) {
+      if (block !== null) {
         // 直前の譜面のブロックの行数が0になっていないかどうかチェック
         if (blockLength === 0) {
           return `ucsファイルの${fileLinesNum}行目が不正です`;
@@ -170,7 +170,7 @@ const validateAndLoadUCS = (content: string): Chart | string => {
     }
 
     // 1個目の譜面のブロックのヘッダー部のチェック
-    if (!block) {
+    if (block === null) {
       return `ucsファイルの${fileLinesNum}行目が不正です`;
     }
 
@@ -270,7 +270,7 @@ const validateAndLoadUCS = (content: string): Chart | string => {
   }
 
   // 最後のブロックをリストに格納
-  if (!block) {
+  if (block === null) {
     return `ucsファイルの${fileLinesNum}行目が不正です`;
   }
   block.length = blockLength;
@@ -281,7 +281,7 @@ const validateAndLoadUCS = (content: string): Chart | string => {
 
 function useOpenFile() {
   const setTopBarTitle = useSetRecoilState<string>(topBarTitleState);
-  const setChart = useSetRecoilState<Chart | undefined>(chartState);
+  const setChart = useSetRecoilState<Chart | null>(chartState);
   const setUserErrorMessage = useSetRecoilState<string>(userErrorMessageState);
   const setIsShownSystemErrorSnackbar = useSetRecoilState<boolean>(
     isShownSystemErrorSnackbarState

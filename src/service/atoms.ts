@@ -1,9 +1,9 @@
 import { atom } from "recoil";
 import { Chart } from "../types/ucs";
 
-export const chartState = atom<Chart | undefined>({
+export const chartState = atom<Chart | null>({
   key: "chartState",
-  default: undefined,
+  default: null,
 });
 
 export const isOpenedNewFileDialogState = atom<boolean>({

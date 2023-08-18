@@ -3,7 +3,7 @@ import { Block, Chart, Note } from "../types/ucs";
 import { chartState, isShownSystemErrorSnackbarState } from "../service/atoms";
 
 function useEditNotes() {
-  const [chart, setChart] = useRecoilState<Chart | undefined>(chartState);
+  const [chart, setChart] = useRecoilState<Chart | null>(chartState);
   const setIsShownSystemErrorSnackbar = useSetRecoilState<boolean>(
     isShownSystemErrorSnackbarState
   );
@@ -19,7 +19,7 @@ function useEditNotes() {
     mouseUpRowIdx: number
   ) => {
     // 内部矛盾チェック
-    if (!chart) {
+    if (chart === null) {
       setIsShownSystemErrorSnackbar(true);
       return;
     }
