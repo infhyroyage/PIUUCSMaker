@@ -1,5 +1,7 @@
-// MUIコンポーネントのz-indexのデフォルト値
-// https://mui.com/material-ui/customization/z-index
+/**
+ * MUIコンポーネントのz-indexのデフォルト値
+ * @link https://mui.com/material-ui/customization/z-index
+ */
 export const MUI_DEFAULT_Z_INDEX: Record<string, number> = {
   mobileStepper: 1000,
   fab: 1050,
