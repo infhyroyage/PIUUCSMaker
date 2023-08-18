@@ -10,16 +10,13 @@ import Hold1 from "../images/hold1.png";
 import Hold2 from "../images/hold2.png";
 import Hold3 from "../images/hold3.png";
 import Hold4 from "../images/hold4.png";
-import { Block, Chart, Note } from "../types/ucs";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import {
-  chartState,
-  isShownSystemErrorSnackbarState,
-  zoomIdxState,
-} from "../service/atoms";
+import { Chart, Note } from "../types/ucs";
+import { useRecoilValue } from "recoil";
+import { chartState, zoomIdxState } from "../service/atoms";
 import { ZOOM_VALUES } from "../service/zoom";
 import ChartBorderLine from "./ChartBorderLine";
 import { Theme, useTheme } from "@mui/material";
+import useEditNotes from "../hooks/useEditNotes";
 
 // 単ノート・ホールドの画像ファイルのバイナリデータ
 const NOTE_SRCS: string[] = [Note0, Note1, Note2, Note3, Note4];
@@ -38,13 +35,13 @@ function ChartBlockRectangle({
   const [indicatorTop, setIndicatorTop] = useState<number | undefined>(
     undefined
   );
-  const [chart, setChart] = useRecoilState<Chart | undefined>(chartState);
+  const [mouseDownRowIdx, setMouseDownRowIdx] = useState<number | null>(null);
+  const chart = useRecoilValue<Chart | undefined>(chartState);
   const zoomIdx: number = useRecoilValue<number>(zoomIdxState);
-  const setIsShownSystemErrorSnackbar = useSetRecoilState<boolean>(
-    isShownSystemErrorSnackbarState
-  );
 
   const theme: Theme = useTheme();
+
+  const { editNotes } = useEditNotes();
 
   const onMouseMove = (event: React.MouseEvent<HTMLSpanElement>) => {
     // 譜面のブロックのマウスホバーした際に、マウスの行インデックスの場所にインディケーターを表示
@@ -62,15 +59,21 @@ function ChartBlockRectangle({
   };
 
   const onMouseDown = () => {
-    // 押下した瞬間での譜面全体での行インデックスを保持
-    // TODO: 上記未実装のためNOP
+    // 押下した瞬間にインディケーターが非表示である場合はNOP
+    if (typeof indicatorTop === "undefined") return;
+
+    // 押下した譜面全体での行インデックスを保持
+    const indicatorTopOffset: number = borderSize;
+    setMouseDownRowIdx(
+      accumulatedBlockLength +
+        ((indicatorTop + indicatorTopOffset) * split) /
+          (2.0 * noteSize * ZOOM_VALUES[zoomIdx])
+    );
   };
 
   const onMouseUp = () => {
-    // 押下を離した瞬間にインディケーターが非表示である場合、
-    // 保持した押下した瞬間での譜面全体での行インデックスを初期化のみ行う
-    // TODO: 上記未実装のためNOP
-    if (typeof indicatorTop === "undefined") return;
+    // 押下を離した瞬間にインディケーターが非表示である/押下した譜面全体での行インデックスが初期値の場合はNOP
+    if (typeof indicatorTop === "undefined" || mouseDownRowIdx === null) return;
 
     // 押下を離した瞬間での譜面全体での行インデックスmouseUpRowIdxを取得
     const indicatorTopOffset: number = borderSize;
@@ -79,47 +82,11 @@ function ChartBlockRectangle({
       ((indicatorTop + indicatorTopOffset) * split) /
         (2.0 * noteSize * ZOOM_VALUES[zoomIdx]);
 
-    // 内部矛盾チェック
-    if (!chart) {
-      setIsShownSystemErrorSnackbar(true);
-      return;
-    }
+    // 単ノート/(中抜き)ホールドの追加・削除
+    editNotes(blockIdx, column, mouseDownRowIdx, mouseUpRowIdx);
 
-    // mouseUpRowIdxの場所に単ノート/(中抜き)ホールドを含む場合は、その単ノート/(中抜き)ホールドを削除し、
-    // 含まない場合は、mouseUpRowIdxの場所に単ノート/ホールドを譜面に追加
-    // TODO: ホールドの追加は未実装
-    let updatedColumnNotes: Note[] = [...chart.blocks[blockIdx].notes[column]];
-    const noteIdx: number = chart.blocks[blockIdx].notes[column].findIndex(
-      (note: Note) => note.start <= mouseUpRowIdx && mouseUpRowIdx <= note.goal
-    );
-    if (noteIdx === -1) {
-      updatedColumnNotes.push({
-        start: mouseUpRowIdx,
-        goal: mouseUpRowIdx,
-        hollowStarts: [],
-        hollowGoals: [],
-      });
-    } else {
-      updatedColumnNotes = [
-        ...chart.blocks[blockIdx].notes[column].slice(0, noteIdx),
-        ...chart.blocks[blockIdx].notes[column].slice(noteIdx + 1),
-      ];
-    }
-
-    // 譜面の更新
-    setChart({
-      ...chart,
-      blocks: chart.blocks.map((block: Block, i: number) =>
-        i === blockIdx
-          ? {
-              ...block,
-              notes: block.notes.map((columnNotes: Note[], j: number) =>
-                j === column ? updatedColumnNotes : columnNotes
-              ),
-            }
-          : block
-      ),
-    });
+    // 保持していた押下した譜面全体での行インデックスを初期化
+    setMouseDownRowIdx(null);
   };
 
   const imgs: React.ReactNode[] = useMemo(() => {
