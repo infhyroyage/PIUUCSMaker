@@ -1,23 +1,19 @@
-import { Note } from "./ucs";
-
 export type ChartBlockProps = {
-  chartLength: 5 | 10;
   blockIdx: number;
+  chartLength: 5 | 10;
   blockLength: number;
   accumulatedBlockLength: number;
   split: number;
-  notes: Note[][];
 };
 
 export type ChartBlockRectangleProps = {
-  column: number;
   blockIdx: number;
+  column: number;
+  accumulatedBlockLength: number;
+  split: number;
   blockHeight: number;
   noteSize: number;
   borderSize: number;
-  accumulatedBlockLength: number;
-  split: number;
-  notes: Note[];
 };
 
 export type ChartBorderLineProps = {

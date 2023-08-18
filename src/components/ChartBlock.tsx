@@ -8,12 +8,11 @@ import { zoomIdxState } from "../service/atoms";
 import ChartBorderLine from "./ChartBorderLine";
 
 function ChartBlock({
-  chartLength,
   blockIdx,
+  chartLength,
   blockLength,
   accumulatedBlockLength,
   split,
-  notes,
 }: ChartBlockProps) {
   const zoomIdx: number = useRecoilValue<number>(zoomIdxState);
 
@@ -53,7 +52,6 @@ function ChartBlock({
             borderSize={borderSize}
             accumulatedBlockLength={accumulatedBlockLength}
             split={split}
-            notes={notes[column]}
           />
           {column + 1 === chartLength && (
             <ChartBorderLine

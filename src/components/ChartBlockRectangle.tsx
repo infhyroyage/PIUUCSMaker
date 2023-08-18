@@ -26,14 +26,13 @@ const NOTE_SRCS: string[] = [Note0, Note1, Note2, Note3, Note4];
 const HOLD_SRCS: string[] = [Hold0, Hold1, Hold2, Hold3, Hold4];
 
 function ChartBlockRectangle({
-  column,
   blockIdx,
+  column,
+  accumulatedBlockLength,
+  split,
   blockHeight,
   noteSize,
   borderSize,
-  accumulatedBlockLength,
-  split,
-  notes,
 }: ChartBlockRectangleProps) {
   // インディケーターを表示する場合はtop値、表示しない場合はundefined
   const [indicatorTop, setIndicatorTop] = useState<number | undefined>(
@@ -73,39 +72,41 @@ function ChartBlockRectangle({
     // TODO: 上記未実装のためNOP
     if (typeof indicatorTop === "undefined") return;
 
-    // 押下を離した瞬間での譜面全体での行インデックスmouseUpRowを取得
+    // 押下を離した瞬間での譜面全体での行インデックスmouseUpRowIdxを取得
     const indicatorTopOffset: number = borderSize;
-    const mouseUpRow: number =
+    const mouseUpRowIdx: number =
       accumulatedBlockLength +
       ((indicatorTop + indicatorTopOffset) * split) /
         (2.0 * noteSize * ZOOM_VALUES[zoomIdx]);
 
-    // mouseUpRowの場所に単ノート/(中抜き)ホールドを含む場合は、その単ノート/(中抜き)ホールドを削除し、
-    // 含まない場合は、mouseUpRowの場所に単ノート/ホールドを譜面に追加
+    // 内部矛盾チェック
+    if (!chart) {
+      setIsShownSystemErrorSnackbar(true);
+      return;
+    }
+
+    // mouseUpRowIdxの場所に単ノート/(中抜き)ホールドを含む場合は、その単ノート/(中抜き)ホールドを削除し、
+    // 含まない場合は、mouseUpRowIdxの場所に単ノート/ホールドを譜面に追加
     // TODO: ホールドの追加は未実装
-    let updatedColumnNotes: Note[] = [...notes];
-    const noteIdx: number = notes.findIndex(
-      (note: Note) => note.start <= mouseUpRow && mouseUpRow <= note.goal
+    let updatedColumnNotes: Note[] = [...chart.blocks[blockIdx].notes[column]];
+    const noteIdx: number = chart.blocks[blockIdx].notes[column].findIndex(
+      (note: Note) => note.start <= mouseUpRowIdx && mouseUpRowIdx <= note.goal
     );
     if (noteIdx === -1) {
       updatedColumnNotes.push({
-        start: mouseUpRow,
-        goal: mouseUpRow,
+        start: mouseUpRowIdx,
+        goal: mouseUpRowIdx,
         hollowStarts: [],
         hollowGoals: [],
       });
     } else {
       updatedColumnNotes = [
-        ...notes.slice(0, noteIdx),
-        ...notes.slice(noteIdx + 1),
+        ...chart.blocks[blockIdx].notes[column].slice(0, noteIdx),
+        ...chart.blocks[blockIdx].notes[column].slice(noteIdx + 1),
       ];
     }
 
     // 譜面の更新
-    if (!chart) {
-      setIsShownSystemErrorSnackbar(true);
-      return;
-    }
     setChart({
       ...chart,
       blocks: chart.blocks.map((block: Block, i: number) =>
@@ -122,67 +123,16 @@ function ChartBlockRectangle({
   };
 
   const imgs: React.ReactNode[] = useMemo(() => {
+    if (!chart) return [];
+
     let imgTopOffset: number =
       borderSize + (typeof indicatorTop === "undefined" ? 0 : noteSize);
-    return notes.reduce((prev: React.ReactNode[], note: Note) => {
-      // 単ノート/ホールド/中抜きホールドの始点
-      prev.push(
-        <img
-          key={note.start}
-          src={NOTE_SRCS[column % 5]}
-          alt={`note${column % 5}`}
-          width={noteSize}
-          height={noteSize}
-          style={{
-            position: "relative",
-            top: `${
-              (2.0 *
-                noteSize *
-                ZOOM_VALUES[zoomIdx] *
-                (note.start - accumulatedBlockLength)) /
-                split -
-              imgTopOffset
-            }px`,
-            zIndex: (note.start + 1) * 10,
-          }}
-        />
-      );
-      imgTopOffset = imgTopOffset + noteSize;
-
-      if (note.start !== note.goal) {
-        // ホールド/中抜きホールド
-        // TODO: 中抜きホールドの中間にかぶせる部分のみ表示し、かぶせない部分は半透明にする
-        const holdHeight: number =
-          (2.0 * noteSize * ZOOM_VALUES[zoomIdx] * (note.goal - note.start)) /
-          split;
+    return chart.blocks[blockIdx].notes[column].reduce(
+      (prev: React.ReactNode[], note: Note) => {
+        // 単ノート/ホールド/中抜きホールドの始点
         prev.push(
           <img
-            key={(note.start + note.goal) / 2}
-            src={HOLD_SRCS[column % 5]}
-            alt={`hold${column % 5}`}
-            width={noteSize}
-            height={holdHeight}
-            style={{
-              position: "relative",
-              top: `${
-                (2.0 *
-                  noteSize *
-                  ZOOM_VALUES[zoomIdx] *
-                  (note.start - accumulatedBlockLength)) /
-                  split +
-                noteSize * 0.5 -
-                imgTopOffset
-              }px`,
-              zIndex: (note.start + 1) * 10 + 1,
-            }}
-          />
-        );
-        imgTopOffset = imgTopOffset + holdHeight;
-
-        // ホールド/中抜きホールドの終点
-        prev.push(
-          <img
-            key={note.goal}
+            key={note.start}
             src={NOTE_SRCS[column % 5]}
             alt={`note${column % 5}`}
             width={noteSize}
@@ -193,25 +143,82 @@ function ChartBlockRectangle({
                 (2.0 *
                   noteSize *
                   ZOOM_VALUES[zoomIdx] *
-                  (note.goal - accumulatedBlockLength)) /
+                  (note.start - accumulatedBlockLength)) /
                   split -
                 imgTopOffset
               }px`,
-              zIndex: (note.start + 1) * 10 + 2,
+              zIndex: (note.start + 1) * 10,
             }}
           />
         );
         imgTopOffset = imgTopOffset + noteSize;
-      }
 
-      return prev;
-    }, []);
+        if (note.start !== note.goal) {
+          // ホールド/中抜きホールド
+          // TODO: 中抜きホールドの中間にかぶせる部分のみ表示し、かぶせない部分は半透明にする
+          const holdHeight: number =
+            (2.0 * noteSize * ZOOM_VALUES[zoomIdx] * (note.goal - note.start)) /
+            split;
+          prev.push(
+            <img
+              key={(note.start + note.goal) / 2}
+              src={HOLD_SRCS[column % 5]}
+              alt={`hold${column % 5}`}
+              width={noteSize}
+              height={holdHeight}
+              style={{
+                position: "relative",
+                top: `${
+                  (2.0 *
+                    noteSize *
+                    ZOOM_VALUES[zoomIdx] *
+                    (note.start - accumulatedBlockLength)) /
+                    split +
+                  noteSize * 0.5 -
+                  imgTopOffset
+                }px`,
+                zIndex: (note.start + 1) * 10 + 1,
+              }}
+            />
+          );
+          imgTopOffset = imgTopOffset + holdHeight;
+
+          // ホールド/中抜きホールドの終点
+          prev.push(
+            <img
+              key={note.goal}
+              src={NOTE_SRCS[column % 5]}
+              alt={`note${column % 5}`}
+              width={noteSize}
+              height={noteSize}
+              style={{
+                position: "relative",
+                top: `${
+                  (2.0 *
+                    noteSize *
+                    ZOOM_VALUES[zoomIdx] *
+                    (note.goal - accumulatedBlockLength)) /
+                    split -
+                  imgTopOffset
+                }px`,
+                zIndex: (note.start + 1) * 10 + 2,
+              }}
+            />
+          );
+          imgTopOffset = imgTopOffset + noteSize;
+        }
+
+        return prev;
+      },
+      []
+    );
   }, [
     borderSize,
     indicatorTop,
     noteSize,
-    notes,
+    blockIdx,
     column,
+    chart,
     accumulatedBlockLength,
     split,
     zoomIdx,
