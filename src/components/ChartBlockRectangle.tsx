@@ -10,11 +10,16 @@ import Hold1 from "../images/hold1.png";
 import Hold2 from "../images/hold2.png";
 import Hold3 from "../images/hold3.png";
 import Hold4 from "../images/hold4.png";
-import { Note } from "../types/ucs";
-import { useRecoilValue } from "recoil";
-import { zoomIdxState } from "../service/atoms";
+import { Block, Chart, Note } from "../types/ucs";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import {
+  chartState,
+  isShownSystemErrorSnackbarState,
+  zoomIdxState,
+} from "../service/atoms";
 import { ZOOM_VALUES } from "../service/zoom";
 import ChartBorderLine from "./ChartBorderLine";
+import { Theme, useTheme } from "@mui/material";
 
 // 単ノート・ホールドの画像ファイルのバイナリデータ
 const NOTE_SRCS: string[] = [Note0, Note1, Note2, Note3, Note4];
@@ -22,7 +27,7 @@ const HOLD_SRCS: string[] = [Hold0, Hold1, Hold2, Hold3, Hold4];
 
 function ChartBlockRectangle({
   column,
-  isEvenIdx,
+  blockIdx,
   blockHeight,
   noteSize,
   borderSize,
@@ -30,9 +35,17 @@ function ChartBlockRectangle({
   split,
   notes,
 }: ChartBlockRectangleProps) {
-  const [isHovered, setIsHovered] = useState<boolean>(false);
-  const [indicatorTop, setIndicatorTop] = useState<number>(0);
+  // インディケーターを表示する場合はtop値、表示しない場合はundefined
+  const [indicatorTop, setIndicatorTop] = useState<number | undefined>(
+    undefined
+  );
+  const [chart, setChart] = useRecoilState<Chart | undefined>(chartState);
   const zoomIdx: number = useRecoilValue<number>(zoomIdxState);
+  const setIsShownSystemErrorSnackbar = useSetRecoilState<boolean>(
+    isShownSystemErrorSnackbarState
+  );
+
+  const theme: Theme = useTheme();
 
   const onMouseMove = (event: React.MouseEvent<HTMLSpanElement>) => {
     // 譜面のブロックのマウスホバーした際に、マウスの行インデックスの場所にインディケーターを表示
@@ -44,14 +57,73 @@ function ChartBlockRectangle({
       const distance: number = (2.0 * noteSize * ZOOM_VALUES[zoomIdx]) / split;
       const indicatorTopOffset: number = borderSize;
       setIndicatorTop(y - (y % distance) - indicatorTopOffset);
-      setIsHovered(true);
     } else {
-      setIsHovered(false);
+      setIndicatorTop(undefined);
     }
   };
 
+  const onMouseDown = () => {
+    // 押下した瞬間での譜面全体での行インデックスを保持
+    // TODO: 上記未実装のためNOP
+  };
+
+  const onMouseUp = () => {
+    // 押下を離した瞬間にインディケーターが非表示である場合、
+    // 保持した押下した瞬間での譜面全体での行インデックスを初期化のみ行う
+    // TODO: 上記未実装のためNOP
+    if (typeof indicatorTop === "undefined") return;
+
+    // 押下を離した瞬間での譜面全体での行インデックスmouseUpRowを取得
+    const indicatorTopOffset: number = borderSize;
+    const mouseUpRow: number =
+      accumulatedBlockLength +
+      ((indicatorTop + indicatorTopOffset) * split) /
+        (2.0 * noteSize * ZOOM_VALUES[zoomIdx]);
+
+    // mouseUpRowの場所に単ノート/(中抜き)ホールドを含む場合は、その単ノート/(中抜き)ホールドを削除し、
+    // 含まない場合は、mouseUpRowの場所に単ノート/ホールドを譜面に追加
+    // TODO: ホールドの追加は未実装
+    let updatedColumnNotes: Note[] = [...notes];
+    const noteIdx: number = notes.findIndex(
+      (note: Note) => note.start <= mouseUpRow && mouseUpRow <= note.goal
+    );
+    if (noteIdx === -1) {
+      updatedColumnNotes.push({
+        start: mouseUpRow,
+        goal: mouseUpRow,
+        hollowStarts: [],
+        hollowGoals: [],
+      });
+    } else {
+      updatedColumnNotes = [
+        ...notes.slice(0, noteIdx),
+        ...notes.slice(noteIdx + 1),
+      ];
+    }
+
+    // 譜面の更新
+    if (!chart) {
+      setIsShownSystemErrorSnackbar(true);
+      return;
+    }
+    setChart({
+      ...chart,
+      blocks: chart.blocks.map((block: Block, i: number) =>
+        i === blockIdx
+          ? {
+              ...block,
+              notes: block.notes.map((columnNotes: Note[], j: number) =>
+                j === column ? updatedColumnNotes : columnNotes
+              ),
+            }
+          : block
+      ),
+    });
+  };
+
   const imgs: React.ReactNode[] = useMemo(() => {
-    let imgTopOffset: number = borderSize + (isHovered ? noteSize : 0);
+    let imgTopOffset: number =
+      borderSize + (typeof indicatorTop === "undefined" ? 0 : noteSize);
     return notes.reduce((prev: React.ReactNode[], note: Note) => {
       // 単ノート/ホールド/中抜きホールドの始点
       prev.push(
@@ -136,7 +208,7 @@ function ChartBlockRectangle({
     }, []);
   }, [
     borderSize,
-    isHovered,
+    indicatorTop,
     noteSize,
     notes,
     column,
@@ -151,13 +223,11 @@ function ChartBlockRectangle({
         display: "block",
         width: `${noteSize}px`,
         height: `${blockHeight}px`,
-        backgroundColor: isEvenIdx
-          ? "rgb(255, 255, 170)"
-          : "rgb(170, 255, 255)",
+        backgroundColor:
+          blockIdx % 2 === 0 ? "rgb(255, 255, 170)" : "rgb(170, 255, 255)",
         lineHeight: 0,
       }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseLeave={() => setIndicatorTop(undefined)}
       onMouseMove={onMouseMove}
     >
       <ChartBorderLine
@@ -168,7 +238,7 @@ function ChartBlockRectangle({
           height: `${borderSize}px`,
         }}
       />
-      {isHovered && (
+      {typeof indicatorTop !== "undefined" && (
         <span
           style={{
             display: "block",
@@ -177,7 +247,10 @@ function ChartBlockRectangle({
             width: `${noteSize}px`,
             height: `${noteSize}px`,
             backgroundColor: "rgba(170, 170, 170, 0.5)",
+            zIndex: theme.zIndex.drawer - 1,
           }}
+          onMouseDown={onMouseDown}
+          onMouseUp={onMouseUp}
         />
       )}
       {imgs}

@@ -64,7 +64,6 @@ export type Block = {
   /**
    * 列ごとの単ノート/ホールド/中抜きホールドの集合
    * Single/SinglePerformance譜面の場合の第1インデックスは0〜4、Double/DoublePerformance譜面の場合は0〜9
-   * 第2インデックスの順番は、Note.startの昇順になるようにソートすること
    */
   notes: Note[][];
 };
@@ -87,7 +86,6 @@ export type Chart = {
 
   /**
    * 譜面のブロックの集合
-   * インデックスの順番は、譜面の最初からソートすること
    */
   blocks: Block[];
 };

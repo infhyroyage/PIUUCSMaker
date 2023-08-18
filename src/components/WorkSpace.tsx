@@ -19,7 +19,7 @@ function WorkSpace() {
             <ChartBlock
               key={idx}
               chartLength={chart.length}
-              isEvenIdx={idx % 2 === 0}
+              blockIdx={idx}
               blockLength={block.length}
               accumulatedBlockLength={accumulatedBlockLength}
               split={block.split}

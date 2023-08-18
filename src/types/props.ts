@@ -2,7 +2,7 @@ import { Note } from "./ucs";
 
 export type ChartBlockProps = {
   chartLength: 5 | 10;
-  isEvenIdx: boolean;
+  blockIdx: number;
   blockLength: number;
   accumulatedBlockLength: number;
   split: number;
@@ -11,7 +11,7 @@ export type ChartBlockProps = {
 
 export type ChartBlockRectangleProps = {
   column: number;
-  isEvenIdx: boolean;
+  blockIdx: number;
   blockHeight: number;
   noteSize: number;
   borderSize: number;

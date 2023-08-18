@@ -9,7 +9,7 @@ import ChartBorderLine from "./ChartBorderLine";
 
 function ChartBlock({
   chartLength,
-  isEvenIdx,
+  blockIdx,
   blockLength,
   accumulatedBlockLength,
   split,
@@ -47,7 +47,7 @@ function ChartBlock({
           />
           <ChartBlockRectangle
             column={column}
-            isEvenIdx={isEvenIdx}
+            blockIdx={blockIdx}
             blockHeight={blockHeight}
             noteSize={noteSize}
             borderSize={borderSize}
