@@ -23,7 +23,6 @@ function WorkSpace() {
               blockLength={block.length}
               accumulatedBlockLength={accumulatedBlockLength}
               split={block.split}
-              notes={block.notes}
             />
           );
           accumulatedBlockLength = accumulatedBlockLength + block.length;
