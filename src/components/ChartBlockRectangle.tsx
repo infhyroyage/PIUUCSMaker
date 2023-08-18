@@ -131,7 +131,7 @@ function ChartBlockRectangle({
                   noteSize * 0.5 -
                   imgTopOffset
                 }px`,
-                zIndex: (note.start + 1) * 10 + 1,
+                zIndex: (note.start + 1) * 10 + 2,
               }}
             />
           );
@@ -155,7 +155,7 @@ function ChartBlockRectangle({
                     split -
                   imgTopOffset
                 }px`,
-                zIndex: (note.start + 1) * 10 + 2,
+                zIndex: (note.start + 1) * 10 + 1,
               }}
             />
           );
