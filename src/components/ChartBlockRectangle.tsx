@@ -68,7 +68,7 @@ function ChartBlockRectangle({
         (2.0 * noteSize * ZOOM_VALUES[zoomIdx]);
 
     // 単ノート/(中抜き)ホールドの追加・削除
-    editNotes(blockIdx, column, mouseDownRowIdx, mouseUpRowIdx);
+    editNotes(column, mouseDownRowIdx, mouseUpRowIdx);
 
     // 保持していた押下した譜面全体での行インデックスを初期化
     setMouseDownRowIdx(null);
