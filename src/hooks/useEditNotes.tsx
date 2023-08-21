@@ -10,7 +10,7 @@ function useEditNotes() {
 
   // 譜面全体での行インデックスmouseDownRowIdxで押下した後に
   // 譜面全体での行インデックスmouseUpRowIdxで押下を離した際の
-  // 列インデックスcolumnにて、単ノート/(中抜き)ホールドの追加・削除を行う
+  // 列インデックスcolumnにて、単ノート/ホールドの追加・削除を行う
   const editNotes = (
     column: number,
     mouseDownRowIdx: number,
@@ -52,7 +52,7 @@ function useEditNotes() {
       return;
     }
 
-    // 単ノート/ホールド/中抜きホールドの始点start、終点goalの譜面全体での行インデックスを取得
+    // 単ノート/ホールドの始点start、終点goalの譜面全体での行インデックスを取得
     const start: number =
       mouseDownRowIdx < mouseUpRowIdx ? mouseDownRowIdx : mouseUpRowIdx;
     const goal: number =
@@ -66,17 +66,12 @@ function useEditNotes() {
       let updatedNotes: Note[] = [...chart.blocks[startBlockIdx].notes[column]];
 
       // startの場所に単ノートを新規追加
-      // ただし、その場所に単ノート/(中抜き)ホールドが含む場合は、それを削除する(単ノートは新規追加しない)
+      // ただし、その場所に単ノート/ホールドが含む場合は、それを削除する(単ノートは新規追加しない)
       const noteIdx: number = chart.blocks[startBlockIdx].notes[
         column
       ].findIndex((note: Note) => note.start <= start && start <= note.goal);
       if (noteIdx === -1) {
-        updatedNotes.push({
-          start,
-          goal,
-          hollowStarts: [],
-          hollowGoals: [],
-        });
+        updatedNotes.push({ start, goal });
       } else {
         updatedNotes = [
           ...chart.blocks[startBlockIdx].notes[column].slice(0, noteIdx),
@@ -105,7 +100,7 @@ function useEditNotes() {
           : mouseDownBlockIdx;
 
       // startとgoalとの間にホールドを新規追加
-      // ただし、その間の場所に単ノート/(中抜き)ホールドが含む場合は、それをすべて削除してから新規追加する
+      // ただし、その間の場所に単ノート/ホールドが含む場合は、それをすべて削除してから新規追加する
       updatedChart = {
         ...chart,
         blocks: chart.blocks.map((block: Block, blockIdx: number) => {
@@ -115,12 +110,7 @@ function useEditNotes() {
             column
           ].filter((note: Note) => note.start > goal || note.goal < start);
           if (blockIdx === startBlockIdx) {
-            updatedNotes.push({
-              start,
-              goal,
-              hollowStarts: [],
-              hollowGoals: [],
-            });
+            updatedNotes.push({ start, goal });
           }
 
           return {

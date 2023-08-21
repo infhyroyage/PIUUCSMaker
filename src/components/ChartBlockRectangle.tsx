@@ -67,7 +67,7 @@ function ChartBlockRectangle({
       ((indicatorTop + indicatorTopOffset) * split) /
         (2.0 * noteSize * ZOOM_VALUES[zoomIdx]);
 
-    // 単ノート/(中抜き)ホールドの追加・削除
+    // 単ノート/ホールドの追加・削除
     editNotes(column, mouseDownRowIdx, mouseUpRowIdx);
 
     // 保持していた押下した譜面全体での行インデックスを初期化
@@ -81,7 +81,7 @@ function ChartBlockRectangle({
       borderSize + (indicatorTop === null ? 0 : noteSize);
     return chart.blocks[blockIdx].notes[column].reduce(
       (prev: React.ReactNode[], note: Note) => {
-        // 単ノート/ホールド/中抜きホールドの始点
+        // 単ノート/ホールドの始点
         prev.push(
           <img
             key={note.start}
@@ -106,8 +106,7 @@ function ChartBlockRectangle({
         imgTopOffset = imgTopOffset + noteSize;
 
         if (note.start !== note.goal) {
-          // ホールド/中抜きホールド
-          // TODO: 中抜きホールドの中間にかぶせる部分のみ表示し、かぶせない部分は半透明にする
+          // ホールド
           const holdHeight: number =
             (2.0 * noteSize * ZOOM_VALUES[zoomIdx] * (note.goal - note.start)) /
             split;
@@ -135,7 +134,7 @@ function ChartBlockRectangle({
           );
           imgTopOffset = imgTopOffset + holdHeight;
 
-          // ホールド/中抜きホールドの終点
+          // ホールドの終点
           prev.push(
             <img
               key={note.goal}

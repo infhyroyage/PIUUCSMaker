@@ -61,21 +61,11 @@ const validateAndLoadUCS = (content: string): Chart | string => {
    * * 譜面のブロックの行数
    * * 譜面全体での行インデックス
    * * ホールドの始点の行インデックス
-   * * 中抜きホールドの中間にかぶせる始点の一時情報
-   * * 中抜きホールドの中間にかぶせる始点の行インデックスの配列
-   * * 中抜きホールドの中間にかぶせる終点の行インデックスの配列
    */
   let block: Block | null = null;
   let blockLength: number = 0;
   let rowIdx: number = 0;
   let startHolds: number[] = Array(chartLength).fill(-1);
-  let startHollows: number[] = Array(chartLength).fill(-1);
-  let hollowStartLists: number[][] = Array(chartLength)
-    .fill(null)
-    .map<number[]>(() => []);
-  let hollowGoalLists: number[][] = Array(chartLength)
-    .fill(null)
-    .map<number[]>(() => []);
 
   // 2行しか記載していないかのチェック
   fileLinesNum++;
@@ -179,43 +169,30 @@ const validateAndLoadUCS = (content: string): Chart | string => {
       return `ucsファイルの${fileLinesNum}行目が不正です`;
     }
 
-    // 単ノート/ホールド/中抜きホールドの情報を解析し、そのインスタンスを追加
+    // 単ノート/ホールドの情報を解析し、そのインスタンスを追加
     for (let column: number = 0; column < chartLength; column++) {
       switch (line[column]) {
         case "X":
           // 不正なホールドの記述かのチェック
-          if (startHolds[column] > -1 || startHollows[column] > -1) {
+          if (startHolds[column] > -1) {
             return `ucsファイルの${fileLinesNum}行目が不正です`;
           }
 
           // 単ノート追加
-          block.notes[column].push({
-            start: rowIdx,
-            goal: rowIdx,
-            hollowStarts: [],
-            hollowGoals: [],
-          });
-
+          block.notes[column].push({ start: rowIdx, goal: rowIdx });
           break;
         case "M":
           // 不正なホールドの記述かのチェック
-          if (startHolds[column] > -1 || startHollows[column] > -1) {
+          if (startHolds[column] > -1) {
             return `ucsファイルの${fileLinesNum}行目が不正です`;
           }
 
           startHolds[column] = rowIdx;
-          startHollows[column] = rowIdx;
-
           break;
         case "H":
           // 不正なホールドの記述かのチェック
           if (startHolds[column] === -1) {
             return `ucsファイルの${fileLinesNum}行目が不正です`;
-          }
-
-          // 中抜きホールド判定
-          if (startHollows[column] === -1) {
-            startHollows[column] = rowIdx;
           }
 
           break;
@@ -225,36 +202,17 @@ const validateAndLoadUCS = (content: string): Chart | string => {
             return `ucsファイルの${fileLinesNum}行目が不正です`;
           }
 
-          // 中抜きホールド判定
-          if (
-            hollowStartLists[column].length > 0 &&
-            hollowGoalLists[column].length > 0 &&
-            startHollows[column] !== -1
-          ) {
-            hollowStartLists[column].push(startHollows[column]);
-            hollowGoalLists[column].push(rowIdx);
-          }
-
-          // ホールド/中抜きホールド追加
+          // ホールド追加
           block.notes[column].push({
             start: startHolds[column],
             goal: rowIdx,
-            hollowStarts: hollowStartLists[column],
-            hollowGoals: hollowGoalLists[column],
           });
-
           startHolds[column] = -1;
-          startHollows[column] = -1;
-          hollowStartLists[column].length = 0;
-          hollowGoalLists[column].length = 0;
-
           break;
         case ".":
-          // 中抜きホールド判定
-          if (startHollows[column] > -1) {
-            hollowStartLists[column].push(startHollows[column]);
-            hollowGoalLists[column].push(rowIdx - 1);
-            startHollows[column] = -1;
+          // 不正なホールドの記述かのチェック
+          if (startHolds[column] > -1) {
+            return `ucsファイルの${fileLinesNum}行目が不正です`;
           }
 
           break;
