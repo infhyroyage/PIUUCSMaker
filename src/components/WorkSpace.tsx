@@ -39,6 +39,7 @@ function WorkSpace() {
         alignItems: "center",
         justifyContent: "center",
         flexGrow: 1,
+        userSelect: "none",
       }}
     >
       {chartBlocks}
