@@ -1,51 +1,56 @@
-import { Block, Chart } from "../types/ucs";
+import React from "react";
+import { Chart } from "../types/ucs";
 import ReadyFile from "./ReadyFile";
-import ChartBlock from "./ChartBlock";
 import { useRecoilValue } from "recoil";
 import { chartState } from "../service/atoms";
-import { useMemo } from "react";
+import useChartSizes from "../hooks/useChartSizes";
+import ChartBorderLine from "./ChartBorderLine";
+import ChartVerticalRectangles from "./ChartVerticalRectangles";
 
 function WorkSpace() {
   const chart: Chart | null = useRecoilValue<Chart | null>(chartState);
 
-  const chartBlocks: React.ReactNode[] = useMemo(() => {
-    if (chart === null) return [];
+  // 単ノートの1辺、枠線のサイズを取得
+  const { noteSize, borderSize } = useChartSizes();
 
-    let accumulatedBlockLength: number = 0;
-    return chart.blocks.reduce(
-      (prev: React.ReactNode[], block: Block, idx: number) => {
-        prev.push(
-          <ChartBlock
-            key={idx}
-            chartLength={chart.length}
-            blockIdx={idx}
-            blockLength={block.length}
-            accumulatedBlockLength={accumulatedBlockLength}
-            split={block.split}
-          />
-        );
-        accumulatedBlockLength = accumulatedBlockLength + block.length;
-        return prev;
-      },
-      []
-    );
-  }, [chart]);
-
-  return chartBlocks.length > 0 ? (
+  return chart === null ? (
+    <ReadyFile />
+  ) : (
     <div
       style={{
         display: "flex",
-        flexDirection: "column",
+        flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
         flexGrow: 1,
         userSelect: "none",
+        lineHeight: 0,
       }}
     >
-      {chartBlocks}
+      {[...Array(chart.length)].map((_, column: number) => (
+        <React.Fragment key={column}>
+          {column === 0 && (
+            <ChartBorderLine
+              style={{
+                width: `${borderSize}px`,
+                height: "100%",
+              }}
+            />
+          )}
+          <ChartVerticalRectangles
+            borderSize={borderSize}
+            column={column}
+            noteSize={noteSize}
+          />
+          <ChartBorderLine
+            style={{
+              width: `${borderSize}px`,
+              height: "100%",
+            }}
+          />
+        </React.Fragment>
+      ))}
     </div>
-  ) : (
-    <ReadyFile />
   );
 }
 
