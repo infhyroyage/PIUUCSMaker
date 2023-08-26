@@ -79,12 +79,64 @@ function ChartBlockRectangle({
 
     let imgTopOffset: number =
       borderSize + (indicatorTop === null ? 0 : noteSize);
-    return chart.blocks[blockIdx].notes[column].reduce(
-      (prev: React.ReactNode[], note: Note) => {
-        // 単ノート/ホールドの始点
+    return chart.notes[column].reduce((prev: React.ReactNode[], note: Note) => {
+      // 単ノート/ホールドの始点
+      prev.push(
+        <img
+          key={note.start}
+          src={IMAGE_BINARIES[column % 5].note}
+          alt={`note${column % 5}`}
+          width={noteSize}
+          height={noteSize}
+          style={{
+            position: "relative",
+            top: `${
+              (2.0 *
+                noteSize *
+                ZOOM_VALUES[zoomIdx] *
+                (note.start - accumulatedBlockLength)) /
+                split -
+              imgTopOffset
+            }px`,
+            zIndex: (note.start + 1) * 10,
+          }}
+        />
+      );
+      imgTopOffset = imgTopOffset + noteSize;
+
+      if (note.start !== note.goal) {
+        // ホールド
+        const holdHeight: number =
+          (2.0 * noteSize * ZOOM_VALUES[zoomIdx] * (note.goal - note.start)) /
+          split;
         prev.push(
           <img
-            key={note.start}
+            key={(note.start + note.goal) / 2}
+            src={IMAGE_BINARIES[column % 5].hold}
+            alt={`hold${column % 5}`}
+            width={noteSize}
+            height={holdHeight}
+            style={{
+              position: "relative",
+              top: `${
+                (2.0 *
+                  noteSize *
+                  ZOOM_VALUES[zoomIdx] *
+                  (note.start - accumulatedBlockLength)) /
+                  split +
+                noteSize * 0.5 -
+                imgTopOffset
+              }px`,
+              zIndex: (note.start + 1) * 10 + 2,
+            }}
+          />
+        );
+        imgTopOffset = imgTopOffset + holdHeight;
+
+        // ホールドの終点
+        prev.push(
+          <img
+            key={note.goal}
             src={IMAGE_BINARIES[column % 5].note}
             alt={`note${column % 5}`}
             width={noteSize}
@@ -95,74 +147,19 @@ function ChartBlockRectangle({
                 (2.0 *
                   noteSize *
                   ZOOM_VALUES[zoomIdx] *
-                  (note.start - accumulatedBlockLength)) /
+                  (note.goal - accumulatedBlockLength)) /
                   split -
                 imgTopOffset
               }px`,
-              zIndex: (note.start + 1) * 10,
+              zIndex: (note.start + 1) * 10 + 1,
             }}
           />
         );
         imgTopOffset = imgTopOffset + noteSize;
+      }
 
-        if (note.start !== note.goal) {
-          // ホールド
-          const holdHeight: number =
-            (2.0 * noteSize * ZOOM_VALUES[zoomIdx] * (note.goal - note.start)) /
-            split;
-          prev.push(
-            <img
-              key={(note.start + note.goal) / 2}
-              src={IMAGE_BINARIES[column % 5].hold}
-              alt={`hold${column % 5}`}
-              width={noteSize}
-              height={holdHeight}
-              style={{
-                position: "relative",
-                top: `${
-                  (2.0 *
-                    noteSize *
-                    ZOOM_VALUES[zoomIdx] *
-                    (note.start - accumulatedBlockLength)) /
-                    split +
-                  noteSize * 0.5 -
-                  imgTopOffset
-                }px`,
-                zIndex: (note.start + 1) * 10 + 2,
-              }}
-            />
-          );
-          imgTopOffset = imgTopOffset + holdHeight;
-
-          // ホールドの終点
-          prev.push(
-            <img
-              key={note.goal}
-              src={IMAGE_BINARIES[column % 5].note}
-              alt={`note${column % 5}`}
-              width={noteSize}
-              height={noteSize}
-              style={{
-                position: "relative",
-                top: `${
-                  (2.0 *
-                    noteSize *
-                    ZOOM_VALUES[zoomIdx] *
-                    (note.goal - accumulatedBlockLength)) /
-                    split -
-                  imgTopOffset
-                }px`,
-                zIndex: (note.start + 1) * 10 + 1,
-              }}
-            />
-          );
-          imgTopOffset = imgTopOffset + noteSize;
-        }
-
-        return prev;
-      },
-      []
-    );
+      return prev;
+    }, []);
   }, [
     borderSize,
     indicatorTop,

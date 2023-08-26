@@ -48,12 +48,6 @@ export type Block = {
    * 行数
    */
   length: number;
-
-  /**
-   * 列ごとの単ノート/ホールドの集合
-   * Single/SinglePerformance譜面の場合の第1インデックスは0〜4、Double/DoublePerformance譜面の場合は0〜9
-   */
-  notes: Note[][];
 };
 
 /**
@@ -76,4 +70,10 @@ export type Chart = {
    * 譜面のブロックの集合
    */
   blocks: Block[];
+
+  /**
+   * 列ごとの単ノート/ホールドの集合
+   * Single/SinglePerformance譜面の場合の第1インデックスは0〜4、Double/DoublePerformance譜面の場合は0〜9
+   */
+  notes: Note[][];
 };

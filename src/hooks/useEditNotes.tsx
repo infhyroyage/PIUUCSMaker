@@ -1,5 +1,5 @@
 import { useRecoilState, useSetRecoilState } from "recoil";
-import { Block, Chart, Note } from "../types/ucs";
+import { Chart, Note } from "../types/ucs";
 import { chartState, isShownSystemErrorSnackbarState } from "../service/atoms";
 
 function useEditNotes() {
@@ -57,74 +57,36 @@ function useEditNotes() {
       mouseDownRowIdx < mouseUpRowIdx ? mouseDownRowIdx : mouseUpRowIdx;
     const goal: number =
       mouseDownRowIdx < mouseUpRowIdx ? mouseUpRowIdx : mouseDownRowIdx;
-    // startに対応する譜面のブロックのインデックスを取得
-    const startBlockIdx: number =
-      mouseDownBlockIdx < mouseUpBlockIdx ? mouseDownBlockIdx : mouseUpBlockIdx;
 
-    let updatedChart: Chart;
+    let updatedNotes: Note[];
     if (start === goal) {
-      let updatedNotes: Note[] = [...chart.blocks[startBlockIdx].notes[column]];
-
       // startの場所に単ノートを新規追加
       // ただし、その場所に単ノート/ホールドが含む場合は、それを削除する(単ノートは新規追加しない)
-      const noteIdx: number = chart.blocks[startBlockIdx].notes[
-        column
-      ].findIndex((note: Note) => note.start <= start && start <= note.goal);
-      if (noteIdx === -1) {
-        updatedNotes.push({ start, goal });
-      } else {
-        updatedNotes = [
-          ...chart.blocks[startBlockIdx].notes[column].slice(0, noteIdx),
-          ...chart.blocks[startBlockIdx].notes[column].slice(noteIdx + 1),
-        ];
-      }
-
-      updatedChart = {
-        ...chart,
-        blocks: chart.blocks.map((block: Block, blockIdx: number) =>
-          blockIdx === startBlockIdx
-            ? {
-                ...block,
-                notes: block.notes.map((notes: Note[], j: number) =>
-                  j === column ? updatedNotes : notes
-                ),
-              }
-            : block
-        ),
-      };
+      const noteIdx: number = chart.notes[column].findIndex(
+        (note: Note) => note.start <= start && start <= note.goal
+      );
+      updatedNotes =
+        noteIdx === -1
+          ? [...chart.notes[column], { start, goal }]
+          : [
+              ...chart.notes[column].slice(0, noteIdx),
+              ...chart.notes[column].slice(noteIdx + 1),
+            ];
     } else {
-      // goalに対応する譜面のブロックのインデックスを取得
-      const goalBlockIdx: number =
-        mouseDownBlockIdx < mouseUpBlockIdx
-          ? mouseUpBlockIdx
-          : mouseDownBlockIdx;
-
       // startとgoalとの間にホールドを新規追加
       // ただし、その間の場所に単ノート/ホールドが含む場合は、それをすべて削除してから新規追加する
-      updatedChart = {
-        ...chart,
-        blocks: chart.blocks.map((block: Block, blockIdx: number) => {
-          if (blockIdx < startBlockIdx || blockIdx > goalBlockIdx) return block;
-
-          const updatedNotes: Note[] = chart.blocks[blockIdx].notes[
-            column
-          ].filter((note: Note) => note.start > goal || note.goal < start);
-          if (blockIdx === startBlockIdx) {
-            updatedNotes.push({ start, goal });
-          }
-
-          return {
-            ...block,
-            notes: block.notes.map((notes: Note[], j: number) =>
-              j === column ? updatedNotes : notes
-            ),
-          };
-        }),
-      };
+      updatedNotes = chart.notes[column].filter(
+        (note: Note) => note.start > goal || note.goal < start
+      );
     }
 
     // 譜面の更新
-    setChart(updatedChart);
+    setChart({
+      ...chart,
+      notes: chart.notes.map((notes: Note[], i: number) =>
+        i === column ? updatedNotes : notes
+      ),
+    });
   };
 
   return { editNotes };

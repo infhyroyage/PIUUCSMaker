@@ -53,6 +53,9 @@ const validateAndLoadUCS = (content: string): Chart | string => {
       line
     ),
     blocks: [],
+    notes: Array(chartLength)
+      .fill(null)
+      .map<Note[]>(() => []),
   };
 
   /*
@@ -149,9 +152,6 @@ const validateAndLoadUCS = (content: string): Chart | string => {
         beat,
         split,
         length: 0,
-        notes: Array(chartLength)
-          .fill(null)
-          .map<Note[]>(() => []),
       };
 
       fileLinesNum++;
@@ -179,7 +179,7 @@ const validateAndLoadUCS = (content: string): Chart | string => {
           }
 
           // 単ノート追加
-          block.notes[column].push({ start: rowIdx, goal: rowIdx });
+          chart.notes[column].push({ start: rowIdx, goal: rowIdx });
           break;
         case "M":
           // 不正なホールドの記述かのチェック
@@ -203,7 +203,7 @@ const validateAndLoadUCS = (content: string): Chart | string => {
           }
 
           // ホールド追加
-          block.notes[column].push({
+          chart.notes[column].push({
             start: startHolds[column],
             goal: rowIdx,
           });
