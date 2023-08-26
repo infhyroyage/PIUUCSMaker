@@ -13,8 +13,7 @@ import { ZOOM_VALUES } from "../service/zoom";
 import { Theme, useTheme } from "@mui/material";
 import { IMAGE_BINARIES } from "../service/images";
 import useEditNotes from "../hooks/useEditNotes";
-
-const APP_BAR_HEIGHT: number = 64;
+import { MENU_BAR_HEIGHT } from "./MenuBar";
 
 function ChartVerticalRectangles({
   borderSize,
@@ -120,10 +119,10 @@ function ChartVerticalRectangles({
           unitRowHeights[blockIdx] * chart.blocks[blockIdx].length;
         if (y < blockOffsets[blockIdx] + blockHeight) {
           const top: number =
-            y - (y % unitRowHeights[blockIdx]) + APP_BAR_HEIGHT;
+            y - (y % unitRowHeights[blockIdx]) + MENU_BAR_HEIGHT;
           const rowIdx: number =
             accumulatedBlockLengths[blockIdx] +
-            (top - APP_BAR_HEIGHT - blockOffsets[blockIdx]) /
+            (top - MENU_BAR_HEIGHT - blockOffsets[blockIdx]) /
               unitRowHeights[blockIdx];
           indicator = { top, blockIdx, rowIdx };
           break;
@@ -229,7 +228,7 @@ function ChartVerticalRectangles({
                 style={{
                   position: "absolute",
                   top: `${
-                    APP_BAR_HEIGHT +
+                    MENU_BAR_HEIGHT +
                     blockOffsets[startBlockIdx] +
                     unitRowHeights[startBlockIdx] *
                       (note.start - accumulatedBlockLengths[startBlockIdx])
@@ -255,7 +254,7 @@ function ChartVerticalRectangles({
                     style={{
                       position: "absolute",
                       top: `${
-                        APP_BAR_HEIGHT +
+                        MENU_BAR_HEIGHT +
                         blockOffsets[startBlockIdx] +
                         unitRowHeights[startBlockIdx] *
                           (note.start -
@@ -274,7 +273,7 @@ function ChartVerticalRectangles({
                     style={{
                       position: "absolute",
                       top: `${
-                        APP_BAR_HEIGHT +
+                        MENU_BAR_HEIGHT +
                         blockOffsets[goalBlockIdx] +
                         unitRowHeights[goalBlockIdx] *
                           (note.goal - accumulatedBlockLengths[goalBlockIdx])

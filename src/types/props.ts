@@ -14,6 +14,13 @@ export type ChartRectangleProps = {
   height: number;
 };
 
+export type MenuBarProps = {
+  isDarkMode: boolean;
+  isOpenedDrawer: boolean;
+  setIsDarkMode: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsOpenedDrawer: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
 export type MenuDrawerProps = {
   isOpenedDrawer: boolean;
 };
