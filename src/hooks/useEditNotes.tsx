@@ -75,9 +75,12 @@ function useEditNotes() {
     } else {
       // startとgoalとの間にホールドを新規追加
       // ただし、その間の場所に単ノート/ホールドが含む場合は、それをすべて削除してから新規追加する
-      updatedNotes = chart.notes[column].filter(
-        (note: Note) => note.start > goal || note.goal < start
-      );
+      updatedNotes = [
+        ...chart.notes[column].filter(
+          (note: Note) => note.start > goal || note.goal < start
+        ),
+        { start, goal },
+      ];
     }
 
     // 譜面の更新
