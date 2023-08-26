@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { ChartBorderLineProps } from "../types/props";
 
 function ChartBorderLine({ style }: ChartBorderLineProps) {
@@ -12,4 +13,4 @@ function ChartBorderLine({ style }: ChartBorderLineProps) {
   );
 }
 
-export default ChartBorderLine;
+export default memo(ChartBorderLine);
