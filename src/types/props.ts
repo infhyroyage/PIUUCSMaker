@@ -1,5 +1,6 @@
 export type ChartBorderLineProps = {
-  style: React.CSSProperties;
+  height: string;
+  width: string;
 };
 
 export type ChartVerticalRectanglesProps = {

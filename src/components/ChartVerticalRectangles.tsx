@@ -179,7 +179,8 @@ function ChartVerticalRectangles({
                 height={unitRowHeights[blockIdx] * block.length - borderSize}
               />
               <ChartBorderLine
-                style={{ width: `${noteSize}px`, height: `${borderSize}px` }}
+                width={`${noteSize}px`}
+                height={`${borderSize}px`}
               />
             </React.Fragment>
           )

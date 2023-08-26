@@ -1,11 +1,12 @@
 import { memo } from "react";
 import { ChartBorderLineProps } from "../types/props";
 
-function ChartBorderLine({ style }: ChartBorderLineProps) {
+function ChartBorderLine({ height, width }: ChartBorderLineProps) {
   return (
     <span
       style={{
-        ...style,
+        width,
+        height,
         display: "block",
         backgroundColor: "rgb(11, 93, 153)",
       }}
