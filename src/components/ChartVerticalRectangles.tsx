@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useMemo, useState } from "react";
-import { ChartVerticalRectanglesProps } from "../types/props";
+import { ChartVerticalRectanglesProps, IndicatorInfo } from "../types/props";
 import { Block, Chart, Note } from "../types/ucs";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import {
@@ -10,32 +10,23 @@ import {
 import ChartRectangle from "./ChartRectangle";
 import ChartBorderLine from "./ChartBorderLine";
 import { ZOOM_VALUES } from "../service/zoom";
-import { Theme, useTheme } from "@mui/material";
 import { IMAGE_BINARIES } from "../service/images";
-import useEditNotes from "../hooks/useEditNotes";
 import { MENU_BAR_HEIGHT } from "./MenuBar";
+import ChartIndicator from "./ChartIndicator";
 
 function ChartVerticalRectangles({
   borderSize,
   column,
   noteSize,
 }: ChartVerticalRectanglesProps) {
-  // インディケーターを表示しない場合はnull
-  const [indicator, setIndicator] = useState<{
-    top: number; // インディケーターのtop値
-    blockIdx: number; // インディケーターの示す譜面のブロックのインデックス
-    rowIdx: number; // インディケーターの示す譜面全体での行のインデックス
-  } | null>(null);
-  const [mouseDownRowIdx, setMouseDownRowIdx] = useState<number | null>(null);
+  const [indicatorInfo, setIndicatorInfo] = useState<IndicatorInfo | null>(
+    null
+  );
   const chart: Chart | null = useRecoilValue<Chart | null>(chartState);
   const zoomIdx: number = useRecoilValue<number>(zoomIdxState);
   const setIsShownSystemErrorSnackbar = useSetRecoilState<boolean>(
     isShownSystemErrorSnackbarState
   );
-
-  const theme: Theme = useTheme();
-
-  const { editNotes } = useEditNotes();
 
   /**
    * 各譜面のブロックにおける、以前までの譜面のブロックまでの行数の総和を計算
@@ -109,11 +100,7 @@ function ChartVerticalRectangles({
 
       // 譜面のブロックのマウスホバーした際に、マウスの行インデックスの場所にインディケーターを表示
       // 譜面のブロックのマウスホバーが外れた際に、インディケーターを非表示
-      let indicator: {
-        top: number;
-        blockIdx: number;
-        rowIdx: number;
-      } | null = null;
+      let info: IndicatorInfo | null = null;
       for (let blockIdx = 0; blockIdx < chart.blocks.length; blockIdx++) {
         const blockHeight: number =
           unitRowHeights[blockIdx] * chart.blocks[blockIdx].length;
@@ -124,33 +111,20 @@ function ChartVerticalRectangles({
             accumulatedBlockLengths[blockIdx] +
             (top - MENU_BAR_HEIGHT - blockOffsets[blockIdx]) /
               unitRowHeights[blockIdx];
-          indicator = { top, blockIdx, rowIdx };
+          info = { top, blockIdx, rowIdx };
           break;
         }
       }
-      setIndicator(indicator);
+      setIndicatorInfo(info);
     },
-    [chart, setIndicator, unitRowHeights]
+    [
+      accumulatedBlockLengths,
+      blockOffsets,
+      chart,
+      setIndicatorInfo,
+      unitRowHeights,
+    ]
   );
-
-  const onMouseDown = useCallback(() => {
-    // 押下した瞬間にインディケーターが非表示である場合はNOP
-    if (indicator === null) return;
-
-    // 押下した譜面全体での行インデックスを保持
-    setMouseDownRowIdx(indicator.rowIdx);
-  }, [indicator, setMouseDownRowIdx]);
-
-  const onMouseUp = useCallback(() => {
-    // 押下を離した瞬間にインディケーターが非表示である/押下した譜面全体での行インデックスが初期値の場合はNOP
-    if (indicator === null || mouseDownRowIdx === null) return;
-
-    // 単ノート/ホールドの追加・削除
-    editNotes(column, mouseDownRowIdx, indicator.rowIdx);
-
-    // 保持していた押下した譜面全体での行インデックスを初期化
-    setMouseDownRowIdx(null);
-  }, [indicator, mouseDownRowIdx, setMouseDownRowIdx]);
 
   return (
     <span
@@ -160,7 +134,7 @@ function ChartVerticalRectangles({
         flexDirection: "column",
       }}
       onMouseMove={onMouseMove}
-      onMouseLeave={() => setIndicator(null)}
+      onMouseLeave={() => setIndicatorInfo(null)}
     >
       {chart !== null &&
         chart.blocks.map((block: Block, blockIdx: number) =>
@@ -286,21 +260,11 @@ function ChartVerticalRectangles({
             </React.Fragment>
           );
         }, [])}
-      {indicator !== null && (
-        <span
-          style={{
-            display: "block",
-            position: "absolute",
-            top: `${indicator.top}px`,
-            width: `${noteSize}px`,
-            height: `${noteSize}px`,
-            backgroundColor: "rgba(170, 170, 170, 0.5)",
-            zIndex: theme.zIndex.drawer - 1,
-          }}
-          onMouseDown={onMouseDown}
-          onMouseUp={onMouseUp}
-        />
-      )}
+      <ChartIndicator
+        column={column}
+        indicatorInfo={indicatorInfo}
+        noteSize={noteSize}
+      />
     </span>
   );
 }
