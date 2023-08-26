@@ -27,7 +27,7 @@ function useEditNotes() {
     let mouseDownBlockIdx: number | null = null;
     let mouseUpBlockIdx: number | null = null;
     let accumulatedBlockLength: number = 0;
-    for (let i = 0; chart.blocks.length; i++) {
+    for (let i = 0; i < chart.blocks.length; i++) {
       if (
         mouseDownBlockIdx === null &&
         mouseDownRowIdx < accumulatedBlockLength + chart.blocks[i].length
