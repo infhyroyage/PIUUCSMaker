@@ -1,10 +1,12 @@
-import React, { memo, useCallback, useMemo, useState } from "react";
-import { ChartVerticalRectanglesProps, IndicatorInfo } from "../types/props";
+import React, { memo, useCallback, useMemo } from "react";
+import { ChartVerticalRectanglesProps } from "../types/props";
 import { Block, Chart, Note } from "../types/ucs";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
   chartState,
+  indicatorInfoState,
   isShownSystemErrorSnackbarState,
+  mouseDownInfoState,
   zoomIdxState,
 } from "../service/atoms";
 import ChartRectangle from "./ChartRectangle";
@@ -13,16 +15,18 @@ import { ZOOM_VALUES } from "../service/zoom";
 import { IMAGE_BINARIES } from "../service/images";
 import { MENU_BAR_HEIGHT } from "./MenuBar";
 import ChartIndicator from "./ChartIndicator";
+import { IndicatorInfo, MouseDownInfo } from "../types/atoms";
 
 function ChartVerticalRectangles({
   borderSize,
   column,
   noteSize,
 }: ChartVerticalRectanglesProps) {
-  const [indicatorInfo, setIndicatorInfo] = useState<IndicatorInfo | null>(
-    null
-  );
-  const chart: Chart | null = useRecoilValue<Chart | null>(chartState);
+  const [indicatorInfo, setIndicatorInfo] =
+    useRecoilState<IndicatorInfo | null>(indicatorInfoState);
+  const [mouseDownInfo, setMouseDownInfo] =
+    useRecoilState<MouseDownInfo | null>(mouseDownInfoState);
+  const [chart, setChart] = useRecoilState<Chart | null>(chartState);
   const zoomIdx: number = useRecoilValue<number>(zoomIdxState);
   const setIsShownSystemErrorSnackbar = useSetRecoilState<boolean>(
     isShownSystemErrorSnackbarState
@@ -111,7 +115,7 @@ function ChartVerticalRectangles({
             accumulatedBlockLengths[blockIdx] +
             (top - MENU_BAR_HEIGHT - blockOffsets[blockIdx]) /
               unitRowHeights[blockIdx];
-          info = { top, blockIdx, rowIdx };
+          info = { column, blockIdx, rowIdx, top };
           break;
         }
       }
@@ -121,10 +125,86 @@ function ChartVerticalRectangles({
       accumulatedBlockLengths,
       blockOffsets,
       chart,
+      column,
       setIndicatorInfo,
       unitRowHeights,
     ]
   );
+
+  const onMouseDown = useCallback(() => {
+    // 押下した瞬間にインディケーターが非表示である場合はNOP
+    if (indicatorInfo === null) return;
+
+    // マウス押下時のパラメーターを保持
+    setMouseDownInfo({
+      column,
+      rowIdx: indicatorInfo.rowIdx,
+      top: indicatorInfo.top,
+    });
+  }, [column, indicatorInfo, setMouseDownInfo]);
+
+  const onMouseUp = useCallback(() => {
+    // 同一列内でのマウス操作の場合のみ、譜面の更新を行う
+    if (mouseDownInfo !== null && column === mouseDownInfo.column) {
+      // 内部矛盾チェック
+      if (chart === null || indicatorInfo === null) {
+        setIsShownSystemErrorSnackbar(true);
+        return;
+      }
+
+      // 単ノート/ホールドの始点start、終点goalの譜面全体での行インデックスを取得
+      const start: number =
+        mouseDownInfo.rowIdx < indicatorInfo.rowIdx
+          ? mouseDownInfo.rowIdx
+          : indicatorInfo.rowIdx;
+      const goal: number =
+        mouseDownInfo.rowIdx < indicatorInfo.rowIdx
+          ? indicatorInfo.rowIdx
+          : mouseDownInfo.rowIdx;
+
+      // 譜面全体での行インデックスmouseDownInfo.rowIdxで押下した後に
+      // 譜面全体での行インデックスindicatorInfo.rowIdxで押下を離した際の
+      // 列インデックスcolumnにて、単ノート/ホールドの追加・削除を行う
+      let updatedNotes: Note[];
+      if (start === goal) {
+        // startの場所に単ノートを新規追加
+        // ただし、その場所に単ノート/ホールドが含む場合は、それを削除する(単ノートは新規追加しない)
+        const noteIdx: number = chart.notes[column].findIndex(
+          (note: Note) => note.start <= start && start <= note.goal
+        );
+        updatedNotes =
+          noteIdx === -1
+            ? [...chart.notes[column], { start, goal }]
+            : [
+                ...chart.notes[column].slice(0, noteIdx),
+                ...chart.notes[column].slice(noteIdx + 1),
+              ];
+      } else {
+        // startとgoalとの間にホールドを新規追加
+        // ただし、その間の場所に単ノート/ホールドが含む場合は、それをすべて削除してから新規追加する
+        updatedNotes = [
+          ...chart.notes[column].filter(
+            (note: Note) => note.start > goal || note.goal < start
+          ),
+          { start, goal },
+        ];
+      }
+      // 単ノート/ホールドの追加・削除を行った譜面に更新
+      setChart({
+        ...chart,
+        notes: chart.notes.map((notes: Note[], i: number) =>
+          i === column ? updatedNotes : notes
+        ),
+      });
+    }
+  }, [
+    chart,
+    column,
+    indicatorInfo,
+    mouseDownInfo,
+    setChart,
+    setIsShownSystemErrorSnackbar,
+  ]);
 
   return (
     <span
@@ -135,6 +215,8 @@ function ChartVerticalRectangles({
       }}
       onMouseMove={onMouseMove}
       onMouseLeave={() => setIndicatorInfo(null)}
+      onMouseDown={onMouseDown}
+      onMouseUp={onMouseUp}
     >
       {chart !== null &&
         chart.blocks.map((block: Block, blockIdx: number) =>
@@ -260,11 +342,7 @@ function ChartVerticalRectangles({
             </React.Fragment>
           );
         }, [])}
-      <ChartIndicator
-        column={column}
-        indicatorInfo={indicatorInfo}
-        noteSize={noteSize}
-      />
+      <ChartIndicator column={column} noteSize={noteSize} />
     </span>
   );
 }

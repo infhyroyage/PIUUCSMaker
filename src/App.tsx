@@ -7,10 +7,16 @@ import MenuDrawer from "./components/MenuDrawer";
 import NewFileDialog from "./components/NewFileDialog";
 import { MUI_DEFAULT_Z_INDEX } from "./service/mui";
 import MenuBar from "./components/MenuBar";
+import { useSetRecoilState } from "recoil";
+import { MouseDownInfo } from "./types/atoms";
+import { mouseDownInfoState } from "./service/atoms";
 
 function App() {
   const [isOpenedDrawer, setIsOpenedDrawer] = useState<boolean>(false);
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
+  const setMouseDownInfo = useSetRecoilState<MouseDownInfo | null>(
+    mouseDownInfoState
+  );
 
   const theme = useMemo(
     () =>
@@ -39,16 +45,18 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <MenuBar
-        isDarkMode={isDarkMode}
-        isOpenedDrawer={isOpenedDrawer}
-        setIsDarkMode={setIsDarkMode}
-        setIsOpenedDrawer={setIsOpenedDrawer}
-      />
-      <Box sx={{ display: "flex" }}>
-        <MenuDrawer isOpenedDrawer={isOpenedDrawer} />
-        <WorkSpace />
-      </Box>
+      <div onMouseUp={() => setMouseDownInfo(null)}>
+        <MenuBar
+          isDarkMode={isDarkMode}
+          isOpenedDrawer={isOpenedDrawer}
+          setIsDarkMode={setIsDarkMode}
+          setIsOpenedDrawer={setIsOpenedDrawer}
+        />
+        <Box sx={{ display: "flex" }}>
+          <MenuDrawer isOpenedDrawer={isOpenedDrawer} />
+          <WorkSpace />
+        </Box>
+      </div>
       <NewFileDialog />
       <UserErrorSnackbar />
       <SystemErrorSnackbar />

@@ -4,25 +4,6 @@ export type ChartBorderLineProps = {
 };
 
 /**
- * インディケーターの表示パラメーター
- */
-export type IndicatorInfo = {
-  /**
-   * インディケーターのtop値
-   */
-  top: number;
-
-  /**
-   * インディケーターの示す譜面のブロックのインデックス
-   */
-  blockIdx: number;
-
-  /**
-   * インディケーターの示す譜面全体での行のインデックス
-   */
-  rowIdx: number;
-};
-/**
  * 関数コンポーネントChartIndicatorで用いるprops
  */
 export type ChartIndicatorProps = {
@@ -31,12 +12,6 @@ export type ChartIndicatorProps = {
    * Single/SinglePerformance譜面の場合は0〜4、Double/DoublePerformance譜面の場合は0〜9
    */
   column: number;
-
-  /**
-   * インディケーターの表示パラメーター
-   * インディケーターを表示しない場合はnull
-   */
-  indicatorInfo: IndicatorInfo | null;
 
   /**
    * 単ノートの1辺のサイズ(px単位)
