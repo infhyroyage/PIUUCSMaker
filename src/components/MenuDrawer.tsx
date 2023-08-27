@@ -1,4 +1,4 @@
-import { memo, useMemo } from "react";
+import { useMemo } from "react";
 import {
   Divider,
   Drawer,
@@ -9,7 +9,6 @@ import {
   ListItemText,
   Theme,
 } from "@mui/material";
-import { MenuDrawerProps } from "../types/props";
 import AddIcon from "@mui/icons-material/Add";
 import FileOpenIcon from "@mui/icons-material/FileOpen";
 import SaveAsIcon from "@mui/icons-material/SaveAs";
@@ -18,16 +17,21 @@ import RedoIcon from "@mui/icons-material/Redo";
 import ZoomInIcon from "@mui/icons-material/ZoomIn";
 import ZoomOutIcon from "@mui/icons-material/ZoomOut";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import { isOpenedNewFileDialogState, zoomIdxState } from "../service/atoms";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import {
+  isOpenedMenuDrawerState,
+  isOpenedNewFileDialogState,
+  zoomIdxState,
+} from "../service/atoms";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { ZOOM_VALUES } from "../service/zoom";
 import useOpenFile from "../hooks/useOpenFile";
 // import PauseIcon from '@mui/icons-material/Pause';
 
 const OPENED_DRAWER_WIDTH = 200;
 
-function MenuDrawer({ isOpenedDrawer }: MenuDrawerProps) {
+function MenuDrawer() {
   const [zoomIdx, setZoomIdx] = useRecoilState<number>(zoomIdxState);
+  const isOpenedMenuDrawer = useRecoilValue<boolean>(isOpenedMenuDrawerState);
   const setIsOpenedNewChartDialog = useSetRecoilState<boolean>(
     isOpenedNewFileDialogState
   );
@@ -36,30 +40,30 @@ function MenuDrawer({ isOpenedDrawer }: MenuDrawerProps) {
 
   const listItemButtonSX = useMemo(() => {
     return {
-      justifyContent: isOpenedDrawer ? "initial" : "center",
+      justifyContent: isOpenedMenuDrawer ? "initial" : "center",
       minHeight: 48,
       px: 2.5,
     };
-  }, [isOpenedDrawer]);
+  }, [isOpenedMenuDrawer]);
 
   const listItemIconSX = useMemo(() => {
     return {
       justifyContent: "center",
       minWidth: 0,
-      mr: isOpenedDrawer ? 3 : "auto",
+      mr: isOpenedMenuDrawer ? 3 : "auto",
     };
-  }, [isOpenedDrawer]);
+  }, [isOpenedMenuDrawer]);
 
   return (
     <Drawer
       variant="permanent"
-      open={isOpenedDrawer}
+      open={isOpenedMenuDrawer}
       PaperProps={{ elevation: 3, sx: { marginTop: "64px" } }}
       sx={(theme: Theme) => ({
-        width: isOpenedDrawer ? OPENED_DRAWER_WIDTH : "64px",
+        width: isOpenedMenuDrawer ? OPENED_DRAWER_WIDTH : "64px",
         transition: theme.transitions.create("width", {
           easing: theme.transitions.easing.sharp,
-          duration: isOpenedDrawer
+          duration: isOpenedMenuDrawer
             ? theme.transitions.duration.enteringScreen
             : theme.transitions.duration.leavingScreen,
         }),
@@ -68,10 +72,10 @@ function MenuDrawer({ isOpenedDrawer }: MenuDrawerProps) {
         boxSizing: "border-box",
         overflowX: "hidden",
         "& .MuiDrawer-paper": {
-          width: isOpenedDrawer ? OPENED_DRAWER_WIDTH : "64px",
+          width: isOpenedMenuDrawer ? OPENED_DRAWER_WIDTH : "64px",
           transition: theme.transitions.create("width", {
             easing: theme.transitions.easing.sharp,
-            duration: isOpenedDrawer
+            duration: isOpenedMenuDrawer
               ? theme.transitions.duration.enteringScreen
               : theme.transitions.duration.leavingScreen,
           }),
@@ -87,7 +91,7 @@ function MenuDrawer({ isOpenedDrawer }: MenuDrawerProps) {
             <ListItemIcon sx={listItemIconSX}>
               <AddIcon />
             </ListItemIcon>
-            {isOpenedDrawer && (
+            {isOpenedMenuDrawer && (
               <ListItemText primary="New UCS File" sx={{ opacity: 1 }} />
             )}
           </ListItemButton>
@@ -109,7 +113,7 @@ function MenuDrawer({ isOpenedDrawer }: MenuDrawerProps) {
             <ListItemIcon sx={listItemIconSX}>
               <FileOpenIcon />
             </ListItemIcon>
-            {isOpenedDrawer && (
+            {isOpenedMenuDrawer && (
               <ListItemText primary="Open UCS File" sx={{ opacity: 1 }} />
             )}
           </ListItemButton>
@@ -119,7 +123,7 @@ function MenuDrawer({ isOpenedDrawer }: MenuDrawerProps) {
             <ListItemIcon sx={listItemIconSX}>
               <SaveAsIcon />
             </ListItemIcon>
-            {isOpenedDrawer && (
+            {isOpenedMenuDrawer && (
               <ListItemText primary="Save As" sx={{ opacity: 1 }} />
             )}
           </ListItemButton>
@@ -132,7 +136,7 @@ function MenuDrawer({ isOpenedDrawer }: MenuDrawerProps) {
             <ListItemIcon sx={listItemIconSX}>
               <UndoIcon />
             </ListItemIcon>
-            {isOpenedDrawer && (
+            {isOpenedMenuDrawer && (
               <ListItemText primary="Undo" sx={{ opacity: 1 }} />
             )}
           </ListItemButton>
@@ -142,7 +146,7 @@ function MenuDrawer({ isOpenedDrawer }: MenuDrawerProps) {
             <ListItemIcon sx={listItemIconSX}>
               <RedoIcon />
             </ListItemIcon>
-            {isOpenedDrawer && (
+            {isOpenedMenuDrawer && (
               <ListItemText primary="Redo" sx={{ opacity: 1 }} />
             )}
           </ListItemButton>
@@ -159,7 +163,7 @@ function MenuDrawer({ isOpenedDrawer }: MenuDrawerProps) {
             <ListItemIcon sx={listItemIconSX}>
               <ZoomInIcon />
             </ListItemIcon>
-            {isOpenedDrawer && (
+            {isOpenedMenuDrawer && (
               <ListItemText primary="Zoom In" sx={{ opacity: 1 }} />
             )}
           </ListItemButton>
@@ -173,7 +177,7 @@ function MenuDrawer({ isOpenedDrawer }: MenuDrawerProps) {
             <ListItemIcon sx={listItemIconSX}>
               <ZoomOutIcon />
             </ListItemIcon>
-            {isOpenedDrawer && (
+            {isOpenedMenuDrawer && (
               <ListItemText primary="Zoom Out" sx={{ opacity: 1 }} />
             )}
           </ListItemButton>
@@ -186,7 +190,7 @@ function MenuDrawer({ isOpenedDrawer }: MenuDrawerProps) {
             <ListItemIcon sx={listItemIconSX}>
               <PlayArrowIcon />
             </ListItemIcon>
-            {isOpenedDrawer && (
+            {isOpenedMenuDrawer && (
               <ListItemText primary="Play" sx={{ opacity: 1 }} />
             )}
           </ListItemButton>
@@ -196,4 +200,4 @@ function MenuDrawer({ isOpenedDrawer }: MenuDrawerProps) {
   );
 }
 
-export default memo(MenuDrawer);
+export default MenuDrawer;

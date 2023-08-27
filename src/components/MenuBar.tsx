@@ -1,11 +1,14 @@
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import MenuIcon from "@mui/icons-material/Menu";
-import { MenuBarProps } from "../types/props";
 import { ZOOM_VALUES } from "../service/zoom";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { topBarTitleState, zoomIdxState } from "../service/atoms";
-import { memo } from "react";
+import {
+  isDarkModeState,
+  isOpenedMenuDrawerState,
+  topBarTitleState,
+  zoomIdxState,
+} from "../service/atoms";
 import {
   AppBar,
   FormControl,
@@ -21,13 +24,12 @@ import {
 
 export const MENU_BAR_HEIGHT: number = 64;
 
-function MenuBar({
-  isDarkMode,
-  isOpenedDrawer,
-  setIsDarkMode,
-  setIsOpenedDrawer,
-}: MenuBarProps) {
+function MenuBar() {
+  const [isOpenedMenuDrawer, setIsOpenedMenuDrawer] = useRecoilState<boolean>(
+    isOpenedMenuDrawerState
+  );
   const [zoomIdx, setZoomIdx] = useRecoilState<number>(zoomIdxState);
+  const [isDarkMode, setIsDarkMode] = useRecoilState<boolean>(isDarkModeState);
   const topBarTitle = useRecoilValue<string>(topBarTitleState);
 
   return (
@@ -41,7 +43,7 @@ function MenuBar({
       <Toolbar sx={{ height: "100%" }}>
         <IconButton
           color="inherit"
-          onClick={() => setIsOpenedDrawer(!isOpenedDrawer)}
+          onClick={() => setIsOpenedMenuDrawer(!isOpenedMenuDrawer)}
           edge="start"
         >
           <MenuIcon />
@@ -84,4 +86,4 @@ function MenuBar({
   );
 }
 
-export default memo(MenuBar);
+export default MenuBar;

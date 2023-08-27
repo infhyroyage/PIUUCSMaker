@@ -12,6 +12,16 @@ export const indicatorInfoState = atom<IndicatorInfo | null>({
   default: null,
 });
 
+export const isDarkModeState = atom<boolean>({
+  key: "isDarkMode",
+  default: false,
+});
+
+export const isOpenedMenuDrawerState = atom<boolean>({
+  key: "isOpenedMenuDrawer",
+  default: false,
+});
+
 export const isOpenedNewFileDialogState = atom<boolean>({
   key: "isOpenedNewFileDialog",
   default: false,
