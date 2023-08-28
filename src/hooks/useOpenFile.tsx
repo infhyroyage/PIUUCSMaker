@@ -239,7 +239,7 @@ const validateAndLoadUCS = (content: string): Chart | string => {
 
 function useOpenFile() {
   const setTopBarTitle = useSetRecoilState<string>(topBarTitleState);
-  const setChart = useSetRecoilState<Chart | null>(chartState);
+  const setChart = useSetRecoilState<Chart>(chartState);
   const setUserErrorMessage = useSetRecoilState<string>(userErrorMessageState);
   const setIsShownSystemErrorSnackbar = useSetRecoilState<boolean>(
     isShownSystemErrorSnackbarState

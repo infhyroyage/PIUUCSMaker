@@ -118,7 +118,7 @@ function NewFileDialog() {
     rowLength: "50",
     split: "2",
   });
-  const setChart = useSetRecoilState<Chart | null>(chartState);
+  const setChart = useSetRecoilState<Chart>(chartState);
   const [isOpenedNewFileDialog, setIsOpenedNewFileDialog] =
     useRecoilState<boolean>(isOpenedNewFileDialogState);
   const setTopBarTitle = useSetRecoilState<string>(topBarTitleState);

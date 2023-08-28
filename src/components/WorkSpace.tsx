@@ -8,12 +8,12 @@ import ChartBorderLine from "./ChartBorderLine";
 import ChartVerticalRectangles from "./ChartVerticalRectangles";
 
 function WorkSpace() {
-  const chart: Chart | null = useRecoilValue<Chart | null>(chartState);
+  const chart: Chart = useRecoilValue<Chart>(chartState);
 
   // 単ノートの1辺、枠線のサイズを取得
   const { noteSize, borderSize } = useChartSizes();
 
-  return chart === null ? (
+  return chart.blocks.length === 0 ? (
     <ReadyFile />
   ) : (
     <div

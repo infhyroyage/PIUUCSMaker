@@ -2,9 +2,14 @@ import { atom } from "recoil";
 import { Chart } from "../types/ucs";
 import { IndicatorInfo, MouseDownInfo } from "../types/atoms";
 
-export const chartState = atom<Chart | null>({
+export const chartState = atom<Chart>({
   key: "chartState",
-  default: null,
+  default: {
+    length: 5,
+    isPerformance: false,
+    blocks: [], // ucsファイルを読み込んでいない場合は空配列
+    notes: [],
+  },
 });
 
 export const indicatorInfoState = atom<IndicatorInfo | null>({
