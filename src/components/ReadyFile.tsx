@@ -24,11 +24,11 @@ function ReadyFile() {
         onClick={() => setIsOpenedNewFileDialog(true)}
         disabled={isOpeningFile}
       >
-        New UCS File
+        New UCS
       </Button>
       <Typography>or</Typography>
       <Button variant="contained" component="label" disabled={isOpeningFile}>
-        {isOpeningFile ? "Ready..." : "Open UCS File"}
+        {isOpeningFile ? "Ready..." : "Upload UCS"}
         <input
           type="file"
           accept=".ucs"
