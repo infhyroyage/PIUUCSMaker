@@ -10,8 +10,6 @@ import {
   Theme,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import FileOpenIcon from "@mui/icons-material/FileOpen";
-import SaveAsIcon from "@mui/icons-material/SaveAs";
 import UndoIcon from "@mui/icons-material/Undo";
 import RedoIcon from "@mui/icons-material/Redo";
 import ZoomInIcon from "@mui/icons-material/ZoomIn";
@@ -20,16 +18,22 @@ import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import {
   isOpenedMenuDrawerState,
   isOpenedNewFileDialogState,
+  isVolumeOnState,
   zoomIdxState,
 } from "../service/atoms";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { ZOOM_VALUES } from "../service/zoom";
 import useOpenFile from "../hooks/useOpenFile";
 // import PauseIcon from '@mui/icons-material/Pause';
+import VolumeOffIcon from "@mui/icons-material/VolumeOff";
+import VolumeUpIcon from "@mui/icons-material/VolumeUp";
+import UploadIcon from "@mui/icons-material/Upload";
+import DownloadIcon from "@mui/icons-material/Download";
 
 const OPENED_DRAWER_WIDTH = 200;
 
 function MenuDrawer() {
+  const [isVolumeOn, setIsVolumeOn] = useRecoilState<boolean>(isVolumeOnState);
   const [zoomIdx, setZoomIdx] = useRecoilState<number>(zoomIdxState);
   const isOpenedMenuDrawer = useRecoilValue<boolean>(isOpenedMenuDrawerState);
   const setIsOpenedNewChartDialog = useSetRecoilState<boolean>(
@@ -92,7 +96,7 @@ function MenuDrawer() {
               <AddIcon />
             </ListItemIcon>
             {isOpenedMenuDrawer && (
-              <ListItemText primary="New UCS File" sx={{ opacity: 1 }} />
+              <ListItemText primary="New UCS" sx={{ opacity: 1 }} />
             )}
           </ListItemButton>
         </ListItem>
@@ -111,20 +115,20 @@ function MenuDrawer() {
               onChange={handleOpenFile}
             />
             <ListItemIcon sx={listItemIconSX}>
-              <FileOpenIcon />
+              <UploadIcon />
             </ListItemIcon>
             {isOpenedMenuDrawer && (
-              <ListItemText primary="Open UCS File" sx={{ opacity: 1 }} />
+              <ListItemText primary="Upload UCS" sx={{ opacity: 1 }} />
             )}
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding sx={{ display: "block" }}>
           <ListItemButton onClick={() => alert("TODO")} sx={listItemButtonSX}>
             <ListItemIcon sx={listItemIconSX}>
-              <SaveAsIcon />
+              <DownloadIcon />
             </ListItemIcon>
             {isOpenedMenuDrawer && (
-              <ListItemText primary="Save As" sx={{ opacity: 1 }} />
+              <ListItemText primary="Download UCS" sx={{ opacity: 1 }} />
             )}
           </ListItemButton>
         </ListItem>
@@ -192,6 +196,22 @@ function MenuDrawer() {
             </ListItemIcon>
             {isOpenedMenuDrawer && (
               <ListItemText primary="Play" sx={{ opacity: 1 }} />
+            )}
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding sx={{ display: "block" }}>
+          <ListItemButton
+            onClick={() => setIsVolumeOn(!isVolumeOn)}
+            sx={listItemButtonSX}
+          >
+            <ListItemIcon sx={listItemIconSX}>
+              {isVolumeOn ? <VolumeUpIcon /> : <VolumeOffIcon />}
+            </ListItemIcon>
+            {isOpenedMenuDrawer && (
+              <ListItemText
+                primary={`Sound ${isVolumeOn ? "ON" : "OFF"}`}
+                sx={{ opacity: 1 }}
+              />
             )}
           </ListItemButton>
         </ListItem>

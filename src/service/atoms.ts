@@ -37,6 +37,11 @@ export const isShownSystemErrorSnackbarState = atom<boolean>({
   default: false,
 });
 
+export const isVolumeOnState = atom<boolean>({
+  key: "isVolumeOn",
+  default: false,
+});
+
 export const mouseDownInfoState = atom<MouseDownInfo | null>({
   key: "mouseDownInfo",
   default: null,
