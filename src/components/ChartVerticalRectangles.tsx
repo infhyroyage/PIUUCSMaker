@@ -12,7 +12,7 @@ import {
 import ChartRectangle from "./ChartRectangle";
 import ChartBorderLine from "./ChartBorderLine";
 import { ZOOM_VALUES } from "../service/zoom";
-import { IMAGE_BINARIES } from "../service/images";
+import { IMAGE_BINARIES } from "../service/assets";
 import { MENU_BAR_HEIGHT } from "./MenuBar";
 import ChartIndicator from "./ChartIndicator";
 import { IndicatorInfo, MouseDownInfo } from "../types/atoms";

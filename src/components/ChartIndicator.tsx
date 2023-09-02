@@ -1,7 +1,7 @@
 import { memo } from "react";
 import { ChartIndicatorProps } from "../types/props";
 import { Theme, useTheme } from "@mui/material";
-import { IMAGE_BINARIES } from "../service/images";
+import { IMAGE_BINARIES } from "../service/assets";
 import { useRecoilValue } from "recoil";
 import { IndicatorInfo, MouseDownInfo } from "../types/atoms";
 import { indicatorInfoState, mouseDownInfoState } from "../service/atoms";

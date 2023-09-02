@@ -7,7 +7,7 @@ const config: Configuration = {
   module: {
     rules: [
       {
-        test: /\.png?$/,
+        test: /\.(png|wav)$/,
         use: "file-loader",
       },
       {
