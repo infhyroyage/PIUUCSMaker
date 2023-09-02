@@ -42,14 +42,19 @@ export const isVolumeOnState = atom<boolean>({
   default: false,
 });
 
+export const menuBarHeightState = atom<number>({
+  key: "menuBarHeight",
+  default: 0,
+});
+
+export const menuBarTitleState = atom<string>({
+  key: "menuBarTitle",
+  default: "PIU UCS Maker",
+});
+
 export const mouseDownInfoState = atom<MouseDownInfo | null>({
   key: "mouseDownInfo",
   default: null,
-});
-
-export const topBarTitleState = atom<string>({
-  key: "topBarTitle",
-  default: "PIU UCS Maker",
 });
 
 export const userErrorMessageState = atom<string>({

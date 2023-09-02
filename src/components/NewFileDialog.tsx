@@ -14,7 +14,7 @@ import { useRecoilState, useSetRecoilState } from "recoil";
 import {
   chartState,
   isOpenedNewFileDialogState,
-  topBarTitleState,
+  menuBarTitleState,
 } from "../service/atoms";
 import { useState, useTransition } from "react";
 import { NewFileDialogForm } from "../types/form";
@@ -121,7 +121,7 @@ function NewFileDialog() {
   const setChart = useSetRecoilState<Chart>(chartState);
   const [isOpenedNewFileDialog, setIsOpenedNewFileDialog] =
     useRecoilState<boolean>(isOpenedNewFileDialogState);
-  const setTopBarTitle = useSetRecoilState<string>(topBarTitleState);
+  const setMenuBarTitle = useSetRecoilState<string>(menuBarTitleState);
 
   const [isPending, startTransition] = useTransition();
 
@@ -131,7 +131,7 @@ function NewFileDialog() {
       if (typeof result === "string") {
         // TODO: テキストフィールドにエラーを表示
       } else {
-        setTopBarTitle(form.fileName);
+        setMenuBarTitle(form.fileName);
         setChart(result);
         setIsOpenedNewFileDialog(false);
       }

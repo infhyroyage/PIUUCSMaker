@@ -1,5 +1,5 @@
 import { Divider, Drawer, Theme } from "@mui/material";
-import { isOpenedMenuDrawerState } from "../service/atoms";
+import { isOpenedMenuDrawerState, menuBarHeightState } from "../service/atoms";
 import { useRecoilValue } from "recoil";
 import MenuDrawerFileList from "./MenuDrawerFileList";
 import MenuDrawerProcessList from "./MenuDrawerProcessList";
@@ -11,14 +11,15 @@ const OPENED_DRAWER_WIDTH = 200;
 
 function MenuDrawer() {
   const isOpenedMenuDrawer = useRecoilValue<boolean>(isOpenedMenuDrawerState);
+  const menuBarHeight = useRecoilValue<number>(menuBarHeightState);
 
   return (
     <Drawer
       variant="permanent"
       open={isOpenedMenuDrawer}
-      PaperProps={{ elevation: 3, sx: { marginTop: "64px" } }}
+      PaperProps={{ elevation: 3, sx: { marginTop: `${menuBarHeight}px` } }}
       sx={(theme: Theme) => ({
-        width: isOpenedMenuDrawer ? OPENED_DRAWER_WIDTH : "64px",
+        width: isOpenedMenuDrawer ? OPENED_DRAWER_WIDTH : menuBarHeight,
         transition: theme.transitions.create("width", {
           easing: theme.transitions.easing.sharp,
           duration: isOpenedMenuDrawer
@@ -30,7 +31,7 @@ function MenuDrawer() {
         boxSizing: "border-box",
         overflowX: "hidden",
         "& .MuiDrawer-paper": {
-          width: isOpenedMenuDrawer ? OPENED_DRAWER_WIDTH : "64px",
+          width: isOpenedMenuDrawer ? OPENED_DRAWER_WIDTH : menuBarHeight,
           transition: theme.transitions.create("width", {
             easing: theme.transitions.easing.sharp,
             duration: isOpenedMenuDrawer

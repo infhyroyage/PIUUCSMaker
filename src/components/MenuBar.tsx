@@ -1,9 +1,10 @@
 import MenuIcon from "@mui/icons-material/Menu";
 import { ZOOM_VALUES } from "../service/zoom";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
   isOpenedMenuDrawerState,
-  topBarTitleState,
+  menuBarHeightState,
+  menuBarTitleState,
   zoomIdxState,
 } from "../service/atoms";
 import {
@@ -17,25 +18,41 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
-
-export const MENU_BAR_HEIGHT: number = 64;
+import { useEffect, useRef, useState } from "react";
 
 function MenuBar() {
+  const [windowInnerWidth, setWindowInnerWidth] = useState<number>(
+    window.innerWidth
+  );
   const [isOpenedMenuDrawer, setIsOpenedMenuDrawer] = useRecoilState<boolean>(
     isOpenedMenuDrawerState
   );
   const [zoomIdx, setZoomIdx] = useRecoilState<number>(zoomIdxState);
-  const topBarTitle = useRecoilValue<string>(topBarTitleState);
+  const menuBarTitle = useRecoilValue<string>(menuBarTitleState);
+  const setMenuBarHeight = useSetRecoilState<number>(menuBarHeightState);
+
+  const updateSize = () => {
+    setWindowInnerWidth(window.innerWidth);
+  };
+
+  useEffect(() => {
+    window.addEventListener("resize", updateSize);
+    return () => window.removeEventListener("resize", updateSize);
+  }, []);
+
+  const toolBarRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (toolBarRef.current) {
+      setMenuBarHeight(toolBarRef.current.getBoundingClientRect().height);
+    }
+  }, [setMenuBarHeight, windowInnerWidth]);
 
   return (
     <AppBar
       position="sticky"
-      sx={{
-        height: `${MENU_BAR_HEIGHT}px`,
-        zIndex: (theme: Theme) => theme.zIndex.drawer + 1,
-      }}
+      sx={{ zIndex: (theme: Theme) => theme.zIndex.drawer + 1 }}
     >
-      <Toolbar sx={{ height: "100%" }}>
+      <Toolbar ref={toolBarRef}>
         <IconButton
           color="inherit"
           onClick={() => setIsOpenedMenuDrawer(!isOpenedMenuDrawer)}
@@ -44,7 +61,7 @@ function MenuBar() {
           <MenuIcon />
         </IconButton>
         <Typography variant="h6" noWrap component="div" flexGrow={1} ml={4}>
-          {topBarTitle}
+          {menuBarTitle}
         </Typography>
         <FormControl size="small" sx={{ marginRight: 4 }}>
           <Select

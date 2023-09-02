@@ -6,6 +6,7 @@ import {
   chartState,
   indicatorInfoState,
   isShownSystemErrorSnackbarState,
+  menuBarHeightState,
   mouseDownInfoState,
   zoomIdxState,
 } from "../service/atoms";
@@ -13,7 +14,6 @@ import ChartRectangle from "./ChartRectangle";
 import ChartBorderLine from "./ChartBorderLine";
 import { ZOOM_VALUES } from "../service/zoom";
 import { IMAGE_BINARIES } from "../service/assets";
-import { MENU_BAR_HEIGHT } from "./MenuBar";
 import ChartIndicator from "./ChartIndicator";
 import { IndicatorInfo, MouseDownInfo } from "../types/atoms";
 
@@ -22,11 +22,12 @@ function ChartVerticalRectangles({
   column,
   noteSize,
 }: ChartVerticalRectanglesProps) {
+  const [chart, setChart] = useRecoilState<Chart>(chartState);
   const [indicatorInfo, setIndicatorInfo] =
     useRecoilState<IndicatorInfo | null>(indicatorInfoState);
   const [mouseDownInfo, setMouseDownInfo] =
     useRecoilState<MouseDownInfo | null>(mouseDownInfoState);
-  const [chart, setChart] = useRecoilState<Chart>(chartState);
+  const menuBarHeight = useRecoilValue<number>(menuBarHeightState);
   const zoomIdx: number = useRecoilValue<number>(zoomIdxState);
   const setIsShownSystemErrorSnackbar = useSetRecoilState<boolean>(
     isShownSystemErrorSnackbarState
@@ -98,10 +99,10 @@ function ChartVerticalRectangles({
           unitRowHeights[blockIdx] * chart.blocks[blockIdx].length;
         if (y < blockOffsets[blockIdx] + blockHeight) {
           const top: number =
-            y - (y % unitRowHeights[blockIdx]) + MENU_BAR_HEIGHT;
+            y - (y % unitRowHeights[blockIdx]) + menuBarHeight;
           const rowIdx: number =
             accumulatedBlockLengths[blockIdx] +
-            (top - MENU_BAR_HEIGHT - blockOffsets[blockIdx]) /
+            (top - menuBarHeight - blockOffsets[blockIdx]) /
               unitRowHeights[blockIdx];
           info = { column, blockIdx, rowIdx, top };
           break;
@@ -114,6 +115,7 @@ function ChartVerticalRectangles({
       blockOffsets,
       chart.blocks,
       column,
+      menuBarHeight,
       setIndicatorInfo,
       unitRowHeights,
     ]
@@ -260,7 +262,7 @@ function ChartVerticalRectangles({
               style={{
                 position: "absolute",
                 top: `${
-                  MENU_BAR_HEIGHT +
+                  menuBarHeight +
                   blockOffsets[startBlockIdx] +
                   unitRowHeights[startBlockIdx] *
                     (note.start - accumulatedBlockLengths[startBlockIdx])
@@ -286,7 +288,7 @@ function ChartVerticalRectangles({
                   style={{
                     position: "absolute",
                     top: `${
-                      MENU_BAR_HEIGHT +
+                      menuBarHeight +
                       blockOffsets[startBlockIdx] +
                       unitRowHeights[startBlockIdx] *
                         (note.start - accumulatedBlockLengths[startBlockIdx]) +
@@ -304,7 +306,7 @@ function ChartVerticalRectangles({
                   style={{
                     position: "absolute",
                     top: `${
-                      MENU_BAR_HEIGHT +
+                      menuBarHeight +
                       blockOffsets[goalBlockIdx] +
                       unitRowHeights[goalBlockIdx] *
                         (note.goal - accumulatedBlockLengths[goalBlockIdx])

@@ -4,7 +4,7 @@ import { Block, Chart, Note } from "../types/ucs";
 import {
   chartState,
   isShownSystemErrorSnackbarState,
-  topBarTitleState,
+  menuBarTitleState,
   userErrorMessageState,
 } from "../service/atoms";
 
@@ -238,7 +238,7 @@ const validateAndLoadUCS = (content: string): Chart | string => {
 };
 
 function useOpenFile() {
-  const setTopBarTitle = useSetRecoilState<string>(topBarTitleState);
+  const setMenuBarTitle = useSetRecoilState<string>(menuBarTitleState);
   const setChart = useSetRecoilState<Chart>(chartState);
   const setUserErrorMessage = useSetRecoilState<string>(userErrorMessageState);
   const setIsShownSystemErrorSnackbar = useSetRecoilState<boolean>(
@@ -276,7 +276,7 @@ function useOpenFile() {
         if (typeof result === "string") {
           setUserErrorMessage(result);
         } else {
-          setTopBarTitle(fileName);
+          setMenuBarTitle(fileName);
           setChart(result);
         }
       });
