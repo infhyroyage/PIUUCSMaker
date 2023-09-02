@@ -8,26 +8,41 @@ import {
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import VolumeOffIcon from "@mui/icons-material/VolumeOff";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
-// import PauseIcon from '@mui/icons-material/Pause';
+import StopIcon from "@mui/icons-material/Stop";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { isOpenedMenuDrawerState, isVolumeOnState } from "../service/atoms";
+import {
+  chartState,
+  isOpenedMenuDrawerState,
+  isVolumeOnState,
+} from "../service/atoms";
 import useMenuDrawerStyles from "../hooks/useMenuDrawerStyles";
+import usePlayingMusic from "../hooks/usePlayingMusic";
+import { Chart } from "../types/ucs";
 
 function MenuDrawerPlayingList() {
   const [isVolumeOn, setIsVolumeOn] = useRecoilState<boolean>(isVolumeOnState);
+  const chart: Chart = useRecoilValue<Chart>(chartState);
   const isOpenedMenuDrawer = useRecoilValue<boolean>(isOpenedMenuDrawerState);
 
+  const { isPlaying, start, stop } = usePlayingMusic();
   const { listItemButtonStyle, listItemIconStyle } = useMenuDrawerStyles();
 
   return (
     <List>
       <ListItem disablePadding sx={{ display: "block" }}>
-        <ListItemButton onClick={() => alert("TODO")} sx={listItemButtonStyle}>
+        <ListItemButton
+          onClick={() => (isPlaying ? stop() : start())}
+          disabled={chart.blocks.length === 0}
+          sx={listItemButtonStyle}
+        >
           <ListItemIcon sx={listItemIconStyle}>
-            <PlayArrowIcon />
+            {isPlaying ? <StopIcon /> : <PlayArrowIcon />}
           </ListItemIcon>
           {isOpenedMenuDrawer && (
-            <ListItemText primary="Play" sx={{ opacity: 1 }} />
+            <ListItemText
+              primary={isPlaying ? "Stop" : "Play"}
+              sx={{ opacity: 1 }}
+            />
           )}
         </ListItemButton>
       </ListItem>
