@@ -5,6 +5,7 @@ import MenuDrawerFileList from "./MenuDrawerFileList";
 import MenuDrawerProcessList from "./MenuDrawerProcessList";
 import MenuDrawerZoomList from "./MenuDrawerZoomList";
 import MenuDrawerPlayingList from "./MenuDrawerPlayingList";
+import MenuDrawerThemeList from "./MenuDrawerThemeList";
 
 const OPENED_DRAWER_WIDTH = 200;
 
@@ -46,6 +47,8 @@ function MenuDrawer() {
       <MenuDrawerZoomList />
       <Divider />
       <MenuDrawerPlayingList />
+      <Divider />
+      <MenuDrawerThemeList />
     </Drawer>
   );
 }

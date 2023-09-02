@@ -1,10 +1,7 @@
-import DarkModeIcon from "@mui/icons-material/DarkMode";
-import LightModeIcon from "@mui/icons-material/LightMode";
 import MenuIcon from "@mui/icons-material/Menu";
 import { ZOOM_VALUES } from "../service/zoom";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
-  isDarkModeState,
   isOpenedMenuDrawerState,
   topBarTitleState,
   zoomIdxState,
@@ -16,7 +13,6 @@ import {
   MenuItem,
   Select,
   SelectChangeEvent,
-  Switch,
   Theme,
   Toolbar,
   Typography,
@@ -29,7 +25,6 @@ function MenuBar() {
     isOpenedMenuDrawerState
   );
   const [zoomIdx, setZoomIdx] = useRecoilState<number>(zoomIdxState);
-  const [isDarkMode, setIsDarkMode] = useRecoilState<boolean>(isDarkModeState);
   const topBarTitle = useRecoilValue<string>(topBarTitleState);
 
   return (
@@ -63,24 +58,6 @@ function MenuBar() {
             ))}
           </Select>
         </FormControl>
-        <Switch
-          checked={isDarkMode}
-          onChange={() => setIsDarkMode(!isDarkMode)}
-          icon={<LightModeIcon sx={{ color: "white" }} />}
-          checkedIcon={<DarkModeIcon sx={{ color: "white" }} />}
-          sx={{
-            width: 58,
-            height: 38,
-            padding: 0,
-            "& .MuiSwitch-switchBase": {
-              padding: 0,
-              margin: "7px",
-            },
-            "& .MuiSwitch-track": {
-              borderRadius: 38 / 2,
-            },
-          }}
-        />
       </Toolbar>
     </AppBar>
   );
