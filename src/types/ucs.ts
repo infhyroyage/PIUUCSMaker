@@ -68,6 +68,7 @@ export type Chart = {
 
   /**
    * 譜面のブロックの集合
+   * ucsファイルを読み込んでいない場合は空配列
    */
   blocks: Block[];
 

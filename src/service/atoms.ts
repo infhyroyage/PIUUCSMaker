@@ -7,7 +7,7 @@ export const chartState = atom<Chart>({
   default: {
     length: 5,
     isPerformance: false,
-    blocks: [], // ucsファイルを読み込んでいない場合は空配列
+    blocks: [],
     notes: [],
   },
 });
