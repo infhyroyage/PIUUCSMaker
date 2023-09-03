@@ -5,6 +5,7 @@ import {
   isOpenedMenuDrawerState,
   menuBarHeightState,
   menuBarTitleState,
+  volumeValueState,
   zoomIdxState,
 } from "../service/atoms";
 import {
@@ -14,22 +15,41 @@ import {
   MenuItem,
   Select,
   SelectChangeEvent,
+  Slider,
+  Stack,
   Theme,
   Toolbar,
   Typography,
 } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
+import VolumeOffIcon from "@mui/icons-material/VolumeOff";
+import VolumeDownIcon from "@mui/icons-material/VolumeDown";
+import VolumeUpIcon from "@mui/icons-material/VolumeUp";
+import VolumeMuteIcon from "@mui/icons-material/VolumeMute";
 
 function MenuBar() {
+  const [muteVolBuf, setMuteVolBuf] = useState<number | null>(null);
   const [windowInnerWidth, setWindowInnerWidth] = useState<number>(
     window.innerWidth
   );
   const [isOpenedMenuDrawer, setIsOpenedMenuDrawer] = useRecoilState<boolean>(
     isOpenedMenuDrawerState
   );
+  const [volumeValue, setVolumeValue] =
+    useRecoilState<number>(volumeValueState);
   const [zoomIdx, setZoomIdx] = useRecoilState<number>(zoomIdxState);
   const menuBarTitle = useRecoilValue<string>(menuBarTitleState);
   const setMenuBarHeight = useSetRecoilState<number>(menuBarHeightState);
+
+  const onClickVolumeButton = () => {
+    if (muteVolBuf === null) {
+      setMuteVolBuf(volumeValue);
+      setVolumeValue(0);
+    } else {
+      setVolumeValue(muteVolBuf);
+      setMuteVolBuf(null);
+    }
+  };
 
   const updateSize = () => {
     setWindowInnerWidth(window.innerWidth);
@@ -63,18 +83,47 @@ function MenuBar() {
         <Typography variant="h6" noWrap component="div" flexGrow={1} ml={4}>
           {menuBarTitle}
         </Typography>
-        <FormControl size="small" sx={{ marginRight: 4 }}>
-          <Select
-            value={`${zoomIdx}`}
-            onChange={(event: SelectChangeEvent) =>
-              setZoomIdx(Number(event.target.value))
-            }
-          >
-            {ZOOM_VALUES.map((zoomValue: number, idx: number) => (
-              <MenuItem key={idx} value={`${idx}`}>{`${zoomValue}x`}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        <Stack alignItems="center" direction="row" spacing={4}>
+          <FormControl size="small">
+            <Select
+              value={`${zoomIdx}`}
+              onChange={(event: SelectChangeEvent) =>
+                setZoomIdx(Number(event.target.value))
+              }
+            >
+              {ZOOM_VALUES.map((zoomValue: number, idx: number) => (
+                <MenuItem
+                  key={idx}
+                  value={`${idx}`}
+                >{`${zoomValue}x`}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <Stack alignItems="center" direction="row" spacing={2}>
+            <IconButton color="inherit" onClick={onClickVolumeButton}>
+              {muteVolBuf !== null ? (
+                <VolumeOffIcon />
+              ) : volumeValue === 0 ? (
+                <VolumeMuteIcon />
+              ) : volumeValue <= 0.5 ? (
+                <VolumeDownIcon />
+              ) : (
+                <VolumeUpIcon />
+              )}
+            </IconButton>
+            <Slider
+              disabled={muteVolBuf !== null}
+              max={1}
+              min={0}
+              onChange={(_, value: number | number[]) => {
+                setVolumeValue(value as number);
+              }}
+              step={0.01}
+              sx={{ width: 100 }}
+              value={muteVolBuf || volumeValue}
+            />
+          </Stack>
+        </Stack>
       </Toolbar>
     </AppBar>
   );

@@ -1,14 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import beatWav from "../sounds/beat.wav";
-import { isVolumeOnState } from "../service/atoms";
 import { useRecoilValue } from "recoil";
+import { volumeValueState } from "../service/atoms";
 
 function usePlayingMusic() {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const isVolumeOn = useRecoilValue<boolean>(isVolumeOnState);
+  const volumeValue = useRecoilValue<number>(volumeValueState);
 
-  const beatAudioContext = useRef<AudioContext | null>(null);
-  const beatGainNode = useRef<GainNode | null>(null);
+  const audioContext = useRef<AudioContext | null>(null);
+  const gainNode = useRef<GainNode | null>(null);
   const beatAudioBuffer = useRef<AudioBuffer | null>(null);
   const sourceNode = useRef<AudioBufferSourceNode | null>(null);
   const intervalIds = useRef<NodeJS.Timeout[]>([]);
@@ -16,27 +16,25 @@ function usePlayingMusic() {
   const start = () => setIsPlaying(true);
   const stop = () => setIsPlaying(false);
 
-  // Sound ON場合のみbeat.wavをデコードして読み込み
+  // beat.wavをデコードして読み込み
   useEffect(() => {
-    if (isVolumeOn) {
-      const context = new AudioContext();
-      beatAudioContext.current = context;
-      beatGainNode.current = context.createGain();
-      fetch(beatWav)
-        .then((response) => response.arrayBuffer())
-        .then((arrayBuffer) => context.decodeAudioData(arrayBuffer))
-        .then((decodedAudio) => {
-          beatAudioBuffer.current = decodedAudio;
-        });
-    }
-  }, [isVolumeOn]);
+    const context = new AudioContext();
+    audioContext.current = context;
+    gainNode.current = context.createGain();
+    fetch(beatWav)
+      .then((response) => response.arrayBuffer())
+      .then((arrayBuffer) => context.decodeAudioData(arrayBuffer))
+      .then((decodedAudio) => {
+        beatAudioBuffer.current = decodedAudio;
+      });
+  }, []);
 
-  // Sound ONの場合は音量を100%、Sound OFFの場合は0%として動的に設定
+  // 音量を0(ミュート)から1(MAX)まで動的に設定
   useEffect(() => {
-    if (beatGainNode.current) {
-      beatGainNode.current.gain.value = isVolumeOn ? 1 : 0;
+    if (gainNode.current) {
+      gainNode.current.gain.value = volumeValue;
     }
-  }, [isVolumeOn]);
+  }, [volumeValue]);
 
   useEffect(() => {
     if (isPlaying) {
@@ -48,11 +46,11 @@ function usePlayingMusic() {
         const interval = intervals[intervalIdx];
         const intervalId = setTimeout(() => {
           // beat.wavを読み込んだ場合のみビート音を再生
-          if (beatAudioContext.current && beatGainNode.current) {
-            sourceNode.current = beatAudioContext.current.createBufferSource();
+          if (audioContext.current && gainNode.current) {
+            sourceNode.current = audioContext.current.createBufferSource();
             sourceNode.current.buffer = beatAudioBuffer.current;
-            sourceNode.current.connect(beatGainNode.current);
-            beatGainNode.current.connect(beatAudioContext.current.destination);
+            sourceNode.current.connect(gainNode.current);
+            gainNode.current.connect(audioContext.current.destination);
             sourceNode.current.start();
           }
 
@@ -73,8 +71,8 @@ function usePlayingMusic() {
 
       // ビート音の再生を中断
       sourceNode.current.stop();
-      if (beatGainNode.current) {
-        beatGainNode.current.disconnect();
+      if (gainNode.current) {
+        gainNode.current.disconnect();
       }
       sourceNode.current.disconnect();
 

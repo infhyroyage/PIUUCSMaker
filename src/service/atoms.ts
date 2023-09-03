@@ -37,9 +37,9 @@ export const isShownSystemErrorSnackbarState = atom<boolean>({
   default: false,
 });
 
-export const isVolumeOnState = atom<boolean>({
-  key: "isVolumeOn",
-  default: false,
+export const volumeValueState = atom<number>({
+  key: "volumeValue",
+  default: 0.5,
 });
 
 export const menuBarHeightState = atom<number>({
