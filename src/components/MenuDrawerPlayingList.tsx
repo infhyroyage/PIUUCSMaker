@@ -27,8 +27,8 @@ function MenuDrawerPlayingList() {
       <ListItem disablePadding sx={{ display: "block" }}>
         <ListItemButton
           component="label"
-          htmlFor="upload-mp3"
           disabled={isUploadingMP3}
+          htmlFor="upload-mp3"
           sx={listItemButtonStyle}
         >
           <input
@@ -42,14 +42,17 @@ function MenuDrawerPlayingList() {
             <AudioFileIcon />
           </ListItemIcon>
           {isOpenedMenuDrawer && (
-            <ListItemText primary="Upload MP3" sx={{ opacity: 1 }} />
+            <ListItemText
+              primary={isUploadingMP3 ? "Ready..." : "Upload MP3"}
+              sx={{ opacity: 1 }}
+            />
           )}
         </ListItemButton>
       </ListItem>
       <ListItem disablePadding sx={{ display: "block" }}>
         <ListItemButton
+          disabled={chart.blocks.length === 0 || isUploadingMP3}
           onClick={() => (isPlaying ? stop() : start())}
-          disabled={chart.blocks.length === 0}
           sx={listItemButtonStyle}
         >
           <ListItemIcon sx={listItemIconStyle}>

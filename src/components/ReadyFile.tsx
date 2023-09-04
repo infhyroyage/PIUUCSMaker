@@ -12,28 +12,28 @@ function ReadyFile() {
 
   return (
     <Stack
-      display="flex"
-      justifyContent="center"
       alignItems="center"
+      display="flex"
       height="100vh"
+      justifyContent="center"
       spacing={3}
       sx={{ flexGrow: 1 }}
     >
       <Button
-        variant="contained"
-        onClick={() => setIsOpenedNewFileDialog(true)}
         disabled={isUploadingUCS}
+        onClick={() => setIsOpenedNewFileDialog(true)}
+        variant="contained"
       >
         New UCS
       </Button>
       <Typography>or</Typography>
-      <Button variant="contained" component="label" disabled={isUploadingUCS}>
+      <Button disabled={isUploadingUCS} component="label" variant="contained">
         {isUploadingUCS ? "Ready..." : "Upload UCS"}
         <input
-          type="file"
           accept=".ucs"
-          style={{ display: "none" }}
           onChange={uploadUCS}
+          style={{ display: "none" }}
+          type="file"
         />
       </Button>
     </Stack>

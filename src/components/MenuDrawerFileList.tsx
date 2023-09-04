@@ -1,4 +1,5 @@
 import {
+  CircularProgress,
   List,
   ListItem,
   ListItemButton,
@@ -10,13 +11,16 @@ import UploadIcon from "@mui/icons-material/Upload";
 import DownloadIcon from "@mui/icons-material/Download";
 import useUploadingUCS from "../hooks/useUploadingUCS";
 import {
+  chartState,
   isOpenedMenuDrawerState,
   isOpenedNewFileDialogState,
 } from "../service/atoms";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import useMenuDrawerStyles from "../hooks/useMenuDrawerStyles";
+import { Chart } from "../types/ucs";
 
 function MenuDrawerFileList() {
+  const chart: Chart = useRecoilValue<Chart>(chartState);
   const isOpenedMenuDrawer = useRecoilValue<boolean>(isOpenedMenuDrawerState);
   const setIsOpenedNewChartDialog = useSetRecoilState<boolean>(
     isOpenedNewFileDialogState
@@ -29,6 +33,7 @@ function MenuDrawerFileList() {
     <List>
       <ListItem disablePadding sx={{ display: "block" }}>
         <ListItemButton
+          disabled={isUploadingUCS}
           onClick={() => setIsOpenedNewChartDialog(true)}
           sx={listItemButtonStyle}
         >
@@ -43,8 +48,8 @@ function MenuDrawerFileList() {
       <ListItem disablePadding sx={{ display: "block" }}>
         <ListItemButton
           component="label"
-          htmlFor="upload-ucs"
           disabled={isUploadingUCS}
+          htmlFor="upload-ucs"
           sx={listItemButtonStyle}
         >
           <input
@@ -58,12 +63,19 @@ function MenuDrawerFileList() {
             <UploadIcon />
           </ListItemIcon>
           {isOpenedMenuDrawer && (
-            <ListItemText primary="Upload UCS" sx={{ opacity: 1 }} />
+            <ListItemText
+              primary={isUploadingUCS ? "Ready..." : "Upload UCS"}
+              sx={{ opacity: 1 }}
+            />
           )}
         </ListItemButton>
       </ListItem>
       <ListItem disablePadding sx={{ display: "block" }}>
-        <ListItemButton onClick={() => alert("TODO")} sx={listItemButtonStyle}>
+        <ListItemButton
+          disabled={chart.blocks.length === 0 || isUploadingUCS}
+          onClick={() => alert("TODO")}
+          sx={listItemButtonStyle}
+        >
           <ListItemIcon sx={listItemIconStyle}>
             <DownloadIcon />
           </ListItemIcon>
