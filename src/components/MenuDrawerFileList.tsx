@@ -8,7 +8,7 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import UploadIcon from "@mui/icons-material/Upload";
 import DownloadIcon from "@mui/icons-material/Download";
-import useOpenFile from "../hooks/useOpenFile";
+import useUploadingUCS from "../hooks/useUploadingUCS";
 import {
   isOpenedMenuDrawerState,
   isOpenedNewFileDialogState,
@@ -22,7 +22,7 @@ function MenuDrawerFileList() {
     isOpenedNewFileDialogState
   );
 
-  const { isOpeningFile, handleOpenFile } = useOpenFile();
+  const { isUploadingUCS, uploadUCS } = useUploadingUCS();
   const { listItemButtonStyle, listItemIconStyle } = useMenuDrawerStyles();
 
   return (
@@ -44,7 +44,7 @@ function MenuDrawerFileList() {
         <ListItemButton
           component="label"
           htmlFor="upload-ucs"
-          disabled={isOpeningFile}
+          disabled={isUploadingUCS}
           sx={listItemButtonStyle}
         >
           <input
@@ -52,7 +52,7 @@ function MenuDrawerFileList() {
             type="file"
             accept=".ucs"
             style={{ display: "none" }}
-            onChange={handleOpenFile}
+            onChange={uploadUCS}
           />
           <ListItemIcon sx={listItemIconStyle}>
             <UploadIcon />

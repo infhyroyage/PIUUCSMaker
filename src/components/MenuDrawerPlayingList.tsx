@@ -18,7 +18,7 @@ function MenuDrawerPlayingList() {
   const chart: Chart = useRecoilValue<Chart>(chartState);
   const isOpenedMenuDrawer = useRecoilValue<boolean>(isOpenedMenuDrawerState);
 
-  const { isPlaying, isUploading, start, stop, uploadMP3File } =
+  const { isPlaying, isUploadingMP3, start, stop, uploadMP3 } =
     usePlayingMusic();
   const { listItemButtonStyle, listItemIconStyle } = useMenuDrawerStyles();
 
@@ -28,7 +28,7 @@ function MenuDrawerPlayingList() {
         <ListItemButton
           component="label"
           htmlFor="upload-mp3"
-          disabled={isUploading}
+          disabled={isUploadingMP3}
           sx={listItemButtonStyle}
         >
           <input
@@ -36,7 +36,7 @@ function MenuDrawerPlayingList() {
             type="file"
             accept=".mp3"
             style={{ display: "none" }}
-            onChange={uploadMP3File}
+            onChange={uploadMP3}
           />
           <ListItemIcon sx={listItemIconStyle}>
             <AudioFileIcon />

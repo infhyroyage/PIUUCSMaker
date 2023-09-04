@@ -51,7 +51,7 @@ function usePlayingMusic() {
     }
   }, [volumeValue]);
 
-  const uploadMP3File = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const uploadMP3 = (event: React.ChangeEvent<HTMLInputElement>) => {
     // MP3ファイルを何もアップロードしなかった場合はNOP
     const fileList: FileList | null = event.target.files;
     if (!fileList || fileList.length === 0) return;
@@ -133,7 +133,7 @@ function usePlayingMusic() {
     }
   }, [isPlaying]);
 
-  return { isPlaying, isUploading: isPending, start, stop, uploadMP3File };
+  return { isPlaying, isUploadingMP3: isPending, start, stop, uploadMP3 };
 }
 
 export default usePlayingMusic;

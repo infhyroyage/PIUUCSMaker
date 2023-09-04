@@ -1,5 +1,5 @@
 import { Button, Stack, Typography } from "@mui/material";
-import useOpenFile from "../hooks/useOpenFile";
+import useUploadingUCS from "../hooks/useUploadingUCS";
 import { useSetRecoilState } from "recoil";
 import { isOpenedNewFileDialogState } from "../service/atoms";
 
@@ -8,7 +8,7 @@ function ReadyFile() {
     isOpenedNewFileDialogState
   );
 
-  const { isOpeningFile, handleOpenFile } = useOpenFile();
+  const { isUploadingUCS, uploadUCS } = useUploadingUCS();
 
   return (
     <Stack
@@ -22,18 +22,18 @@ function ReadyFile() {
       <Button
         variant="contained"
         onClick={() => setIsOpenedNewFileDialog(true)}
-        disabled={isOpeningFile}
+        disabled={isUploadingUCS}
       >
         New UCS
       </Button>
       <Typography>or</Typography>
-      <Button variant="contained" component="label" disabled={isOpeningFile}>
-        {isOpeningFile ? "Ready..." : "Upload UCS"}
+      <Button variant="contained" component="label" disabled={isUploadingUCS}>
+        {isUploadingUCS ? "Ready..." : "Upload UCS"}
         <input
           type="file"
           accept=".ucs"
           style={{ display: "none" }}
-          onChange={handleOpenFile}
+          onChange={uploadUCS}
         />
       </Button>
     </Stack>

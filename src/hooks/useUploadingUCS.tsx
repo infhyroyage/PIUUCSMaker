@@ -237,7 +237,7 @@ const validateAndLoadUCS = (content: string): Chart | string => {
   return chart;
 };
 
-function useOpenFile() {
+function useUploadingUCS() {
   const setMenuBarTitle = useSetRecoilState<string>(menuBarTitleState);
   const setChart = useSetRecoilState<Chart>(chartState);
   const setUserErrorMessage = useSetRecoilState<string>(userErrorMessageState);
@@ -247,7 +247,7 @@ function useOpenFile() {
 
   const [isPending, startTransition] = useTransition();
 
-  const handleOpenFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const uploadUCS = (event: React.ChangeEvent<HTMLInputElement>) => {
     // UCSファイルを何もアップロードしなかった場合はNOP
     const fileList: FileList | null = event.target.files;
     if (!fileList || fileList.length === 0) return;
@@ -277,7 +277,7 @@ function useOpenFile() {
     });
   };
 
-  return { isOpeningFile: isPending, handleOpenFile };
+  return { isUploadingUCS: isPending, uploadUCS };
 }
 
-export default useOpenFile;
+export default useUploadingUCS;
