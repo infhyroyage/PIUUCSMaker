@@ -261,27 +261,20 @@ function useOpenFile() {
     }
 
     const fileName: string = splitedName.join(".");
-    const reader: FileReader = new FileReader();
-    reader.onload = () => {
-      // 内部矛盾チェック
-      if (typeof reader.result !== "string") {
-        console.error(typeof reader.result);
-        setIsShownSystemErrorSnackbar(true);
-        return;
-      }
-      const content: string = reader.result;
-
-      startTransition(() => {
-        const result: Chart | string = validateAndLoadUCS(content);
-        if (typeof result === "string") {
-          setUserErrorMessage(result);
-        } else {
-          setMenuBarTitle(fileName);
-          setChart(result);
-        }
-      });
-    };
-    reader.readAsText(fileList[0]);
+    startTransition(() => {
+      fileList[0]
+        .text()
+        .then((content: string) => {
+          const result: Chart | string = validateAndLoadUCS(content);
+          if (typeof result === "string") {
+            setUserErrorMessage(result);
+          } else {
+            setMenuBarTitle(fileName);
+            setChart(result);
+          }
+        })
+        .catch(() => setIsShownSystemErrorSnackbar(true));
+    });
   };
 
   return { isOpeningFile: isPending, handleOpenFile };
