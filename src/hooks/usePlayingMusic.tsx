@@ -1,24 +1,64 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import beatWav from "../sounds/beat.wav";
-import { useRecoilValue } from "recoil";
-import { volumeValueState } from "../service/atoms";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import {
+  isShownSystemErrorSnackbarState,
+  userErrorMessageState,
+  volumeValueState,
+} from "../service/atoms";
 
 function usePlayingMusic() {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const volumeValue = useRecoilValue<number>(volumeValueState);
+  const setUserErrorMessage = useSetRecoilState<string>(userErrorMessageState);
+  const setIsShownSystemErrorSnackbar = useSetRecoilState<boolean>(
+    isShownSystemErrorSnackbarState
+  );
 
   const audioContext = useRef<AudioContext | null>(null);
   const gainNode = useRef<GainNode | null>(null);
   const beatAudioBuffer = useRef<AudioBuffer | null>(null);
-  const sourceNode = useRef<AudioBufferSourceNode | null>(null);
+  const musicAudioBuffer = useRef<AudioBuffer | null>(null);
+  const beatSourceNode = useRef<AudioBufferSourceNode | null>(null);
+  // const musicSourceNode = useRef<AudioBufferSourceNode | null>(null);
   const intervalIds = useRef<NodeJS.Timeout[]>([]);
+
+  const [isPending, startTransition] = useTransition();
 
   const start = () => setIsPlaying(true);
   const stop = () => setIsPlaying(false);
 
+  // アップロードしたMP3ファイルをデコードして読み込み
+  const uploadMP3File = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // MP3ファイルを何もアップロードしなかった場合はNOP
+    const fileList: FileList | null = event.target.files;
+    if (!fileList || fileList.length === 0) return;
+
+    // 拡張子チェック
+    const splitedName: string[] = fileList[0].name.split(".");
+    const extension: string | undefined = splitedName.pop();
+    if (extension !== "mp3") {
+      setUserErrorMessage("拡張子がmp3ではありません");
+      return;
+    }
+
+    startTransition(() => {
+      fileList[0]
+        .arrayBuffer()
+        .then((arrayBuffer: ArrayBuffer) => {
+          if (!audioContext.current) throw new Error();
+          return audioContext.current.decodeAudioData(arrayBuffer);
+        })
+        .then((decodedAudio) => {
+          musicAudioBuffer.current = decodedAudio;
+        })
+        .catch(() => setIsShownSystemErrorSnackbar(true));
+    });
+  };
+
   // beat.wavをデコードして読み込み
   useEffect(() => {
-    const context = new AudioContext();
+    const context = new AudioContext(); // TODO: ここで警告発生
     audioContext.current = context;
     gainNode.current = context.createGain();
     fetch(beatWav)
@@ -47,17 +87,17 @@ function usePlayingMusic() {
         const intervalId = setTimeout(() => {
           // beat.wavを読み込んだ場合のみビート音を再生
           if (audioContext.current && gainNode.current) {
-            sourceNode.current = audioContext.current.createBufferSource();
-            sourceNode.current.buffer = beatAudioBuffer.current;
-            sourceNode.current.connect(gainNode.current);
+            beatSourceNode.current = audioContext.current.createBufferSource();
+            beatSourceNode.current.buffer = beatAudioBuffer.current;
+            beatSourceNode.current.connect(gainNode.current);
             gainNode.current.connect(audioContext.current.destination);
-            sourceNode.current.start();
+            beatSourceNode.current.start();
           }
 
           // ビート音がすべて再生が終了したら停止するリスナーを設定
           if (intervalIdx === intervals.length - 1) {
-            if (sourceNode.current) {
-              sourceNode.current.addEventListener("ended", stop);
+            if (beatSourceNode.current) {
+              beatSourceNode.current.addEventListener("ended", stop);
             } else {
               stop();
             }
@@ -65,16 +105,16 @@ function usePlayingMusic() {
         }, interval);
         intervalIds.current.push(intervalId);
       }
-    } else if (sourceNode.current) {
+    } else if (beatSourceNode.current) {
       // ビート音がすべて再生が終了したら停止するリスナーを解除
-      sourceNode.current.removeEventListener("ended", stop);
+      beatSourceNode.current.removeEventListener("ended", stop);
 
       // ビート音の再生を中断
-      sourceNode.current.stop();
+      beatSourceNode.current.stop();
       if (gainNode.current) {
         gainNode.current.disconnect();
       }
-      sourceNode.current.disconnect();
+      beatSourceNode.current.disconnect();
 
       // 設定した各ビート音の再生間隔を初期化
       intervalIds.current.forEach((intervalId) => {
@@ -84,7 +124,7 @@ function usePlayingMusic() {
     }
   }, [isPlaying]);
 
-  return { isPlaying, start, stop };
+  return { isPlaying, isUploading: isPending, start, stop, uploadMP3File };
 }
 
 export default usePlayingMusic;

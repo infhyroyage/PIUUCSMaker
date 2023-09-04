@@ -43,12 +43,12 @@ function MenuDrawerFileList() {
       <ListItem disablePadding sx={{ display: "block" }}>
         <ListItemButton
           component="label"
-          htmlFor="upload"
+          htmlFor="upload-ucs"
           disabled={isOpeningFile}
           sx={listItemButtonStyle}
         >
           <input
-            id="upload"
+            id="upload-ucs"
             type="file"
             accept=".ucs"
             style={{ display: "none" }}
