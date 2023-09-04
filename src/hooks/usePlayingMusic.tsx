@@ -1,19 +1,12 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 import beatWav from "../sounds/beat.wav";
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import {
-  isShownSystemErrorSnackbarState,
-  userErrorMessageState,
-  volumeValueState,
-} from "../service/atoms";
+import { userErrorMessageState, volumeValueState } from "../service/atoms";
 
 function usePlayingMusic() {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const volumeValue = useRecoilValue<number>(volumeValueState);
   const setUserErrorMessage = useSetRecoilState<string>(userErrorMessageState);
-  const setIsShownSystemErrorSnackbar = useSetRecoilState<boolean>(
-    isShownSystemErrorSnackbarState
-  );
 
   const audioContext = useRef<AudioContext | null>(null);
   const gainNode = useRef<GainNode | null>(null);
@@ -25,10 +18,39 @@ function usePlayingMusic() {
 
   const [isPending, startTransition] = useTransition();
 
-  const start = () => setIsPlaying(true);
+  const start = () => {
+    // beat.wavをデコードして読み込んでいない場合は読み込んでおく
+    if (beatAudioBuffer.current === null) {
+      fetch(beatWav)
+        .then((response) => response.arrayBuffer())
+        .then((arrayBuffer) => {
+          // AudioContext/GainNodeを初期化していない場合は初期化しておく
+          if (audioContext.current === null) {
+            audioContext.current = new AudioContext();
+            gainNode.current = audioContext.current.createGain();
+            gainNode.current.gain.value = volumeValue;
+          }
+
+          return audioContext.current.decodeAudioData(arrayBuffer);
+        })
+        .then(
+          (decodedAudio: AudioBuffer) =>
+            (beatAudioBuffer.current = decodedAudio)
+        );
+    }
+
+    setIsPlaying(true);
+  };
+
   const stop = () => setIsPlaying(false);
 
-  // アップロードしたMP3ファイルをデコードして読み込み
+  // 音量を0(ミュート)から1(MAX)まで動的に設定
+  useEffect(() => {
+    if (gainNode.current !== null) {
+      gainNode.current.gain.value = volumeValue;
+    }
+  }, [volumeValue]);
+
   const uploadMP3File = (event: React.ChangeEvent<HTMLInputElement>) => {
     // MP3ファイルを何もアップロードしなかった場合はNOP
     const fileList: FileList | null = event.target.files;
@@ -43,38 +65,25 @@ function usePlayingMusic() {
     }
 
     startTransition(() => {
+      // アップロードしたMP3ファイルをデコードして読み込み
       fileList[0]
         .arrayBuffer()
         .then((arrayBuffer: ArrayBuffer) => {
-          if (!audioContext.current) throw new Error();
+          // AudioContext/GainNodeを初期化していない場合は初期化しておく
+          if (audioContext.current === null) {
+            audioContext.current = new AudioContext();
+            gainNode.current = audioContext.current.createGain();
+            gainNode.current.gain.value = volumeValue;
+          }
+
           return audioContext.current.decodeAudioData(arrayBuffer);
         })
-        .then((decodedAudio) => {
-          musicAudioBuffer.current = decodedAudio;
-        })
-        .catch(() => setIsShownSystemErrorSnackbar(true));
+        .then(
+          (decodedAudio: AudioBuffer) =>
+            (musicAudioBuffer.current = decodedAudio)
+        );
     });
   };
-
-  // beat.wavをデコードして読み込み
-  useEffect(() => {
-    const context = new AudioContext(); // TODO: ここで警告発生
-    audioContext.current = context;
-    gainNode.current = context.createGain();
-    fetch(beatWav)
-      .then((response) => response.arrayBuffer())
-      .then((arrayBuffer) => context.decodeAudioData(arrayBuffer))
-      .then((decodedAudio) => {
-        beatAudioBuffer.current = decodedAudio;
-      });
-  }, []);
-
-  // 音量を0(ミュート)から1(MAX)まで動的に設定
-  useEffect(() => {
-    if (gainNode.current) {
-      gainNode.current.gain.value = volumeValue;
-    }
-  }, [volumeValue]);
 
   useEffect(() => {
     if (isPlaying) {
