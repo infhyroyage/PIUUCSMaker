@@ -22,7 +22,7 @@ function usePlayingMusic() {
   const beatAudioBuffer = useRef<AudioBuffer | null>(null);
   const musicAudioBuffer = useRef<AudioBuffer | null>(null);
   const beatSourceNode = useRef<AudioBufferSourceNode | null>(null);
-  // const musicSourceNode = useRef<AudioBufferSourceNode | null>(null);
+  const musicSourceNode = useRef<AudioBufferSourceNode | null>(null);
   const intervalIds = useRef<NodeJS.Timeout[]>([]);
 
   const [isPending, startTransition] = useTransition();
@@ -135,10 +135,30 @@ function usePlayingMusic() {
 
   useEffect(() => {
     if (isPlaying) {
-      // 各ビート音の再生間隔をそれぞれ設定
+      // MP3ファイルの音楽を再生するまでの時間を設定
+      // 0番目の譜面のブロックのDelayが負の場合、MP3ファイルの音楽を再生するまでの時間を遅延する
+      const musicInterval: number =
+        chart.blocks[0].delay < 0 ? -1 * chart.blocks[0].delay : 0;
+      const musicIntervalId: NodeJS.Timeout = setTimeout(() => {
+        // AudioContext/GainNodeを初期化した場合のみMP3ファイルの音楽を再生
+        if (audioContext.current && gainNode.current) {
+          musicSourceNode.current = audioContext.current.createBufferSource();
+          musicSourceNode.current.buffer = musicAudioBuffer.current;
+          musicSourceNode.current.connect(gainNode.current);
+          gainNode.current.connect(audioContext.current.destination);
+          musicSourceNode.current.start();
+        }
+      }, musicInterval);
+      intervalIds.current.push(musicIntervalId);
+
+      // 各ビート音を再生するまでの時間をそれぞれ設定
+      // 0番目の譜面のブロックのDelayが正の場合、すべてのビート音を再生するまでの時間を遅延する
       for (let intervalIdx = 0; intervalIdx < intervals.length; intervalIdx++) {
-        const intervalId = setTimeout(() => {
-          // beat.wavを読み込んだ場合のみビート音を再生
+        const beatInterval: number =
+          intervals[intervalIdx] +
+          (chart.blocks[0].delay > 0 ? chart.blocks[0].delay : 0);
+        const beatIntervalId: NodeJS.Timeout = setTimeout(() => {
+          // AudioContext/GainNodeを初期化した場合のみビート音を再生
           if (audioContext.current && gainNode.current) {
             beatSourceNode.current = audioContext.current.createBufferSource();
             beatSourceNode.current.buffer = beatAudioBuffer.current;
@@ -148,6 +168,7 @@ function usePlayingMusic() {
           }
 
           // ビート音がすべて再生が終了したら停止するリスナーを設定
+          // TODO: 全部のビート音の再生終了後にMP3ファイルの音楽が再生中の場合、MP3ファイルの音楽がぶつ切りになる
           if (intervalIdx === intervals.length - 1) {
             if (beatSourceNode.current) {
               beatSourceNode.current.addEventListener("ended", stop);
@@ -155,19 +176,28 @@ function usePlayingMusic() {
               stop();
             }
           }
-        }, intervals[intervalIdx]);
-        intervalIds.current.push(intervalId);
+        }, beatInterval);
+        intervalIds.current.push(beatIntervalId);
       }
-    } else if (beatSourceNode.current) {
-      // ビート音がすべて再生が終了したら停止するリスナーを解除
-      beatSourceNode.current.removeEventListener("ended", stop);
+    } else if (musicSourceNode.current || beatSourceNode.current) {
+      if (musicSourceNode.current) {
+        // MP3ファイルの音楽の再生を中断
+        musicSourceNode.current.stop();
+        musicSourceNode.current.disconnect();
+      }
 
-      // ビート音の再生を中断
-      beatSourceNode.current.stop();
+      if (beatSourceNode.current) {
+        // ビート音がすべて再生が終了したら停止するリスナーを解除
+        beatSourceNode.current.removeEventListener("ended", stop);
+
+        // ビート音の再生を中断
+        beatSourceNode.current.stop();
+        beatSourceNode.current.disconnect();
+      }
+
       if (gainNode.current) {
         gainNode.current.disconnect();
       }
-      beatSourceNode.current.disconnect();
 
       // 設定した各ビート音の再生間隔を初期化
       intervalIds.current.forEach((intervalId) => {
