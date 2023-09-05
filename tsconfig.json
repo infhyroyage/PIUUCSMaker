@@ -8,6 +8,6 @@
     "module": "commonJs",
     "sourceMap": true,
     "strict": true,
-    "target": "es5"
+    "target": "es2015"
   }
 }

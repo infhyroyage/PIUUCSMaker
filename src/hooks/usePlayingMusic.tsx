@@ -1,16 +1,19 @@
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import beatWav from "../sounds/beat.wav";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
+  chartState,
   fileNamesState,
   userErrorMessageState,
   volumeValueState,
 } from "../service/atoms";
 import { FileNames } from "../types/atoms";
+import { Block, Chart, Note } from "../types/ucs";
 
 function usePlayingMusic() {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [fileNames, setFileNames] = useRecoilState<FileNames>(fileNamesState);
+  const chart = useRecoilValue<Chart>(chartState);
   const volumeValue = useRecoilValue<number>(volumeValueState);
   const setUserErrorMessage = useSetRecoilState<string>(userErrorMessageState);
 
@@ -89,14 +92,51 @@ function usePlayingMusic() {
     });
   };
 
+  // ビート音を再生するまでの時間(interval)をすべて計算
+  const intervals: number[] = useMemo(() => {
+    // 譜面のブロック単位でのビート音を再生するまでの時間のオフセット
+    let offset: number = 0;
+
+    return chart.blocks.reduce((prev: number[], block: Block) => {
+      // 1行あたりのビート音を鳴らす間隔(ms単位)を計算
+      const unitDuration: number = 60000 / (block.split * block.bpm);
+
+      // 譜面のブロックに該当するノートの始点での譜面全体での行のインデックスを列ごとに抽出
+      const filteredStarts: number[][] = chart.notes.map((notes: Note[]) =>
+        notes
+          .filter(
+            (note: Note) =>
+              note.start >= block.accumulatedLength &&
+              note.start < block.accumulatedLength + block.length
+          )
+          .map((note: Note) => note.start)
+      );
+
+      // 譜面のブロック単位でビート音を再生する譜面全体での行のインデックスを取得
+      const filteredRowIdxes: number[] = [
+        ...new Set<number>(filteredStarts.flat()), // 平滑化して重複排除
+      ];
+
+      // 譜面のブロック単位でビート音を再生するまでの時間をまとめて追加
+      const intervals: number[] = [
+        ...prev,
+        ...filteredRowIdxes.map(
+          (rowIdx: number) =>
+            offset + unitDuration * (rowIdx - block.accumulatedLength)
+        ),
+      ];
+
+      // オフセット更新
+      offset += block.length * unitDuration;
+
+      return intervals;
+    }, []);
+  }, [chart.blocks, chart.notes]);
+
   useEffect(() => {
     if (isPlaying) {
-      // TODO: ビート音の再生間隔の暫定値
-      const intervals = [0, 1000, 2000, 2500, 3000, 4000];
-
       // 各ビート音の再生間隔をそれぞれ設定
       for (let intervalIdx = 0; intervalIdx < intervals.length; intervalIdx++) {
-        const interval = intervals[intervalIdx];
         const intervalId = setTimeout(() => {
           // beat.wavを読み込んだ場合のみビート音を再生
           if (audioContext.current && gainNode.current) {
@@ -115,7 +155,7 @@ function usePlayingMusic() {
               stop();
             }
           }
-        }, interval);
+        }, intervals[intervalIdx]);
         intervalIds.current.push(intervalId);
       }
     } else if (beatSourceNode.current) {
