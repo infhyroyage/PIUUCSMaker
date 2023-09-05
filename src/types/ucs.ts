@@ -48,6 +48,12 @@ export type Block = {
    * 行数
    */
   length: number;
+
+  /**
+   * 以前までの譜面のブロックの行数の総和
+   * 0番目の譜面のブロックの場合は0
+   */
+  accumulatedLength: number;
 };
 
 /**

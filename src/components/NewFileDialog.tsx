@@ -101,6 +101,7 @@ const validateAndLoadUCS = (form: NewFileDialogForm): Chart | string => {
         beat,
         split,
         length: blockLength,
+        accumulatedLength: 0,
       },
     ],
     notes: Array(chartLength)

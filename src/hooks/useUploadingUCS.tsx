@@ -62,11 +62,13 @@ const validateAndLoadUCS = (content: string): Chart | string => {
    * 各列の以下の一時変数を初期化
    * * 譜面のブロック
    * * 譜面のブロックの行数
+   * * 以前までの譜面のブロックの行数の総和
    * * 譜面全体での行インデックス
    * * ホールドの始点の行インデックス
    */
   let block: Block | null = null;
   let blockLength: number = 0;
+  let accumulatedBlockLength: number = 0;
   let rowIdx: number = 0;
   let startHolds: number[] = Array(chartLength).fill(-1);
 
@@ -94,6 +96,7 @@ const validateAndLoadUCS = (content: string): Chart | string => {
         // 譜面のブロックの行数を更新して格納
         block.length = blockLength;
         chart.blocks.push(block);
+        accumulatedBlockLength += blockLength;
         blockLength = 0;
       }
 
@@ -152,6 +155,7 @@ const validateAndLoadUCS = (content: string): Chart | string => {
         beat,
         split,
         length: 0,
+        accumulatedLength: accumulatedBlockLength,
       };
 
       fileLinesNum++;

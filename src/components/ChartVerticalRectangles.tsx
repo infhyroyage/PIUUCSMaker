@@ -34,21 +34,6 @@ function ChartVerticalRectangles({
   );
 
   /**
-   * 各譜面のブロックにおける、以前までの譜面のブロックまでの行数の総和を計算
-   */
-  const accumulatedBlockLengths: number[] = useMemo(
-    () =>
-      [...Array(chart.blocks.length)].reduce(
-        (prev: number[], _, blockIdx: number) =>
-          blockIdx === 0
-            ? [0]
-            : [...prev, prev[blockIdx - 1] + chart.blocks[blockIdx - 1].length],
-        []
-      ),
-    [chart.blocks]
-  );
-
-  /**
    * 各譜面のブロックの1行あたりの高さをpx単位で計算
    * 譜面のブロックの1行あたりの高さ := 2 * noteSize * 倍率 / 譜面のブロックのSplit
    * 例えば、この高さに譜面のブロックの行数を乗ずると、譜面のブロックの高さとなる
@@ -101,7 +86,7 @@ function ChartVerticalRectangles({
           const top: number =
             y - (y % unitRowHeights[blockIdx]) + menuBarHeight;
           const rowIdx: number =
-            accumulatedBlockLengths[blockIdx] +
+            chart.blocks[blockIdx].accumulatedLength +
             (top - menuBarHeight - blockOffsets[blockIdx]) /
               unitRowHeights[blockIdx];
           info = { column, blockIdx, rowIdx, top };
@@ -111,7 +96,6 @@ function ChartVerticalRectangles({
       setIndicatorInfo(info);
     },
     [
-      accumulatedBlockLengths,
       blockOffsets,
       chart.blocks,
       column,
@@ -224,25 +208,24 @@ function ChartVerticalRectangles({
         // start/goalに対応する譜面のブロックのインデックスをそれぞれ取得
         let startBlockIdx: number | null = null;
         let goalBlockIdx: number | null = null;
-        let accumulatedBlockLength: number = 0;
+        let accumulatedLengthTemp: number = 0;
         for (let blockIdx = 0; blockIdx < chart.blocks.length; blockIdx++) {
           if (
             startBlockIdx === null &&
-            note.start < accumulatedBlockLength + chart.blocks[blockIdx].length
+            note.start < accumulatedLengthTemp + chart.blocks[blockIdx].length
           ) {
             startBlockIdx = blockIdx;
           }
           if (
             goalBlockIdx === null &&
-            note.goal < accumulatedBlockLength + chart.blocks[blockIdx].length
+            note.goal < accumulatedLengthTemp + chart.blocks[blockIdx].length
           ) {
             goalBlockIdx = blockIdx;
           }
 
           if (startBlockIdx !== null && goalBlockIdx !== null) break;
 
-          accumulatedBlockLength =
-            accumulatedBlockLength + chart.blocks[blockIdx].length;
+          accumulatedLengthTemp += chart.blocks[blockIdx].length;
         }
 
         // 内部矛盾チェック
@@ -265,7 +248,7 @@ function ChartVerticalRectangles({
                   menuBarHeight +
                   blockOffsets[startBlockIdx] +
                   unitRowHeights[startBlockIdx] *
-                    (note.start - accumulatedBlockLengths[startBlockIdx])
+                    (note.start - chart.blocks[startBlockIdx].accumulatedLength)
                 }px`,
                 zIndex: (note.start + 1) * 10,
               }}
@@ -280,10 +263,12 @@ function ChartVerticalRectangles({
                   height={
                     blockOffsets[goalBlockIdx] +
                     unitRowHeights[goalBlockIdx] *
-                      (note.goal - accumulatedBlockLengths[goalBlockIdx]) -
+                      (note.goal -
+                        chart.blocks[goalBlockIdx].accumulatedLength) -
                     blockOffsets[startBlockIdx] -
                     unitRowHeights[startBlockIdx] *
-                      (note.start - accumulatedBlockLengths[startBlockIdx])
+                      (note.start -
+                        chart.blocks[startBlockIdx].accumulatedLength)
                   }
                   style={{
                     position: "absolute",
@@ -291,7 +276,8 @@ function ChartVerticalRectangles({
                       menuBarHeight +
                       blockOffsets[startBlockIdx] +
                       unitRowHeights[startBlockIdx] *
-                        (note.start - accumulatedBlockLengths[startBlockIdx]) +
+                        (note.start -
+                          chart.blocks[startBlockIdx].accumulatedLength) +
                       noteSize * 0.5
                     }px`,
                     zIndex: (note.start + 1) * 10 + 2,
@@ -309,7 +295,8 @@ function ChartVerticalRectangles({
                       menuBarHeight +
                       blockOffsets[goalBlockIdx] +
                       unitRowHeights[goalBlockIdx] *
-                        (note.goal - accumulatedBlockLengths[goalBlockIdx])
+                        (note.goal -
+                          chart.blocks[goalBlockIdx].accumulatedLength)
                     }px`,
                     zIndex: (note.start + 1) * 10 + 1,
                   }}
