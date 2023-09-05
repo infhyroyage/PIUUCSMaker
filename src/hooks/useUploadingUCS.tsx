@@ -1,12 +1,12 @@
 import { useTransition } from "react";
-import { useSetRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import { Block, Chart, Note } from "../types/ucs";
 import {
   chartState,
-  isShownSystemErrorSnackbarState,
-  menuBarTitleState,
+  fileNamesState,
   userErrorMessageState,
 } from "../service/atoms";
+import { FileNames } from "../types/atoms";
 
 const validateAndLoadUCS = (content: string): Chart | string => {
   // ucsファイルの改行コードがCRLF形式かのチェック
@@ -238,12 +238,9 @@ const validateAndLoadUCS = (content: string): Chart | string => {
 };
 
 function useUploadingUCS() {
-  const setMenuBarTitle = useSetRecoilState<string>(menuBarTitleState);
+  const [fileNames, setFileNames] = useRecoilState<FileNames>(fileNamesState);
   const setChart = useSetRecoilState<Chart>(chartState);
   const setUserErrorMessage = useSetRecoilState<string>(userErrorMessageState);
-  const setIsShownSystemErrorSnackbar = useSetRecoilState<boolean>(
-    isShownSystemErrorSnackbarState
-  );
 
   const [isPending, startTransition] = useTransition();
 
@@ -253,27 +250,21 @@ function useUploadingUCS() {
     if (!fileList || fileList.length === 0) return;
 
     // 拡張子チェック
-    const splitedName: string[] = fileList[0].name.split(".");
-    const extension: string | undefined = splitedName.pop();
-    if (extension !== "ucs") {
+    if (fileList[0].name.split(".").pop() !== "ucs") {
       setUserErrorMessage("拡張子がucsではありません");
       return;
     }
 
-    const fileName: string = splitedName.join(".");
     startTransition(() => {
-      fileList[0]
-        .text()
-        .then((content: string) => {
-          const result: Chart | string = validateAndLoadUCS(content);
-          if (typeof result === "string") {
-            setUserErrorMessage(result);
-          } else {
-            setMenuBarTitle(fileName);
-            setChart(result);
-          }
-        })
-        .catch(() => setIsShownSystemErrorSnackbar(true));
+      fileList[0].text().then((content: string) => {
+        const result: Chart | string = validateAndLoadUCS(content);
+        if (typeof result === "string") {
+          setUserErrorMessage(result);
+        } else {
+          setFileNames({ ...fileNames, ucs: fileList[0].name });
+          setChart(result);
+        }
+      });
     });
   };
 

@@ -14,11 +14,12 @@ import { useRecoilState, useSetRecoilState } from "recoil";
 import {
   chartState,
   isOpenedNewFileDialogState,
-  menuBarTitleState,
+  fileNamesState,
 } from "../service/atoms";
 import { useState, useTransition } from "react";
 import { NewFileDialogForm } from "../types/form";
 import { Chart, Note } from "../types/ucs";
+import { FileNames } from "../types/atoms";
 
 const validateAndLoadUCS = (form: NewFileDialogForm): Chart | string => {
   // UCSファイル名のチェック
@@ -118,10 +119,10 @@ function NewFileDialog() {
     rowLength: "50",
     split: "2",
   });
+  const [fileNames, setFileNames] = useRecoilState<FileNames>(fileNamesState);
   const setChart = useSetRecoilState<Chart>(chartState);
   const [isOpenedNewFileDialog, setIsOpenedNewFileDialog] =
     useRecoilState<boolean>(isOpenedNewFileDialogState);
-  const setMenuBarTitle = useSetRecoilState<string>(menuBarTitleState);
 
   const [isPending, startTransition] = useTransition();
 
@@ -131,7 +132,7 @@ function NewFileDialog() {
       if (typeof result === "string") {
         // TODO: テキストフィールドにエラーを表示
       } else {
-        setMenuBarTitle(form.fileName);
+        setFileNames({ ...fileNames, ucs: `${form.fileName}.ucs` });
         setChart(result);
         setIsOpenedNewFileDialog(false);
       }
@@ -159,7 +160,7 @@ function NewFileDialog() {
           <Select
             disabled={isPending}
             fullWidth
-            label="Mode"
+            label="Mode" // TODO: ラベルが効いていない
             margin="dense"
             onChange={(event: SelectChangeEvent) => {
               setForm({ ...form, mode: event.target.value });

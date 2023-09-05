@@ -4,7 +4,7 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
   isOpenedMenuDrawerState,
   menuBarHeightState,
-  menuBarTitleState,
+  fileNamesState,
   volumeValueState,
   zoomIdxState,
 } from "../service/atoms";
@@ -26,6 +26,7 @@ import VolumeOffIcon from "@mui/icons-material/VolumeOff";
 import VolumeDownIcon from "@mui/icons-material/VolumeDown";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import VolumeMuteIcon from "@mui/icons-material/VolumeMute";
+import { FileNames } from "../types/atoms";
 
 function MenuBar() {
   const [muteVolBuf, setMuteVolBuf] = useState<number | null>(null);
@@ -38,7 +39,7 @@ function MenuBar() {
   const [volumeValue, setVolumeValue] =
     useRecoilState<number>(volumeValueState);
   const [zoomIdx, setZoomIdx] = useRecoilState<number>(zoomIdxState);
-  const menuBarTitle = useRecoilValue<string>(menuBarTitleState);
+  const fileNames = useRecoilValue<FileNames>(fileNamesState);
   const setMenuBarHeight = useSetRecoilState<number>(menuBarHeightState);
 
   const onClickVolumeButton = () => {
@@ -81,7 +82,9 @@ function MenuBar() {
           <MenuIcon />
         </IconButton>
         <Typography variant="h6" noWrap component="div" flexGrow={1} ml={4}>
-          {menuBarTitle}
+          {`${fileNames.ucs || "PIU UCS Maker"}${
+            fileNames.mp3 ? ` (${fileNames.mp3})` : ""
+          }`}
         </Typography>
         <Stack alignItems="center" direction="row" spacing={4}>
           <FormControl size="small">

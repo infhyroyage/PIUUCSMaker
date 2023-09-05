@@ -1,10 +1,16 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 import beatWav from "../sounds/beat.wav";
-import { useRecoilValue, useSetRecoilState } from "recoil";
-import { userErrorMessageState, volumeValueState } from "../service/atoms";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import {
+  fileNamesState,
+  userErrorMessageState,
+  volumeValueState,
+} from "../service/atoms";
+import { FileNames } from "../types/atoms";
 
 function usePlayingMusic() {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [fileNames, setFileNames] = useRecoilState<FileNames>(fileNamesState);
   const volumeValue = useRecoilValue<number>(volumeValueState);
   const setUserErrorMessage = useSetRecoilState<string>(userErrorMessageState);
 
@@ -57,9 +63,7 @@ function usePlayingMusic() {
     if (!fileList || fileList.length === 0) return;
 
     // 拡張子チェック
-    const splitedName: string[] = fileList[0].name.split(".");
-    const extension: string | undefined = splitedName.pop();
-    if (extension !== "mp3") {
+    if (fileList[0].name.split(".").pop() !== "mp3") {
       setUserErrorMessage("拡張子がmp3ではありません");
       return;
     }
@@ -78,10 +82,10 @@ function usePlayingMusic() {
 
           return audioContext.current.decodeAudioData(arrayBuffer);
         })
-        .then(
-          (decodedAudio: AudioBuffer) =>
-            (musicAudioBuffer.current = decodedAudio)
-        );
+        .then((decodedAudio: AudioBuffer) => {
+          musicAudioBuffer.current = decodedAudio;
+          setFileNames({ ...fileNames, mp3: fileList[0].name });
+        });
     });
   };
 

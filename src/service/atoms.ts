@@ -1,6 +1,6 @@
 import { atom } from "recoil";
 import { Chart } from "../types/ucs";
-import { IndicatorInfo, MouseDownInfo } from "../types/atoms";
+import { FileNames, IndicatorInfo, MouseDownInfo } from "../types/atoms";
 
 export const chartState = atom<Chart>({
   key: "chartState",
@@ -37,19 +37,14 @@ export const isShownSystemErrorSnackbarState = atom<boolean>({
   default: false,
 });
 
-export const volumeValueState = atom<number>({
-  key: "volumeValue",
-  default: 0.5,
-});
-
 export const menuBarHeightState = atom<number>({
   key: "menuBarHeight",
   default: 0,
 });
 
-export const menuBarTitleState = atom<string>({
-  key: "menuBarTitle",
-  default: "PIU UCS Maker",
+export const fileNamesState = atom<FileNames>({
+  key: "fileNames",
+  default: {},
 });
 
 export const mouseDownInfoState = atom<MouseDownInfo | null>({
@@ -60,6 +55,11 @@ export const mouseDownInfoState = atom<MouseDownInfo | null>({
 export const userErrorMessageState = atom<string>({
   key: "userErrorMessage",
   default: "",
+});
+
+export const volumeValueState = atom<number>({
+  key: "volumeValue",
+  default: 0.5,
 });
 
 export const zoomIdxState = atom<number>({

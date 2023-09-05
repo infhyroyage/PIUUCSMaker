@@ -1,4 +1,21 @@
 /**
+ * アップロードしたファイル名
+ */
+export type FileNames = {
+  /**
+   * mp3ファイル名(拡張子込)
+   * 未アップロード時はundefined
+   */
+  mp3?: string;
+
+  /**
+   * ucsファイル名(拡張子込)
+   * 未アップロード時はundefined
+   */
+  ucs?: string;
+};
+
+/**
  * インディケーターの表示パラメーター
  */
 export type IndicatorInfo = {
