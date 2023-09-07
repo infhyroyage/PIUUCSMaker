@@ -5,8 +5,6 @@ import {
   DialogContent,
   DialogTitle,
   MenuItem,
-  Select,
-  SelectChangeEvent,
   Stack,
   TextField,
 } from "@mui/material";
@@ -16,7 +14,7 @@ import {
   isOpenedNewFileDialogState,
   fileNamesState,
 } from "../service/atoms";
-import { useState, useTransition } from "react";
+import { ChangeEvent, useState, useTransition } from "react";
 import { NewFileDialogForm } from "../types/form";
 import { Chart, Note } from "../types/ucs";
 import { FileNames } from "../types/atoms";
@@ -158,14 +156,15 @@ function NewFileDialog() {
             size="small"
             value={form.fileName}
           />
-          <Select
+          <TextField
             disabled={isPending}
             fullWidth
-            label="Mode" // TODO: ラベルが効いていない
+            label="Mode"
             margin="dense"
-            onChange={(event: SelectChangeEvent) => {
+            onChange={(event: ChangeEvent<HTMLInputElement>) => {
               setForm({ ...form, mode: event.target.value });
             }}
+            select
             size="small"
             value={form.mode}
           >
@@ -173,7 +172,7 @@ function NewFileDialog() {
             <MenuItem value="SinglePerformance">Single Performance</MenuItem>
             <MenuItem value="Double">Double</MenuItem>
             <MenuItem value="DoublePerformance">Double Performance</MenuItem>
-          </Select>
+          </TextField>
           <TextField
             disabled={isPending}
             fullWidth
