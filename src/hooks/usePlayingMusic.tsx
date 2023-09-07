@@ -168,7 +168,9 @@ function usePlayingMusic() {
           }
 
           // ビート音がすべて再生が終了したら停止するリスナーを設定
-          // TODO: 全部のビート音の再生終了後にMP3ファイルの音楽が再生中の場合、MP3ファイルの音楽がぶつ切りになる
+          // TODO: 現状、全部のビート音の再生終了した瞬間、MP3ファイルの音楽が再生中でもぶつ切りになるが、
+          // 将来的には、最下部に自動スクロールした瞬間に、ビート音・MP3ファイルの音楽が再生中でも共にぶつ切りにする
+          // (=リスナーをセットせず、単にstop()のみ実行する)
           if (intervalIdx === intervals.length - 1) {
             if (beatSourceNode.current) {
               beatSourceNode.current.addEventListener("ended", stop);
