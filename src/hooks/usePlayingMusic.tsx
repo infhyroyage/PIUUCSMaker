@@ -135,6 +135,9 @@ function usePlayingMusic() {
 
   useEffect(() => {
     if (isPlaying) {
+      // 手動での上下スクロールを抑止
+      document.body.style.overflowY = "hidden";
+
       // MP3ファイルの音楽を再生するまでの時間を設定
       // 0番目の譜面のブロックのDelayが負の場合、MP3ファイルの音楽を再生するまでの時間を遅延する
       const musicInterval: number =
@@ -181,31 +184,36 @@ function usePlayingMusic() {
         }, beatInterval);
         intervalIds.current.push(beatIntervalId);
       }
-    } else if (musicSourceNode.current || beatSourceNode.current) {
-      if (musicSourceNode.current) {
-        // MP3ファイルの音楽の再生を中断
-        musicSourceNode.current.stop();
-        musicSourceNode.current.disconnect();
+    } else {
+      // 手動での上下スクロール抑止を解除
+      document.body.style.overflowY = "scroll";
+
+      if (musicSourceNode.current || beatSourceNode.current) {
+        if (musicSourceNode.current) {
+          // MP3ファイルの音楽の再生を中断
+          musicSourceNode.current.stop();
+          musicSourceNode.current.disconnect();
+        }
+
+        if (beatSourceNode.current) {
+          // ビート音がすべて再生が終了したら停止するリスナーを解除
+          beatSourceNode.current.removeEventListener("ended", stop);
+
+          // ビート音の再生を中断
+          beatSourceNode.current.stop();
+          beatSourceNode.current.disconnect();
+        }
+
+        if (gainNode.current) {
+          gainNode.current.disconnect();
+        }
+
+        // 設定した各ビート音の再生間隔を初期化
+        intervalIds.current.forEach((intervalId) => {
+          clearInterval(intervalId);
+        });
+        intervalIds.current = [];
       }
-
-      if (beatSourceNode.current) {
-        // ビート音がすべて再生が終了したら停止するリスナーを解除
-        beatSourceNode.current.removeEventListener("ended", stop);
-
-        // ビート音の再生を中断
-        beatSourceNode.current.stop();
-        beatSourceNode.current.disconnect();
-      }
-
-      if (gainNode.current) {
-        gainNode.current.disconnect();
-      }
-
-      // 設定した各ビート音の再生間隔を初期化
-      intervalIds.current.forEach((intervalId) => {
-        clearInterval(intervalId);
-      });
-      intervalIds.current = [];
     }
   }, [isPlaying]);
 
