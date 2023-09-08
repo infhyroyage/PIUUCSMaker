@@ -46,10 +46,10 @@ function App() {
       <CssBaseline />
       <div onMouseUp={() => setMouseDownInfo(null)}>
         <MenuBar />
-        <Box sx={{ display: "flex" }}>
+        <div style={{ display: "flex" }}>
           <MenuDrawer />
           <WorkSpace />
-        </Box>
+        </div>
       </div>
       <NewFileDialog />
       <UserErrorSnackbar />

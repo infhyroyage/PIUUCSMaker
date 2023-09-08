@@ -1,9 +1,13 @@
 import { Button, Stack, Typography } from "@mui/material";
 import useUploadingUCS from "../hooks/useUploadingUCS";
-import { useSetRecoilState } from "recoil";
-import { isOpenedNewFileDialogState } from "../service/atoms";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import {
+  isOpenedNewFileDialogState,
+  menuBarHeightState,
+} from "../service/atoms";
 
 function ReadyFile() {
+  const menuBarHeight = useRecoilValue<number>(menuBarHeightState);
   const setIsOpenedNewFileDialog = useSetRecoilState<boolean>(
     isOpenedNewFileDialogState
   );
@@ -14,7 +18,7 @@ function ReadyFile() {
     <Stack
       alignItems="center"
       display="flex"
-      height="100vh"
+      height={`calc(100vh - ${menuBarHeight}px)`}
       justifyContent="center"
       spacing={3}
       sx={{ flexGrow: 1 }}
