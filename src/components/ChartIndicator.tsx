@@ -5,8 +5,9 @@ import { IMAGE_BINARIES } from "../service/assets";
 import { useRecoilValue } from "recoil";
 import { IndicatorInfo, MouseDownInfo } from "../types/atoms";
 import { indicatorInfoState, mouseDownInfoState } from "../service/atoms";
+import useChartSizes from "../hooks/useChartSizes";
 
-function ChartIndicator({ column, noteSize }: ChartIndicatorProps) {
+function ChartIndicator({ column }: ChartIndicatorProps) {
   const indicatorInfo = useRecoilValue<IndicatorInfo | null>(
     indicatorInfoState
   );
@@ -15,6 +16,9 @@ function ChartIndicator({ column, noteSize }: ChartIndicatorProps) {
   );
 
   const theme: Theme = useTheme();
+
+  // 単ノートの1辺のサイズを取得
+  const { noteSize } = useChartSizes();
 
   return (
     indicatorInfo &&

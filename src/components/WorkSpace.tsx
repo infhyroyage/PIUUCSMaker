@@ -11,8 +11,8 @@ function WorkSpace() {
   const chart: Chart = useRecoilValue<Chart>(chartState);
   const menuBarHeight = useRecoilValue<number>(menuBarHeightState);
 
-  // 単ノートの1辺、枠線のサイズを取得
-  const { noteSize, borderSize } = useChartSizes();
+  // 枠線のサイズを取得
+  const { borderSize } = useChartSizes();
 
   return chart.blocks.length === 0 ? (
     <ReadyFile />
@@ -34,11 +34,7 @@ function WorkSpace() {
             {column === 0 && (
               <ChartBorderLine width={`${borderSize}px`} height="100%" />
             )}
-            <ChartVerticalRectangles
-              borderSize={borderSize}
-              column={column}
-              noteSize={noteSize}
-            />
+            <ChartVerticalRectangles column={column} />
             <ChartBorderLine width={`${borderSize}px`} height="100%" />
           </React.Fragment>
         ))}

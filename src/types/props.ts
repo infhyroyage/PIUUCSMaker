@@ -1,10 +1,17 @@
 export type ChartBorderLineProps = {
+  /**
+   * 高さ(px単位)
+   */
   height: string;
+
+  /**
+   * 場(px単位)
+   */
   width: string;
 };
 
 /**
- * 関数コンポーネントChartIndicatorで用いるprops
+ * ChartIndicatorのprops
  */
 export type ChartIndicatorProps = {
   /**
@@ -12,20 +19,30 @@ export type ChartIndicatorProps = {
    * Single/SinglePerformance譜面の場合は0〜4、Double/DoublePerformance譜面の場合は0〜9
    */
   column: number;
-
-  /**
-   * 単ノートの1辺のサイズ(px単位)
-   */
-  noteSize: number;
 };
 
+/**
+ * ChartRectangleのprops
+ */
 export type ChartRectangleProps = {
+  /**
+   * 譜面のブロックのインデックス
+   */
   blockIdx: number;
+
+  /**
+   * 高さ(px単位)
+   */
   height: number;
 };
 
+/**
+ * ChartVerticalRectanglesのprops
+ */
 export type ChartVerticalRectanglesProps = {
-  borderSize: number;
+  /**
+   * 列インデックス
+   * Single/SinglePerformance譜面の場合は0〜4、Double/DoublePerformance譜面の場合は0〜9
+   */
   column: number;
-  noteSize: number;
 };

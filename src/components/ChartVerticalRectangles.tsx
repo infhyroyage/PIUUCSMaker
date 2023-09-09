@@ -16,12 +16,9 @@ import { ZOOM_VALUES } from "../service/zoom";
 import { IMAGE_BINARIES } from "../service/assets";
 import ChartIndicator from "./ChartIndicator";
 import { IndicatorInfo, MouseDownInfo } from "../types/atoms";
+import useChartSizes from "../hooks/useChartSizes";
 
-function ChartVerticalRectangles({
-  borderSize,
-  column,
-  noteSize,
-}: ChartVerticalRectanglesProps) {
+function ChartVerticalRectangles({ column }: ChartVerticalRectanglesProps) {
   const [chart, setChart] = useRecoilState<Chart>(chartState);
   const [indicatorInfo, setIndicatorInfo] =
     useRecoilState<IndicatorInfo | null>(indicatorInfoState);
@@ -32,6 +29,9 @@ function ChartVerticalRectangles({
   const setIsShownSystemErrorSnackbar = useSetRecoilState<boolean>(
     isShownSystemErrorSnackbarState
   );
+
+  // 単ノートの1辺、枠線のサイズを取得
+  const { noteSize, borderSize } = useChartSizes();
 
   /**
    * 各譜面のブロックの1行あたりの高さをpx単位で計算
@@ -306,7 +306,7 @@ function ChartVerticalRectangles({
           </React.Fragment>
         );
       }, [])}
-      <ChartIndicator column={column} noteSize={noteSize} />
+      <ChartIndicator column={column} />
     </span>
   );
 }
