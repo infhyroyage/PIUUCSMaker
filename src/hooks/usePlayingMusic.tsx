@@ -138,12 +138,47 @@ function usePlayingMusic() {
       // 手動での上下スクロールを抑止
       document.body.style.overflowY = "hidden";
 
-      // MP3ファイルの音楽を再生するまでの時間を設定
-      // 0番目の譜面のブロックのDelayが負の場合、MP3ファイルの音楽を再生するまでの時間を遅延する
+      // 再生開始位置に合うように上下スクロールして調整
+      // TODO: 暫定的に開始位置にスクロール
+      window.scrollTo(0, 0);
+
+      // 各ビート音・MP3ファイルの音楽を再生するまでの時間をそれぞれ設定
+      // 0番目の譜面のブロックのDelayが正の場合は各ビート音、負の場合はMP3ファイルの音楽を再生するまでの時間を遅延する
       const musicInterval: number =
         chart.blocks[0].delay < 0 ? -1 * chart.blocks[0].delay : 0;
+      const beatIntervals: number[] = intervals.map(
+        (interval: number) =>
+          interval + (chart.blocks[0].delay > 0 ? chart.blocks[0].delay : 0)
+      );
+
+      // 各ビート音の再生
+      for (let i = 0; i < beatIntervals.length; i++) {
+        const beatIntervalId: NodeJS.Timeout = setTimeout(() => {
+          if (audioContext.current && gainNode.current) {
+            beatSourceNode.current = audioContext.current.createBufferSource();
+            beatSourceNode.current.buffer = beatAudioBuffer.current;
+            beatSourceNode.current.connect(gainNode.current);
+            gainNode.current.connect(audioContext.current.destination);
+            beatSourceNode.current.start();
+          }
+
+          // すべてのビート音の再生が終了したら、MP3ファイルの音楽・ビート音をともに再生停止するリスナーを設定
+          // TODO: 現状、全部のビート音の再生終了した瞬間、MP3ファイルの音楽が再生中でもぶつ切りになるが、
+          // 将来的には、最下部に自動スクロールした瞬間に、ビート音・MP3ファイルの音楽が再生中でも共にぶつ切りにする
+          // (=リスナーをセットせず、単にstop()のみ実行する)
+          if (i === intervals.length - 1) {
+            if (beatSourceNode.current) {
+              beatSourceNode.current.addEventListener("ended", stop);
+            } else {
+              stop();
+            }
+          }
+        }, beatIntervals[i]);
+        intervalIds.current.push(beatIntervalId);
+      }
+
+      // MP3ファイルの音楽を再生
       const musicIntervalId: NodeJS.Timeout = setTimeout(() => {
-        // AudioContext/GainNodeを初期化した場合のみMP3ファイルの音楽を再生
         if (audioContext.current && gainNode.current) {
           musicSourceNode.current = audioContext.current.createBufferSource();
           musicSourceNode.current.buffer = musicAudioBuffer.current;
@@ -153,37 +188,6 @@ function usePlayingMusic() {
         }
       }, musicInterval);
       intervalIds.current.push(musicIntervalId);
-
-      // 各ビート音を再生するまでの時間をそれぞれ設定
-      // 0番目の譜面のブロックのDelayが正の場合、すべてのビート音を再生するまでの時間を遅延する
-      for (let intervalIdx = 0; intervalIdx < intervals.length; intervalIdx++) {
-        const beatInterval: number =
-          intervals[intervalIdx] +
-          (chart.blocks[0].delay > 0 ? chart.blocks[0].delay : 0);
-        const beatIntervalId: NodeJS.Timeout = setTimeout(() => {
-          // AudioContext/GainNodeを初期化した場合のみビート音を再生
-          if (audioContext.current && gainNode.current) {
-            beatSourceNode.current = audioContext.current.createBufferSource();
-            beatSourceNode.current.buffer = beatAudioBuffer.current;
-            beatSourceNode.current.connect(gainNode.current);
-            gainNode.current.connect(audioContext.current.destination);
-            beatSourceNode.current.start();
-          }
-
-          // ビート音がすべて再生が終了したら停止するリスナーを設定
-          // TODO: 現状、全部のビート音の再生終了した瞬間、MP3ファイルの音楽が再生中でもぶつ切りになるが、
-          // 将来的には、最下部に自動スクロールした瞬間に、ビート音・MP3ファイルの音楽が再生中でも共にぶつ切りにする
-          // (=リスナーをセットせず、単にstop()のみ実行する)
-          if (intervalIdx === intervals.length - 1) {
-            if (beatSourceNode.current) {
-              beatSourceNode.current.addEventListener("ended", stop);
-            } else {
-              stop();
-            }
-          }
-        }, beatInterval);
-        intervalIds.current.push(beatIntervalId);
-      }
     } else {
       // 手動での上下スクロール抑止を解除
       document.body.style.overflowY = "scroll";
