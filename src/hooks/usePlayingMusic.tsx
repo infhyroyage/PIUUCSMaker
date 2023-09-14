@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import beatWav from "../sounds/beat.wav";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
@@ -104,9 +104,18 @@ function usePlayingMusic() {
       // 手動での上下スクロールを抑止
       document.body.style.overflowY = "hidden";
 
-      // 再生開始位置に合うように上下スクロールして調整
-      // TODO: 暫定的に開始位置にスクロール
-      window.scrollTo({ top: 0 });
+      // 現在のブラウザの画面のy座標を初期化
+      // 0番目の譜面のブロックのDelayが正の場合は、ビート音を再生するまでの時間を遅延する必要があるため、
+      // その分だけブラウザの画面のy座標を減算する
+      let top: number =
+        chart.blocks[0].delay > 0
+          ? (-2.0 *
+              chart.blocks[0].delay *
+              noteSize *
+              ZOOM_VALUES[zoomIdx] *
+              chart.blocks[0].bpm) /
+            60000
+          : 0;
 
       // ブラウザの画面のy座標に応じた、各ビート音を再生するタイミング、および、
       // 開始地点からの下へスクロールする速度(px/秒)の推移を計算
@@ -170,6 +179,12 @@ function usePlayingMusic() {
         { beatTops: [], verocities: [] }
       );
 
+      // 自動スクロール開始位置を調整
+      // TODO: 暫定的に開始位置を0番目の譜面全体での行のインデックスとする
+      window.scrollTo({ top });
+
+      // TODO: 0番目の譜面のブロックのDelayが負の場合のみ、start関数の引数にdelay値を入れてみる
+
       // MP3ファイルの音楽を再生するまでの時間をそれぞれ設定
       // 0番目の譜面のブロックのDelayが負の場合はMP3ファイルの音楽を再生するまでの時間を遅延する
       // const musicInterval: number = chart.blocks[0].delay < 0 ? -1 * chart.blocks[0].delay : 0;
@@ -188,50 +203,46 @@ function usePlayingMusic() {
       // });
 
       const FPS: number = 60;
-      const scrollDelayIntervalId: NodeJS.Timeout = setTimeout(
-        () => {
-          let beatTopIdx: number = 0;
-          let verocityIdx: number = 0;
-          const scrollIntervalId: NodeJS.Timeout = setInterval(() => {
-            // スクロール後のブラウザの画面のy座標を計算
-            const top: number =
-              window.scrollY +
-              scrollParam.verocities[verocityIdx].verocity / FPS;
+      let beatTopIdx: number = 0;
+      let verocityIdx: number = 0;
+      const scrollIntervalId: NodeJS.Timeout = setInterval(() => {
+        if (
+          top <= 0 &&
+          top + scrollParam.verocities[verocityIdx].verocity / FPS >= 0
+        ) {
+        }
+        // スクロール後のブラウザの画面のy座標を計算
+        top += scrollParam.verocities[verocityIdx].verocity / FPS;
 
-            // 下へ自動スクロール
-            window.scrollTo(0, top);
+        // 下へ自動スクロール
+        window.scrollTo({ top });
 
-            // ブラウザの画面のy座標に応じてビート音を再生
-            if (
-              beatTopIdx < scrollParam.beatTops.length &&
-              scrollParam.beatTops[beatTopIdx] <= top &&
-              audioContext.current &&
-              gainNode.current
-            ) {
-              beatSourceNode.current =
-                audioContext.current.createBufferSource();
-              beatSourceNode.current.buffer = beatAudioBuffer.current;
-              beatSourceNode.current.connect(gainNode.current);
-              gainNode.current.connect(audioContext.current.destination);
-              beatSourceNode.current.start();
-              beatTopIdx += 1;
-            }
+        // ブラウザの画面のy座標に応じてビート音を再生
+        if (
+          beatTopIdx < scrollParam.beatTops.length &&
+          scrollParam.beatTops[beatTopIdx] <= top &&
+          audioContext.current &&
+          gainNode.current
+        ) {
+          beatSourceNode.current = audioContext.current.createBufferSource();
+          beatSourceNode.current.buffer = beatAudioBuffer.current;
+          beatSourceNode.current.connect(gainNode.current);
+          gainNode.current.connect(audioContext.current.destination);
+          beatSourceNode.current.start();
+          beatTopIdx += 1;
+        }
 
-            // ブラウザの画面のy座標に応じてスクロール速度を変更
-            if (scrollParam.verocities[verocityIdx].border <= top) {
-              verocityIdx += 1;
-            }
+        // ブラウザの画面のy座標に応じてスクロール速度を変更
+        if (scrollParam.verocities[verocityIdx].border <= top) {
+          verocityIdx += 1;
+        }
 
-            // 最後の譜面のブロックをスクロールし終えたら停止
-            if (verocityIdx === scrollParam.verocities.length) {
-              stop();
-            }
-          }, 1000 / FPS);
-          intervalIds.current.push(scrollIntervalId);
-        },
-        chart.blocks[0].delay > 0 ? chart.blocks[0].delay : 0
-      );
-      intervalIds.current.push(scrollDelayIntervalId);
+        // 最後の譜面のブロックをスクロールし終えたら停止
+        if (verocityIdx === scrollParam.verocities.length) {
+          stop();
+        }
+      }, 1000 / FPS);
+      intervalIds.current.push(scrollIntervalId);
     } else {
       // 手動での上下スクロール抑止を解除
       document.body.style.overflowY = "scroll";
