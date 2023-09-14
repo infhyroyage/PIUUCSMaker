@@ -6,15 +6,19 @@ import {
   fileNamesState,
   userErrorMessageState,
   volumeValueState,
+  zoomIdxState,
 } from "../service/atoms";
 import { FileNames } from "../types/atoms";
 import { Block, Chart, Note } from "../types/ucs";
+import useChartSizes from "./useChartSizes";
+import { ZOOM_VALUES } from "../service/zoom";
 
 function usePlayingMusic() {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [fileNames, setFileNames] = useRecoilState<FileNames>(fileNamesState);
   const chart = useRecoilValue<Chart>(chartState);
   const volumeValue = useRecoilValue<number>(volumeValueState);
+  const zoomIdx: number = useRecoilValue<number>(zoomIdxState);
   const setUserErrorMessage = useSetRecoilState<string>(userErrorMessageState);
 
   const audioContext = useRef<AudioContext | null>(null);
@@ -26,6 +30,9 @@ function usePlayingMusic() {
   const intervalIds = useRef<NodeJS.Timeout[]>([]);
 
   const [isPending, startTransition] = useTransition();
+
+  // 単ノートの1辺のサイズを取得
+  const { noteSize } = useChartSizes();
 
   const start = () => {
     // beat.wavをデコードして読み込んでいない場合は読み込んでおく
@@ -92,47 +99,6 @@ function usePlayingMusic() {
     });
   };
 
-  // ビート音を再生するまでの時間(interval)をすべて計算
-  const intervals: number[] = useMemo(() => {
-    // 譜面のブロック単位でのビート音を再生するまでの時間のオフセット
-    let offset: number = 0;
-
-    return chart.blocks.reduce((prev: number[], block: Block) => {
-      // 1行あたりのビート音を鳴らす間隔(ms単位)を計算
-      const unitDuration: number = 60000 / (block.split * block.bpm);
-
-      // 譜面のブロックに該当するノートの始点での譜面全体での行のインデックスを列ごとに抽出
-      const filteredStarts: number[][] = chart.notes.map((notes: Note[]) =>
-        notes
-          .filter(
-            (note: Note) =>
-              note.start >= block.accumulatedLength &&
-              note.start < block.accumulatedLength + block.length
-          )
-          .map((note: Note) => note.start)
-      );
-
-      // 譜面のブロック単位でビート音を再生する譜面全体での行のインデックスを取得
-      const filteredRowIdxes: number[] = [
-        ...new Set<number>(filteredStarts.flat()), // 平滑化して重複排除
-      ];
-
-      // 譜面のブロック単位でビート音を再生するまでの時間をまとめて追加
-      const intervals: number[] = [
-        ...prev,
-        ...filteredRowIdxes.map(
-          (rowIdx: number) =>
-            offset + unitDuration * (rowIdx - block.accumulatedLength)
-        ),
-      ];
-
-      // オフセット更新
-      offset += block.length * unitDuration;
-
-      return intervals;
-    }, []);
-  }, [chart.blocks, chart.notes]);
-
   useEffect(() => {
     if (isPlaying) {
       // 手動での上下スクロールを抑止
@@ -140,54 +106,132 @@ function usePlayingMusic() {
 
       // 再生開始位置に合うように上下スクロールして調整
       // TODO: 暫定的に開始位置にスクロール
-      window.scrollTo(0, 0);
+      window.scrollTo({ top: 0 });
 
-      // 各ビート音・MP3ファイルの音楽を再生するまでの時間をそれぞれ設定
-      // 0番目の譜面のブロックのDelayが正の場合は各ビート音、負の場合はMP3ファイルの音楽を再生するまでの時間を遅延する
-      const musicInterval: number =
-        chart.blocks[0].delay < 0 ? -1 * chart.blocks[0].delay : 0;
-      const beatIntervals: number[] = intervals.map(
-        (interval: number) =>
-          interval + (chart.blocks[0].delay > 0 ? chart.blocks[0].delay : 0)
+      // ブラウザの画面のy座標に応じた、各ビート音を再生するタイミング、および、
+      // 開始地点からの下へスクロールする速度(px/秒)の推移を計算
+      let blockOffset: number = 0;
+      let verocity: number = -1;
+      let border: number = 0;
+      type ScrollParam = {
+        beatTops: number[];
+        verocities: { verocity: number; border: number }[];
+      };
+      const scrollParam: ScrollParam = chart.blocks.reduce(
+        (prev: ScrollParam, block: Block, blockIdx: number) => {
+          // 各譜面のブロックの1行あたりの高さをpx単位で計算
+          // 譜面のブロックの1行あたりの高さ := 2 * noteSize * 倍率 / 譜面のブロックのSplit
+          // 例えば、この高さに譜面のブロックの行数を乗ずると、譜面のブロックの高さとなる
+          const unitRowHeight: number =
+            (2.0 * noteSize * ZOOM_VALUES[zoomIdx]) / block.split;
+
+          // 列ごとに各ノートの始点での譜面全体での行のインデックスを抽出
+          const filteredStarts: number[][] = chart.notes.map((notes: Note[]) =>
+            notes
+              .filter(
+                (note: Note) =>
+                  note.start >= block.accumulatedLength &&
+                  note.start < block.accumulatedLength + block.length
+              )
+              .map((note: Note) => note.start)
+          );
+          // ビート音を再生するタイミングでのブラウザの画面のy座標をまとめて追加
+          const tops: number[] = [
+            ...new Set<number>(filteredStarts.flat()), // 平滑化して重複排除
+          ]
+            .sort((a: number, b: number) => a - b) // 譜面全体での行のインデックスを昇順にソート
+            .map(
+              (rowIdx: number) =>
+                blockOffset + unitRowHeight * (rowIdx - block.accumulatedLength)
+            );
+          prev.beatTops = prev.beatTops.concat(tops);
+
+          // 譜面のブロックの高さのオフセット更新
+          blockOffset += unitRowHeight * block.length;
+
+          // 開始地点からの下へスクロールする速度(px/秒)を計算し、
+          // その速度が変化するブラウザの画面のy座標を格納しながら
+          // 譜面のブロックの1行あたりの高さ(px単位)をインクリメント
+          const blockVerocity: number =
+            (2.0 * noteSize * ZOOM_VALUES[zoomIdx] * block.bpm) / 60;
+          if (blockVerocity !== verocity) {
+            if (blockIdx > 0) {
+              prev.verocities.push({ verocity, border });
+            }
+            verocity = blockVerocity;
+          }
+          border += unitRowHeight * block.length;
+          if (blockIdx === chart.blocks.length - 1) {
+            prev.verocities.push({ verocity, border });
+          }
+
+          return prev;
+        },
+        { beatTops: [], verocities: [] }
       );
 
-      // 各ビート音の再生
-      for (let i = 0; i < beatIntervals.length; i++) {
-        const beatIntervalId: NodeJS.Timeout = setTimeout(() => {
-          if (audioContext.current && gainNode.current) {
-            beatSourceNode.current = audioContext.current.createBufferSource();
-            beatSourceNode.current.buffer = beatAudioBuffer.current;
-            beatSourceNode.current.connect(gainNode.current);
-            gainNode.current.connect(audioContext.current.destination);
-            beatSourceNode.current.start();
-          }
+      // MP3ファイルの音楽を再生するまでの時間をそれぞれ設定
+      // 0番目の譜面のブロックのDelayが負の場合はMP3ファイルの音楽を再生するまでの時間を遅延する
+      // const musicInterval: number = chart.blocks[0].delay < 0 ? -1 * chart.blocks[0].delay : 0;
+      // 2. MP3ファイルの音楽を再生するPromiseの生成
+      // const musicPromise: Promise<void> = new Promise(() => {
+      //   const musicIntervalId: NodeJS.Timeout = setTimeout(() => {
+      //     if (audioContext.current && gainNode.current) {
+      //       musicSourceNode.current = audioContext.current.createBufferSource();
+      //       musicSourceNode.current.buffer = musicAudioBuffer.current;
+      //       musicSourceNode.current.connect(gainNode.current);
+      //       gainNode.current.connect(audioContext.current.destination);
+      //       musicSourceNode.current.start();
+      //     }
+      //   }, musicInterval);
+      //   intervalIds.current.push(musicIntervalId);
+      // });
 
-          // すべてのビート音の再生が終了したら、MP3ファイルの音楽・ビート音をともに再生停止するリスナーを設定
-          // TODO: 現状、全部のビート音の再生終了した瞬間、MP3ファイルの音楽が再生中でもぶつ切りになるが、
-          // 将来的には、最下部に自動スクロールした瞬間に、ビート音・MP3ファイルの音楽が再生中でも共にぶつ切りにする
-          // (=リスナーをセットせず、単にstop()のみ実行する)
-          if (i === intervals.length - 1) {
-            if (beatSourceNode.current) {
-              beatSourceNode.current.addEventListener("ended", stop);
-            } else {
+      const FPS: number = 60;
+      const scrollDelayIntervalId: NodeJS.Timeout = setTimeout(
+        () => {
+          let beatTopIdx: number = 0;
+          let verocityIdx: number = 0;
+          const scrollIntervalId: NodeJS.Timeout = setInterval(() => {
+            // スクロール後のブラウザの画面のy座標を計算
+            const top: number =
+              window.scrollY +
+              scrollParam.verocities[verocityIdx].verocity / FPS;
+
+            // 下へ自動スクロール
+            window.scrollTo(0, top);
+
+            // ブラウザの画面のy座標に応じてビート音を再生
+            if (
+              beatTopIdx < scrollParam.beatTops.length &&
+              scrollParam.beatTops[beatTopIdx] <= top &&
+              audioContext.current &&
+              gainNode.current
+            ) {
+              beatSourceNode.current =
+                audioContext.current.createBufferSource();
+              beatSourceNode.current.buffer = beatAudioBuffer.current;
+              beatSourceNode.current.connect(gainNode.current);
+              gainNode.current.connect(audioContext.current.destination);
+              beatSourceNode.current.start();
+              beatTopIdx += 1;
+            }
+
+            // ブラウザの画面のy座標に応じてスクロール速度を変更
+            if (scrollParam.verocities[verocityIdx].border <= top) {
+              verocityIdx += 1;
+            }
+
+            // 最後の譜面のブロックをスクロールし終えたら停止
+            if (verocityIdx === scrollParam.verocities.length) {
               stop();
             }
-          }
-        }, beatIntervals[i]);
-        intervalIds.current.push(beatIntervalId);
-      }
-
-      // MP3ファイルの音楽を再生
-      const musicIntervalId: NodeJS.Timeout = setTimeout(() => {
-        if (audioContext.current && gainNode.current) {
-          musicSourceNode.current = audioContext.current.createBufferSource();
-          musicSourceNode.current.buffer = musicAudioBuffer.current;
-          musicSourceNode.current.connect(gainNode.current);
-          gainNode.current.connect(audioContext.current.destination);
-          musicSourceNode.current.start();
-        }
-      }, musicInterval);
-      intervalIds.current.push(musicIntervalId);
+          }, 1000 / FPS);
+          intervalIds.current.push(scrollIntervalId);
+        },
+        chart.blocks[0].delay > 0 ? chart.blocks[0].delay : 0
+      );
+      intervalIds.current.push(scrollDelayIntervalId);
     } else {
       // 手動での上下スクロール抑止を解除
       document.body.style.overflowY = "scroll";
@@ -211,13 +255,13 @@ function usePlayingMusic() {
         if (gainNode.current) {
           gainNode.current.disconnect();
         }
-
-        // 設定した各ビート音の再生間隔を初期化
-        intervalIds.current.forEach((intervalId) => {
-          clearInterval(intervalId);
-        });
-        intervalIds.current = [];
       }
+
+      // 初期化
+      intervalIds.current.forEach((intervalId) => {
+        clearInterval(intervalId);
+      });
+      intervalIds.current = [];
     }
   }, [isPlaying]);
 
