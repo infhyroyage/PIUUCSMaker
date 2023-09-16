@@ -13,6 +13,9 @@ import { Block, Chart, Note } from "../types/ucs";
 import useChartSizes from "./useChartSizes";
 import { ZOOM_VALUES } from "../service/zoom";
 
+// TODO: Playを押下してからMP3の音楽を再生するまでの遅延時間(ms)を、ユーザーに設定・ローカルストレージに保存させる
+const MUSIC_PLAYING_DELAY: number = -400;
+
 function usePlayingMusic() {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [fileNames, setFileNames] = useRecoilState<FileNames>(fileNamesState);
@@ -105,12 +108,12 @@ function usePlayingMusic() {
       document.body.style.overflowY = "hidden";
 
       // 現在のブラウザの画面のy座標を初期化
-      // 0番目の譜面のブロックのDelayが正の場合は、ビート音を再生するまでの時間を遅延する必要があるため、
-      // その分だけブラウザの画面のy座標を減算する
+      // MP3の音楽を再生するまでの遅延時間のユーザー設定値と0番目の譜面のブロックのDelayに応じて、
+      // ビート音を再生するまでの時間を遅延する分だけブラウザの画面のy座標を減算する
       let top: number =
-        chart.blocks[0].delay > 0
+        chart.blocks[0].delay - MUSIC_PLAYING_DELAY > 0
           ? (-2.0 *
-              chart.blocks[0].delay *
+              (chart.blocks[0].delay - MUSIC_PLAYING_DELAY) *
               noteSize *
               ZOOM_VALUES[zoomIdx] *
               chart.blocks[0].bpm) /
@@ -183,38 +186,29 @@ function usePlayingMusic() {
       // TODO: 暫定的に開始位置を0番目の譜面全体での行のインデックスとする
       window.scrollTo({ top });
 
-      // TODO: 0番目の譜面のブロックのDelayが負の場合のみ、start関数の引数にdelay値を入れてみる
+      // MP3ファイルの音楽を再生
+      // ユーザー設定値と0番目の譜面のブロックのDelayに応じて、MP3ファイルの音楽を再生するまでの時間を遅延する
+      if (audioContext.current && gainNode.current) {
+        musicSourceNode.current = audioContext.current.createBufferSource();
+        musicSourceNode.current.buffer = musicAudioBuffer.current;
+        musicSourceNode.current.connect(gainNode.current);
+        gainNode.current.connect(audioContext.current.destination);
+        musicSourceNode.current.start(
+          MUSIC_PLAYING_DELAY - chart.blocks[0].delay > 0
+            ? (MUSIC_PLAYING_DELAY - chart.blocks[0].delay) / 1000
+            : 0
+        );
+      }
 
-      // MP3ファイルの音楽を再生するまでの時間をそれぞれ設定
-      // 0番目の譜面のブロックのDelayが負の場合はMP3ファイルの音楽を再生するまでの時間を遅延する
-      // const musicInterval: number = chart.blocks[0].delay < 0 ? -1 * chart.blocks[0].delay : 0;
-      // 2. MP3ファイルの音楽を再生するPromiseの生成
-      // const musicPromise: Promise<void> = new Promise(() => {
-      //   const musicIntervalId: NodeJS.Timeout = setTimeout(() => {
-      //     if (audioContext.current && gainNode.current) {
-      //       musicSourceNode.current = audioContext.current.createBufferSource();
-      //       musicSourceNode.current.buffer = musicAudioBuffer.current;
-      //       musicSourceNode.current.connect(gainNode.current);
-      //       gainNode.current.connect(audioContext.current.destination);
-      //       musicSourceNode.current.start();
-      //     }
-      //   }, musicInterval);
-      //   intervalIds.current.push(musicIntervalId);
-      // });
-
+      // 自動スクロールを開始
       const FPS: number = 60;
       let beatTopIdx: number = 0;
       let verocityIdx: number = 0;
       const scrollIntervalId: NodeJS.Timeout = setInterval(() => {
-        if (
-          top <= 0 &&
-          top + scrollParam.verocities[verocityIdx].verocity / FPS >= 0
-        ) {
-        }
         // スクロール後のブラウザの画面のy座標を計算
         top += scrollParam.verocities[verocityIdx].verocity / FPS;
 
-        // 下へ自動スクロール
+        // 下へスクロール
         window.scrollTo({ top });
 
         // ブラウザの画面のy座標に応じてビート音を再生
@@ -243,6 +237,10 @@ function usePlayingMusic() {
         }
       }, 1000 / FPS);
       intervalIds.current.push(scrollIntervalId);
+
+      return () => {
+        console.log("unmounted");
+      };
     } else {
       // 手動での上下スクロール抑止を解除
       document.body.style.overflowY = "scroll";
