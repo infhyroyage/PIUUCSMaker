@@ -13,9 +13,6 @@ import { Block, Chart, Note } from "../types/ucs";
 import useChartSizes from "./useChartSizes";
 import { ZOOM_VALUES } from "../service/zoom";
 
-// TODO: Playを押下してからMP3の音楽を再生するまでの遅延時間(ms)を、ユーザーに設定・ローカルストレージに保存させる
-const MUSIC_PLAYING_DELAY: number = -400;
-
 function usePlayingMusic() {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [fileNames, setFileNames] = useRecoilState<FileNames>(fileNamesState);
@@ -30,6 +27,8 @@ function usePlayingMusic() {
   const musicAudioBuffer = useRef<AudioBuffer | null>(null);
   const beatSourceNode = useRef<AudioBufferSourceNode | null>(null);
   const musicSourceNode = useRef<AudioBufferSourceNode | null>(null);
+  const previousTime = useRef<number>(0);
+  const currentTime = useRef<number>(0);
 
   const [isPending, startTransition] = useTransition();
 
@@ -108,12 +107,12 @@ function usePlayingMusic() {
     document.body.style.overflowY = "hidden";
 
     // 現在のブラウザの画面のy座標を初期化
-    // MP3の音楽を再生するまでの遅延時間のユーザー設定値と0番目の譜面のブロックのDelayに応じて、
-    // ビート音を再生するまでの時間を遅延する分だけブラウザの画面のy座標を減算する
+    // 0番目の譜面のブロックのDelayが正の場合は、ビート音を再生するまでの時間を遅延する必要があるため、
+    // その分だけブラウザの画面のy座標を減算する
     let top: number =
-      chart.blocks[0].delay - MUSIC_PLAYING_DELAY > 0
+      chart.blocks[0].delay > 0
         ? (-2.0 *
-            (chart.blocks[0].delay - MUSIC_PLAYING_DELAY) *
+            chart.blocks[0].delay *
             noteSize *
             ZOOM_VALUES[zoomIdx] *
             chart.blocks[0].bpm) /
@@ -121,7 +120,7 @@ function usePlayingMusic() {
         : 0;
 
     // ブラウザの画面のy座標に応じた、各ビート音を再生するタイミング、および、
-    // 開始地点からの下へスクロールする速度(px/秒)の推移を計算
+    // 開始地点からの下へスクロールする速度(px/ms)の推移を計算
     let blockOffset: number = 0;
     let verocity: number = -1;
     let border: number = 0;
@@ -161,11 +160,11 @@ function usePlayingMusic() {
         // 譜面のブロックの高さのオフセット更新
         blockOffset += unitRowHeight * block.length;
 
-        // 開始地点からの下へスクロールする速度(px/秒)を計算し、
+        // 開始地点からの下へスクロールする速度(px/ms)を計算し、
         // その速度が変化するブラウザの画面のy座標を格納しながら
         // 譜面のブロックの1行あたりの高さ(px単位)をインクリメント
         const blockVerocity: number =
-          (2.0 * noteSize * ZOOM_VALUES[zoomIdx] * block.bpm) / 60;
+          (2.0 * noteSize * ZOOM_VALUES[zoomIdx] * block.bpm) / 60000;
         if (blockVerocity !== verocity) {
           if (blockIdx > 0) {
             prev.verocities.push({ verocity, border });
@@ -187,16 +186,14 @@ function usePlayingMusic() {
     window.scrollTo({ top });
 
     // MP3ファイルの音楽を再生
-    // ユーザー設定値と0番目の譜面のブロックのDelayに応じて、MP3ファイルの音楽を再生するまでの時間を遅延する
+    // 0番目の譜面のブロックのDelayが負の場合はMP3ファイルの音楽を再生するまでの時間を遅延する
     if (audioContext.current && gainNode.current) {
       musicSourceNode.current = audioContext.current.createBufferSource();
       musicSourceNode.current.buffer = musicAudioBuffer.current;
       musicSourceNode.current.connect(gainNode.current);
       gainNode.current.connect(audioContext.current.destination);
       musicSourceNode.current.start(
-        MUSIC_PLAYING_DELAY - chart.blocks[0].delay > 0
-          ? (MUSIC_PLAYING_DELAY - chart.blocks[0].delay) / 1000
-          : 0
+        chart.blocks[0].delay < 0 ? (-1 * chart.blocks[0].delay) / 1000 : 0
       );
     }
 
@@ -204,11 +201,16 @@ function usePlayingMusic() {
     const FPS: number = 60;
     let beatTopIdx: number = 0;
     let verocityIdx: number = 0;
+    previousTime.current = Date.now();
     const scrollIntervalId: NodeJS.Timeout = setInterval(() => {
-      // スクロール後のブラウザの画面のy座標を計算
-      top += scrollParam.verocities[verocityIdx].verocity / FPS;
+      // 最後にスクロールしてからの現在時刻からスクロール間の時間(ms)であるelapsedTimeを計算
+      // この時間は理論上は1000 / FPSと一致するが、実動作上は必ずしも一致しない
+      currentTime.current = Date.now();
+      const elapsedTime: number = currentTime.current - previousTime.current;
+      previousTime.current = currentTime.current;
 
-      // 下へスクロール
+      // スクロール後のブラウザの画面のy座標(px)を計算し、下へスクロール
+      top += scrollParam.verocities[verocityIdx].verocity * elapsedTime;
       window.scrollTo({ top });
 
       // ブラウザの画面のy座標に応じてビート音を再生
