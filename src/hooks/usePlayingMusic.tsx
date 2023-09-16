@@ -6,9 +6,9 @@ import {
   fileNamesState,
   userErrorMessageState,
   volumeValueState,
-  zoomIdxState,
+  zoomState,
 } from "../service/atoms";
-import { FileNames } from "../types/atoms";
+import { FileNames, Zoom } from "../types/atoms";
 import { Block, Chart, Note } from "../types/ucs";
 import useChartSizes from "./useChartSizes";
 import { ZOOM_VALUES } from "../service/zoom";
@@ -18,7 +18,7 @@ function usePlayingMusic() {
   const [fileNames, setFileNames] = useRecoilState<FileNames>(fileNamesState);
   const chart = useRecoilValue<Chart>(chartState);
   const volumeValue = useRecoilValue<number>(volumeValueState);
-  const zoomIdx: number = useRecoilValue<number>(zoomIdxState);
+  const zoom = useRecoilValue<Zoom>(zoomState);
   const setUserErrorMessage = useSetRecoilState<string>(userErrorMessageState);
 
   const audioContext = useRef<AudioContext | null>(null);
@@ -114,7 +114,7 @@ function usePlayingMusic() {
         ? (-2.0 *
             chart.blocks[0].delay *
             noteSize *
-            ZOOM_VALUES[zoomIdx] *
+            ZOOM_VALUES[zoom.idx] *
             chart.blocks[0].bpm) /
           60000
         : 0;
@@ -134,7 +134,7 @@ function usePlayingMusic() {
         // 譜面のブロックの1行あたりの高さ := 2 * noteSize * 倍率 / 譜面のブロックのSplit
         // 例えば、この高さに譜面のブロックの行数を乗ずると、譜面のブロックの高さとなる
         const unitRowHeight: number =
-          (2.0 * noteSize * ZOOM_VALUES[zoomIdx]) / block.split;
+          (2.0 * noteSize * ZOOM_VALUES[zoom.idx]) / block.split;
 
         // 列ごとに各ノートの始点での譜面全体での行のインデックスを抽出
         const filteredStarts: number[][] = chart.notes.map((notes: Note[]) =>
@@ -164,7 +164,7 @@ function usePlayingMusic() {
         // その速度が変化するブラウザの画面のy座標を格納しながら
         // 譜面のブロックの1行あたりの高さ(px単位)をインクリメント
         const blockVerocity: number =
-          (2.0 * noteSize * ZOOM_VALUES[zoomIdx] * block.bpm) / 60000;
+          (2.0 * noteSize * ZOOM_VALUES[zoom.idx] * block.bpm) / 60000;
         if (blockVerocity !== verocity) {
           if (blockIdx > 0) {
             prev.verocities.push({ verocity, border });

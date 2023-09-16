@@ -6,7 +6,7 @@ import {
   menuBarHeightState,
   fileNamesState,
   volumeValueState,
-  zoomIdxState,
+  zoomState,
 } from "../service/atoms";
 import {
   AppBar,
@@ -26,7 +26,7 @@ import VolumeOffIcon from "@mui/icons-material/VolumeOff";
 import VolumeDownIcon from "@mui/icons-material/VolumeDown";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import VolumeMuteIcon from "@mui/icons-material/VolumeMute";
-import { FileNames } from "../types/atoms";
+import { FileNames, Zoom } from "../types/atoms";
 
 function MenuBar() {
   const [muteVolBuf, setMuteVolBuf] = useState<number | null>(null);
@@ -38,7 +38,7 @@ function MenuBar() {
   );
   const [volumeValue, setVolumeValue] =
     useRecoilState<number>(volumeValueState);
-  const [zoomIdx, setZoomIdx] = useRecoilState<number>(zoomIdxState);
+  const [zoom, setZoom] = useRecoilState<Zoom>(zoomState);
   const fileNames = useRecoilValue<FileNames>(fileNamesState);
   const setMenuBarHeight = useSetRecoilState<number>(menuBarHeightState);
 
@@ -89,9 +89,15 @@ function MenuBar() {
         <Stack alignItems="center" direction="row" spacing={4}>
           <FormControl size="small">
             <Select
-              value={`${zoomIdx}`}
+              value={`${zoom.idx}`}
               onChange={(event: SelectChangeEvent) =>
-                setZoomIdx(Number(event.target.value))
+                setZoom({
+                  idx: Number(event.target.value),
+                  top:
+                    (document.documentElement.scrollTop *
+                      ZOOM_VALUES[Number(event.target.value)]) /
+                    ZOOM_VALUES[zoom.idx],
+                })
               }
             >
               {ZOOM_VALUES.map((zoomValue: number, idx: number) => (

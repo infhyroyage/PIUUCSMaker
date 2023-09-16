@@ -1,6 +1,6 @@
 import { atom } from "recoil";
 import { Chart } from "../types/ucs";
-import { FileNames, IndicatorInfo, MouseDownInfo } from "../types/atoms";
+import { FileNames, IndicatorInfo, MouseDownInfo, Zoom } from "../types/atoms";
 
 export const chartState = atom<Chart>({
   key: "chartState",
@@ -62,7 +62,7 @@ export const volumeValueState = atom<number>({
   default: 0.5,
 });
 
-export const zoomIdxState = atom<number>({
-  key: "zoomIdx",
-  default: 0,
+export const zoomState = atom<Zoom>({
+  key: "zoom",
+  default: { idx: 0, top: null },
 });

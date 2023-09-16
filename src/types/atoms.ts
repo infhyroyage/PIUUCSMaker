@@ -60,3 +60,19 @@ export type MouseDownInfo = {
    */
   top: number;
 };
+
+/**
+ * 拡大/縮小時のパラメーター
+ */
+export type Zoom = {
+  /**
+   * 現在の倍率の値のインデックス
+   */
+  idx: number;
+
+  /**
+   * 拡大/縮小直後のブラウザの画面のy座標
+   * 1度も拡大/縮小していない場合はnull
+   */
+  top: number | null;
+};

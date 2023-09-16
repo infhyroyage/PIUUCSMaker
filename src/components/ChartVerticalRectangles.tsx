@@ -8,14 +8,14 @@ import {
   isShownSystemErrorSnackbarState,
   menuBarHeightState,
   mouseDownInfoState,
-  zoomIdxState,
+  zoomState,
 } from "../service/atoms";
 import ChartRectangle from "./ChartRectangle";
 import ChartBorderLine from "./ChartBorderLine";
 import { ZOOM_VALUES } from "../service/zoom";
 import { IMAGE_BINARIES } from "../service/assets";
 import ChartIndicator from "./ChartIndicator";
-import { IndicatorInfo, MouseDownInfo } from "../types/atoms";
+import { IndicatorInfo, MouseDownInfo, Zoom } from "../types/atoms";
 import useChartSizes from "../hooks/useChartSizes";
 
 function ChartVerticalRectangles({ column }: ChartVerticalRectanglesProps) {
@@ -25,7 +25,7 @@ function ChartVerticalRectangles({ column }: ChartVerticalRectanglesProps) {
   const [mouseDownInfo, setMouseDownInfo] =
     useRecoilState<MouseDownInfo | null>(mouseDownInfoState);
   const menuBarHeight = useRecoilValue<number>(menuBarHeightState);
-  const zoomIdx: number = useRecoilValue<number>(zoomIdxState);
+  const zoom = useRecoilValue<Zoom>(zoomState);
   const setIsShownSystemErrorSnackbar = useSetRecoilState<boolean>(
     isShownSystemErrorSnackbarState
   );
@@ -41,9 +41,9 @@ function ChartVerticalRectangles({ column }: ChartVerticalRectanglesProps) {
   const unitRowHeights: number[] = useMemo(
     () =>
       chart.blocks.map(
-        (block: Block) => (2.0 * noteSize * ZOOM_VALUES[zoomIdx]) / block.split
+        (block: Block) => (2.0 * noteSize * ZOOM_VALUES[zoom.idx]) / block.split
       ),
-    [chart.blocks, noteSize, zoomIdx]
+    [chart.blocks, noteSize, zoom]
   );
 
   /**
@@ -60,13 +60,13 @@ function ChartVerticalRectangles({ column }: ChartVerticalRectanglesProps) {
                 prev[blockIdx - 1] +
                   (2.0 *
                     noteSize *
-                    ZOOM_VALUES[zoomIdx] *
+                    ZOOM_VALUES[zoom.idx] *
                     chart.blocks[blockIdx - 1].length) /
                     chart.blocks[blockIdx - 1].split,
               ],
         []
       ),
-    [chart.blocks, noteSize, zoomIdx]
+    [chart.blocks, noteSize, zoom]
   );
 
   const onMouseMove = useCallback(
