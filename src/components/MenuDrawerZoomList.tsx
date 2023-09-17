@@ -13,12 +13,14 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import { ZOOM_VALUES } from "../service/zoom";
 import { Zoom } from "../types/atoms";
 import { useEffect } from "react";
+import usePlayingMusic from "../hooks/usePlayingMusic";
 
 function MenuDrawerZoomList() {
   const isOpenedMenuDrawer = useRecoilValue<boolean>(isOpenedMenuDrawerState);
   const [zoom, setZoom] = useRecoilState<Zoom>(zoomState);
 
   const { listItemButtonStyle, listItemIconStyle } = useMenuDrawerStyles();
+  const { isPlaying } = usePlayingMusic();
 
   useEffect(() => {
     if (zoom.top !== null) scrollTo({ top: zoom.top });
@@ -28,6 +30,7 @@ function MenuDrawerZoomList() {
     <List>
       <ListItem disablePadding sx={{ display: "block" }}>
         <ListItemButton
+          disabled={zoom.idx === ZOOM_VALUES.length - 1 || isPlaying}
           onClick={() =>
             setZoom({
               idx: zoom.idx + 1,
@@ -37,7 +40,6 @@ function MenuDrawerZoomList() {
                 ZOOM_VALUES[zoom.idx],
             })
           }
-          disabled={zoom.idx === ZOOM_VALUES.length - 1}
           sx={listItemButtonStyle}
         >
           <ListItemIcon sx={listItemIconStyle}>
@@ -50,6 +52,7 @@ function MenuDrawerZoomList() {
       </ListItem>
       <ListItem disablePadding sx={{ display: "block" }}>
         <ListItemButton
+          disabled={zoom.idx === 0 || isPlaying}
           onClick={() =>
             setZoom({
               idx: zoom.idx - 1,
@@ -59,7 +62,6 @@ function MenuDrawerZoomList() {
                 ZOOM_VALUES[zoom.idx],
             })
           }
-          disabled={zoom.idx === 0}
           sx={listItemButtonStyle}
         >
           <ListItemIcon sx={listItemIconStyle}>

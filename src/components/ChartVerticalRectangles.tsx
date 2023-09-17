@@ -17,6 +17,7 @@ import { IMAGE_BINARIES } from "../service/assets";
 import ChartIndicator from "./ChartIndicator";
 import { IndicatorInfo, MouseDownInfo, Zoom } from "../types/atoms";
 import useChartSizes from "../hooks/useChartSizes";
+import usePlayingMusic from "../hooks/usePlayingMusic";
 
 function ChartVerticalRectangles({ column }: ChartVerticalRectanglesProps) {
   const [chart, setChart] = useRecoilState<Chart>(chartState);
@@ -32,6 +33,7 @@ function ChartVerticalRectangles({ column }: ChartVerticalRectanglesProps) {
 
   // 単ノートの1辺、枠線のサイズを取得
   const { noteSize, borderSize } = useChartSizes();
+  const { isPlaying } = usePlayingMusic();
 
   /**
    * 各譜面のブロックの1行あたりの高さをpx単位で計算
@@ -71,6 +73,9 @@ function ChartVerticalRectangles({ column }: ChartVerticalRectanglesProps) {
 
   const onMouseMove = useCallback(
     (event: React.MouseEvent<HTMLSpanElement>) => {
+      // 再生中の場合はNOP
+      if (isPlaying) return;
+
       // マウスホバーしたy座標を取得
       const y: number = Math.floor(
         event.clientY - event.currentTarget.getBoundingClientRect().top
@@ -99,15 +104,24 @@ function ChartVerticalRectangles({ column }: ChartVerticalRectanglesProps) {
       blockOffsets,
       chart.blocks,
       column,
+      isPlaying,
       menuBarHeight,
       setIndicatorInfo,
       unitRowHeights,
     ]
   );
 
+  const onMouseLeave = useCallback(() => {
+    // 再生中の場合はNOP
+    if (isPlaying) return;
+
+    // インディケーターを非表示
+    setIndicatorInfo(null);
+  }, [isPlaying, setIndicatorInfo]);
+
   const onMouseDown = useCallback(() => {
-    // 押下した瞬間にインディケーターが非表示である場合はNOP
-    if (indicatorInfo === null) return;
+    // 再生中、または、押下した瞬間にインディケーターが非表示である場合はNOP
+    if (isPlaying || indicatorInfo === null) return;
 
     // マウス押下時のパラメーターを保持
     setMouseDownInfo({
@@ -115,9 +129,12 @@ function ChartVerticalRectangles({ column }: ChartVerticalRectanglesProps) {
       rowIdx: indicatorInfo.rowIdx,
       top: indicatorInfo.top,
     });
-  }, [column, indicatorInfo, setMouseDownInfo]);
+  }, [column, indicatorInfo, isPlaying, setMouseDownInfo]);
 
   const onMouseUp = useCallback(() => {
+    // 再生中の場合はNOP
+    if (isPlaying) return;
+
     // 同一列内でのマウス操作の場合のみ、譜面の更新を行う
     if (
       mouseDownInfo !== null &&
@@ -169,7 +186,7 @@ function ChartVerticalRectangles({ column }: ChartVerticalRectanglesProps) {
         ),
       });
     }
-  }, [chart, column, indicatorInfo, mouseDownInfo, setChart]);
+  }, [chart, column, indicatorInfo, isPlaying, mouseDownInfo, setChart]);
 
   return (
     <span
@@ -179,7 +196,7 @@ function ChartVerticalRectangles({ column }: ChartVerticalRectanglesProps) {
         flexDirection: "column",
       }}
       onMouseMove={onMouseMove}
-      onMouseLeave={() => setIndicatorInfo(null)}
+      onMouseLeave={onMouseLeave}
       onMouseDown={onMouseDown}
       onMouseUp={onMouseUp}
     >

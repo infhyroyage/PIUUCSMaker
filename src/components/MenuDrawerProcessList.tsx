@@ -10,16 +10,22 @@ import RedoIcon from "@mui/icons-material/Redo";
 import useMenuDrawerStyles from "../hooks/useMenuDrawerStyles";
 import { isOpenedMenuDrawerState } from "../service/atoms";
 import { useRecoilValue } from "recoil";
+import usePlayingMusic from "../hooks/usePlayingMusic";
 
 function MenuDrawerProcessList() {
   const isOpenedMenuDrawer = useRecoilValue<boolean>(isOpenedMenuDrawerState);
 
   const { listItemButtonStyle, listItemIconStyle } = useMenuDrawerStyles();
+  const { isPlaying } = usePlayingMusic();
 
   return (
     <List>
       <ListItem disablePadding sx={{ display: "block" }}>
-        <ListItemButton onClick={() => alert("TODO")} sx={listItemButtonStyle}>
+        <ListItemButton
+          disabled={isPlaying}
+          onClick={() => alert("TODO")}
+          sx={listItemButtonStyle}
+        >
           <ListItemIcon sx={listItemIconStyle}>
             <UndoIcon />
           </ListItemIcon>
@@ -29,7 +35,11 @@ function MenuDrawerProcessList() {
         </ListItemButton>
       </ListItem>
       <ListItem disablePadding sx={{ display: "block" }}>
-        <ListItemButton onClick={() => alert("TODO")} sx={listItemButtonStyle}>
+        <ListItemButton
+          disabled={isPlaying}
+          onClick={() => alert("TODO")}
+          sx={listItemButtonStyle}
+        >
           <ListItemIcon sx={listItemIconStyle}>
             <RedoIcon />
           </ListItemIcon>

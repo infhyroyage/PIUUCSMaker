@@ -27,7 +27,7 @@ function MenuDrawerPlayingList() {
       <ListItem disablePadding sx={{ display: "block" }}>
         <ListItemButton
           component="label"
-          disabled={isUploadingMP3}
+          disabled={isPlaying || isUploadingMP3}
           htmlFor="upload-mp3"
           sx={listItemButtonStyle}
         >

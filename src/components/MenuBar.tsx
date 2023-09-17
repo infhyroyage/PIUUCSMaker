@@ -27,6 +27,7 @@ import VolumeDownIcon from "@mui/icons-material/VolumeDown";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import VolumeMuteIcon from "@mui/icons-material/VolumeMute";
 import { FileNames, Zoom } from "../types/atoms";
+import usePlayingMusic from "../hooks/usePlayingMusic";
 
 function MenuBar() {
   const [muteVolBuf, setMuteVolBuf] = useState<number | null>(null);
@@ -41,6 +42,8 @@ function MenuBar() {
   const [zoom, setZoom] = useRecoilState<Zoom>(zoomState);
   const fileNames = useRecoilValue<FileNames>(fileNamesState);
   const setMenuBarHeight = useSetRecoilState<number>(menuBarHeightState);
+
+  const { isPlaying } = usePlayingMusic();
 
   const onClickVolumeButton = () => {
     if (muteVolBuf === null) {
@@ -89,7 +92,7 @@ function MenuBar() {
         <Stack alignItems="center" direction="row" spacing={4}>
           <FormControl size="small">
             <Select
-              value={`${zoom.idx}`}
+              disabled={isPlaying}
               onChange={(event: SelectChangeEvent) =>
                 setZoom({
                   idx: Number(event.target.value),
@@ -99,6 +102,7 @@ function MenuBar() {
                     ZOOM_VALUES[zoom.idx],
                 })
               }
+              value={`${zoom.idx}`}
             >
               {ZOOM_VALUES.map((zoomValue: number, idx: number) => (
                 <MenuItem

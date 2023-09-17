@@ -1,5 +1,4 @@
 import {
-  CircularProgress,
   List,
   ListItem,
   ListItemButton,
@@ -18,6 +17,7 @@ import {
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import useMenuDrawerStyles from "../hooks/useMenuDrawerStyles";
 import { Chart } from "../types/ucs";
+import usePlayingMusic from "../hooks/usePlayingMusic";
 
 function MenuDrawerFileList() {
   const chart: Chart = useRecoilValue<Chart>(chartState);
@@ -26,14 +26,15 @@ function MenuDrawerFileList() {
     isOpenedNewFileDialogState
   );
 
-  const { isUploadingUCS, uploadUCS } = useUploadingUCS();
   const { listItemButtonStyle, listItemIconStyle } = useMenuDrawerStyles();
+  const { isPlaying } = usePlayingMusic();
+  const { isUploadingUCS, uploadUCS } = useUploadingUCS();
 
   return (
     <List>
       <ListItem disablePadding sx={{ display: "block" }}>
         <ListItemButton
-          disabled={isUploadingUCS}
+          disabled={isPlaying || isUploadingUCS}
           onClick={() => setIsOpenedNewChartDialog(true)}
           sx={listItemButtonStyle}
         >
@@ -48,7 +49,7 @@ function MenuDrawerFileList() {
       <ListItem disablePadding sx={{ display: "block" }}>
         <ListItemButton
           component="label"
-          disabled={isUploadingUCS}
+          disabled={isPlaying || isUploadingUCS}
           htmlFor="upload-ucs"
           sx={listItemButtonStyle}
         >
@@ -72,7 +73,7 @@ function MenuDrawerFileList() {
       </ListItem>
       <ListItem disablePadding sx={{ display: "block" }}>
         <ListItemButton
-          disabled={chart.blocks.length === 0 || isUploadingUCS}
+          disabled={chart.blocks.length === 0 || isPlaying || isUploadingUCS}
           onClick={() => alert("TODO")}
           sx={listItemButtonStyle}
         >
