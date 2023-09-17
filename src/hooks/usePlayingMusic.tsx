@@ -237,40 +237,40 @@ function usePlayingMusic() {
     const FPS: number = 60;
     previousScrollTime.current = Date.now();
     const scrollIntervalId: NodeJS.Timeout = setInterval(() => {
-      // 最後の譜面のブロックをスクロールし終えたら停止
       if (verocityIdx === scrollParam.verocities.length) {
+        // 最後の譜面のブロックをスクロールし終えたら停止
         stop();
-      }
+      } else {
+        // 最後にスクロールしてからの現在時刻からスクロール間の時間(ms)であるelapsedTimeを計算
+        // この時間は理論上は1000 / FPSと一致するが、実動作上は必ずしも一致しない
+        currentScrollTime.current = Date.now();
+        const elapsedScrollTime: number =
+          currentScrollTime.current - previousScrollTime.current;
+        previousScrollTime.current = currentScrollTime.current;
 
-      // 最後にスクロールしてからの現在時刻からスクロール間の時間(ms)であるelapsedTimeを計算
-      // この時間は理論上は1000 / FPSと一致するが、実動作上は必ずしも一致しない
-      currentScrollTime.current = Date.now();
-      const elapsedScrollTime: number =
-        currentScrollTime.current - previousScrollTime.current;
-      previousScrollTime.current = currentScrollTime.current;
+        // スクロール後のブラウザの画面のy座標(px)を計算し、下へスクロール
+        top += scrollParam.verocities[verocityIdx].verocity * elapsedScrollTime;
+        window.scrollTo({ top });
 
-      // スクロール後のブラウザの画面のy座標(px)を計算し、下へスクロール
-      top += scrollParam.verocities[verocityIdx].verocity * elapsedScrollTime;
-      window.scrollTo({ top });
+        // ブラウザの画面のy座標に応じてビート音を再生
+        if (
+          beatTopIdx < scrollParam.beatTops.length &&
+          scrollParam.beatTops[beatTopIdx] <= top &&
+          audioContext.current &&
+          gainNode.current
+        ) {
+          beatSourceNode.current = audioContext.current.createBufferSource();
+          beatSourceNode.current.buffer = beatAudioBuffer.current;
+          beatSourceNode.current.connect(gainNode.current);
+          gainNode.current.connect(audioContext.current.destination);
+          beatSourceNode.current.start();
+          beatTopIdx += 1;
+        }
 
-      // ブラウザの画面のy座標に応じてビート音を再生
-      if (
-        beatTopIdx < scrollParam.beatTops.length &&
-        scrollParam.beatTops[beatTopIdx] <= top &&
-        audioContext.current &&
-        gainNode.current
-      ) {
-        beatSourceNode.current = audioContext.current.createBufferSource();
-        beatSourceNode.current.buffer = beatAudioBuffer.current;
-        beatSourceNode.current.connect(gainNode.current);
-        gainNode.current.connect(audioContext.current.destination);
-        beatSourceNode.current.start();
-        beatTopIdx += 1;
-      }
-
-      // ブラウザの画面のy座標に応じてスクロール速度を変更
-      if (scrollParam.verocities[verocityIdx].border <= top) {
-        verocityIdx += 1;
+        // ブラウザの画面のy座標に応じてスクロール速度を変更
+        if (scrollParam.verocities[verocityIdx].border <= top) {
+          verocityIdx += 1;
+        }
       }
     }, 1000 / FPS);
 
