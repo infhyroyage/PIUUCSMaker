@@ -13,11 +13,11 @@ import {
 import ChartRectangle from "./ChartRectangle";
 import ChartBorderLine from "./ChartBorderLine";
 import { ZOOM_VALUES } from "../service/zoom";
-import { IMAGE_BINARIES } from "../service/assets";
 import ChartIndicator from "./ChartIndicator";
 import { IndicatorInfo, MouseDownInfo, Zoom } from "../types/atoms";
 import useChartSizes from "../hooks/useChartSizes";
 import usePlayingMusic from "../hooks/usePlayingMusic";
+import ChartVerticalNoteImages from "./ChartVerticalNoteImages";
 
 function ChartVerticalRectangles({ column }: ChartVerticalRectanglesProps) {
   const [chart, setChart] = useRecoilState<Chart>(chartState);
@@ -31,7 +31,6 @@ function ChartVerticalRectangles({ column }: ChartVerticalRectanglesProps) {
     isShownSystemErrorSnackbarState
   );
 
-  // 単ノートの1辺、枠線のサイズを取得
   const { noteSize, borderSize } = useChartSizes();
   const { isPlaying } = usePlayingMusic();
 
@@ -223,106 +222,38 @@ function ChartVerticalRectangles({ column }: ChartVerticalRectanglesProps) {
       )}
       {chart.notes[column].map((note: Note, i: number) => {
         // start/goalに対応する譜面のブロックのインデックスをそれぞれ取得
-        let startBlockIdx: number | null = null;
-        let goalBlockIdx: number | null = null;
-        let accumulatedLengthTemp: number = 0;
-        for (let blockIdx = 0; blockIdx < chart.blocks.length; blockIdx++) {
-          if (
-            startBlockIdx === null &&
-            note.start < accumulatedLengthTemp + chart.blocks[blockIdx].length
-          ) {
-            startBlockIdx = blockIdx;
-          }
-          if (
-            goalBlockIdx === null &&
-            note.goal < accumulatedLengthTemp + chart.blocks[blockIdx].length
-          ) {
-            goalBlockIdx = blockIdx;
-          }
-
-          if (startBlockIdx !== null && goalBlockIdx !== null) break;
-
-          accumulatedLengthTemp += chart.blocks[blockIdx].length;
-        }
-
+        const startBlockIdx: number = chart.blocks.findIndex(
+          (block: Block) => note.start < block.accumulatedLength + block.length
+        );
+        const goalBlockIdx: number = chart.blocks.findIndex(
+          (block: Block) => note.goal < block.accumulatedLength + block.length
+        );
         // 内部矛盾チェック
-        if (startBlockIdx === null || goalBlockIdx === null) {
+        if (startBlockIdx === -1 || goalBlockIdx === -1) {
           setIsShownSystemErrorSnackbar(true);
           return;
         }
 
         return (
-          <React.Fragment key={i}>
-            {/* 単ノート/ホールドの始点の画像 */}
-            <img
-              src={IMAGE_BINARIES[column % 5].note}
-              alt={`note${column % 5}`}
-              width={noteSize}
-              height={noteSize}
-              style={{
-                position: "absolute",
-                top: `${
-                  menuBarHeight +
-                  blockOffsets[startBlockIdx] +
-                  unitRowHeights[startBlockIdx] *
-                    (note.start - chart.blocks[startBlockIdx].accumulatedLength)
-                }px`,
-                zIndex: (note.start + 1) * 10,
-              }}
-            />
-            {note.start !== note.goal && (
-              <>
-                {/* ホールドの画像 */}
-                <img
-                  src={IMAGE_BINARIES[column % 5].hold}
-                  alt={`hold${column % 5}`}
-                  width={noteSize}
-                  height={
-                    blockOffsets[goalBlockIdx] +
-                    unitRowHeights[goalBlockIdx] *
-                      (note.goal -
-                        chart.blocks[goalBlockIdx].accumulatedLength) -
-                    blockOffsets[startBlockIdx] -
-                    unitRowHeights[startBlockIdx] *
-                      (note.start -
-                        chart.blocks[startBlockIdx].accumulatedLength)
-                  }
-                  style={{
-                    position: "absolute",
-                    top: `${
-                      menuBarHeight +
-                      blockOffsets[startBlockIdx] +
-                      unitRowHeights[startBlockIdx] *
-                        (note.start -
-                          chart.blocks[startBlockIdx].accumulatedLength) +
-                      noteSize * 0.5
-                    }px`,
-                    zIndex: (note.start + 1) * 10 + 2,
-                  }}
-                />
-                {/* ホールドの終点の画像 */}
-                <img
-                  src={IMAGE_BINARIES[column % 5].note}
-                  alt={`note${column % 5}`}
-                  width={noteSize}
-                  height={noteSize}
-                  style={{
-                    position: "absolute",
-                    top: `${
-                      menuBarHeight +
-                      blockOffsets[goalBlockIdx] +
-                      unitRowHeights[goalBlockIdx] *
-                        (note.goal -
-                          chart.blocks[goalBlockIdx].accumulatedLength)
-                    }px`,
-                    zIndex: (note.start + 1) * 10 + 1,
-                  }}
-                />
-              </>
-            )}
-          </React.Fragment>
+          <ChartVerticalNoteImages
+            key={i}
+            column={column}
+            goalTop={
+              menuBarHeight +
+              blockOffsets[goalBlockIdx] +
+              unitRowHeights[goalBlockIdx] *
+                (note.goal - chart.blocks[goalBlockIdx].accumulatedLength)
+            }
+            startTop={
+              menuBarHeight +
+              blockOffsets[startBlockIdx] +
+              unitRowHeights[startBlockIdx] *
+                (note.start - chart.blocks[startBlockIdx].accumulatedLength)
+            }
+            startZIndex={(note.start + 1) * 10}
+          />
         );
-      }, [])}
+      })}
       <ChartIndicator column={column} />
     </span>
   );
