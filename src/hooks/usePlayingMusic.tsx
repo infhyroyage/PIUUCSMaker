@@ -4,6 +4,7 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
   chartState,
   fileNamesState,
+  isMuteBeatsState,
   isPlayingState,
   noteSizeState,
   userErrorMessageState,
@@ -17,14 +18,16 @@ import { ZOOM_VALUES } from "../service/zoom";
 function usePlayingMusic() {
   const [isPlaying, setIsPlaying] = useRecoilState<boolean>(isPlayingState);
   const [fileNames, setFileNames] = useRecoilState<FileNames>(fileNamesState);
+  const setUserErrorMessage = useSetRecoilState<string>(userErrorMessageState);
   const chart = useRecoilValue<Chart>(chartState);
+  const isMuteBeats = useRecoilValue<boolean>(isMuteBeatsState);
   const noteSize = useRecoilValue<number>(noteSizeState);
   const volumeValue = useRecoilValue<number>(volumeValueState);
   const zoom = useRecoilValue<Zoom>(zoomState);
-  const setUserErrorMessage = useSetRecoilState<string>(userErrorMessageState);
 
   const audioContext = useRef<AudioContext | null>(null);
-  const gainNode = useRef<GainNode | null>(null);
+  const beatGainNode = useRef<GainNode | null>(null);
+  const musicGainNode = useRef<GainNode | null>(null);
   const beatAudioBuffer = useRef<AudioBuffer | null>(null);
   const musicAudioBuffer = useRef<AudioBuffer | null>(null);
   const beatSourceNode = useRef<AudioBufferSourceNode | null>(null);
@@ -40,11 +43,15 @@ function usePlayingMusic() {
       fetch(beatWav)
         .then((response) => response.arrayBuffer())
         .then((arrayBuffer) => {
-          // AudioContext/GainNodeを初期化していない場合は初期化しておく
+          // AudioContextを初期化していない場合は初期化しておく
           if (audioContext.current === null) {
             audioContext.current = new AudioContext();
-            gainNode.current = audioContext.current.createGain();
-            gainNode.current.gain.value = volumeValue;
+          }
+
+          // ビート音用のGainNodeを初期化していない場合は初期化しておく
+          if (beatGainNode.current === null) {
+            beatGainNode.current = audioContext.current.createGain();
+            beatGainNode.current.gain.value = isMuteBeats ? 0 : volumeValue;
           }
 
           return audioContext.current.decodeAudioData(arrayBuffer);
@@ -60,12 +67,12 @@ function usePlayingMusic() {
 
   const stop = () => setIsPlaying(false);
 
-  // 音量を0(ミュート)から1(MAX)まで動的に設定
+  // ビート音用の音量を0(ミュート)から1(MAX)まで動的に設定
   useEffect(() => {
-    if (gainNode.current !== null) {
-      gainNode.current.gain.value = volumeValue;
+    if (beatGainNode.current !== null) {
+      beatGainNode.current.gain.value = isMuteBeats ? 0 : volumeValue;
     }
-  }, [volumeValue]);
+  }, [isMuteBeats, volumeValue]);
 
   const uploadMP3 = (event: React.ChangeEvent<HTMLInputElement>) => {
     // MP3ファイルを何もアップロードしなかった場合はNOP
@@ -83,11 +90,15 @@ function usePlayingMusic() {
       fileList[0]
         .arrayBuffer()
         .then((arrayBuffer: ArrayBuffer) => {
-          // AudioContext/GainNodeを初期化していない場合は初期化しておく
+          // AudioContextを初期化していない場合は初期化しておく
           if (audioContext.current === null) {
             audioContext.current = new AudioContext();
-            gainNode.current = audioContext.current.createGain();
-            gainNode.current.gain.value = volumeValue;
+          }
+
+          // MP3ファイルの音楽用のGainNodeを初期化していない場合は初期化しておく
+          if (musicGainNode.current === null) {
+            musicGainNode.current = audioContext.current.createGain();
+            musicGainNode.current.gain.value = volumeValue;
           }
 
           return audioContext.current.decodeAudioData(arrayBuffer);
@@ -98,6 +109,13 @@ function usePlayingMusic() {
         });
     });
   };
+
+  // MP3ファイルの音楽用の音量を0(ミュート)から1(MAX)まで動的に設定
+  useEffect(() => {
+    if (musicGainNode.current !== null) {
+      musicGainNode.current.gain.value = volumeValue;
+    }
+  }, [volumeValue]);
 
   useEffect(() => {
     if (!isPlaying) return;
@@ -212,11 +230,11 @@ function usePlayingMusic() {
     }
 
     // MP3ファイルの音楽を再生
-    if (audioContext.current && gainNode.current) {
+    if (audioContext.current && musicGainNode.current) {
       musicSourceNode.current = audioContext.current.createBufferSource();
       musicSourceNode.current.buffer = musicAudioBuffer.current;
-      musicSourceNode.current.connect(gainNode.current);
-      gainNode.current.connect(audioContext.current.destination);
+      musicSourceNode.current.connect(musicGainNode.current);
+      musicGainNode.current.connect(audioContext.current.destination);
       musicSourceNode.current.start(
         // 0番目の譜面のブロックのDelayが負の場合は、現在のブラウザの画面のy座標に応じた自動スクロール経過時間(秒)に応じて、
         // MP3ファイルの音楽を再生するまでの時間を遅延する
@@ -256,12 +274,12 @@ function usePlayingMusic() {
           beatTopIdx < scrollParam.beatTops.length &&
           scrollParam.beatTops[beatTopIdx] <= top &&
           audioContext.current &&
-          gainNode.current
+          beatGainNode.current
         ) {
           beatSourceNode.current = audioContext.current.createBufferSource();
           beatSourceNode.current.buffer = beatAudioBuffer.current;
-          beatSourceNode.current.connect(gainNode.current);
-          gainNode.current.connect(audioContext.current.destination);
+          beatSourceNode.current.connect(beatGainNode.current);
+          beatGainNode.current.connect(audioContext.current.destination);
           beatSourceNode.current.start();
           beatTopIdx += 1;
         }
@@ -277,23 +295,25 @@ function usePlayingMusic() {
       // 手動での上下スクロール抑止を解除
       document.body.style.overflowY = "scroll";
 
+      // 自動スクロールを停止
+      clearInterval(scrollIntervalId);
+
       // ビート音の再生を中断
       if (beatSourceNode.current) {
         beatSourceNode.current.stop();
         beatSourceNode.current.disconnect();
       }
-
-      // 自動スクロールを停止
-      clearInterval(scrollIntervalId);
+      if (beatGainNode.current) {
+        beatGainNode.current.disconnect();
+      }
 
       // MP3ファイルの音楽の再生を中断
       if (musicSourceNode.current) {
         musicSourceNode.current.stop();
         musicSourceNode.current.disconnect();
       }
-
-      if (gainNode.current) {
-        gainNode.current.disconnect();
+      if (musicGainNode.current) {
+        musicGainNode.current.disconnect();
       }
     };
   }, [isPlaying]);

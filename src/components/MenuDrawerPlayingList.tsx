@@ -6,11 +6,14 @@ import {
   ListItemText,
 } from "@mui/material";
 import AudioFileIcon from "@mui/icons-material/AudioFile";
+import MusicOffIcon from "@mui/icons-material/MusicOff";
+import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import StopIcon from "@mui/icons-material/Stop";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import {
   chartState,
+  isMuteBeatsState,
   isOpenedMenuDrawerState,
   isPlayingState,
 } from "../service/atoms";
@@ -23,6 +26,8 @@ import {
 
 function MenuDrawerPlayingList() {
   const chart: Chart = useRecoilValue<Chart>(chartState);
+  const [isMuteBeats, setIsMuteBeats] =
+    useRecoilState<boolean>(isMuteBeatsState);
   const isOpenedMenuDrawer = useRecoilValue<boolean>(isOpenedMenuDrawerState);
   const isPlaying = useRecoilValue<boolean>(isPlayingState);
 
@@ -50,6 +55,22 @@ function MenuDrawerPlayingList() {
           {isOpenedMenuDrawer && (
             <ListItemText
               primary={isUploadingMP3 ? "Ready..." : "Upload MP3"}
+              sx={{ opacity: 1 }}
+            />
+          )}
+        </ListItemButton>
+      </ListItem>
+      <ListItem disablePadding sx={{ display: "block" }}>
+        <ListItemButton
+          onClick={() => setIsMuteBeats(!isMuteBeats)}
+          sx={generateListItemButtonStyle(isOpenedMenuDrawer)}
+        >
+          <ListItemIcon sx={generateListItemIconStyle(isOpenedMenuDrawer)}>
+            {isMuteBeats ? <MusicOffIcon /> : <MusicNoteIcon />}
+          </ListItemIcon>
+          {isOpenedMenuDrawer && (
+            <ListItemText
+              primary={isMuteBeats ? "Mute Beats" : "Unmute Beats"}
               sx={{ opacity: 1 }}
             />
           )}

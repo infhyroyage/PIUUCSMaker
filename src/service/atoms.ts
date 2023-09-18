@@ -22,6 +22,11 @@ export const isDarkModeState = atom<boolean>({
   default: false,
 });
 
+export const isMuteBeatsState = atom<boolean>({
+  key: "isMuteBeats",
+  default: true,
+});
+
 export const isOpenedMenuDrawerState = atom<boolean>({
   key: "isOpenedMenuDrawer",
   default: false,
