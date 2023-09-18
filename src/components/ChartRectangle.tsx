@@ -6,7 +6,7 @@ function ChartRectangle({ blockIdx, height }: ChartRectangleProps) {
     <span
       style={{
         width: "100%",
-        height: `${height}px`,
+        height,
         backgroundColor:
           blockIdx % 2 === 0 ? "rgb(255, 255, 170)" : "rgb(170, 255, 255)",
       }}

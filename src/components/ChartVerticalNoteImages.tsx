@@ -22,7 +22,7 @@ function ChartVerticalNoteImages({
         height={noteSize}
         style={{
           position: "absolute",
-          top: `${startTop}px`,
+          top: startTop,
           zIndex: startZIndex,
         }}
       />
@@ -36,7 +36,7 @@ function ChartVerticalNoteImages({
             height={goalTop - startTop}
             style={{
               position: "absolute",
-              top: `${startTop + noteSize * 0.5}px`,
+              top: startTop + noteSize * 0.5,
               zIndex: startZIndex + 1,
             }}
           />
@@ -48,7 +48,7 @@ function ChartVerticalNoteImages({
             height={noteSize}
             style={{
               position: "absolute",
-              top: `${goalTop}px`,
+              top: goalTop,
               zIndex: startZIndex + 2,
             }}
           />

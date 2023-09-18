@@ -8,7 +8,7 @@ import {
   noteSizeState,
 } from "../service/atoms";
 import ChartBorderLine from "./ChartBorderLine";
-import ChartVerticalRectangles from "./ChartVerticalRectangles";
+import ChartVertical from "./ChartVertical";
 
 function WorkSpace() {
   const [noteSize, setNoteSize] = useRecoilState<number>(noteSizeState);
@@ -59,10 +59,10 @@ function WorkSpace() {
         {[...Array(chart.length)].map((_, column: number) => (
           <React.Fragment key={column}>
             {column === 0 && (
-              <ChartBorderLine width={`${borderSize}px`} height="100%" />
+              <ChartBorderLine width={borderSize} height="100%" />
             )}
-            <ChartVerticalRectangles column={column} />
-            <ChartBorderLine width={`${borderSize}px`} height="100%" />
+            <ChartVertical column={column} />
+            <ChartBorderLine width={borderSize} height="100%" />
           </React.Fragment>
         ))}
       </div>

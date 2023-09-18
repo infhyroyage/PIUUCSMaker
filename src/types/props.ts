@@ -2,12 +2,12 @@ export type ChartBorderLineProps = {
   /**
    * 高さ(px単位)
    */
-  height: string;
+  height: number | string;
 
   /**
-   * 場(px単位)
+   * 幅(px単位)
    */
-  width: string;
+  width: number | string;
 };
 
 /**
@@ -37,6 +37,27 @@ export type ChartRectangleProps = {
 };
 
 /**
+ * ChartVerticalのprops
+ */
+export type ChartVerticalProps = {
+  /**
+   * 列インデックス
+   * Single/SinglePerformance譜面の場合は0〜4、Double/DoublePerformance譜面の場合は0〜9
+   */
+  column: number;
+};
+
+/**
+ * ChartVerticalRectanglesのprops
+ */
+export type ChartVerticalRectanglesProps = {
+  /**
+   * 譜面のブロックのインデックス
+   */
+  blockIdx: number;
+};
+
+/**
  * ChartVerticalNoteImagesのprops
  */
 export type ChartVerticalNoteImagesProps = {
@@ -62,15 +83,4 @@ export type ChartVerticalNoteImagesProps = {
    * 単ノート/ホールドの始点の画像のz-index値
    */
   startZIndex: number;
-};
-
-/**
- * ChartVerticalRectanglesのprops
- */
-export type ChartVerticalRectanglesProps = {
-  /**
-   * 列インデックス
-   * Single/SinglePerformance譜面の場合は0〜4、Double/DoublePerformance譜面の場合は0〜9
-   */
-  column: number;
 };

@@ -35,11 +35,10 @@ function ChartIndicator({ column }: ChartIndicatorProps) {
               height={noteSize}
               style={{
                 position: "absolute",
-                top: `${
+                top:
                   mouseDownInfo.top < indicatorInfo.top
                     ? mouseDownInfo.top
-                    : indicatorInfo.top
-                }px`,
+                    : indicatorInfo.top,
                 zIndex: theme.zIndex.drawer - 4,
               }}
             />
@@ -57,12 +56,11 @@ function ChartIndicator({ column }: ChartIndicatorProps) {
                   }
                   style={{
                     position: "absolute",
-                    top: `${
+                    top:
                       (mouseDownInfo.top < indicatorInfo.top
                         ? mouseDownInfo.top
                         : indicatorInfo.top) +
-                      noteSize * 0.5
-                    }px`,
+                      noteSize * 0.5,
                     zIndex: theme.zIndex.drawer - 2,
                   }}
                 />
@@ -74,11 +72,10 @@ function ChartIndicator({ column }: ChartIndicatorProps) {
                   height={noteSize}
                   style={{
                     position: "absolute",
-                    top: `${
+                    top:
                       mouseDownInfo.top < indicatorInfo.top
                         ? indicatorInfo.top
-                        : mouseDownInfo.top
-                    }px`,
+                        : mouseDownInfo.top,
                     zIndex: theme.zIndex.drawer - 3,
                   }}
                 />
@@ -91,9 +88,9 @@ function ChartIndicator({ column }: ChartIndicatorProps) {
           style={{
             display: "block",
             position: "absolute",
-            top: `${indicatorInfo.top}px`,
-            width: `${noteSize}px`,
-            height: `${noteSize}px`,
+            top: indicatorInfo.top,
+            width: noteSize,
+            height: noteSize,
             backgroundColor: "rgba(170, 170, 170, 0.5)",
             zIndex: theme.zIndex.drawer - 1,
           }}
