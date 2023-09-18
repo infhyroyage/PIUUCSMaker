@@ -15,11 +15,13 @@ import {
   fileNamesState,
 } from "../service/atoms";
 import { ChangeEvent, useState, useTransition } from "react";
-import { NewFileDialogForm } from "../types/form";
+import { NewFileDialogErrors, NewFileDialogForm } from "../types/form";
 import { Chart, Note } from "../types/ucs";
 import { FileNames } from "../types/atoms";
 
-const validateAndLoadUCS = (form: NewFileDialogForm): Chart | string => {
+const validateAndLoadUCS = (
+  form: NewFileDialogForm
+): Chart | NewFileDialogErrors => {
   // UCSファイル名のチェック
   if (form.fileName.length === 0) {
     return "fileName";
@@ -109,6 +111,7 @@ const validateAndLoadUCS = (form: NewFileDialogForm): Chart | string => {
 };
 
 function NewFileDialog() {
+  const [resultError, setResultError] = useState<NewFileDialogErrors | "">("");
   const [form, setForm] = useState<NewFileDialogForm>({
     beat: "4",
     bpm: "120",
@@ -127,9 +130,10 @@ function NewFileDialog() {
 
   const onCreate = () =>
     startTransition(() => {
-      const result: Chart | string = validateAndLoadUCS(form);
+      const result: Chart | NewFileDialogErrors = validateAndLoadUCS(form);
       if (typeof result === "string") {
-        // TODO: テキストフィールドにエラーを表示
+        // バリデーションエラーのテキストフィールドを表示
+        setResultError(result);
       } else {
         setFileNames({ ...fileNames, ucs: `${form.fileName}.ucs` });
         setChart(result);
@@ -146,6 +150,7 @@ function NewFileDialog() {
         <Stack spacing={3} mt={1}>
           <TextField
             disabled={isPending}
+            error={resultError === "fileName"}
             fullWidth
             helperText="Not Set Extension(.ucs)"
             label="UCS File Name"
@@ -158,6 +163,7 @@ function NewFileDialog() {
           />
           <TextField
             disabled={isPending}
+            error={resultError === "mode"}
             fullWidth
             label="Mode"
             margin="dense"
@@ -175,6 +181,7 @@ function NewFileDialog() {
           </TextField>
           <TextField
             disabled={isPending}
+            error={resultError === "bpm"}
             fullWidth
             helperText="0.1 - 999"
             label="BPM"
@@ -183,10 +190,12 @@ function NewFileDialog() {
               setForm({ ...form, bpm: event.target.value });
             }}
             size="small"
+            type="number"
             value={form.bpm}
           />
           <TextField
             disabled={isPending}
+            error={resultError === "delay"}
             fullWidth
             helperText="-999999 - 999999"
             label="Delay(ms)"
@@ -195,10 +204,12 @@ function NewFileDialog() {
               setForm({ ...form, delay: event.target.value });
             }}
             size="small"
+            type="number"
             value={form.delay}
           />
           <TextField
             disabled={isPending}
+            error={resultError === "beat"}
             fullWidth
             helperText="1 - 64"
             label="Beat"
@@ -212,6 +223,7 @@ function NewFileDialog() {
           />
           <TextField
             disabled={isPending}
+            error={resultError === "split"}
             fullWidth
             helperText="1 - 128"
             label="Split"
@@ -225,6 +237,7 @@ function NewFileDialog() {
           />
           <TextField
             disabled={isPending}
+            error={resultError === "rowLength"}
             fullWidth
             helperText="Over 1"
             label="Row Length"
