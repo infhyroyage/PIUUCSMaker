@@ -8,19 +8,22 @@ import {
 import ZoomInIcon from "@mui/icons-material/ZoomIn";
 import ZoomOutIcon from "@mui/icons-material/ZoomOut";
 import useMenuDrawerStyles from "../hooks/useMenuDrawerStyles";
-import { isOpenedMenuDrawerState, zoomState } from "../service/atoms";
+import {
+  isOpenedMenuDrawerState,
+  isPlayingState,
+  zoomState,
+} from "../service/atoms";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { ZOOM_VALUES } from "../service/zoom";
 import { Zoom } from "../types/atoms";
 import { useEffect } from "react";
-import usePlayingMusic from "../hooks/usePlayingMusic";
 
 function MenuDrawerZoomList() {
   const isOpenedMenuDrawer = useRecoilValue<boolean>(isOpenedMenuDrawerState);
   const [zoom, setZoom] = useRecoilState<Zoom>(zoomState);
+  const isPlaying = useRecoilValue<boolean>(isPlayingState);
 
   const { listItemButtonStyle, listItemIconStyle } = useMenuDrawerStyles();
-  const { isPlaying } = usePlayingMusic();
 
   useEffect(() => {
     if (zoom.top !== null) scrollTo({ top: zoom.top });

@@ -7,6 +7,7 @@ import {
   fileNamesState,
   volumeValueState,
   zoomState,
+  isPlayingState,
 } from "../service/atoms";
 import {
   AppBar,
@@ -27,7 +28,6 @@ import VolumeDownIcon from "@mui/icons-material/VolumeDown";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import VolumeMuteIcon from "@mui/icons-material/VolumeMute";
 import { FileNames, Zoom } from "../types/atoms";
-import usePlayingMusic from "../hooks/usePlayingMusic";
 
 function MenuBar() {
   const [muteVolBuf, setMuteVolBuf] = useState<number | null>(null);
@@ -41,9 +41,8 @@ function MenuBar() {
     useRecoilState<number>(volumeValueState);
   const [zoom, setZoom] = useRecoilState<Zoom>(zoomState);
   const fileNames = useRecoilValue<FileNames>(fileNamesState);
+  const isPlaying = useRecoilValue<boolean>(isPlayingState);
   const setMenuBarHeight = useSetRecoilState<number>(menuBarHeightState);
-
-  const { isPlaying } = usePlayingMusic();
 
   const onClickVolumeButton = () => {
     if (muteVolBuf === null) {

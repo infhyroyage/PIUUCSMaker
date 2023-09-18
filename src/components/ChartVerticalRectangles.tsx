@@ -5,6 +5,7 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
   chartState,
   indicatorInfoState,
+  isPlayingState,
   isShownSystemErrorSnackbarState,
   menuBarHeightState,
   mouseDownInfoState,
@@ -16,7 +17,6 @@ import { ZOOM_VALUES } from "../service/zoom";
 import ChartIndicator from "./ChartIndicator";
 import { IndicatorInfo, MouseDownInfo, Zoom } from "../types/atoms";
 import useChartSizes from "../hooks/useChartSizes";
-import usePlayingMusic from "../hooks/usePlayingMusic";
 import ChartVerticalNoteImages from "./ChartVerticalNoteImages";
 
 function ChartVerticalRectangles({ column }: ChartVerticalRectanglesProps) {
@@ -25,6 +25,7 @@ function ChartVerticalRectangles({ column }: ChartVerticalRectanglesProps) {
     useRecoilState<IndicatorInfo | null>(indicatorInfoState);
   const [mouseDownInfo, setMouseDownInfo] =
     useRecoilState<MouseDownInfo | null>(mouseDownInfoState);
+  const isPlaying = useRecoilValue<boolean>(isPlayingState);
   const menuBarHeight = useRecoilValue<number>(menuBarHeightState);
   const zoom = useRecoilValue<Zoom>(zoomState);
   const setIsShownSystemErrorSnackbar = useSetRecoilState<boolean>(
@@ -32,7 +33,6 @@ function ChartVerticalRectangles({ column }: ChartVerticalRectanglesProps) {
   );
 
   const { noteSize, borderSize } = useChartSizes();
-  const { isPlaying } = usePlayingMusic();
 
   /**
    * 各譜面のブロックの1行あたりの高さをpx単位で計算

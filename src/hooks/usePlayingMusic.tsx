@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useTransition } from "react";
 import beatWav from "../sounds/beat.wav";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
   chartState,
   fileNamesState,
+  isPlayingState,
   userErrorMessageState,
   volumeValueState,
   zoomState,
@@ -14,7 +15,7 @@ import useChartSizes from "./useChartSizes";
 import { ZOOM_VALUES } from "../service/zoom";
 
 function usePlayingMusic() {
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [isPlaying, setIsPlaying] = useRecoilState<boolean>(isPlayingState);
   const [fileNames, setFileNames] = useRecoilState<FileNames>(fileNamesState);
   const chart = useRecoilValue<Chart>(chartState);
   const volumeValue = useRecoilValue<number>(volumeValueState);
@@ -299,7 +300,7 @@ function usePlayingMusic() {
     };
   }, [isPlaying]);
 
-  return { isPlaying, isUploadingMP3: isPending, start, stop, uploadMP3 };
+  return { isUploadingMP3: isPending, start, stop, uploadMP3 };
 }
 
 export default usePlayingMusic;

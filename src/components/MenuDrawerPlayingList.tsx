@@ -9,7 +9,11 @@ import AudioFileIcon from "@mui/icons-material/AudioFile";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import StopIcon from "@mui/icons-material/Stop";
 import { useRecoilValue } from "recoil";
-import { chartState, isOpenedMenuDrawerState } from "../service/atoms";
+import {
+  chartState,
+  isOpenedMenuDrawerState,
+  isPlayingState,
+} from "../service/atoms";
 import useMenuDrawerStyles from "../hooks/useMenuDrawerStyles";
 import usePlayingMusic from "../hooks/usePlayingMusic";
 import { Chart } from "../types/ucs";
@@ -17,9 +21,9 @@ import { Chart } from "../types/ucs";
 function MenuDrawerPlayingList() {
   const chart: Chart = useRecoilValue<Chart>(chartState);
   const isOpenedMenuDrawer = useRecoilValue<boolean>(isOpenedMenuDrawerState);
+  const isPlaying = useRecoilValue<boolean>(isPlayingState);
 
-  const { isPlaying, isUploadingMP3, start, stop, uploadMP3 } =
-    usePlayingMusic();
+  const { isUploadingMP3, start, stop, uploadMP3 } = usePlayingMusic();
   const { listItemButtonStyle, listItemIconStyle } = useMenuDrawerStyles();
 
   return (

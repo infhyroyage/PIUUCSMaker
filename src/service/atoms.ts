@@ -32,6 +32,11 @@ export const isOpenedNewFileDialogState = atom<boolean>({
   default: false,
 });
 
+export const isPlayingState = atom<boolean>({
+  key: "isPlaying",
+  default: false,
+});
+
 export const isShownSystemErrorSnackbarState = atom<boolean>({
   key: "isShownSystemErrorSnackbar",
   default: false,

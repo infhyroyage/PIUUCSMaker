@@ -13,21 +13,21 @@ import {
   chartState,
   isOpenedMenuDrawerState,
   isOpenedNewFileDialogState,
+  isPlayingState,
 } from "../service/atoms";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import useMenuDrawerStyles from "../hooks/useMenuDrawerStyles";
 import { Chart } from "../types/ucs";
-import usePlayingMusic from "../hooks/usePlayingMusic";
 
 function MenuDrawerFileList() {
   const chart: Chart = useRecoilValue<Chart>(chartState);
   const isOpenedMenuDrawer = useRecoilValue<boolean>(isOpenedMenuDrawerState);
+  const isPlaying = useRecoilValue<boolean>(isPlayingState);
   const setIsOpenedNewChartDialog = useSetRecoilState<boolean>(
     isOpenedNewFileDialogState
   );
 
   const { listItemButtonStyle, listItemIconStyle } = useMenuDrawerStyles();
-  const { isPlaying } = usePlayingMusic();
   const { isUploadingUCS, uploadUCS } = useUploadingUCS();
 
   return (
