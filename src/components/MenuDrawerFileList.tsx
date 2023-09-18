@@ -16,8 +16,11 @@ import {
   isPlayingState,
 } from "../service/atoms";
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import useMenuDrawerStyles from "../hooks/useMenuDrawerStyles";
 import { Chart } from "../types/ucs";
+import {
+  generateListItemButtonStyle,
+  generateListItemIconStyle,
+} from "../service/styles";
 
 function MenuDrawerFileList() {
   const chart: Chart = useRecoilValue<Chart>(chartState);
@@ -27,7 +30,6 @@ function MenuDrawerFileList() {
     isOpenedNewFileDialogState
   );
 
-  const { listItemButtonStyle, listItemIconStyle } = useMenuDrawerStyles();
   const { isUploadingUCS, uploadUCS } = useUploadingUCS();
 
   return (
@@ -36,9 +38,9 @@ function MenuDrawerFileList() {
         <ListItemButton
           disabled={isPlaying || isUploadingUCS}
           onClick={() => setIsOpenedNewChartDialog(true)}
-          sx={listItemButtonStyle}
+          sx={generateListItemButtonStyle(isOpenedMenuDrawer)}
         >
-          <ListItemIcon sx={listItemIconStyle}>
+          <ListItemIcon sx={generateListItemIconStyle(isOpenedMenuDrawer)}>
             <AddIcon />
           </ListItemIcon>
           {isOpenedMenuDrawer && (
@@ -51,7 +53,7 @@ function MenuDrawerFileList() {
           component="label"
           disabled={isPlaying || isUploadingUCS}
           htmlFor="upload-ucs"
-          sx={listItemButtonStyle}
+          sx={generateListItemButtonStyle(isOpenedMenuDrawer)}
         >
           <input
             id="upload-ucs"
@@ -60,7 +62,7 @@ function MenuDrawerFileList() {
             style={{ display: "none" }}
             onChange={uploadUCS}
           />
-          <ListItemIcon sx={listItemIconStyle}>
+          <ListItemIcon sx={generateListItemIconStyle(isOpenedMenuDrawer)}>
             <UploadIcon />
           </ListItemIcon>
           {isOpenedMenuDrawer && (
@@ -75,9 +77,9 @@ function MenuDrawerFileList() {
         <ListItemButton
           disabled={chart.blocks.length === 0 || isPlaying || isUploadingUCS}
           onClick={() => alert("TODO")}
-          sx={listItemButtonStyle}
+          sx={generateListItemButtonStyle(isOpenedMenuDrawer)}
         >
-          <ListItemIcon sx={listItemIconStyle}>
+          <ListItemIcon sx={generateListItemIconStyle(isOpenedMenuDrawer)}>
             <DownloadIcon />
           </ListItemIcon>
           {isOpenedMenuDrawer && (

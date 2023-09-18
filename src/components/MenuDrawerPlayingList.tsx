@@ -14,9 +14,12 @@ import {
   isOpenedMenuDrawerState,
   isPlayingState,
 } from "../service/atoms";
-import useMenuDrawerStyles from "../hooks/useMenuDrawerStyles";
 import usePlayingMusic from "../hooks/usePlayingMusic";
 import { Chart } from "../types/ucs";
+import {
+  generateListItemButtonStyle,
+  generateListItemIconStyle,
+} from "../service/styles";
 
 function MenuDrawerPlayingList() {
   const chart: Chart = useRecoilValue<Chart>(chartState);
@@ -24,7 +27,6 @@ function MenuDrawerPlayingList() {
   const isPlaying = useRecoilValue<boolean>(isPlayingState);
 
   const { isUploadingMP3, start, stop, uploadMP3 } = usePlayingMusic();
-  const { listItemButtonStyle, listItemIconStyle } = useMenuDrawerStyles();
 
   return (
     <List>
@@ -33,7 +35,7 @@ function MenuDrawerPlayingList() {
           component="label"
           disabled={isPlaying || isUploadingMP3}
           htmlFor="upload-mp3"
-          sx={listItemButtonStyle}
+          sx={generateListItemButtonStyle(isOpenedMenuDrawer)}
         >
           <input
             id="upload-mp3"
@@ -42,7 +44,7 @@ function MenuDrawerPlayingList() {
             style={{ display: "none" }}
             onChange={uploadMP3}
           />
-          <ListItemIcon sx={listItemIconStyle}>
+          <ListItemIcon sx={generateListItemIconStyle(isOpenedMenuDrawer)}>
             <AudioFileIcon />
           </ListItemIcon>
           {isOpenedMenuDrawer && (
@@ -57,9 +59,9 @@ function MenuDrawerPlayingList() {
         <ListItemButton
           disabled={chart.blocks.length === 0 || isUploadingMP3}
           onClick={() => (isPlaying ? stop() : start())}
-          sx={listItemButtonStyle}
+          sx={generateListItemButtonStyle(isOpenedMenuDrawer)}
         >
-          <ListItemIcon sx={listItemIconStyle}>
+          <ListItemIcon sx={generateListItemIconStyle(isOpenedMenuDrawer)}>
             {isPlaying ? <StopIcon /> : <PlayArrowIcon />}
           </ListItemIcon>
           {isOpenedMenuDrawer && (

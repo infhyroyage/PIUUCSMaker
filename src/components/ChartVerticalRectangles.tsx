@@ -9,6 +9,7 @@ import {
   isShownSystemErrorSnackbarState,
   menuBarHeightState,
   mouseDownInfoState,
+  noteSizeState,
   zoomState,
 } from "../service/atoms";
 import ChartRectangle from "./ChartRectangle";
@@ -16,7 +17,6 @@ import ChartBorderLine from "./ChartBorderLine";
 import { ZOOM_VALUES } from "../service/zoom";
 import ChartIndicator from "./ChartIndicator";
 import { IndicatorInfo, MouseDownInfo, Zoom } from "../types/atoms";
-import useChartSizes from "../hooks/useChartSizes";
 import ChartVerticalNoteImages from "./ChartVerticalNoteImages";
 
 function ChartVerticalRectangles({ column }: ChartVerticalRectanglesProps) {
@@ -27,18 +27,15 @@ function ChartVerticalRectangles({ column }: ChartVerticalRectanglesProps) {
     useRecoilState<MouseDownInfo | null>(mouseDownInfoState);
   const isPlaying = useRecoilValue<boolean>(isPlayingState);
   const menuBarHeight = useRecoilValue<number>(menuBarHeightState);
+  const noteSize = useRecoilValue<number>(noteSizeState);
   const zoom = useRecoilValue<Zoom>(zoomState);
   const setIsShownSystemErrorSnackbar = useSetRecoilState<boolean>(
     isShownSystemErrorSnackbarState
   );
 
-  const { noteSize, borderSize } = useChartSizes();
-
-  /**
-   * 各譜面のブロックの1行あたりの高さをpx単位で計算
-   * 譜面のブロックの1行あたりの高さ := 2 * noteSize * 倍率 / 譜面のブロックのSplit
-   * 例えば、この高さに譜面のブロックの行数を乗ずると、譜面のブロックの高さとなる
-   */
+  // 各譜面のブロックの1行あたりの高さをpx単位で計算
+  // 譜面のブロックの1行あたりの高さ := 2 * noteSize * 倍率 / 譜面のブロックのSplit
+  // 例えば、この高さに譜面のブロックの行数を乗ずると、譜面のブロックの高さとなる
   const unitRowHeights: number[] = useMemo(
     () =>
       chart.blocks.map(
@@ -47,10 +44,8 @@ function ChartVerticalRectangles({ column }: ChartVerticalRectanglesProps) {
     [chart.blocks, noteSize, zoom]
   );
 
-  /**
-   * 各譜面のブロックを設置するトップバーからのy座標の距離をpx単位で計算
-   */
-  const blockOffsets: number[] = useMemo(
+  // 各譜面のブロックを設置するトップバーからのy座標の距離をpx単位で計算
+  const blockYDists: number[] = useMemo(
     () =>
       [...Array(chart.blocks.length)].reduce(
         (prev: number[], _, blockIdx: number) =>
@@ -70,6 +65,12 @@ function ChartVerticalRectangles({ column }: ChartVerticalRectanglesProps) {
     [chart.blocks, noteSize, zoom]
   );
 
+  // 枠線のサイズをnoteSizeの0.05倍(小数点以下切り捨て、最小値は1)として計算
+  const borderSize = useMemo(
+    () => (noteSize > 20 ? Math.floor(noteSize / 20) : 1),
+    [noteSize]
+  );
+
   const onMouseMove = useCallback(
     (event: React.MouseEvent<HTMLSpanElement>) => {
       // 再生中の場合はNOP
@@ -86,12 +87,12 @@ function ChartVerticalRectangles({ column }: ChartVerticalRectanglesProps) {
       for (let blockIdx = 0; blockIdx < chart.blocks.length; blockIdx++) {
         const blockHeight: number =
           unitRowHeights[blockIdx] * chart.blocks[blockIdx].length;
-        if (y < blockOffsets[blockIdx] + blockHeight) {
+        if (y < blockYDists[blockIdx] + blockHeight) {
           const top: number =
             y - (y % unitRowHeights[blockIdx]) + menuBarHeight;
           const rowIdx: number =
             chart.blocks[blockIdx].accumulatedLength +
-            (top - menuBarHeight - blockOffsets[blockIdx]) /
+            (top - menuBarHeight - blockYDists[blockIdx]) /
               unitRowHeights[blockIdx];
           info = { column, blockIdx, rowIdx, top };
           break;
@@ -100,7 +101,7 @@ function ChartVerticalRectangles({ column }: ChartVerticalRectanglesProps) {
       setIndicatorInfo(info);
     },
     [
-      blockOffsets,
+      blockYDists,
       chart.blocks,
       column,
       isPlaying,
@@ -240,13 +241,13 @@ function ChartVerticalRectangles({ column }: ChartVerticalRectanglesProps) {
             column={column}
             goalTop={
               menuBarHeight +
-              blockOffsets[goalBlockIdx] +
+              blockYDists[goalBlockIdx] +
               unitRowHeights[goalBlockIdx] *
                 (note.goal - chart.blocks[goalBlockIdx].accumulatedLength)
             }
             startTop={
               menuBarHeight +
-              blockOffsets[startBlockIdx] +
+              blockYDists[startBlockIdx] +
               unitRowHeights[startBlockIdx] *
                 (note.start - chart.blocks[startBlockIdx].accumulatedLength)
             }

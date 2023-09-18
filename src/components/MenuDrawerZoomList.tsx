@@ -7,7 +7,6 @@ import {
 } from "@mui/material";
 import ZoomInIcon from "@mui/icons-material/ZoomIn";
 import ZoomOutIcon from "@mui/icons-material/ZoomOut";
-import useMenuDrawerStyles from "../hooks/useMenuDrawerStyles";
 import {
   isOpenedMenuDrawerState,
   isPlayingState,
@@ -17,13 +16,15 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import { ZOOM_VALUES } from "../service/zoom";
 import { Zoom } from "../types/atoms";
 import { useEffect } from "react";
+import {
+  generateListItemButtonStyle,
+  generateListItemIconStyle,
+} from "../service/styles";
 
 function MenuDrawerZoomList() {
   const isOpenedMenuDrawer = useRecoilValue<boolean>(isOpenedMenuDrawerState);
   const [zoom, setZoom] = useRecoilState<Zoom>(zoomState);
   const isPlaying = useRecoilValue<boolean>(isPlayingState);
-
-  const { listItemButtonStyle, listItemIconStyle } = useMenuDrawerStyles();
 
   useEffect(() => {
     if (zoom.top !== null) scrollTo({ top: zoom.top });
@@ -43,9 +44,9 @@ function MenuDrawerZoomList() {
                 ZOOM_VALUES[zoom.idx],
             })
           }
-          sx={listItemButtonStyle}
+          sx={generateListItemButtonStyle(isOpenedMenuDrawer)}
         >
-          <ListItemIcon sx={listItemIconStyle}>
+          <ListItemIcon sx={generateListItemIconStyle(isOpenedMenuDrawer)}>
             <ZoomInIcon />
           </ListItemIcon>
           {isOpenedMenuDrawer && (
@@ -65,9 +66,9 @@ function MenuDrawerZoomList() {
                 ZOOM_VALUES[zoom.idx],
             })
           }
-          sx={listItemButtonStyle}
+          sx={generateListItemButtonStyle(isOpenedMenuDrawer)}
         >
-          <ListItemIcon sx={listItemIconStyle}>
+          <ListItemIcon sx={generateListItemIconStyle(isOpenedMenuDrawer)}>
             <ZoomOutIcon />
           </ListItemIcon>
           {isOpenedMenuDrawer && (

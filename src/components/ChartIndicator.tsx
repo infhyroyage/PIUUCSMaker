@@ -4,8 +4,11 @@ import { Theme, useTheme } from "@mui/material";
 import { IMAGE_BINARIES } from "../service/assets";
 import { useRecoilValue } from "recoil";
 import { IndicatorInfo, MouseDownInfo } from "../types/atoms";
-import { indicatorInfoState, mouseDownInfoState } from "../service/atoms";
-import useChartSizes from "../hooks/useChartSizes";
+import {
+  indicatorInfoState,
+  mouseDownInfoState,
+  noteSizeState,
+} from "../service/atoms";
 
 function ChartIndicator({ column }: ChartIndicatorProps) {
   const indicatorInfo = useRecoilValue<IndicatorInfo | null>(
@@ -14,11 +17,9 @@ function ChartIndicator({ column }: ChartIndicatorProps) {
   const mouseDownInfo = useRecoilValue<MouseDownInfo | null>(
     mouseDownInfoState
   );
+  const noteSize = useRecoilValue<number>(noteSizeState);
 
   const theme: Theme = useTheme();
-
-  // 単ノートの1辺のサイズを取得
-  const { noteSize } = useChartSizes();
 
   return (
     indicatorInfo &&

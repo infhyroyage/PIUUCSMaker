@@ -57,6 +57,11 @@ export const mouseDownInfoState = atom<MouseDownInfo | null>({
   default: null,
 });
 
+export const noteSizeState = atom<number>({
+  key: "noteSize",
+  default: 0,
+});
+
 export const userErrorMessageState = atom<string>({
   key: "userErrorMessage",
   default: "",

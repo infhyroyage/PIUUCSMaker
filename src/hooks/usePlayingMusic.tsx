@@ -5,19 +5,20 @@ import {
   chartState,
   fileNamesState,
   isPlayingState,
+  noteSizeState,
   userErrorMessageState,
   volumeValueState,
   zoomState,
 } from "../service/atoms";
 import { FileNames, Zoom } from "../types/atoms";
 import { Block, Chart, Note } from "../types/ucs";
-import useChartSizes from "./useChartSizes";
 import { ZOOM_VALUES } from "../service/zoom";
 
 function usePlayingMusic() {
   const [isPlaying, setIsPlaying] = useRecoilState<boolean>(isPlayingState);
   const [fileNames, setFileNames] = useRecoilState<FileNames>(fileNamesState);
   const chart = useRecoilValue<Chart>(chartState);
+  const noteSize = useRecoilValue<number>(noteSizeState);
   const volumeValue = useRecoilValue<number>(volumeValueState);
   const zoom = useRecoilValue<Zoom>(zoomState);
   const setUserErrorMessage = useSetRecoilState<string>(userErrorMessageState);
@@ -32,9 +33,6 @@ function usePlayingMusic() {
   const currentScrollTime = useRef<number>(0);
 
   const [isPending, startTransition] = useTransition();
-
-  // 単ノートの1辺のサイズを取得
-  const { noteSize } = useChartSizes();
 
   const start = () => {
     // beat.wavをデコードして読み込んでいない場合は読み込んでおく

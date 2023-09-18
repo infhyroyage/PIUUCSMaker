@@ -1,7 +1,8 @@
 import { memo } from "react";
-import useChartSizes from "../hooks/useChartSizes";
 import { IMAGE_BINARIES } from "../service/assets";
 import { ChartVerticalNoteImagesProps } from "../types/props";
+import { useRecoilValue } from "recoil";
+import { noteSizeState } from "../service/atoms";
 
 function ChartVerticalNoteImages({
   column,
@@ -9,7 +10,7 @@ function ChartVerticalNoteImages({
   startTop,
   startZIndex,
 }: ChartVerticalNoteImagesProps) {
-  const { noteSize } = useChartSizes();
+  const noteSize = useRecoilValue<number>(noteSizeState);
 
   return (
     <>

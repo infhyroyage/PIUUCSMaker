@@ -5,7 +5,7 @@ import UserErrorSnackbar from "./components/UserErrorSnackbar";
 import WorkSpace from "./components/WorkSpace";
 import MenuDrawer from "./components/MenuDrawer";
 import NewFileDialog from "./components/NewFileDialog";
-import { MUI_DEFAULT_Z_INDEX } from "./service/mui";
+import { MUI_DEFAULT_Z_INDEX } from "./service/styles";
 import MenuBar from "./components/MenuBar";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import { MouseDownInfo } from "./types/atoms";

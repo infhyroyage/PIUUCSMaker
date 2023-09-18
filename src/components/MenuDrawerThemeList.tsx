@@ -7,24 +7,25 @@ import {
 } from "@mui/material";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
-import useMenuDrawerStyles from "../hooks/useMenuDrawerStyles";
 import { isDarkModeState, isOpenedMenuDrawerState } from "../service/atoms";
 import { useRecoilState, useRecoilValue } from "recoil";
+import {
+  generateListItemButtonStyle,
+  generateListItemIconStyle,
+} from "../service/styles";
 
 function MenuDrawerThemeList() {
   const [isDarkMode, setIsDarkMode] = useRecoilState<boolean>(isDarkModeState);
   const isOpenedMenuDrawer = useRecoilValue<boolean>(isOpenedMenuDrawerState);
-
-  const { listItemButtonStyle, listItemIconStyle } = useMenuDrawerStyles();
 
   return (
     <List>
       <ListItem disablePadding sx={{ display: "block" }}>
         <ListItemButton
           onClick={() => setIsDarkMode(!isDarkMode)}
-          sx={listItemButtonStyle}
+          sx={generateListItemButtonStyle(isOpenedMenuDrawer)}
         >
-          <ListItemIcon sx={listItemIconStyle}>
+          <ListItemIcon sx={generateListItemIconStyle(isOpenedMenuDrawer)}>
             {isDarkMode ? <DarkModeIcon /> : <LightModeIcon />}
           </ListItemIcon>
           {isOpenedMenuDrawer && (

@@ -7,15 +7,16 @@ import {
 } from "@mui/material";
 import UndoIcon from "@mui/icons-material/Undo";
 import RedoIcon from "@mui/icons-material/Redo";
-import useMenuDrawerStyles from "../hooks/useMenuDrawerStyles";
 import { isOpenedMenuDrawerState, isPlayingState } from "../service/atoms";
 import { useRecoilValue } from "recoil";
+import {
+  generateListItemButtonStyle,
+  generateListItemIconStyle,
+} from "../service/styles";
 
 function MenuDrawerProcessList() {
   const isOpenedMenuDrawer = useRecoilValue<boolean>(isOpenedMenuDrawerState);
   const isPlaying = useRecoilValue<boolean>(isPlayingState);
-
-  const { listItemButtonStyle, listItemIconStyle } = useMenuDrawerStyles();
 
   return (
     <List>
@@ -23,9 +24,9 @@ function MenuDrawerProcessList() {
         <ListItemButton
           disabled={isPlaying}
           onClick={() => alert("TODO")}
-          sx={listItemButtonStyle}
+          sx={generateListItemButtonStyle(isOpenedMenuDrawer)}
         >
-          <ListItemIcon sx={listItemIconStyle}>
+          <ListItemIcon sx={generateListItemIconStyle(isOpenedMenuDrawer)}>
             <UndoIcon />
           </ListItemIcon>
           {isOpenedMenuDrawer && (
@@ -37,9 +38,9 @@ function MenuDrawerProcessList() {
         <ListItemButton
           disabled={isPlaying}
           onClick={() => alert("TODO")}
-          sx={listItemButtonStyle}
+          sx={generateListItemButtonStyle(isOpenedMenuDrawer)}
         >
-          <ListItemIcon sx={listItemIconStyle}>
+          <ListItemIcon sx={generateListItemIconStyle(isOpenedMenuDrawer)}>
             <RedoIcon />
           </ListItemIcon>
           {isOpenedMenuDrawer && (
