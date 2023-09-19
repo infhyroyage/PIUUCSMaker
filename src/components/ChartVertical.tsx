@@ -40,7 +40,7 @@ function ChartVertical({ column }: ChartVerticalProps) {
       chart.blocks.map(
         (block: Block) => (2.0 * noteSize * ZOOM_VALUES[zoom.idx]) / block.split
       ),
-    [chart.blocks, noteSize, zoom]
+    [chart.blocks, noteSize, zoom.idx]
   );
 
   // 各譜面のブロックを設置するトップバーからのy座標の距離をpx単位で計算
@@ -61,7 +61,7 @@ function ChartVertical({ column }: ChartVerticalProps) {
               ],
         []
       ),
-    [chart.blocks, noteSize, zoom]
+    [chart.blocks, noteSize, zoom.idx]
   );
 
   const onMouseMove = useCallback(
@@ -82,7 +82,9 @@ function ChartVertical({ column }: ChartVerticalProps) {
           unitRowHeights[blockIdx] * chart.blocks[blockIdx].length;
         if (y < blockYDists[blockIdx] + blockHeight) {
           const top: number =
-            y - (y % unitRowHeights[blockIdx]) + menuBarHeight;
+            y -
+            ((y - blockYDists[blockIdx]) % unitRowHeights[blockIdx]) +
+            menuBarHeight;
           const rowIdx: number =
             chart.blocks[blockIdx].accumulatedLength +
             (top - menuBarHeight - blockYDists[blockIdx]) /
