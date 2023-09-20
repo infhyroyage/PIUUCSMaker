@@ -1,6 +1,6 @@
 import { atom } from "recoil";
 import { Chart } from "../types/ucs";
-import { FileNames, Zoom } from "../types/atoms";
+import { FileNames, Indicator, MouseDown, Zoom } from "../types/atoms";
 
 export const chartState = atom<Chart>({
   key: "chartState",
@@ -10,6 +10,16 @@ export const chartState = atom<Chart>({
     blocks: [],
     notes: [],
   },
+});
+
+export const fileNamesState = atom<FileNames>({
+  key: "fileNames",
+  default: {},
+});
+
+export const indicatorsState = atom<Indicator[]>({
+  key: "indicators",
+  default: new Array<Indicator>(10).fill(null),
 });
 
 export const isDarkModeState = atom<boolean>({
@@ -47,9 +57,9 @@ export const menuBarHeightState = atom<number>({
   default: 0,
 });
 
-export const fileNamesState = atom<FileNames>({
-  key: "fileNames",
-  default: {},
+export const mouseDownsState = atom<MouseDown[]>({
+  key: "mouseDowns",
+  default: new Array<MouseDown>(10).fill(null),
 });
 
 export const noteSizeState = atom<number>({

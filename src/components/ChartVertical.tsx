@@ -1,37 +1,35 @@
 import React, { memo, useCallback, useMemo } from "react";
-import { ChartVerticalProps, Indicator, MouseDown } from "../types/props";
+import { ChartVerticalProps } from "../types/props";
 import { Block, Chart, Note } from "../types/ucs";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
   chartState,
+  indicatorsState,
   isPlayingState,
   isShownSystemErrorSnackbarState,
   menuBarHeightState,
+  mouseDownsState,
   noteSizeState,
   zoomState,
 } from "../service/atoms";
 import { ZOOM_VALUES } from "../service/zoom";
 import ChartIndicator from "./ChartIndicator";
-import { Zoom } from "../types/atoms";
+import { Indicator, MouseDown, Zoom } from "../types/atoms";
 import ChartVerticalNoteImages from "./ChartVerticalNoteImages";
 import ChartVerticalRectangles from "./ChartVerticalRectangles";
 
-function ChartVertical({
-  column,
-  indicator,
-  mouseDown,
-  setIndicators,
-  setMouseDowns,
-}: ChartVerticalProps) {
+function ChartVertical({ column, indicator, mouseDown }: ChartVerticalProps) {
   console.log(`ChartVertical:${column}`);
   const [chart, setChart] = useRecoilState<Chart>(chartState);
   const isPlaying = useRecoilValue<boolean>(isPlayingState);
   const menuBarHeight = useRecoilValue<number>(menuBarHeightState);
   const noteSize = useRecoilValue<number>(noteSizeState);
   const zoom = useRecoilValue<Zoom>(zoomState);
+  const setIndicators = useSetRecoilState<Indicator[]>(indicatorsState);
   const setIsShownSystemErrorSnackbar = useSetRecoilState<boolean>(
     isShownSystemErrorSnackbarState
   );
+  const setMouseDowns = useSetRecoilState<MouseDown[]>(mouseDownsState);
 
   // 各譜面のブロックの1行あたりの高さをpx単位で計算
   // 譜面のブロックの1行あたりの高さ := 2 * noteSize * 倍率 / 譜面のブロックのSplit

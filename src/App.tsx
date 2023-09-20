@@ -7,11 +7,13 @@ import MenuDrawer from "./components/MenuDrawer";
 import NewFileDialog from "./components/NewFileDialog";
 import { MUI_DEFAULT_Z_INDEX } from "./service/styles";
 import MenuBar from "./components/MenuBar";
-import { useRecoilState } from "recoil";
-import { isDarkModeState } from "./service/atoms";
+import { useRecoilState, useSetRecoilState } from "recoil";
+import { isDarkModeState, mouseDownsState } from "./service/atoms";
+import { MouseDown } from "./types/atoms";
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useRecoilState<boolean>(isDarkModeState);
+  const setMouseDowns = useSetRecoilState<MouseDown[]>(mouseDownsState);
 
   const theme = useMemo(
     () =>
@@ -40,14 +42,16 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <MenuBar />
-      <div style={{ display: "flex" }}>
-        <MenuDrawer />
-        <WorkSpace />
+      <div onMouseUp={() => setMouseDowns(new Array<MouseDown>(10).fill(null))}>
+        <MenuBar />
+        <div style={{ display: "flex" }}>
+          <MenuDrawer />
+          <WorkSpace />
+        </div>
+        <NewFileDialog />
+        <UserErrorSnackbar />
+        <SystemErrorSnackbar />
       </div>
-      <NewFileDialog />
-      <UserErrorSnackbar />
-      <SystemErrorSnackbar />
     </ThemeProvider>
   );
 }

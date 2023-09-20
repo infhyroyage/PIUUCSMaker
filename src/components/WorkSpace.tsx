@@ -4,23 +4,21 @@ import ReadyFile from "./ReadyFile";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
   chartState,
+  indicatorsState,
   menuBarHeightState,
+  mouseDownsState,
   noteSizeState,
 } from "../service/atoms";
 import ChartBorderLine from "./ChartBorderLine";
 import ChartVertical from "./ChartVertical";
-import { Indicator, MouseDown } from "../types/props";
+import { Indicator, MouseDown } from "../types/atoms";
 
 function WorkSpace() {
-  const [indicators, setIndicators] = useState<Indicator[]>(
-    new Array<Indicator>(10).fill(null)
-  );
-  const [mouseDowns, setMouseDowns] = useState<MouseDown[]>(
-    new Array<MouseDown>(10).fill(null)
-  );
   const [noteSize, setNoteSize] = useRecoilState<number>(noteSizeState);
   const chart: Chart = useRecoilValue<Chart>(chartState);
+  const indicators = useRecoilValue<Indicator[]>(indicatorsState);
   const menuBarHeight = useRecoilValue<number>(menuBarHeightState);
+  const mouseDowns = useRecoilValue<MouseDown[]>(mouseDownsState);
 
   // ウィンドウサイズを監視し、正方形である単ノートの1辺のサイズ(noteSize)を以下で計算
   // noteSize := min(ウィンドウサイズの横幅, ウィンドウサイズの高さ) / 13
@@ -61,7 +59,6 @@ function WorkSpace() {
         lineHeight: 0,
         userSelect: "none",
       }}
-      onMouseUp={() => setMouseDowns(new Array<MouseDown>(10).fill(null))}
     >
       <div style={{ display: "flex" }}>
         {[...Array(chart.length)].map((_, column: number) => (
@@ -73,8 +70,6 @@ function WorkSpace() {
               column={column}
               indicator={indicators[column]}
               mouseDown={mouseDowns[column]}
-              setIndicators={setIndicators}
-              setMouseDowns={setMouseDowns}
             />
             <ChartBorderLine width={borderSize} height="100%" />
           </React.Fragment>

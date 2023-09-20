@@ -1,3 +1,5 @@
+import { Indicator, MouseDown } from "./atoms";
+
 export type ChartBorderLineProps = {
   /**
    * 高さ(px単位)
@@ -10,41 +12,6 @@ export type ChartBorderLineProps = {
   width: number | string;
 };
 
-/**
- * インディケーターの表示パラメーター
- * インディケーター非表示の場合はnull
- */
-export type Indicator = null | {
-  /**
-   * インディケーターの示す譜面のブロックのインデックス
-   */
-  blockIdx: number;
-
-  /**
-   * インディケーターの示す譜面全体での行のインデックス
-   */
-  rowIdx: number;
-
-  /**
-   * インディケーターのtop値
-   */
-  top: number;
-};
-/**
- * マウス押下時のパラメーター
- * マウス押下していない場合はnull
- */
-export type MouseDown = null | {
-  /**
-   * マウス押下時の譜面全体での行のインデックス
-   */
-  rowIdx: number;
-
-  /**
-   * マウス押下時の行のtop値
-   */
-  top: number;
-};
 /**
  * ChartIndicatorのprops
  */
@@ -104,16 +71,6 @@ export type ChartVerticalProps = {
    * マウス押下していない場合はnull
    */
   mouseDown: MouseDown;
-
-  /**
-   * 各インディケーターの表示パラメーターの設定関数
-   */
-  setIndicators: React.Dispatch<React.SetStateAction<Indicator[]>>;
-
-  /**
-   * 各マウス押下時のパラメーターの設定関数
-   */
-  setMouseDowns: React.Dispatch<React.SetStateAction<MouseDown[]>>;
 };
 
 /**
