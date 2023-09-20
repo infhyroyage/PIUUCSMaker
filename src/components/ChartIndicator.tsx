@@ -61,7 +61,7 @@ function ChartIndicator({ column }: ChartIndicatorProps) {
                         ? mouseDownInfo.top
                         : indicatorInfo.top) +
                       noteSize * 0.5,
-                    zIndex: theme.zIndex.drawer - 2,
+                    zIndex: theme.zIndex.drawer - 3,
                   }}
                 />
                 {/* 押下中でのホールドの終点の画像 */}
@@ -76,7 +76,7 @@ function ChartIndicator({ column }: ChartIndicatorProps) {
                       mouseDownInfo.top < indicatorInfo.top
                         ? indicatorInfo.top
                         : mouseDownInfo.top,
-                    zIndex: theme.zIndex.drawer - 3,
+                    zIndex: theme.zIndex.drawer - 2,
                   }}
                 />
               </>

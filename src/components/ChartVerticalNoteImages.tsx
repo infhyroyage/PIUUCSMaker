@@ -6,41 +6,33 @@ import { noteSizeState } from "../service/atoms";
 
 function ChartVerticalNoteImages({
   column,
-  goalTop,
-  startTop,
-  startZIndex,
+  idx,
+  y,
+  type,
+  unitRowHeight,
 }: ChartVerticalNoteImagesProps) {
   const noteSize = useRecoilValue<number>(noteSizeState);
 
-  return (
-    <>
-      {/* 単ノート/ホールドの始点の画像 */}
-      <img
-        src={IMAGE_BINARIES[column % 5].note}
-        alt={`note${column % 5}`}
-        width={noteSize}
-        height={noteSize}
-        style={{
-          position: "absolute",
-          top: startTop,
-          zIndex: startZIndex,
-        }}
-      />
-      {startTop < goalTop && (
+  switch (type) {
+    case "X":
+      // 単ノートの画像
+      return (
+        <img
+          src={IMAGE_BINARIES[column % 5].note}
+          alt={`note${column % 5}`}
+          width={noteSize}
+          height={noteSize}
+          style={{
+            position: "absolute",
+            top: y,
+            zIndex: (idx + 1) * 10,
+          }}
+        />
+      );
+    case "M":
+      // ホールドの始点の画像
+      return (
         <>
-          {/* ホールドの画像 */}
-          <img
-            src={IMAGE_BINARIES[column % 5].hold}
-            alt={`hold${column % 5}`}
-            width={noteSize}
-            height={goalTop - startTop}
-            style={{
-              position: "absolute",
-              top: startTop + noteSize * 0.5,
-              zIndex: startZIndex + 1,
-            }}
-          />
-          {/* ホールドの終点の画像 */}
           <img
             src={IMAGE_BINARIES[column % 5].note}
             alt={`note${column % 5}`}
@@ -48,14 +40,54 @@ function ChartVerticalNoteImages({
             height={noteSize}
             style={{
               position: "absolute",
-              top: goalTop,
-              zIndex: startZIndex + 2,
+              top: y,
+              zIndex: (idx + 1) * 10,
+            }}
+          />
+          <img
+            src={IMAGE_BINARIES[column % 5].hold}
+            alt={`hold${column % 5}`}
+            width={noteSize}
+            height={unitRowHeight}
+            style={{
+              position: "absolute",
+              top: y + noteSize * 0.5,
+              zIndex: (idx + 1) * 10 + 1,
             }}
           />
         </>
-      )}
-    </>
-  );
+      );
+    case "H":
+      // ホールドの画像
+      return (
+        <img
+          src={IMAGE_BINARIES[column % 5].hold}
+          alt={`hold${column % 5}`}
+          width={noteSize}
+          height={unitRowHeight}
+          style={{
+            position: "absolute",
+            top: y + noteSize * 0.5,
+            zIndex: (idx + 1) * 10,
+          }}
+        />
+      );
+    case "W":
+      // ホールドの終点の画像
+      return (
+        <img
+          src={IMAGE_BINARIES[column % 5].note}
+          alt={`note${column % 5}`}
+          width={noteSize}
+          height={noteSize}
+          style={{
+            position: "absolute",
+            top: y,
+            zIndex: (idx + 1) * 10,
+          }}
+        />
+      );
+  }
 }
 
 export default memo(ChartVerticalNoteImages);

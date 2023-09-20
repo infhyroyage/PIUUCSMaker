@@ -155,15 +155,16 @@ function usePlayingMusic() {
         const unitRowHeight: number =
           (2.0 * noteSize * ZOOM_VALUES[zoom.idx]) / block.split;
 
-        // 列ごとに各ノートの始点での譜面全体での行のインデックスを抽出
+        // 列ごとに単ノート/ホールドの始点において、譜面全体での行のインデックスをそれぞれ抽出
         const filteredStarts: number[][] = chart.notes.map((notes: Note[]) =>
           notes
             .filter(
               (note: Note) =>
-                note.start >= block.accumulatedLength &&
-                note.start < block.accumulatedLength + block.length
+                ["X", "M"].includes(note.type) &&
+                note.idx >= block.accumulatedLength &&
+                note.idx < block.accumulatedLength + block.length
             )
-            .map((note: Note) => note.start)
+            .map((note: Note) => note.idx)
         );
         // ビート音を再生するタイミングでのブラウザの画面のy座標をまとめて追加
         const tops: number[] = [

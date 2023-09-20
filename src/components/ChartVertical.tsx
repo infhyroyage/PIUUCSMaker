@@ -153,24 +153,70 @@ function ChartVertical({ column }: ChartVerticalProps) {
       if (start === goal) {
         // startの場所に単ノートを新規追加
         // ただし、その場所に単ノート/ホールドが含む場合は、それを削除する(単ノートは新規追加しない)
-        const noteIdx: number = chart.notes[column].findIndex(
-          (note: Note) => note.start <= start && start <= note.goal
+        const foundNote: Note | undefined = chart.notes[column].find(
+          (note: Note) => note.idx === start
         );
-        updatedNotes =
-          noteIdx === -1
-            ? [...chart.notes[column], { start, goal }]
-            : [
-                ...chart.notes[column].slice(0, noteIdx),
-                ...chart.notes[column].slice(noteIdx + 1),
-              ];
+        if (foundNote && foundNote.type === "X") {
+          updatedNotes = chart.notes[column].filter(
+            (note: Note) => note.idx !== start
+          );
+        } else if (foundNote && foundNote.type === "M") {
+          const goalHoldNote: Note | undefined = chart.notes[column].find(
+            (note: Note) => note.idx > start && note.type === "W"
+          );
+          updatedNotes = [
+            ...chart.notes[column].filter((note: Note) => note.idx < start),
+            ...chart.notes[column].filter((note: Note) =>
+              goalHoldNote ? note.idx > goalHoldNote.idx : false
+            ),
+          ];
+        } else if (foundNote && foundNote.type === "H") {
+          const startHoldNote: Note | undefined = [...chart.notes[column]]
+            .reverse()
+            .find((note: Note) => note.idx < start && note.type === "M");
+          const goalHoldNote: Note | undefined = chart.notes[column].find(
+            (note: Note) => note.idx > start && note.type === "W"
+          );
+          updatedNotes = [
+            ...chart.notes[column].filter((note: Note) =>
+              startHoldNote ? note.idx < startHoldNote.idx : false
+            ),
+            ...chart.notes[column].filter((note: Note) =>
+              goalHoldNote ? note.idx > goalHoldNote.idx : false
+            ),
+          ];
+        } else if (foundNote && foundNote.type === "W") {
+          const startHoldNote: Note | undefined = [...chart.notes[column]]
+            .reverse()
+            .find((note: Note) => note.idx < start && note.type === "M");
+          updatedNotes = [
+            ...chart.notes[column].filter((note: Note) =>
+              startHoldNote ? note.idx < startHoldNote.idx : false
+            ),
+            ...chart.notes[column].filter((note: Note) => note.idx > start),
+          ];
+        } else {
+          updatedNotes = [
+            ...chart.notes[column].filter((note: Note) => note.idx < start),
+            { idx: start, type: "X" },
+            ...chart.notes[column].filter((note: Note) => note.idx > start),
+          ];
+        }
       } else {
         // startとgoalとの間にホールドを新規追加
         // ただし、その間の場所に単ノート/ホールドが含む場合は、それをすべて削除してから新規追加する
         updatedNotes = [
-          ...chart.notes[column].filter(
-            (note: Note) => note.start > goal || note.goal < start
+          ...chart.notes[column].filter((note: Note) => note.idx < start),
+          ...Array.from<any, Note>(
+            { length: goal - start + 1 },
+            (_, idx: number) => {
+              return {
+                idx: start + idx,
+                type: idx === 0 ? "M" : idx === goal - start ? "W" : "H",
+              };
+            }
           ),
-          { start, goal },
+          ...chart.notes[column].filter((note: Note) => note.idx > goal),
         ];
       }
       // 単ノート/ホールドの追加・削除を行った譜面に更新
@@ -199,15 +245,12 @@ function ChartVertical({ column }: ChartVerticalProps) {
         <ChartVerticalRectangles key={blockIdx} blockIdx={blockIdx} />
       ))}
       {chart.notes[column].map((note: Note, i: number) => {
-        // start/goalに対応する譜面のブロックのインデックスをそれぞれ取得
-        const startBlockIdx: number = chart.blocks.findIndex(
-          (block: Block) => note.start < block.accumulatedLength + block.length
-        );
-        const goalBlockIdx: number = chart.blocks.findIndex(
-          (block: Block) => note.goal < block.accumulatedLength + block.length
+        // noteが属する譜面のブロックのインデックスを取得
+        const blockIdx: number = chart.blocks.findIndex(
+          (block: Block) => note.idx < block.accumulatedLength + block.length
         );
         // 内部矛盾チェック
-        if (startBlockIdx === -1 || goalBlockIdx === -1) {
+        if (blockIdx === -1) {
           setIsShownSystemErrorSnackbar(true);
           return;
         }
@@ -216,19 +259,15 @@ function ChartVertical({ column }: ChartVerticalProps) {
           <ChartVerticalNoteImages
             key={i}
             column={column}
-            goalTop={
+            idx={note.idx}
+            type={note.type}
+            unitRowHeight={unitRowHeights[blockIdx]}
+            y={
               menuBarHeight +
-              blockYDists[goalBlockIdx] +
-              unitRowHeights[goalBlockIdx] *
-                (note.goal - chart.blocks[goalBlockIdx].accumulatedLength)
+              blockYDists[blockIdx] +
+              unitRowHeights[blockIdx] *
+                (note.idx - chart.blocks[blockIdx].accumulatedLength)
             }
-            startTop={
-              menuBarHeight +
-              blockYDists[startBlockIdx] +
-              unitRowHeights[startBlockIdx] *
-                (note.start - chart.blocks[startBlockIdx].accumulatedLength)
-            }
-            startZIndex={(note.start + 1) * 10}
           />
         );
       })}

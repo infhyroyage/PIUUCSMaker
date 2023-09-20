@@ -68,19 +68,22 @@ export type ChartVerticalNoteImagesProps = {
   column: number;
 
   /**
-   * ホールドの終点の画像のtop値
-   * startTopの値より大きい場合はホールドとみなす
-   * それ以外の場合は場合は単ノートとみなし、goalTopの値を無視する
+   * 単ノート/ホールドの始点/ホールドの中間/ホールドの終点の譜面全体での行インデックス
    */
-  goalTop: number;
+  idx: number;
 
   /**
-   * 単ノート/ホールドの始点の画像のtop値
+   * 単ノートの場合はX、ホールドの始点の場合はM、ホールドの中間の場合はH、ホールドの終点の場合はW
    */
-  startTop: number;
+  type: "X" | "M" | "H" | "W";
 
   /**
-   * 単ノート/ホールドの始点の画像のz-index値
+   * 単ノート/ホールドの始点/ホールドの中間/ホールドの終点が属する譜面のブロックの1行あたりの高さ(px単位)
    */
-  startZIndex: number;
+  unitRowHeight: number;
+
+  /**
+   * 単ノート/ホールドの始点/ホールドの中間/ホールドの終点の譜面全体での行インデックスでの、ブラウザの画面のy座標
+   */
+  y: number;
 };

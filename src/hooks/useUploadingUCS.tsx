@@ -64,13 +64,11 @@ const validateAndLoadUCS = (content: string): Chart | string => {
    * * 譜面のブロックの行数
    * * 以前までの譜面のブロックの行数の総和
    * * 譜面全体での行インデックス
-   * * ホールドの始点の行インデックス
    */
   let block: Block | null = null;
   let blockLength: number = 0;
   let accumulatedBlockLength: number = 0;
   let rowIdx: number = 0;
-  let startHolds: number[] = Array(chartLength).fill(-1);
 
   // 2行しか記載していないかのチェック
   fileLinesNum++;
@@ -177,48 +175,22 @@ const validateAndLoadUCS = (content: string): Chart | string => {
     for (let column: number = 0; column < chartLength; column++) {
       switch (line[column]) {
         case "X":
-          // 不正なホールドの記述かのチェック
-          if (startHolds[column] > -1) {
-            return `ucsファイルの${fileLinesNum}行目が不正です`;
-          }
-
           // 単ノート追加
-          chart.notes[column].push({ start: rowIdx, goal: rowIdx });
+          chart.notes[column].push({ idx: rowIdx, type: "X" });
           break;
         case "M":
-          // 不正なホールドの記述かのチェック
-          if (startHolds[column] > -1) {
-            return `ucsファイルの${fileLinesNum}行目が不正です`;
-          }
-
-          startHolds[column] = rowIdx;
+          // ホールドの始点追加
+          chart.notes[column].push({ idx: rowIdx, type: "M" });
           break;
         case "H":
-          // 不正なホールドの記述かのチェック
-          if (startHolds[column] === -1) {
-            return `ucsファイルの${fileLinesNum}行目が不正です`;
-          }
-
+          // ホールドの中間追加
+          chart.notes[column].push({ idx: rowIdx, type: "H" });
           break;
         case "W":
-          // 不正なホールドの記述かのチェック
-          if (startHolds[column] === -1) {
-            return `ucsファイルの${fileLinesNum}行目が不正です`;
-          }
-
-          // ホールド追加
-          chart.notes[column].push({
-            start: startHolds[column],
-            goal: rowIdx,
-          });
-          startHolds[column] = -1;
+          // ホールドの終点追加
+          chart.notes[column].push({ idx: rowIdx, type: "W" });
           break;
         case ".":
-          // 不正なホールドの記述かのチェック
-          if (startHolds[column] > -1) {
-            return `ucsファイルの${fileLinesNum}行目が不正です`;
-          }
-
           break;
         default:
           return `ucsファイルの${fileLinesNum}行目が不正です`;
