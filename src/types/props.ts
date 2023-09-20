@@ -11,6 +11,41 @@ export type ChartBorderLineProps = {
 };
 
 /**
+ * インディケーターの表示パラメーター
+ * インディケーター非表示の場合はnull
+ */
+export type Indicator = null | {
+  /**
+   * インディケーターの示す譜面のブロックのインデックス
+   */
+  blockIdx: number;
+
+  /**
+   * インディケーターの示す譜面全体での行のインデックス
+   */
+  rowIdx: number;
+
+  /**
+   * インディケーターのtop値
+   */
+  top: number;
+};
+/**
+ * マウス押下時のパラメーター
+ * マウス押下していない場合はnull
+ */
+export type MouseDown = null | {
+  /**
+   * マウス押下時の譜面全体での行のインデックス
+   */
+  rowIdx: number;
+
+  /**
+   * マウス押下時の行のtop値
+   */
+  top: number;
+};
+/**
  * ChartIndicatorのprops
  */
 export type ChartIndicatorProps = {
@@ -19,6 +54,18 @@ export type ChartIndicatorProps = {
    * Single/SinglePerformance譜面の場合は0〜4、Double/DoublePerformance譜面の場合は0〜9
    */
   column: number;
+
+  /**
+   * インディケーターの表示パラメーター
+   * インディケーター非表示の場合はnull
+   */
+  indicator: Indicator;
+
+  /**
+   * マウス押下時のパラメーター
+   * マウス押下していない場合はnull
+   */
+  mouseDown: MouseDown;
 };
 
 /**
@@ -45,6 +92,28 @@ export type ChartVerticalProps = {
    * Single/SinglePerformance譜面の場合は0〜4、Double/DoublePerformance譜面の場合は0〜9
    */
   column: number;
+
+  /**
+   * インディケーターの表示パラメーター
+   * インディケーター非表示の場合はnull
+   */
+  indicator: Indicator;
+
+  /**
+   * マウス押下時のパラメーター
+   * マウス押下していない場合はnull
+   */
+  mouseDown: MouseDown;
+
+  /**
+   * 各インディケーターの表示パラメーターの設定関数
+   */
+  setIndicators: React.Dispatch<React.SetStateAction<Indicator[]>>;
+
+  /**
+   * 各マウス押下時のパラメーターの設定関数
+   */
+  setMouseDowns: React.Dispatch<React.SetStateAction<MouseDown[]>>;
 };
 
 /**

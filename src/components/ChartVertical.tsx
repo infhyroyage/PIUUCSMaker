@@ -1,30 +1,30 @@
 import React, { memo, useCallback, useMemo } from "react";
-import { ChartVerticalProps } from "../types/props";
+import { ChartVerticalProps, Indicator, MouseDown } from "../types/props";
 import { Block, Chart, Note } from "../types/ucs";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
   chartState,
-  indicatorInfoState,
   isPlayingState,
   isShownSystemErrorSnackbarState,
   menuBarHeightState,
-  mouseDownInfoState,
   noteSizeState,
   zoomState,
 } from "../service/atoms";
 import { ZOOM_VALUES } from "../service/zoom";
 import ChartIndicator from "./ChartIndicator";
-import { IndicatorInfo, MouseDownInfo, Zoom } from "../types/atoms";
+import { Zoom } from "../types/atoms";
 import ChartVerticalNoteImages from "./ChartVerticalNoteImages";
 import ChartVerticalRectangles from "./ChartVerticalRectangles";
 
-function ChartVertical({ column }: ChartVerticalProps) {
+function ChartVertical({
+  column,
+  indicator,
+  mouseDown,
+  setIndicators,
+  setMouseDowns,
+}: ChartVerticalProps) {
   console.log(`ChartVertical:${column}`);
   const [chart, setChart] = useRecoilState<Chart>(chartState);
-  const [indicatorInfo, setIndicatorInfo] =
-    useRecoilState<IndicatorInfo | null>(indicatorInfoState);
-  const [mouseDownInfo, setMouseDownInfo] =
-    useRecoilState<MouseDownInfo | null>(mouseDownInfoState);
   const isPlaying = useRecoilValue<boolean>(isPlayingState);
   const menuBarHeight = useRecoilValue<number>(menuBarHeightState);
   const noteSize = useRecoilValue<number>(noteSizeState);
@@ -77,7 +77,7 @@ function ChartVertical({ column }: ChartVerticalProps) {
 
       // 譜面のブロックのマウスホバーした際に、マウスの行インデックスの場所にインディケーターを表示
       // 譜面のブロックのマウスホバーが外れた際に、インディケーターを非表示
-      let info: IndicatorInfo | null = null;
+      let updatedIndicator: Indicator = null;
       for (let blockIdx = 0; blockIdx < chart.blocks.length; blockIdx++) {
         const blockHeight: number =
           unitRowHeights[blockIdx] * chart.blocks[blockIdx].length;
@@ -90,7 +90,7 @@ function ChartVertical({ column }: ChartVerticalProps) {
             chart.blocks[blockIdx].accumulatedLength +
             (top - menuBarHeight - blockYDists[blockIdx]) /
               unitRowHeights[blockIdx];
-          info = { column, blockIdx, rowIdx, top };
+          updatedIndicator = { blockIdx, rowIdx, top };
           break;
         }
       }
@@ -98,22 +98,26 @@ function ChartVertical({ column }: ChartVerticalProps) {
       // 無駄な再レンダリングを避けるため、マウスホバーした場所の譜面全体での行のインデックスが
       // 現在のインディケーターの譜面全体での行のインデックスと同じ場合は、indicatorInfoの状態を更新しない
       if (
-        (info !== null || indicatorInfo !== null) &&
-        (info === null ||
-          indicatorInfo === null ||
-          info.rowIdx !== indicatorInfo.rowIdx)
+        (indicator !== null || updatedIndicator !== null) &&
+        (indicator === null ||
+          updatedIndicator === null ||
+          indicator.rowIdx !== updatedIndicator.rowIdx)
       ) {
-        setIndicatorInfo(info);
+        const updatedIndicators: Indicator[] = new Array<Indicator>(10).fill(
+          null
+        );
+        updatedIndicators[column] = updatedIndicator;
+        setIndicators(updatedIndicators);
       }
     },
     [
       blockYDists,
       chart.blocks,
       column,
-      indicatorInfo,
+      indicator,
       isPlaying,
       menuBarHeight,
-      setIndicatorInfo,
+      setIndicators,
       unitRowHeights,
     ]
   );
@@ -123,42 +127,39 @@ function ChartVertical({ column }: ChartVerticalProps) {
     if (isPlaying) return;
 
     // インディケーターを非表示
-    setIndicatorInfo(null);
-  }, [isPlaying, setIndicatorInfo]);
+    setIndicators(new Array<Indicator>(10).fill(null));
+  }, [isPlaying, setIndicators]);
 
   const onMouseDown = useCallback(() => {
     // 再生中、または、押下した瞬間にインディケーターが非表示である場合はNOP
-    if (isPlaying || indicatorInfo === null) return;
+    if (isPlaying || indicator === null) return;
 
     // マウス押下時のパラメーターを保持
-    setMouseDownInfo({
-      column,
-      rowIdx: indicatorInfo.rowIdx,
-      top: indicatorInfo.top,
-    });
-  }, [column, indicatorInfo, isPlaying, setMouseDownInfo]);
+    const updatedMouseDowns: MouseDown[] = new Array<MouseDown>(10).fill(null);
+    updatedMouseDowns[column] = {
+      rowIdx: indicator.rowIdx,
+      top: indicator.top,
+    };
+    setMouseDowns(updatedMouseDowns);
+  }, [column, indicator, isPlaying, setMouseDowns]);
 
   const onMouseUp = useCallback(() => {
     // 再生中の場合はNOP
     if (isPlaying) return;
 
     // 同一列内でのマウス操作の場合のみ、譜面の更新を行う
-    if (
-      mouseDownInfo !== null &&
-      column === mouseDownInfo.column &&
-      indicatorInfo !== null
-    ) {
+    if (mouseDown !== null && indicator !== null) {
       // 単ノート/ホールドの始点start、終点goalの譜面全体での行インデックスを取得
       const start: number =
-        mouseDownInfo.rowIdx < indicatorInfo.rowIdx
-          ? mouseDownInfo.rowIdx
-          : indicatorInfo.rowIdx;
+        mouseDown.rowIdx < indicator.rowIdx
+          ? mouseDown.rowIdx
+          : indicator.rowIdx;
       const goal: number =
-        mouseDownInfo.rowIdx < indicatorInfo.rowIdx
-          ? indicatorInfo.rowIdx
-          : mouseDownInfo.rowIdx;
+        mouseDown.rowIdx < indicator.rowIdx
+          ? indicator.rowIdx
+          : mouseDown.rowIdx;
 
-      // 譜面全体での行インデックスmouseDownInfo.rowIdxで押下した後に
+      // 譜面全体での行インデックスmouseDown.rowIdxで押下した後に
       // 譜面全体での行インデックスindicatorInfo.rowIdxで押下を離した際の
       // 列インデックスcolumnにて、単ノート/ホールドの追加・削除を行う
       let updatedNotes: Note[];
@@ -232,6 +233,7 @@ function ChartVertical({ column }: ChartVerticalProps) {
         ];
       }
       // 単ノート/ホールドの追加・削除を行った譜面に更新
+      setMouseDowns(new Array<MouseDown>(10).fill(null));
       setChart({
         ...chart,
         notes: chart.notes.map((notes: Note[], i: number) =>
@@ -239,7 +241,7 @@ function ChartVertical({ column }: ChartVerticalProps) {
         ),
       });
     }
-  }, [chart, column, indicatorInfo, isPlaying, mouseDownInfo, setChart]);
+  }, [chart, column, indicator, isPlaying, mouseDown, setChart, setMouseDowns]);
 
   return (
     <span
@@ -283,7 +285,11 @@ function ChartVertical({ column }: ChartVerticalProps) {
           />
         );
       })}
-      <ChartIndicator column={column} />
+      <ChartIndicator
+        column={column}
+        indicator={indicator}
+        mouseDown={mouseDown}
+      />
     </span>
   );
 }

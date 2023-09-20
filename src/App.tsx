@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from "react";
-import { Box, CssBaseline, ThemeProvider, createTheme } from "@mui/material";
+import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import SystemErrorSnackbar from "./components/SystemErrorSnackbar";
 import UserErrorSnackbar from "./components/UserErrorSnackbar";
 import WorkSpace from "./components/WorkSpace";
@@ -7,15 +7,11 @@ import MenuDrawer from "./components/MenuDrawer";
 import NewFileDialog from "./components/NewFileDialog";
 import { MUI_DEFAULT_Z_INDEX } from "./service/styles";
 import MenuBar from "./components/MenuBar";
-import { useRecoilState, useSetRecoilState } from "recoil";
-import { MouseDownInfo } from "./types/atoms";
-import { isDarkModeState, mouseDownInfoState } from "./service/atoms";
+import { useRecoilState } from "recoil";
+import { isDarkModeState } from "./service/atoms";
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useRecoilState<boolean>(isDarkModeState);
-  const setMouseDownInfo = useSetRecoilState<MouseDownInfo | null>(
-    mouseDownInfoState
-  );
 
   const theme = useMemo(
     () =>
@@ -44,12 +40,10 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <div onMouseUp={() => setMouseDownInfo(null)}>
-        <MenuBar />
-        <div style={{ display: "flex" }}>
-          <MenuDrawer />
-          <WorkSpace />
-        </div>
+      <MenuBar />
+      <div style={{ display: "flex" }}>
+        <MenuDrawer />
+        <WorkSpace />
       </div>
       <NewFileDialog />
       <UserErrorSnackbar />

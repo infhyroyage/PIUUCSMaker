@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Chart } from "../types/ucs";
 import ReadyFile from "./ReadyFile";
 import { useRecoilState, useRecoilValue } from "recoil";
@@ -9,8 +9,15 @@ import {
 } from "../service/atoms";
 import ChartBorderLine from "./ChartBorderLine";
 import ChartVertical from "./ChartVertical";
+import { Indicator, MouseDown } from "../types/props";
 
 function WorkSpace() {
+  const [indicators, setIndicators] = useState<Indicator[]>(
+    new Array<Indicator>(10).fill(null)
+  );
+  const [mouseDowns, setMouseDowns] = useState<MouseDown[]>(
+    new Array<MouseDown>(10).fill(null)
+  );
   const [noteSize, setNoteSize] = useRecoilState<number>(noteSizeState);
   const chart: Chart = useRecoilValue<Chart>(chartState);
   const menuBarHeight = useRecoilValue<number>(menuBarHeightState);
@@ -54,6 +61,7 @@ function WorkSpace() {
         lineHeight: 0,
         userSelect: "none",
       }}
+      onMouseUp={() => setMouseDowns(new Array<MouseDown>(10).fill(null))}
     >
       <div style={{ display: "flex" }}>
         {[...Array(chart.length)].map((_, column: number) => (
@@ -61,7 +69,13 @@ function WorkSpace() {
             {column === 0 && (
               <ChartBorderLine width={borderSize} height="100%" />
             )}
-            <ChartVertical column={column} />
+            <ChartVertical
+              column={column}
+              indicator={indicators[column]}
+              mouseDown={mouseDowns[column]}
+              setIndicators={setIndicators}
+              setMouseDowns={setMouseDowns}
+            />
             <ChartBorderLine width={borderSize} height="100%" />
           </React.Fragment>
         ))}
