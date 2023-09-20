@@ -52,7 +52,7 @@ export type MouseDownInfo = {
   column: number;
 
   /**
-   * マウス押下時の行のインデックス
+   * マウス押下時の譜面全体での行のインデックス
    */
   rowIdx: number;
   /**

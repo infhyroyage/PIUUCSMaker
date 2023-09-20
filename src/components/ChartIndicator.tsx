@@ -25,65 +25,60 @@ function ChartIndicator({ column }: ChartIndicatorProps) {
     indicatorInfo &&
     column === indicatorInfo.column && (
       <>
-        {mouseDownInfo && column === mouseDownInfo.column && (
-          <>
-            {/* 押下中での単ノート/ホールドの始点の画像 */}
-            <img
-              src={IMAGE_BINARIES[column % 5].note}
-              alt={`note${column % 5}`}
-              width={noteSize}
-              height={noteSize}
-              style={{
-                position: "absolute",
-                top:
-                  mouseDownInfo.top < indicatorInfo.top
-                    ? mouseDownInfo.top
-                    : indicatorInfo.top,
-                zIndex: theme.zIndex.drawer - 4,
-              }}
-            />
-            {mouseDownInfo.rowIdx !== indicatorInfo.rowIdx && (
-              <>
-                {/* 押下中でのホールドの画像 */}
-                <img
-                  src={IMAGE_BINARIES[column % 5].hold}
-                  alt={`hold${column % 5}`}
-                  width={noteSize}
-                  height={
+        {/* 押下中でのホールドのみ画像を表示する(単ノートは表示しない) */}
+        {mouseDownInfo &&
+          column === mouseDownInfo.column &&
+          mouseDownInfo.rowIdx !== indicatorInfo.rowIdx && (
+            <>
+              <img
+                src={IMAGE_BINARIES[column % 5].note}
+                alt={`note${column % 5}`}
+                width={noteSize}
+                height={noteSize}
+                style={{
+                  position: "absolute",
+                  top:
                     mouseDownInfo.top < indicatorInfo.top
-                      ? indicatorInfo.top - mouseDownInfo.top
-                      : mouseDownInfo.top - indicatorInfo.top
-                  }
-                  style={{
-                    position: "absolute",
-                    top:
-                      (mouseDownInfo.top < indicatorInfo.top
-                        ? mouseDownInfo.top
-                        : indicatorInfo.top) +
-                      noteSize * 0.5,
-                    zIndex: theme.zIndex.drawer - 3,
-                  }}
-                />
-                {/* 押下中でのホールドの終点の画像 */}
-                <img
-                  src={IMAGE_BINARIES[column % 5].note}
-                  alt={`note${column % 5}`}
-                  width={noteSize}
-                  height={noteSize}
-                  style={{
-                    position: "absolute",
-                    top:
-                      mouseDownInfo.top < indicatorInfo.top
-                        ? indicatorInfo.top
-                        : mouseDownInfo.top,
-                    zIndex: theme.zIndex.drawer - 2,
-                  }}
-                />
-              </>
-            )}
-          </>
-        )}
-        {/* インディケーター */}
+                      ? mouseDownInfo.top
+                      : indicatorInfo.top,
+                  zIndex: theme.zIndex.drawer - 4,
+                }}
+              />
+              <img
+                src={IMAGE_BINARIES[column % 5].hold}
+                alt={`hold${column % 5}`}
+                width={noteSize}
+                height={
+                  mouseDownInfo.top < indicatorInfo.top
+                    ? indicatorInfo.top - mouseDownInfo.top
+                    : mouseDownInfo.top - indicatorInfo.top
+                }
+                style={{
+                  position: "absolute",
+                  top:
+                    (mouseDownInfo.top < indicatorInfo.top
+                      ? mouseDownInfo.top
+                      : indicatorInfo.top) +
+                    noteSize * 0.5,
+                  zIndex: theme.zIndex.drawer - 3,
+                }}
+              />
+              <img
+                src={IMAGE_BINARIES[column % 5].note}
+                alt={`note${column % 5}`}
+                width={noteSize}
+                height={noteSize}
+                style={{
+                  position: "absolute",
+                  top:
+                    mouseDownInfo.top < indicatorInfo.top
+                      ? indicatorInfo.top
+                      : mouseDownInfo.top,
+                  zIndex: theme.zIndex.drawer - 2,
+                }}
+              />
+            </>
+          )}
         <span
           style={{
             display: "block",
