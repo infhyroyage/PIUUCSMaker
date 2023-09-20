@@ -19,6 +19,7 @@ import ChartVerticalNoteImages from "./ChartVerticalNoteImages";
 import ChartVerticalRectangles from "./ChartVerticalRectangles";
 
 function ChartVertical({ column }: ChartVerticalProps) {
+  console.log(`ChartVertical:${column}`);
   const [chart, setChart] = useRecoilState<Chart>(chartState);
   const [indicatorInfo, setIndicatorInfo] =
     useRecoilState<IndicatorInfo | null>(indicatorInfoState);
@@ -93,12 +94,23 @@ function ChartVertical({ column }: ChartVerticalProps) {
           break;
         }
       }
-      setIndicatorInfo(info);
+
+      // 無駄な再レンダリングを避けるため、マウスホバーした場所の譜面全体での行のインデックスが
+      // 現在のインディケーターの譜面全体での行のインデックスと同じ場合は、indicatorInfoの状態を更新しない
+      if (
+        (info !== null || indicatorInfo !== null) &&
+        (info === null ||
+          indicatorInfo === null ||
+          info.rowIdx !== indicatorInfo.rowIdx)
+      ) {
+        setIndicatorInfo(info);
+      }
     },
     [
       blockYDists,
       chart.blocks,
       column,
+      indicatorInfo,
       isPlaying,
       menuBarHeight,
       setIndicatorInfo,
