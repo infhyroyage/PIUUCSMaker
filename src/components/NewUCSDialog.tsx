@@ -141,7 +141,7 @@ function NewUCSDialog() {
             .fill(null)
             .map<Note[]>(() => [])
         );
-        setUcsName(form.ucsName);
+        setUcsName(`${form.ucsName}.ucs`);
         setIsOpenedNewUCSDialog(false);
       }
     });
