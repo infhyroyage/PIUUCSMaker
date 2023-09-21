@@ -1,15 +1,19 @@
 import { atom } from "recoil";
-import { Chart } from "../types/ucs";
+import { Block, Note } from "../types/ucs";
 import { FileNames, Indicator, MouseDown, Zoom } from "../types/atoms";
 
-export const chartState = atom<Chart>({
-  key: "chartState",
-  default: {
-    length: 5,
-    isPerformance: false,
-    blocks: [],
-    notes: [],
-  },
+export const blocksState = atom<Block[]>({
+  key: "blocks",
+  default: [],
+});
+
+/**
+ * 列数
+ * Single/SinglePerformance譜面の場合は5、Double/DoublePerformance譜面の場合は10
+ */
+export const columnsState = atom<5 | 10>({
+  key: "columns",
+  default: 5,
 });
 
 export const fileNamesState = atom<FileNames>({
@@ -42,6 +46,17 @@ export const isOpenedNewFileDialogState = atom<boolean>({
   default: false,
 });
 
+/**
+ * SinglePerformance/DoublePerformance譜面の場合はtrue、Single/Double譜面の場合はfalse
+ */
+export const isPerformanceState = atom<boolean>({
+  key: "isPerformance",
+  default: false,
+});
+
+/**
+ * 再生中の場合はtrue、そうでない場合はfalse
+ */
 export const isPlayingState = atom<boolean>({
   key: "isPlaying",
   default: false,
@@ -60,6 +75,11 @@ export const menuBarHeightState = atom<number>({
 export const mouseDownsState = atom<MouseDown[]>({
   key: "mouseDowns",
   default: new Array<MouseDown>(10).fill(null),
+});
+
+export const notesState = atom<Note[][]>({
+  key: "notes",
+  default: [],
 });
 
 export const noteSizeState = atom<number>({

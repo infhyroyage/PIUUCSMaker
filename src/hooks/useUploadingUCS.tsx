@@ -1,14 +1,20 @@
 import { useTransition } from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
-import { Block, Chart, Note } from "../types/ucs";
+import { Block, Note } from "../types/ucs";
 import {
-  chartState,
+  blocksState,
+  columnsState,
   fileNamesState,
+  isPerformanceState,
+  notesState,
   userErrorMessageState,
 } from "../service/atoms";
 import { FileNames } from "../types/atoms";
+import { UploadingUCSValidation } from "../types/form";
 
-const validateAndLoadUCS = (content: string): Chart | string => {
+const validateAndLoadUCS = (
+  content: string
+): UploadingUCSValidation | string => {
   // ucsファイルの改行コードがCRLF形式かのチェック
   if (content.indexOf("\r\n") === -1) {
     return "改行コードがCRLF形式ではありません";
@@ -42,21 +48,18 @@ const validateAndLoadUCS = (content: string): Chart | string => {
   ) {
     return `ucsファイルの${fileLinesNum}行目が不正です`;
   }
-  const chartLength: 5 | 10 = [":Mode=Single", ":Mode=S-Performance"].includes(
-    line
-  )
+
+  const blocks: Block[] = [];
+  const columns: 5 | 10 = [":Mode=Single", ":Mode=S-Performance"].includes(line)
     ? 5
     : 10;
-  const chart: Chart = {
-    length: chartLength,
-    isPerformance: [":Mode=S-Performance", ":Mode=D-Performance"].includes(
-      line
-    ),
-    blocks: [],
-    notes: Array(chartLength)
-      .fill(null)
-      .map<Note[]>(() => []),
-  };
+  const isPerformance: boolean = [
+    ":Mode=S-Performance",
+    ":Mode=D-Performance",
+  ].includes(line);
+  const notes: Note[][] = Array(columns)
+    .fill(null)
+    .map<Note[]>(() => []);
 
   /*
    * 各列の以下の一時変数を初期化
@@ -93,7 +96,7 @@ const validateAndLoadUCS = (content: string): Chart | string => {
 
         // 譜面のブロックの行数を更新して格納
         block.length = blockLength;
-        chart.blocks.push(block);
+        blocks.push(block);
         accumulatedBlockLength += blockLength;
         blockLength = 0;
       }
@@ -167,28 +170,28 @@ const validateAndLoadUCS = (content: string): Chart | string => {
     }
 
     // 譜面のブロックのヘッダー部以外の列数をチェック
-    if (line.length !== chartLength) {
+    if (line.length !== columns) {
       return `ucsファイルの${fileLinesNum}行目が不正です`;
     }
 
     // 単ノート/ホールドの情報を解析し、そのインスタンスを追加
-    for (let column: number = 0; column < chartLength; column++) {
+    for (let column: number = 0; column < columns; column++) {
       switch (line[column]) {
         case "X":
           // 単ノート追加
-          chart.notes[column].push({ idx: rowIdx, type: "X" });
+          notes[column].push({ idx: rowIdx, type: "X" });
           break;
         case "M":
           // ホールドの始点追加
-          chart.notes[column].push({ idx: rowIdx, type: "M" });
+          notes[column].push({ idx: rowIdx, type: "M" });
           break;
         case "H":
           // ホールドの中間追加
-          chart.notes[column].push({ idx: rowIdx, type: "H" });
+          notes[column].push({ idx: rowIdx, type: "H" });
           break;
         case "W":
           // ホールドの終点追加
-          chart.notes[column].push({ idx: rowIdx, type: "W" });
+          notes[column].push({ idx: rowIdx, type: "W" });
           break;
         case ".":
           break;
@@ -208,14 +211,17 @@ const validateAndLoadUCS = (content: string): Chart | string => {
     return `ucsファイルの${fileLinesNum}行目が不正です`;
   }
   block.length = blockLength;
-  chart.blocks.push(block);
+  blocks.push(block);
 
-  return chart;
+  return { blocks, columns, isPerformance, notes };
 };
 
 function useUploadingUCS() {
   const [fileNames, setFileNames] = useRecoilState<FileNames>(fileNamesState);
-  const setChart = useSetRecoilState<Chart>(chartState);
+  const setBlocks = useSetRecoilState<Block[]>(blocksState);
+  const setColumns = useSetRecoilState<5 | 10>(columnsState);
+  const setIsPerformance = useSetRecoilState<boolean>(isPerformanceState);
+  const setNotes = useSetRecoilState<Note[][]>(notesState);
   const setUserErrorMessage = useSetRecoilState<string>(userErrorMessageState);
 
   const [isPending, startTransition] = useTransition();
@@ -233,12 +239,16 @@ function useUploadingUCS() {
 
     startTransition(() => {
       fileList[0].text().then((content: string) => {
-        const result: Chart | string = validateAndLoadUCS(content);
+        const result: UploadingUCSValidation | string =
+          validateAndLoadUCS(content);
         if (typeof result === "string") {
           setUserErrorMessage(result);
         } else {
           setFileNames({ ...fileNames, ucs: fileList[0].name });
-          setChart(result);
+          setBlocks(result.blocks);
+          setColumns(result.columns);
+          setIsPerformance(result.isPerformance);
+          setNotes(result.notes);
         }
       });
     });

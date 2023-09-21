@@ -78,9 +78,19 @@ export type ChartVerticalProps = {
  */
 export type ChartVerticalRectanglesProps = {
   /**
+   * 譜面のブロックの高さ(px単位)
+   */
+  blockHeight: number;
+
+  /**
    * 譜面のブロックのインデックス
    */
   blockIdx: number;
+
+  /**
+   * 最後の譜面のブロックの場合はtrue、そうでない場合はfalse
+   */
+  isLastBlock: boolean;
 };
 
 /**

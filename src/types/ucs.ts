@@ -1,9 +1,9 @@
 /**
- * 単ノート/ホールド
+ * 単ノート/ホールドの始点/ホールドの中間/ホールドの終点
  */
 export type Note = {
   /**
-   * 単ノート/ホールドの始点/ホールドの中間/ホールドの終点の譜面全体での行インデックス
+   * 譜面全体での行インデックス
    */
   idx: number;
 
@@ -52,33 +52,4 @@ export type Block = {
    * 0番目の譜面のブロックの場合は0
    */
   accumulatedLength: number;
-};
-
-/**
- * UCSファイルに記載する譜面
- */
-export type Chart = {
-  /**
-   * 列数
-   * Single/SinglePerformance譜面の場合は5、Double/DoublePerformance譜面の場合は10
-   */
-  length: 5 | 10;
-
-  /**
-   * Single/Double譜面の場合はtrue、
-   * SinglePerformance/DoublePerformance譜面の場合はfalse
-   */
-  isPerformance: boolean;
-
-  /**
-   * 譜面のブロックの集合
-   * ucsファイルを読み込んでいない場合は空配列
-   */
-  blocks: Block[];
-
-  /**
-   * 列ごとの単ノート/ホールドの集合
-   * Single/SinglePerformance譜面の場合の第1インデックスは0〜4、Double/DoublePerformance譜面の場合は0〜9
-   */
-  notes: Note[][];
 };

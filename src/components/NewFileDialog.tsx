@@ -10,41 +10,48 @@ import {
 } from "@mui/material";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import {
-  chartState,
   isOpenedNewFileDialogState,
   fileNamesState,
+  blocksState,
+  notesState,
+  columnsState,
+  isPerformanceState,
 } from "../service/atoms";
 import { ChangeEvent, useState, useTransition } from "react";
-import { NewFileDialogErrors, NewFileDialogForm } from "../types/form";
-import { Chart, Note } from "../types/ucs";
+import {
+  NewFileDialogErrors,
+  NewFileDialogForm,
+  NewFileValidation,
+} from "../types/form";
+import { Block, Note } from "../types/ucs";
 import { FileNames } from "../types/atoms";
 
 const validateAndLoadUCS = (
   form: NewFileDialogForm
-): Chart | NewFileDialogErrors => {
+): NewFileValidation | NewFileDialogErrors => {
   // UCSファイル名のチェック
   if (form.fileName.length === 0) {
     return "fileName";
   }
 
   // モードのチェック
-  let chartLength: 5 | 10;
+  let columns: 5 | 10;
   let isPerformance: boolean;
   switch (form.mode) {
     case "Single":
-      chartLength = 5;
+      columns = 5;
       isPerformance = false;
       break;
     case "SinglePerformance":
-      chartLength = 5;
+      columns = 5;
       isPerformance = true;
       break;
     case "Double":
-      chartLength = 10;
+      columns = 10;
       isPerformance = false;
       break;
     case "DoublePerformance":
-      chartLength = 10;
+      columns = 10;
       isPerformance = true;
       break;
     default:
@@ -86,27 +93,15 @@ const validateAndLoadUCS = (
   }
 
   // 行数のチェック
-  const blockLength = Number(form.rowLength);
-  if (!Number.isInteger(blockLength) || blockLength < 1) {
+  const length = Number(form.rowLength);
+  if (!Number.isInteger(length) || length < 1) {
     return "rowLength";
   }
 
   return {
-    length: chartLength,
+    block: { bpm, delay, beat, split, length, accumulatedLength: 0 },
+    columns,
     isPerformance,
-    blocks: [
-      {
-        bpm,
-        delay,
-        beat,
-        split,
-        length: blockLength,
-        accumulatedLength: 0,
-      },
-    ],
-    notes: Array(chartLength)
-      .fill(null)
-      .map<Note[]>(() => []),
   };
 };
 
@@ -122,21 +117,32 @@ function NewFileDialog() {
     split: "2",
   });
   const [fileNames, setFileNames] = useRecoilState<FileNames>(fileNamesState);
-  const setChart = useSetRecoilState<Chart>(chartState);
   const [isOpenedNewFileDialog, setIsOpenedNewFileDialog] =
     useRecoilState<boolean>(isOpenedNewFileDialogState);
+  const setBlocks = useSetRecoilState<Block[]>(blocksState);
+  const setColumns = useSetRecoilState<5 | 10>(columnsState);
+  const setIsPerformance = useSetRecoilState<boolean>(isPerformanceState);
+  const setNotes = useSetRecoilState<Note[][]>(notesState);
 
   const [isPending, startTransition] = useTransition();
 
   const onCreate = () =>
     startTransition(() => {
-      const result: Chart | NewFileDialogErrors = validateAndLoadUCS(form);
+      const result: NewFileValidation | NewFileDialogErrors =
+        validateAndLoadUCS(form);
       if (typeof result === "string") {
         // バリデーションエラーのテキストフィールドを表示
         setResultError(result);
       } else {
         setFileNames({ ...fileNames, ucs: `${form.fileName}.ucs` });
-        setChart(result);
+        setBlocks([result.block]);
+        setColumns(result.columns);
+        setIsPerformance(result.isPerformance);
+        setNotes(
+          Array(result.columns)
+            .fill(null)
+            .map<Note[]>(() => [])
+        );
         setIsOpenedNewFileDialog(false);
       }
     });

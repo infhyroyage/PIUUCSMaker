@@ -1,9 +1,10 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { Chart } from "../types/ucs";
+import React, { useEffect, useMemo } from "react";
+import { Block, Note } from "../types/ucs";
 import ReadyFile from "./ReadyFile";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
-  chartState,
+  blocksState,
+  columnsState,
   indicatorsState,
   menuBarHeightState,
   mouseDownsState,
@@ -15,7 +16,8 @@ import { Indicator, MouseDown } from "../types/atoms";
 
 function WorkSpace() {
   const [noteSize, setNoteSize] = useRecoilState<number>(noteSizeState);
-  const chart: Chart = useRecoilValue<Chart>(chartState);
+  const columns = useRecoilValue<5 | 10>(columnsState);
+  const blocks = useRecoilValue<Block[]>(blocksState);
   const indicators = useRecoilValue<Indicator[]>(indicatorsState);
   const menuBarHeight = useRecoilValue<number>(menuBarHeightState);
   const mouseDowns = useRecoilValue<MouseDown[]>(mouseDownsState);
@@ -46,7 +48,7 @@ function WorkSpace() {
     [noteSize]
   );
 
-  return chart.blocks.length === 0 ? (
+  return blocks.length === 0 ? (
     <ReadyFile />
   ) : (
     <div
@@ -61,7 +63,7 @@ function WorkSpace() {
       }}
     >
       <div style={{ display: "flex" }}>
-        {[...Array(chart.length)].map((_, column: number) => (
+        {[...Array(columns)].map((_, column: number) => (
           <React.Fragment key={column}>
             {column === 0 && (
               <ChartBorderLine width={borderSize} height="100%" />

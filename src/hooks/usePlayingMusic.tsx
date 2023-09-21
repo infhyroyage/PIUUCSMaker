@@ -2,25 +2,27 @@ import { useEffect, useRef, useTransition } from "react";
 import beatWav from "../sounds/beat.wav";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
-  chartState,
+  blocksState,
   fileNamesState,
   isMuteBeatsState,
   isPlayingState,
   noteSizeState,
+  notesState,
   userErrorMessageState,
   volumeValueState,
   zoomState,
 } from "../service/atoms";
 import { FileNames, Zoom } from "../types/atoms";
-import { Block, Chart, Note } from "../types/ucs";
+import { Block, Note } from "../types/ucs";
 import { ZOOM_VALUES } from "../service/zoom";
 
 function usePlayingMusic() {
   const [isPlaying, setIsPlaying] = useRecoilState<boolean>(isPlayingState);
   const [fileNames, setFileNames] = useRecoilState<FileNames>(fileNamesState);
   const setUserErrorMessage = useSetRecoilState<string>(userErrorMessageState);
-  const chart = useRecoilValue<Chart>(chartState);
+  const blocks = useRecoilValue<Block[]>(blocksState);
   const isMuteBeats = useRecoilValue<boolean>(isMuteBeatsState);
+  const notes = useRecoilValue<Note[][]>(notesState);
   const noteSize = useRecoilValue<number>(noteSizeState);
   const volumeValue = useRecoilValue<number>(volumeValueState);
   const zoom = useRecoilValue<Zoom>(zoomState);
@@ -129,12 +131,12 @@ function usePlayingMusic() {
     let top: number =
       document.documentElement.scrollTop > 0
         ? document.documentElement.scrollTop
-        : chart.blocks[0].delay > 0
+        : blocks[0].delay > 0
         ? (-2.0 *
-            chart.blocks[0].delay *
+            blocks[0].delay *
             noteSize *
             ZOOM_VALUES[zoom.idx] *
-            chart.blocks[0].bpm) /
+            blocks[0].bpm) /
           60000
         : 0;
 
@@ -147,7 +149,7 @@ function usePlayingMusic() {
       verocities: { verocity: number; border: number }[];
       elapsedMusicTime: number;
     };
-    const scrollParam: ScrollParam = chart.blocks.reduce(
+    const scrollParam: ScrollParam = blocks.reduce(
       (prev: ScrollParam, block: Block, blockIdx: number) => {
         // 各譜面のブロックの1行あたりの高さをpx単位で計算
         // 譜面のブロックの1行あたりの高さ := 2 * noteSize * 倍率 / 譜面のブロックのSplit
@@ -156,7 +158,7 @@ function usePlayingMusic() {
           (2.0 * noteSize * ZOOM_VALUES[zoom.idx]) / block.split;
 
         // 列ごとに単ノート/ホールドの始点において、譜面全体での行のインデックスをそれぞれ抽出
-        const filteredStarts: number[][] = chart.notes.map((notes: Note[]) =>
+        const filteredStarts: number[][] = notes.map((notes: Note[]) =>
           notes
             .filter(
               (note: Note) =>
@@ -205,7 +207,7 @@ function usePlayingMusic() {
         border += unitRowHeight * block.length;
 
         // 最後の譜面のブロックの下へスクロールする速度(px/ms)が変化するブラウザの画面のy座標を追加
-        if (blockIdx === chart.blocks.length - 1) {
+        if (blockIdx === blocks.length - 1) {
           prev.verocities.push({ verocity, border });
         }
 
@@ -239,14 +241,14 @@ function usePlayingMusic() {
       musicSourceNode.current.start(
         // 0番目の譜面のブロックのDelayが負の場合は、現在のブラウザの画面のy座標に応じた自動スクロール経過時間(秒)に応じて、
         // MP3ファイルの音楽を再生するまでの時間を遅延する
-        chart.blocks[0].delay < 0 &&
-          chart.blocks[0].delay / 1000 + scrollParam.elapsedMusicTime < 0
-          ? (-1 * chart.blocks[0].delay) / 1000 - scrollParam.elapsedMusicTime
+        blocks[0].delay < 0 &&
+          blocks[0].delay / 1000 + scrollParam.elapsedMusicTime < 0
+          ? (-1 * blocks[0].delay) / 1000 - scrollParam.elapsedMusicTime
           : 0,
         // 現在のブラウザの画面のy座標に応じた自動スクロール経過時間(秒)に応じて、MP3ファイルの音楽を再生するオフセットを設定する
         scrollParam.elapsedMusicTime > 0 &&
-          chart.blocks[0].delay / 1000 + scrollParam.elapsedMusicTime > 0
-          ? chart.blocks[0].delay / 1000 + scrollParam.elapsedMusicTime
+          blocks[0].delay / 1000 + scrollParam.elapsedMusicTime > 0
+          ? blocks[0].delay / 1000 + scrollParam.elapsedMusicTime
           : 0
       );
     }

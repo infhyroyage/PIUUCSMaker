@@ -1,15 +1,16 @@
 import React, { memo, useCallback, useMemo } from "react";
 import { ChartVerticalProps } from "../types/props";
-import { Block, Chart, Note } from "../types/ucs";
+import { Block, Note } from "../types/ucs";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
-  chartState,
+  blocksState,
   indicatorsState,
   isPlayingState,
   isShownSystemErrorSnackbarState,
   menuBarHeightState,
   mouseDownsState,
   noteSizeState,
+  notesState,
   zoomState,
 } from "../service/atoms";
 import { ZOOM_VALUES } from "../service/zoom";
@@ -20,7 +21,8 @@ import ChartVerticalRectangles from "./ChartVerticalRectangles";
 
 function ChartVertical({ column, indicator, mouseDown }: ChartVerticalProps) {
   console.log(`ChartVertical:${column}`);
-  const [chart, setChart] = useRecoilState<Chart>(chartState);
+  const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
+  const blocks = useRecoilValue<Block[]>(blocksState);
   const isPlaying = useRecoilValue<boolean>(isPlayingState);
   const menuBarHeight = useRecoilValue<number>(menuBarHeightState);
   const noteSize = useRecoilValue<number>(noteSizeState);
@@ -36,16 +38,16 @@ function ChartVertical({ column, indicator, mouseDown }: ChartVerticalProps) {
   // 例えば、この高さに譜面のブロックの行数を乗ずると、譜面のブロックの高さとなる
   const unitRowHeights: number[] = useMemo(
     () =>
-      chart.blocks.map(
+      blocks.map(
         (block: Block) => (2.0 * noteSize * ZOOM_VALUES[zoom.idx]) / block.split
       ),
-    [chart.blocks, noteSize, zoom.idx]
+    [blocks, noteSize, zoom.idx]
   );
 
   // 各譜面のブロックを設置するトップバーからのy座標の距離をpx単位で計算
   const blockYDists: number[] = useMemo(
     () =>
-      [...Array(chart.blocks.length)].reduce(
+      [...Array(blocks.length)].reduce(
         (prev: number[], _, blockIdx: number) =>
           blockIdx === 0
             ? [0]
@@ -55,12 +57,12 @@ function ChartVertical({ column, indicator, mouseDown }: ChartVerticalProps) {
                   (2.0 *
                     noteSize *
                     ZOOM_VALUES[zoom.idx] *
-                    chart.blocks[blockIdx - 1].length) /
-                    chart.blocks[blockIdx - 1].split,
+                    blocks[blockIdx - 1].length) /
+                    blocks[blockIdx - 1].split,
               ],
         []
       ),
-    [chart.blocks, noteSize, zoom.idx]
+    [blocks, noteSize, zoom.idx]
   );
 
   const onMouseMove = useCallback(
@@ -76,16 +78,16 @@ function ChartVertical({ column, indicator, mouseDown }: ChartVerticalProps) {
       // 譜面のブロックのマウスホバーした際に、マウスの行インデックスの場所にインディケーターを表示
       // 譜面のブロックのマウスホバーが外れた際に、インディケーターを非表示
       let updatedIndicator: Indicator = null;
-      for (let blockIdx = 0; blockIdx < chart.blocks.length; blockIdx++) {
+      for (let blockIdx = 0; blockIdx < blocks.length; blockIdx++) {
         const blockHeight: number =
-          unitRowHeights[blockIdx] * chart.blocks[blockIdx].length;
+          unitRowHeights[blockIdx] * blocks[blockIdx].length;
         if (y < blockYDists[blockIdx] + blockHeight) {
           const top: number =
             y -
             ((y - blockYDists[blockIdx]) % unitRowHeights[blockIdx]) +
             menuBarHeight;
           const rowIdx: number =
-            chart.blocks[blockIdx].accumulatedLength +
+            blocks[blockIdx].accumulatedLength +
             (top - menuBarHeight - blockYDists[blockIdx]) /
               unitRowHeights[blockIdx];
           updatedIndicator = { blockIdx, rowIdx, top };
@@ -110,7 +112,7 @@ function ChartVertical({ column, indicator, mouseDown }: ChartVerticalProps) {
     },
     [
       blockYDists,
-      chart.blocks,
+      blocks,
       column,
       indicator,
       isPlaying,
@@ -164,60 +166,60 @@ function ChartVertical({ column, indicator, mouseDown }: ChartVerticalProps) {
       if (start === goal) {
         // startの場所に単ノートを新規追加
         // ただし、その場所に単ノート/ホールドが含む場合は、それを削除する(単ノートは新規追加しない)
-        const foundNote: Note | undefined = chart.notes[column].find(
+        const foundNote: Note | undefined = notes[column].find(
           (note: Note) => note.idx === start
         );
         if (foundNote && foundNote.type === "X") {
-          updatedNotes = chart.notes[column].filter(
+          updatedNotes = notes[column].filter(
             (note: Note) => note.idx !== start
           );
         } else if (foundNote && foundNote.type === "M") {
-          const goalHoldNote: Note | undefined = chart.notes[column].find(
+          const goalHoldNote: Note | undefined = notes[column].find(
             (note: Note) => note.idx > start && note.type === "W"
           );
           updatedNotes = [
-            ...chart.notes[column].filter((note: Note) => note.idx < start),
-            ...chart.notes[column].filter((note: Note) =>
+            ...notes[column].filter((note: Note) => note.idx < start),
+            ...notes[column].filter((note: Note) =>
               goalHoldNote ? note.idx > goalHoldNote.idx : false
             ),
           ];
         } else if (foundNote && foundNote.type === "H") {
-          const startHoldNote: Note | undefined = [...chart.notes[column]]
+          const startHoldNote: Note | undefined = [...notes[column]]
             .reverse()
             .find((note: Note) => note.idx < start && note.type === "M");
-          const goalHoldNote: Note | undefined = chart.notes[column].find(
+          const goalHoldNote: Note | undefined = notes[column].find(
             (note: Note) => note.idx > start && note.type === "W"
           );
           updatedNotes = [
-            ...chart.notes[column].filter((note: Note) =>
+            ...notes[column].filter((note: Note) =>
               startHoldNote ? note.idx < startHoldNote.idx : false
             ),
-            ...chart.notes[column].filter((note: Note) =>
+            ...notes[column].filter((note: Note) =>
               goalHoldNote ? note.idx > goalHoldNote.idx : false
             ),
           ];
         } else if (foundNote && foundNote.type === "W") {
-          const startHoldNote: Note | undefined = [...chart.notes[column]]
+          const startHoldNote: Note | undefined = [...notes[column]]
             .reverse()
             .find((note: Note) => note.idx < start && note.type === "M");
           updatedNotes = [
-            ...chart.notes[column].filter((note: Note) =>
+            ...notes[column].filter((note: Note) =>
               startHoldNote ? note.idx < startHoldNote.idx : false
             ),
-            ...chart.notes[column].filter((note: Note) => note.idx > start),
+            ...notes[column].filter((note: Note) => note.idx > start),
           ];
         } else {
           updatedNotes = [
-            ...chart.notes[column].filter((note: Note) => note.idx < start),
+            ...notes[column].filter((note: Note) => note.idx < start),
             { idx: start, type: "X" },
-            ...chart.notes[column].filter((note: Note) => note.idx > start),
+            ...notes[column].filter((note: Note) => note.idx > start),
           ];
         }
       } else {
         // startとgoalとの間にホールドを新規追加
         // ただし、その間の場所に単ノート/ホールドが含む場合は、それをすべて削除してから新規追加する
         updatedNotes = [
-          ...chart.notes[column].filter((note: Note) => note.idx < start),
+          ...notes[column].filter((note: Note) => note.idx < start),
           ...Array.from<any, Note>(
             { length: goal - start + 1 },
             (_, idx: number) => {
@@ -227,19 +229,18 @@ function ChartVertical({ column, indicator, mouseDown }: ChartVerticalProps) {
               };
             }
           ),
-          ...chart.notes[column].filter((note: Note) => note.idx > goal),
+          ...notes[column].filter((note: Note) => note.idx > goal),
         ];
       }
       // 単ノート/ホールドの追加・削除を行った譜面に更新
       setMouseDowns(new Array<MouseDown>(10).fill(null));
-      setChart({
-        ...chart,
-        notes: chart.notes.map((notes: Note[], i: number) =>
+      setNotes(
+        notes.map((notes: Note[], i: number) =>
           i === column ? updatedNotes : notes
-        ),
-      });
+        )
+      );
     }
-  }, [chart, column, indicator, isPlaying, mouseDown, setChart, setMouseDowns]);
+  }, [column, indicator, isPlaying, mouseDown, notes, setNotes, setMouseDowns]);
 
   return (
     <span
@@ -253,12 +254,17 @@ function ChartVertical({ column, indicator, mouseDown }: ChartVerticalProps) {
       onMouseDown={onMouseDown}
       onMouseUp={onMouseUp}
     >
-      {[...Array(chart.blocks.length)].map((_, blockIdx: number) => (
-        <ChartVerticalRectangles key={blockIdx} blockIdx={blockIdx} />
+      {blocks.map((block: Block, blockIdx: number) => (
+        <ChartVerticalRectangles
+          key={blockIdx}
+          blockHeight={unitRowHeights[blockIdx] * block.length}
+          blockIdx={blockIdx}
+          isLastBlock={blockIdx === blocks.length - 1}
+        />
       ))}
-      {chart.notes[column].map((note: Note, i: number) => {
+      {notes[column].map((note: Note, i: number) => {
         // noteが属する譜面のブロックのインデックスを取得
-        const blockIdx: number = chart.blocks.findIndex(
+        const blockIdx: number = blocks.findIndex(
           (block: Block) => note.idx < block.accumulatedLength + block.length
         );
         // 内部矛盾チェック
@@ -278,7 +284,7 @@ function ChartVertical({ column, indicator, mouseDown }: ChartVerticalProps) {
               menuBarHeight +
               blockYDists[blockIdx] +
               unitRowHeights[blockIdx] *
-                (note.idx - chart.blocks[blockIdx].accumulatedLength)
+                (note.idx - blocks[blockIdx].accumulatedLength)
             }
           />
         );
