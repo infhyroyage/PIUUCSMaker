@@ -9,9 +9,13 @@ import {
   isPlayingState,
   mp3NameState,
   ucsNameState,
+  columnsState,
+  isPerformanceState,
+  blocksState,
 } from "../service/atoms";
 import {
   AppBar,
+  Box,
   FormControl,
   IconButton,
   MenuItem,
@@ -28,7 +32,7 @@ import VolumeOffIcon from "@mui/icons-material/VolumeOff";
 import VolumeDownIcon from "@mui/icons-material/VolumeDown";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import VolumeMuteIcon from "@mui/icons-material/VolumeMute";
-import { Zoom } from "../types/chart";
+import { Block, Zoom } from "../types/chart";
 
 function MenuBar() {
   const [muteVolBuf, setMuteVolBuf] = useState<number | null>(null);
@@ -41,6 +45,9 @@ function MenuBar() {
   const [volumeValue, setVolumeValue] =
     useRecoilState<number>(volumeValueState);
   const [zoom, setZoom] = useRecoilState<Zoom>(zoomState);
+  const blocks = useRecoilValue<Block[]>(blocksState);
+  const columns = useRecoilValue<5 | 10>(columnsState);
+  const isPerformance = useRecoilValue<boolean>(isPerformanceState);
   const mp3Name = useRecoilValue<string | null>(mp3NameState);
   const isPlaying = useRecoilValue<boolean>(isPlayingState);
   const ucsName = useRecoilValue<string | null>(ucsNameState);
@@ -85,9 +92,18 @@ function MenuBar() {
         >
           <MenuIcon />
         </IconButton>
-        <Typography variant="h6" noWrap component="div" flexGrow={1} ml={4}>
-          {`${ucsName || "PIU UCS Maker"}${mp3Name ? ` (${mp3Name})` : ""}`}
-        </Typography>
+        <Box flexGrow={1} ml={4}>
+          <Typography variant="h6" noWrap component="div">
+            {ucsName || "PIU UCS Maker"}
+          </Typography>
+          {blocks.length > 0 && (
+            <Typography variant="caption" noWrap component="div">
+              {`${columns === 5 ? "Single" : "Double"} ${
+                isPerformance ? "Performance" : ""
+              }${mp3Name ? ` (${mp3Name})` : ""}`}
+            </Typography>
+          )}
+        </Box>
         <Stack alignItems="center" direction="row" spacing={4}>
           <FormControl size="small">
             <Select
