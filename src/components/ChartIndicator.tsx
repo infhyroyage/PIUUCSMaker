@@ -6,7 +6,6 @@ import { useRecoilValue } from "recoil";
 import { noteSizeState } from "../service/atoms";
 
 function ChartIndicator({ column, indicator, mouseDown }: ChartIndicatorProps) {
-  console.log(`ChartIndicator:${column}`);
   const noteSize = useRecoilValue<number>(noteSizeState);
 
   const theme: Theme = useTheme();

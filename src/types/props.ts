@@ -1,4 +1,4 @@
-import { MouseDown } from "./chart";
+import { MouseDown, Note } from "./chart";
 import { Indicator } from "./chart";
 
 export type ChartBorderLineProps = {
@@ -56,22 +56,39 @@ export type ChartRectangleProps = {
  */
 export type ChartVerticalProps = {
   /**
+   * 各譜面のブロックを設置するトップバーからのy座標の距離(px単位)
+   */
+  blockYDists: number[];
+
+  /**
    * 列インデックス
    * Single/SinglePerformance譜面の場合は0〜4、Double/DoublePerformance譜面の場合は0〜9
    */
   column: number;
 
   /**
-   * インディケーターの表示パラメーター
+   * 列インデックスcolumnにおける、インディケーターの表示パラメーター
    * インディケーター非表示の場合はnull
    */
   indicator: Indicator;
 
   /**
-   * マウス押下時のパラメーター
+   * 列インデックスcolumnにおける、マウス押下時のパラメーター
    * マウス押下していない場合はnull
    */
   mouseDown: MouseDown;
+
+  /**
+   * 列インデックスcolumnにおける、単ノート/ホールドの始点/ホールドの中間/ホールドの終点の集合
+   */
+  notes: Note[];
+
+  /**
+   * 各譜面のブロックの1行あたりの高さ(px単位)
+   * 譜面のブロックの1行あたりの高さ := 2 * noteSize * 倍率 / 譜面のブロックのSplit
+   * 例えば、この高さに譜面のブロックの行数を乗ずると、譜面のブロックの高さとなる
+   */
+  unitRowHeights: number[];
 };
 
 /**
