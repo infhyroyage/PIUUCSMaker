@@ -3,29 +3,29 @@ import beatWav from "../sounds/beat.wav";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
   blocksState,
-  fileNamesState,
   isMuteBeatsState,
   isPlayingState,
+  mp3NameState,
   noteSizeState,
   notesState,
   userErrorMessageState,
   volumeValueState,
   zoomState,
 } from "../service/atoms";
-import { FileNames, Zoom } from "../types/atoms";
-import { Block, Note } from "../types/ucs";
+import { Zoom } from "../types/chart";
+import { Block, Note } from "../types/chart";
 import { ZOOM_VALUES } from "../service/zoom";
 
 function usePlayingMusic() {
   const [isPlaying, setIsPlaying] = useRecoilState<boolean>(isPlayingState);
-  const [fileNames, setFileNames] = useRecoilState<FileNames>(fileNamesState);
-  const setUserErrorMessage = useSetRecoilState<string>(userErrorMessageState);
   const blocks = useRecoilValue<Block[]>(blocksState);
   const isMuteBeats = useRecoilValue<boolean>(isMuteBeatsState);
   const notes = useRecoilValue<Note[][]>(notesState);
   const noteSize = useRecoilValue<number>(noteSizeState);
   const volumeValue = useRecoilValue<number>(volumeValueState);
   const zoom = useRecoilValue<Zoom>(zoomState);
+  const setMp3Name = useSetRecoilState<string | null>(mp3NameState);
+  const setUserErrorMessage = useSetRecoilState<string>(userErrorMessageState);
 
   const audioContext = useRef<AudioContext | null>(null);
   const beatGainNode = useRef<GainNode | null>(null);
@@ -107,7 +107,7 @@ function usePlayingMusic() {
         })
         .then((decodedAudio: AudioBuffer) => {
           musicAudioBuffer.current = decodedAudio;
-          setFileNames({ ...fileNames, mp3: fileList[0].name });
+          setMp3Name(fileList[0].name);
         });
     });
   };

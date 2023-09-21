@@ -1,4 +1,5 @@
-import { Indicator, MouseDown } from "./atoms";
+import { MouseDown } from "./chart";
+import { Indicator } from "./chart";
 
 export type ChartBorderLineProps = {
   /**

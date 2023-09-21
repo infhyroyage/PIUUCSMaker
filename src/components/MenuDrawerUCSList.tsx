@@ -16,7 +16,7 @@ import {
   isPlayingState,
 } from "../service/atoms";
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import { Block } from "../types/ucs";
+import { Block } from "../types/chart";
 import {
   generateListItemButtonStyle,
   generateListItemIconStyle,

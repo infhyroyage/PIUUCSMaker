@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useMemo } from "react";
 import { ChartVerticalProps } from "../types/props";
-import { Block, Note } from "../types/ucs";
+import { Block, Note } from "../types/chart";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
   blocksState,
@@ -15,7 +15,9 @@ import {
 } from "../service/atoms";
 import { ZOOM_VALUES } from "../service/zoom";
 import ChartIndicator from "./ChartIndicator";
-import { Indicator, MouseDown, Zoom } from "../types/atoms";
+import { Zoom } from "../types/chart";
+import { MouseDown } from "../types/chart";
+import { Indicator } from "../types/chart";
 import ChartVerticalNoteImages from "./ChartVerticalNoteImages";
 import ChartVerticalRectangles from "./ChartVerticalRectangles";
 

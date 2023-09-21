@@ -1,6 +1,8 @@
 import { atom } from "recoil";
-import { Block, Note } from "../types/ucs";
-import { FileNames, Indicator, MouseDown, Zoom } from "../types/atoms";
+import { Block, Note } from "../types/chart";
+import { Zoom } from "../types/chart";
+import { MouseDown } from "../types/chart";
+import { Indicator } from "../types/chart";
 
 export const blocksState = atom<Block[]>({
   key: "blocks",
@@ -14,11 +16,6 @@ export const blocksState = atom<Block[]>({
 export const columnsState = atom<5 | 10>({
   key: "columns",
   default: 5,
-});
-
-export const fileNamesState = atom<FileNames>({
-  key: "fileNames",
-  default: {},
 });
 
 export const indicatorsState = atom<Indicator[]>({
@@ -77,6 +74,15 @@ export const mouseDownsState = atom<MouseDown[]>({
   default: new Array<MouseDown>(10).fill(null),
 });
 
+/**
+ * mp3ファイル名(拡張子込)
+ * 未アップロード時はundefined
+ */
+export const mp3NameState = atom<string | null>({
+  key: "mp3Name",
+  default: null,
+});
+
 export const notesState = atom<Note[][]>({
   key: "notes",
   default: [],
@@ -85,6 +91,15 @@ export const notesState = atom<Note[][]>({
 export const noteSizeState = atom<number>({
   key: "noteSize",
   default: 0,
+});
+
+/**
+ * ucsファイル名(拡張子込)
+ * 未アップロード時はundefined
+ */
+export const ucsNameState = atom<string | null>({
+  key: "ucsName",
+  default: null,
 });
 
 export const userErrorMessageState = atom<string>({

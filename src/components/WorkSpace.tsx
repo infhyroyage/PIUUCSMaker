@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo } from "react";
-import { Block, Note } from "../types/ucs";
+import { Block, Note } from "../types/chart";
 import ReadyUCS from "./ReadyUCS";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
@@ -12,7 +12,8 @@ import {
 } from "../service/atoms";
 import ChartBorderLine from "./ChartBorderLine";
 import ChartVertical from "./ChartVertical";
-import { Indicator, MouseDown } from "../types/atoms";
+import { MouseDown } from "../types/chart";
+import { Indicator } from "../types/chart";
 
 function WorkSpace() {
   const [noteSize, setNoteSize] = useRecoilState<number>(noteSizeState);

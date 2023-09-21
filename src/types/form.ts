@@ -1,4 +1,4 @@
-import { Block, Note } from "./ucs";
+import { Block, Note } from "./chart";
 
 export type NewUCSDialogErrors =
   | "ucsName"

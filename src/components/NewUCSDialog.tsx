@@ -11,11 +11,11 @@ import {
 import { useRecoilState, useSetRecoilState } from "recoil";
 import {
   isOpenedNewUCSDialogState,
-  fileNamesState,
   blocksState,
   notesState,
   columnsState,
   isPerformanceState,
+  ucsNameState,
 } from "../service/atoms";
 import { ChangeEvent, useState, useTransition } from "react";
 import {
@@ -23,8 +23,7 @@ import {
   NewUCSDialogForm,
   NewUCSValidation,
 } from "../types/form";
-import { Block, Note } from "../types/ucs";
-import { FileNames } from "../types/atoms";
+import { Block, Note } from "../types/chart";
 
 const validateAndLoadUCS = (
   form: NewUCSDialogForm
@@ -106,7 +105,6 @@ const validateAndLoadUCS = (
 };
 
 function NewUCSDialog() {
-  const [resultError, setResultError] = useState<NewUCSDialogErrors | "">("");
   const [form, setForm] = useState<NewUCSDialogForm>({
     beat: "4",
     bpm: "120",
@@ -116,13 +114,14 @@ function NewUCSDialog() {
     rowLength: "50",
     split: "2",
   });
-  const [fileNames, setFileNames] = useRecoilState<FileNames>(fileNamesState);
   const [isOpenedNewUCSDialog, setIsOpenedNewUCSDialog] =
     useRecoilState<boolean>(isOpenedNewUCSDialogState);
+  const [resultError, setResultError] = useState<NewUCSDialogErrors | "">("");
   const setBlocks = useSetRecoilState<Block[]>(blocksState);
   const setColumns = useSetRecoilState<5 | 10>(columnsState);
   const setIsPerformance = useSetRecoilState<boolean>(isPerformanceState);
   const setNotes = useSetRecoilState<Note[][]>(notesState);
+  const setUcsName = useSetRecoilState<string | null>(ucsNameState);
 
   const [isPending, startTransition] = useTransition();
 
@@ -134,7 +133,6 @@ function NewUCSDialog() {
         // バリデーションエラーのテキストフィールドを表示
         setResultError(result);
       } else {
-        setFileNames({ ...fileNames, ucs: `${form.ucsName}.ucs` });
         setBlocks([result.block]);
         setColumns(result.columns);
         setIsPerformance(result.isPerformance);
@@ -143,6 +141,7 @@ function NewUCSDialog() {
             .fill(null)
             .map<Note[]>(() => [])
         );
+        setUcsName(form.ucsName);
         setIsOpenedNewUCSDialog(false);
       }
     });

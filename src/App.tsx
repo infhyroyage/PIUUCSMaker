@@ -9,7 +9,7 @@ import { MUI_DEFAULT_Z_INDEX } from "./service/styles";
 import MenuBar from "./components/MenuBar";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import { isDarkModeState, mouseDownsState } from "./service/atoms";
-import { MouseDown } from "./types/atoms";
+import { MouseDown } from "./types/chart";
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useRecoilState<boolean>(isDarkModeState);

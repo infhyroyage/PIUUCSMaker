@@ -22,7 +22,7 @@ import {
   generateListItemButtonStyle,
   generateListItemIconStyle,
 } from "../service/styles";
-import { Block } from "../types/ucs";
+import { Block } from "../types/chart";
 
 function MenuDrawerPlayingList() {
   const blocks = useRecoilValue<Block[]>(blocksState);

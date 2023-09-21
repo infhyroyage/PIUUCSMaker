@@ -1,15 +1,14 @@
 import { useTransition } from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
-import { Block, Note } from "../types/ucs";
+import { Block, Note } from "../types/chart";
 import {
   blocksState,
   columnsState,
-  fileNamesState,
   isPerformanceState,
   notesState,
+  ucsNameState,
   userErrorMessageState,
 } from "../service/atoms";
-import { FileNames } from "../types/atoms";
 import { UploadingUCSValidation } from "../types/form";
 
 const validateAndLoadUCS = (
@@ -217,11 +216,11 @@ const validateAndLoadUCS = (
 };
 
 function useUploadingUCS() {
-  const [fileNames, setFileNames] = useRecoilState<FileNames>(fileNamesState);
   const setBlocks = useSetRecoilState<Block[]>(blocksState);
   const setColumns = useSetRecoilState<5 | 10>(columnsState);
   const setIsPerformance = useSetRecoilState<boolean>(isPerformanceState);
   const setNotes = useSetRecoilState<Note[][]>(notesState);
+  const setUcsName = useSetRecoilState<string | null>(ucsNameState);
   const setUserErrorMessage = useSetRecoilState<string>(userErrorMessageState);
 
   const [isPending, startTransition] = useTransition();
@@ -244,11 +243,11 @@ function useUploadingUCS() {
         if (typeof result === "string") {
           setUserErrorMessage(result);
         } else {
-          setFileNames({ ...fileNames, ucs: fileList[0].name });
           setBlocks(result.blocks);
           setColumns(result.columns);
           setIsPerformance(result.isPerformance);
           setNotes(result.notes);
+          setUcsName(fileList[0].name);
         }
       });
     });
