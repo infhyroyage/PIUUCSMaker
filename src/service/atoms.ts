@@ -93,6 +93,11 @@ export const noteSizeState = atom<number>({
   default: 0,
 });
 
+export const successMessageState = atom<string>({
+  key: "successMessage",
+  default: "",
+});
+
 /**
  * ucsファイル名(拡張子込)
  * 未アップロード時はundefined

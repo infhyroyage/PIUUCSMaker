@@ -10,6 +10,7 @@ import MenuBar from "./components/MenuBar";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import { isDarkModeState, mouseDownsState } from "./service/atoms";
 import { MouseDown } from "./types/chart";
+import SuccessSnackbar from "./components/SuccessSnackbar";
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useRecoilState<boolean>(isDarkModeState);
@@ -49,6 +50,7 @@ function App() {
           <WorkSpace />
         </div>
         <NewUCSDialog />
+        <SuccessSnackbar />
         <UserErrorSnackbar />
         <SystemErrorSnackbar />
       </div>

@@ -8,6 +8,7 @@ import {
   mp3NameState,
   noteSizeState,
   notesState,
+  successMessageState,
   userErrorMessageState,
   volumeValueState,
   zoomState,
@@ -25,6 +26,7 @@ function usePlayingMusic() {
   const volumeValue = useRecoilValue<number>(volumeValueState);
   const zoom = useRecoilValue<Zoom>(zoomState);
   const setMp3Name = useSetRecoilState<string | null>(mp3NameState);
+  const setSuccessMessage = useSetRecoilState<string>(successMessageState);
   const setUserErrorMessage = useSetRecoilState<string>(userErrorMessageState);
 
   const audioContext = useRef<AudioContext | null>(null);
@@ -108,6 +110,7 @@ function usePlayingMusic() {
         .then((decodedAudio: AudioBuffer) => {
           musicAudioBuffer.current = decodedAudio;
           setMp3Name(fileList[0].name);
+          setSuccessMessage(`${fileList[0].name}のアップロードに成功しました`);
         });
     });
   };
