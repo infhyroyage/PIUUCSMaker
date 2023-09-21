@@ -1,17 +1,23 @@
+import { useEffect, useState } from "react";
 import { Alert, Snackbar } from "@mui/material";
-import { useRecoilState } from "recoil";
+import { useRecoilValue } from "recoil";
 import { userErrorMessageState } from "../service/atoms";
 
 function UserErrorSnackbar() {
-  const [userErrorMessage, setUserErrorMessage] = useRecoilState<string>(
-    userErrorMessageState
-  );
+  const [isOpened, setIsOpened] = useState<boolean>(false);
+  const userErrorMessage = useRecoilValue<string>(userErrorMessageState);
 
-  const onClose = () => setUserErrorMessage("");
+  const onClose = () => setIsOpened(false);
+
+  useEffect(() => {
+    if (userErrorMessage.length > 0) {
+      setIsOpened(true);
+    }
+  }, [userErrorMessage, setIsOpened]);
 
   return (
     <Snackbar
-      open={userErrorMessage.length > 0}
+      open={isOpened}
       anchorOrigin={{ vertical: "top", horizontal: "center" }}
       onClose={onClose}
     >

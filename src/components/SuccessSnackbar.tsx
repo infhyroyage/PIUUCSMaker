@@ -1,7 +1,7 @@
+import { useEffect, useState } from "react";
 import { Alert, Snackbar } from "@mui/material";
 import { useRecoilValue } from "recoil";
 import { successMessageState } from "../service/atoms";
-import { useEffect, useState } from "react";
 
 function SuccessSnackbar() {
   const [isOpened, setIsOpened] = useState<boolean>(false);
