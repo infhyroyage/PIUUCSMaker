@@ -4,7 +4,7 @@ import SystemErrorSnackbar from "./components/SystemErrorSnackbar";
 import UserErrorSnackbar from "./components/UserErrorSnackbar";
 import WorkSpace from "./components/WorkSpace";
 import MenuDrawer from "./components/MenuDrawer";
-import NewFileDialog from "./components/NewFileDialog";
+import NewUCSDialog from "./components/NewUCSDialog";
 import { MUI_DEFAULT_Z_INDEX } from "./service/styles";
 import MenuBar from "./components/MenuBar";
 import { useRecoilState, useSetRecoilState } from "recoil";
@@ -48,7 +48,7 @@ function App() {
           <MenuDrawer />
           <WorkSpace />
         </div>
-        <NewFileDialog />
+        <NewUCSDialog />
         <UserErrorSnackbar />
         <SystemErrorSnackbar />
       </div>

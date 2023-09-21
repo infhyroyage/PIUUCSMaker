@@ -12,7 +12,7 @@ import useUploadingUCS from "../hooks/useUploadingUCS";
 import {
   blocksState,
   isOpenedMenuDrawerState,
-  isOpenedNewFileDialogState,
+  isOpenedNewUCSDialogState,
   isPlayingState,
 } from "../service/atoms";
 import { useRecoilValue, useSetRecoilState } from "recoil";
@@ -22,12 +22,12 @@ import {
   generateListItemIconStyle,
 } from "../service/styles";
 
-function MenuDrawerFileList() {
+function MenuDrawerUCSList() {
   const blocks = useRecoilValue<Block[]>(blocksState);
   const isOpenedMenuDrawer = useRecoilValue<boolean>(isOpenedMenuDrawerState);
   const isPlaying = useRecoilValue<boolean>(isPlayingState);
-  const setIsOpenedNewChartDialog = useSetRecoilState<boolean>(
-    isOpenedNewFileDialogState
+  const setIsOpenedNewUCSDialog = useSetRecoilState<boolean>(
+    isOpenedNewUCSDialogState
   );
 
   const { isUploadingUCS, uploadUCS } = useUploadingUCS();
@@ -37,7 +37,7 @@ function MenuDrawerFileList() {
       <ListItem disablePadding sx={{ display: "block" }}>
         <ListItemButton
           disabled={isPlaying || isUploadingUCS}
-          onClick={() => setIsOpenedNewChartDialog(true)}
+          onClick={() => setIsOpenedNewUCSDialog(true)}
           sx={generateListItemButtonStyle(isOpenedMenuDrawer)}
         >
           <ListItemIcon sx={generateListItemIconStyle(isOpenedMenuDrawer)}>
@@ -91,4 +91,4 @@ function MenuDrawerFileList() {
   );
 }
 
-export default MenuDrawerFileList;
+export default MenuDrawerUCSList;

@@ -2,14 +2,14 @@ import { Button, Stack, Typography } from "@mui/material";
 import useUploadingUCS from "../hooks/useUploadingUCS";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import {
-  isOpenedNewFileDialogState,
+  isOpenedNewUCSDialogState,
   menuBarHeightState,
 } from "../service/atoms";
 
-function ReadyFile() {
+function ReadyUCS() {
   const menuBarHeight = useRecoilValue<number>(menuBarHeightState);
-  const setIsOpenedNewFileDialog = useSetRecoilState<boolean>(
-    isOpenedNewFileDialogState
+  const setIsOpenedNewUCSDialog = useSetRecoilState<boolean>(
+    isOpenedNewUCSDialogState
   );
 
   const { isUploadingUCS, uploadUCS } = useUploadingUCS();
@@ -25,7 +25,7 @@ function ReadyFile() {
     >
       <Button
         disabled={isUploadingUCS}
-        onClick={() => setIsOpenedNewFileDialog(true)}
+        onClick={() => setIsOpenedNewUCSDialog(true)}
         variant="contained"
       >
         New UCS
@@ -44,4 +44,4 @@ function ReadyFile() {
   );
 }
 
-export default ReadyFile;
+export default ReadyUCS;

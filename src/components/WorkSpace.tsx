@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from "react";
 import { Block, Note } from "../types/ucs";
-import ReadyFile from "./ReadyFile";
+import ReadyUCS from "./ReadyUCS";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
   blocksState,
@@ -49,7 +49,7 @@ function WorkSpace() {
   );
 
   return blocks.length === 0 ? (
-    <ReadyFile />
+    <ReadyUCS />
   ) : (
     <div
       style={{

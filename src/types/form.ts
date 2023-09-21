@@ -1,7 +1,7 @@
 import { Block, Note } from "./ucs";
 
-export type NewFileDialogErrors =
-  | "fileName"
+export type NewUCSDialogErrors =
+  | "ucsName"
   | "mode"
   | "bpm"
   | "delay"
@@ -9,17 +9,17 @@ export type NewFileDialogErrors =
   | "split"
   | "rowLength";
 
-export type NewFileDialogForm = {
+export type NewUCSDialogForm = {
   beat: string;
   bpm: string;
   delay: string;
-  fileName: string;
+  ucsName: string;
   mode: string;
   rowLength: string;
   split: string;
 };
 
-export type NewFileValidation = {
+export type NewUCSValidation = {
   block: Block;
   columns: 5 | 10;
   isPerformance: boolean;

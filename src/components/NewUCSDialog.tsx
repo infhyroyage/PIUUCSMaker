@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import {
-  isOpenedNewFileDialogState,
+  isOpenedNewUCSDialogState,
   fileNamesState,
   blocksState,
   notesState,
@@ -19,19 +19,19 @@ import {
 } from "../service/atoms";
 import { ChangeEvent, useState, useTransition } from "react";
 import {
-  NewFileDialogErrors,
-  NewFileDialogForm,
-  NewFileValidation,
+  NewUCSDialogErrors,
+  NewUCSDialogForm,
+  NewUCSValidation,
 } from "../types/form";
 import { Block, Note } from "../types/ucs";
 import { FileNames } from "../types/atoms";
 
 const validateAndLoadUCS = (
-  form: NewFileDialogForm
-): NewFileValidation | NewFileDialogErrors => {
+  form: NewUCSDialogForm
+): NewUCSValidation | NewUCSDialogErrors => {
   // UCSファイル名のチェック
-  if (form.fileName.length === 0) {
-    return "fileName";
+  if (form.ucsName.length === 0) {
+    return "ucsName";
   }
 
   // モードのチェック
@@ -105,20 +105,20 @@ const validateAndLoadUCS = (
   };
 };
 
-function NewFileDialog() {
-  const [resultError, setResultError] = useState<NewFileDialogErrors | "">("");
-  const [form, setForm] = useState<NewFileDialogForm>({
+function NewUCSDialog() {
+  const [resultError, setResultError] = useState<NewUCSDialogErrors | "">("");
+  const [form, setForm] = useState<NewUCSDialogForm>({
     beat: "4",
     bpm: "120",
     delay: "0",
-    fileName: "CS001",
+    ucsName: "CS001",
     mode: "Single",
     rowLength: "50",
     split: "2",
   });
   const [fileNames, setFileNames] = useRecoilState<FileNames>(fileNamesState);
-  const [isOpenedNewFileDialog, setIsOpenedNewFileDialog] =
-    useRecoilState<boolean>(isOpenedNewFileDialogState);
+  const [isOpenedNewUCSDialog, setIsOpenedNewUCSDialog] =
+    useRecoilState<boolean>(isOpenedNewUCSDialogState);
   const setBlocks = useSetRecoilState<Block[]>(blocksState);
   const setColumns = useSetRecoilState<5 | 10>(columnsState);
   const setIsPerformance = useSetRecoilState<boolean>(isPerformanceState);
@@ -128,13 +128,13 @@ function NewFileDialog() {
 
   const onCreate = () =>
     startTransition(() => {
-      const result: NewFileValidation | NewFileDialogErrors =
+      const result: NewUCSValidation | NewUCSDialogErrors =
         validateAndLoadUCS(form);
       if (typeof result === "string") {
         // バリデーションエラーのテキストフィールドを表示
         setResultError(result);
       } else {
-        setFileNames({ ...fileNames, ucs: `${form.fileName}.ucs` });
+        setFileNames({ ...fileNames, ucs: `${form.ucsName}.ucs` });
         setBlocks([result.block]);
         setColumns(result.columns);
         setIsPerformance(result.isPerformance);
@@ -143,29 +143,29 @@ function NewFileDialog() {
             .fill(null)
             .map<Note[]>(() => [])
         );
-        setIsOpenedNewFileDialog(false);
+        setIsOpenedNewUCSDialog(false);
       }
     });
 
-  const onClose = () => setIsOpenedNewFileDialog(false);
+  const onClose = () => setIsOpenedNewUCSDialog(false);
 
   return (
-    <Dialog open={isOpenedNewFileDialog} onClose={onClose}>
+    <Dialog open={isOpenedNewUCSDialog} onClose={onClose}>
       <DialogTitle>New UCS</DialogTitle>
       <DialogContent>
         <Stack spacing={3} mt={1}>
           <TextField
             disabled={isPending}
-            error={resultError === "fileName"}
+            error={resultError === "ucsName"}
             fullWidth
             helperText="Not Set Extension(.ucs)"
             label="UCS File Name"
             margin="dense"
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              setForm({ ...form, fileName: event.target.value });
+              setForm({ ...form, ucsName: event.target.value });
             }}
             size="small"
-            value={form.fileName}
+            value={form.ucsName}
           />
           <TextField
             disabled={isPending}
@@ -269,4 +269,4 @@ function NewFileDialog() {
   );
 }
 
-export default NewFileDialog;
+export default NewUCSDialog;

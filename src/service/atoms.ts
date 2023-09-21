@@ -41,8 +41,8 @@ export const isOpenedMenuDrawerState = atom<boolean>({
   default: false,
 });
 
-export const isOpenedNewFileDialogState = atom<boolean>({
-  key: "isOpenedNewFileDialog",
+export const isOpenedNewUCSDialogState = atom<boolean>({
+  key: "isOpenedNewUCSDialog",
   default: false,
 });
 
