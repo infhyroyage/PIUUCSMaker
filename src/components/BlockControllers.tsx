@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { ZOOM_VALUES } from "../service/zoom";
 import ChartBorderLine from "./ChartBorderLine";
-import { useCallback } from "react";
+import React, { useCallback } from "react";
 
 function BlockControllers() {
   const blocks = useRecoilValue<Block[]>(blocksState);
@@ -35,8 +35,8 @@ function BlockControllers() {
         );
 
         return (
-          <div key={blockIdx}>
-            <Card>
+          <React.Fragment key={blockIdx}>
+            <Card raised square>
               <CardActionArea onClick={onClick}>
                 <CardContent
                   sx={{
@@ -57,7 +57,7 @@ function BlockControllers() {
             {blockIdx < blocks.length - 1 && (
               <ChartBorderLine width="100%" height={borderSize} />
             )}
-          </div>
+          </React.Fragment>
         );
       })}
     </div>
