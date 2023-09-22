@@ -36,7 +36,7 @@ function BlockControllers() {
 
         return (
           <React.Fragment key={blockIdx}>
-            <Card>
+            <Card raised square>
               <CardActionArea onClick={onClick}>
                 <CardContent
                   sx={{
