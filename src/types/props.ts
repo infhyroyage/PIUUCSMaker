@@ -41,9 +41,9 @@ export type ChartIndicatorProps = {
  */
 export type ChartRectangleProps = {
   /**
-   * 譜面のブロックのインデックス
+   * 全譜面のブロックのうち自身が偶数番目の場合はtrue、奇数番目の場合はfalse
    */
-  blockIdx: number;
+  isEven: boolean;
 
   /**
    * 高さ(px単位)
@@ -96,19 +96,34 @@ export type ChartVerticalProps = {
  */
 export type ChartVerticalRectanglesProps = {
   /**
-   * 譜面のブロックの高さ(px単位)
+   * 譜面のブロックのBeat値
    */
-  blockHeight: number;
+  beat: number;
 
   /**
-   * 譜面のブロックのインデックス
+   * 全譜面のブロックのうち自身が偶数番目の場合はtrue、奇数番目の場合はfalse
    */
-  blockIdx: number;
+  isEven: boolean;
 
   /**
-   * 最後の譜面のブロックの場合はtrue、そうでない場合はfalse
+   * 全譜面のブロックのうち自身が最後の場合はtrue、そうでない場合はfalse
    */
   isLastBlock: boolean;
+
+  /**
+   * 譜面のブロックの行数
+   */
+  length: number;
+
+  /**
+   * 譜面のブロックのSplit値
+   */
+  split: number;
+
+  /**
+   * 譜面のブロックの1行あたりの高さ(px単位)
+   */
+  unitRowHeight: number;
 };
 
 /**

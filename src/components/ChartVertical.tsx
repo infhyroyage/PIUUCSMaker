@@ -30,9 +30,12 @@ function ChartVertical({
       {blocks.map((block: Block, blockIdx: number) => (
         <ChartVerticalRectangles
           key={blockIdx}
-          blockHeight={unitRowHeights[blockIdx] * block.length}
-          blockIdx={blockIdx}
+          beat={block.beat}
+          isEven={blockIdx % 2 === 0}
           isLastBlock={blockIdx === blocks.length - 1}
+          length={block.length}
+          split={block.split}
+          unitRowHeight={unitRowHeights[blockIdx]}
         />
       ))}
       {notes.map((note: Note, i: number) => {
