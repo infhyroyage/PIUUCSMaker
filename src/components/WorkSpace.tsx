@@ -9,6 +9,7 @@ import {
 } from "../service/atoms";
 import Chart from "./Chart";
 import BlockControllers from "./BlockControllers";
+import RectangleIdentifiers from "./RectangleIdentifiers";
 
 function WorkSpace() {
   const blocks = useRecoilValue<Block[]>(blocksState);
@@ -42,6 +43,7 @@ function WorkSpace() {
       style={{
         alignItems: "center",
         display: "flex",
+        flexDirection: "column",
         flexGrow: 1,
         justifyContent: "center",
         lineHeight: 0,
@@ -49,6 +51,7 @@ function WorkSpace() {
       }}
     >
       <div style={{ display: "flex" }}>
+        <RectangleIdentifiers />
         <Chart />
         <BlockControllers />
       </div>
