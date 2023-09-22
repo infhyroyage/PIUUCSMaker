@@ -2,11 +2,7 @@ import { memo } from "react";
 import { ChartVerticalProps } from "../types/props";
 import { Block, Note } from "../types/chart";
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import {
-  blocksState,
-  isShownSystemErrorSnackbarState,
-  menuBarHeightState,
-} from "../service/atoms";
+import { blocksState, isShownSystemErrorSnackbarState } from "../service/atoms";
 import ChartIndicator from "./ChartIndicator";
 import ChartVerticalNoteImages from "./ChartVerticalNoteImages";
 import ChartVerticalRectangles from "./ChartVerticalRectangles";
@@ -17,10 +13,8 @@ function ChartVertical({
   indicator,
   mouseDown,
   notes,
-  unitRowHeights,
 }: ChartVerticalProps) {
   const blocks = useRecoilValue<Block[]>(blocksState);
-  const menuBarHeight = useRecoilValue<number>(menuBarHeightState);
   const setIsShownSystemErrorSnackbar = useSetRecoilState<boolean>(
     isShownSystemErrorSnackbarState
   );
@@ -35,7 +29,6 @@ function ChartVertical({
           isLastBlock={blockIdx === blocks.length - 1}
           length={block.length}
           split={block.split}
-          unitRowHeight={unitRowHeights[blockIdx]}
         />
       ))}
       {notes.map((note: Note, i: number) => {
@@ -52,16 +45,12 @@ function ChartVertical({
         return (
           <ChartVerticalNoteImages
             key={i}
+            accumulatedLength={blocks[blockIdx].accumulatedLength}
+            blockYDist={blockYDists[blockIdx]}
             column={column}
             idx={note.idx}
+            split={blocks[blockIdx].split}
             type={note.type}
-            unitRowHeight={unitRowHeights[blockIdx]}
-            y={
-              menuBarHeight +
-              blockYDists[blockIdx] +
-              unitRowHeights[blockIdx] *
-                (note.idx - blocks[blockIdx].accumulatedLength)
-            }
           />
         );
       })}

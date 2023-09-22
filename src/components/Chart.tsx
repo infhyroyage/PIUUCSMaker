@@ -29,15 +29,6 @@ function Chart() {
   const setIndicators = useSetRecoilState<Indicator[]>(indicatorsState);
   const setMouseDowns = useSetRecoilState<MouseDown[]>(mouseDownsState);
 
-  // 各譜面のブロックの1行あたりの高さ(px単位)を計算
-  const unitRowHeights: number[] = useMemo(
-    () =>
-      blocks.map(
-        (block: Block) => (2.0 * noteSize * ZOOM_VALUES[zoom.idx]) / block.split
-      ),
-    [blocks, noteSize, zoom.idx]
-  );
-
   // 各譜面のブロックを設置するトップバーからのy座標の距離(px単位)を計算
   const blockYDists: number[] = useMemo(
     () =>
@@ -79,17 +70,17 @@ function Chart() {
       // 譜面のブロックのマウスホバーが外れた際に、インディケーターを非表示
       let updatedIndicator: Indicator = null;
       for (let blockIdx = 0; blockIdx < blocks.length; blockIdx++) {
-        const blockHeight: number =
-          unitRowHeights[blockIdx] * blocks[blockIdx].length;
+        // 譜面のブロックの1行あたりの高さ(px単位)
+        const unitRowHeight: number =
+          (2.0 * noteSize * ZOOM_VALUES[zoom.idx]) / blocks[blockIdx].split;
+        // 譜面のブロックの高さ(px単位)
+        const blockHeight: number = unitRowHeight * blocks[blockIdx].length;
         if (y < blockYDists[blockIdx] + blockHeight) {
           const top: number =
-            y -
-            ((y - blockYDists[blockIdx]) % unitRowHeights[blockIdx]) +
-            menuBarHeight;
+            y - ((y - blockYDists[blockIdx]) % unitRowHeight) + menuBarHeight;
           const rowIdx: number =
             blocks[blockIdx].accumulatedLength +
-            (top - menuBarHeight - blockYDists[blockIdx]) /
-              unitRowHeights[blockIdx];
+            (top - menuBarHeight - blockYDists[blockIdx]) / unitRowHeight;
           updatedIndicator = { blockIdx, rowIdx, top };
           break;
         }
@@ -118,7 +109,6 @@ function Chart() {
       isPlaying,
       menuBarHeight,
       noteSize,
-      unitRowHeights,
       zoom.idx,
       setIndicators,
     ]
@@ -280,7 +270,6 @@ function Chart() {
           indicator={indicators[column]}
           mouseDown={mouseDowns[column]}
           notes={notes[column]}
-          unitRowHeights={unitRowHeights}
         />
       </span>
       <ChartBorderLine width={borderSize} height="100%" />

@@ -1,17 +1,37 @@
-import { memo } from "react";
+import { memo, useMemo } from "react";
 import { IMAGE_BINARIES } from "../service/assets";
 import { ChartVerticalNoteImagesProps } from "../types/props";
 import { useRecoilValue } from "recoil";
-import { noteSizeState } from "../service/atoms";
+import { menuBarHeightState, noteSizeState, zoomState } from "../service/atoms";
+import { ZOOM_VALUES } from "../service/zoom";
+import { Zoom } from "../types/chart";
 
 function ChartVerticalNoteImages({
+  accumulatedLength,
+  blockYDist,
   column,
   idx,
-  y,
+  split,
   type,
-  unitRowHeight,
 }: ChartVerticalNoteImagesProps) {
+  const menuBarHeight = useRecoilValue<number>(menuBarHeightState);
   const noteSize = useRecoilValue<number>(noteSizeState);
+  const zoom = useRecoilValue<Zoom>(zoomState);
+
+  // 単ノート/ホールドの始点/ホールドの中間/ホールドの終点が属する
+  // 譜面のブロックの1行あたりの高さ(px単位)を計算
+  const unitRowHeight = useMemo(
+    () => (2.0 * noteSize * ZOOM_VALUES[zoom.idx]) / split,
+    [noteSize, split, zoom.idx]
+  );
+
+  // 単ノート/ホールドの始点/ホールドの中間/ホールドの終点の譜面全体での行インデックスでの
+  // ブラウザの画面のy座標(px単位)を計算
+  const top = useMemo(
+    () =>
+      menuBarHeight + blockYDist + unitRowHeight * (idx - accumulatedLength),
+    [accumulatedLength, blockYDist, idx, menuBarHeight, unitRowHeight]
+  );
 
   switch (type) {
     case "X":
@@ -24,7 +44,7 @@ function ChartVerticalNoteImages({
           height={noteSize}
           style={{
             position: "absolute",
-            top: y,
+            top,
             zIndex: (idx + 1) * 10,
           }}
         />
@@ -40,7 +60,7 @@ function ChartVerticalNoteImages({
             height={noteSize}
             style={{
               position: "absolute",
-              top: y,
+              top,
               zIndex: (idx + 1) * 10,
             }}
           />
@@ -51,7 +71,7 @@ function ChartVerticalNoteImages({
             height={unitRowHeight}
             style={{
               position: "absolute",
-              top: y + noteSize * 0.5,
+              top: top + noteSize * 0.5,
               zIndex: (idx + 1) * 10 + 1,
             }}
           />
@@ -67,7 +87,7 @@ function ChartVerticalNoteImages({
           height={unitRowHeight}
           style={{
             position: "absolute",
-            top: y + noteSize * 0.5,
+            top: top + noteSize * 0.5,
             zIndex: (idx + 1) * 10,
           }}
         />
@@ -82,7 +102,7 @@ function ChartVerticalNoteImages({
           height={noteSize}
           style={{
             position: "absolute",
-            top: y,
+            top,
             zIndex: (idx + 1) * 10,
           }}
         />

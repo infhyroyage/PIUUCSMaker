@@ -1,9 +1,11 @@
 import React, { memo, useMemo } from "react";
 import { useRecoilValue } from "recoil";
-import { noteSizeState } from "../service/atoms";
+import { noteSizeState, zoomState } from "../service/atoms";
 import { ChartVerticalRectanglesProps } from "../types/props";
 import ChartBorderLine from "./ChartBorderLine";
 import ChartRectangle from "./ChartRectangle";
+import { Zoom } from "../types/chart";
+import { ZOOM_VALUES } from "../service/zoom";
 
 function ChartVerticalRectangles({
   beat,
@@ -11,9 +13,15 @@ function ChartVerticalRectangles({
   isLastBlock,
   length,
   split,
-  unitRowHeight,
 }: ChartVerticalRectanglesProps) {
   const noteSize = useRecoilValue<number>(noteSizeState);
+  const zoom = useRecoilValue<Zoom>(zoomState);
+
+  // 譜面のブロックの1行あたりの高さ(px単位)を計算
+  const unitRowHeight = useMemo(
+    () => (2.0 * noteSize * ZOOM_VALUES[zoom.idx]) / split,
+    [noteSize, split, zoom.idx]
+  );
 
   // 枠線のサイズ(px単位)をnoteSizeの0.05倍(小数点以下切り捨て、最小値は1)として計算
   // ただし、譜面のブロックの高さが枠線のサイズより小さい場合、例外的に譜面のブロックの高さと同一とする
