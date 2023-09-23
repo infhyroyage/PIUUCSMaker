@@ -117,6 +117,21 @@ function MenuBar() {
                     ZOOM_VALUES[zoom.idx],
                 })
               }
+              sx={{
+                color: "white",
+                "& .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "white",
+                },
+                "&:hover .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "white",
+                },
+                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "white",
+                },
+                "& .MuiSelect-icon": {
+                  color: "white",
+                },
+              }}
               value={`${zoom.idx}`}
             >
               {ZOOM_VALUES.map((zoomValue: number, idx: number) => (
@@ -147,7 +162,7 @@ function MenuBar() {
                 setVolumeValue(value as number);
               }}
               step={0.01}
-              sx={{ width: 100 }}
+              sx={{ width: 100, color: "white" }}
               value={muteVolBuf || volumeValue}
             />
           </Stack>
