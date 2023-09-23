@@ -21,7 +21,7 @@ function RectangleIdentifiers() {
         // 枠線のサイズ(px単位)をnoteSizeの0.05倍(小数点以下切り捨て、最小値は1)として計算
         // ただし、譜面のブロックの高さが枠線のサイズより小さい場合、例外的に譜面のブロックの高さと同一とする
         const borderSize: number = Math.min(
-          noteSize > 20 ? Math.floor(noteSize / 20) : 1,
+          Math.max(Math.floor(noteSize / 20), 1),
           unitRowHeight * block.length
         );
 

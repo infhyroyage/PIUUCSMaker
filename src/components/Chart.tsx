@@ -52,7 +52,7 @@ function Chart() {
 
   // 枠線のサイズ(px単位)をnoteSizeの0.05倍(小数点以下切り捨て、最小値は1)として計算
   const borderSize: number = useMemo(
-    () => (noteSize > 20 ? Math.floor(noteSize / 20) : 1),
+    () => Math.max(Math.floor(noteSize / 20), 1),
     [noteSize]
   );
 
@@ -154,14 +154,8 @@ function Chart() {
       const mouseDown: MouseDown = mouseDowns[column];
       if (indicator !== null && mouseDown !== null) {
         // 単ノート/ホールドの始点start、終点goalの譜面全体での行インデックスを取得
-        const start: number =
-          mouseDown.rowIdx < indicator.rowIdx
-            ? mouseDown.rowIdx
-            : indicator.rowIdx;
-        const goal: number =
-          mouseDown.rowIdx < indicator.rowIdx
-            ? indicator.rowIdx
-            : mouseDown.rowIdx;
+        const start: number = Math.min(indicator.rowIdx, mouseDown.rowIdx);
+        const goal: number = Math.max(indicator.rowIdx, mouseDown.rowIdx);
 
         // 譜面全体での行インデックスmouseDown.rowIdxで押下した後に
         // 譜面全体での行インデックスindicator.rowIdxで押下を離した際の

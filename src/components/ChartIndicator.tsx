@@ -23,8 +23,7 @@ function ChartIndicator({ column, indicator, mouseDown }: ChartIndicatorProps) {
               height={noteSize}
               style={{
                 position: "absolute",
-                top:
-                  mouseDown.top < indicator.top ? mouseDown.top : indicator.top,
+                top: Math.min(indicator.top, mouseDown.top),
                 zIndex: theme.zIndex.drawer - 4,
               }}
             />
@@ -32,18 +31,10 @@ function ChartIndicator({ column, indicator, mouseDown }: ChartIndicatorProps) {
               src={IMAGE_BINARIES[column % 5].hold}
               alt={`hold${column % 5}`}
               width={noteSize}
-              height={
-                mouseDown.top < indicator.top
-                  ? indicator.top - mouseDown.top
-                  : mouseDown.top - indicator.top
-              }
+              height={Math.abs(indicator.top - mouseDown.top)}
               style={{
                 position: "absolute",
-                top:
-                  (mouseDown.top < indicator.top
-                    ? mouseDown.top
-                    : indicator.top) +
-                  noteSize * 0.5,
+                top: Math.min(indicator.top, mouseDown.top) + noteSize * 0.5,
                 zIndex: theme.zIndex.drawer - 3,
               }}
             />
@@ -54,8 +45,7 @@ function ChartIndicator({ column, indicator, mouseDown }: ChartIndicatorProps) {
               height={noteSize}
               style={{
                 position: "absolute",
-                top:
-                  mouseDown.top < indicator.top ? indicator.top : mouseDown.top,
+                top: Math.max(indicator.top, mouseDown.top),
                 zIndex: theme.zIndex.drawer - 2,
               }}
             />

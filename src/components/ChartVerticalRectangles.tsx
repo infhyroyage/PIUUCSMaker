@@ -27,10 +27,7 @@ function ChartVerticalRectangles({
   // ただし、譜面のブロックの高さが枠線のサイズより小さい場合、例外的に譜面のブロックの高さと同一とする
   const borderSize = useMemo(
     () =>
-      Math.min(
-        noteSize > 20 ? Math.floor(noteSize / 20) : 1,
-        unitRowHeight * length
-      ),
+      Math.min(Math.max(Math.floor(noteSize / 20), 1), unitRowHeight * length),
     [length, noteSize, unitRowHeight]
   );
 

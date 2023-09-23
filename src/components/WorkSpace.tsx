@@ -20,13 +20,13 @@ function WorkSpace() {
   // noteSize := min(ウィンドウサイズの横幅, ウィンドウサイズの高さ) / 13
   // ただし、noteSizeの最小値は20とする
   useEffect(() => {
-    const handleWindowResize = () => {
-      const size: number =
-        window.innerWidth > window.innerHeight
-          ? window.innerHeight / 13
-          : window.innerWidth / 13;
-      setNoteSize(size > 20 ? Math.floor(size) : 20);
-    };
+    const handleWindowResize = () =>
+      setNoteSize(
+        Math.max(
+          Math.floor(Math.min(window.innerWidth, window.innerHeight) / 13),
+          20
+        )
+      );
 
     // 初回レンダリング時の初期設定
     handleWindowResize();
