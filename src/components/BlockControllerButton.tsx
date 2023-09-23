@@ -18,6 +18,7 @@ import { BlockControllerButtonProps } from "../types/props";
 
 function BlockControllerButton({
   blockHeight,
+  handleDelete,
   handleEdit,
   isLastBlock,
   textFirst,
@@ -93,7 +94,15 @@ function BlockControllerButton({
           <MenuItem onClick={() => alert("TODO")}>Add at Bottom</MenuItem>
           <MenuItem onClick={() => alert("TODO")}>Insert at Next</MenuItem>
           <MenuItem onClick={() => alert("TODO")}>Merge with Below</MenuItem>
-          <MenuItem onClick={() => alert("TODO")}>Delete</MenuItem>
+          <MenuItem
+            disabled={handleDelete === null}
+            onClick={() => {
+              if (handleDelete !== null) handleDelete();
+              setAnchorPosition(undefined);
+            }}
+          >
+            Delete
+          </MenuItem>
         </MenuList>
       </Menu>
       {/* 譜面のブロックごとに分割する枠線 */}

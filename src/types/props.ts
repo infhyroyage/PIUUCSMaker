@@ -8,6 +8,12 @@ export type BlockControllerButtonProps = {
   blockHeight: number;
 
   /**
+   * 「Delete」選択時の動作
+   * 譜面のブロックが1個しか存在しない場合はnull
+   */
+  handleDelete: (() => void) | null;
+
+  /**
    * 「Edit」選択時の動作
    * @returns
    */
