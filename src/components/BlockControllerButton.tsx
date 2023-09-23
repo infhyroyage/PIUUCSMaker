@@ -5,6 +5,7 @@ import {
   Card,
   CardActionArea,
   CardContent,
+  Divider,
   ListItemIcon,
   ListItemText,
   Menu,
@@ -84,9 +85,48 @@ function BlockControllerButton({
             <ListItemIcon>
               <EditIcon fontSize="small" />
             </ListItemIcon>
+            <ListItemText onClick={() => alert("TODO")}>Edit</ListItemText>
+          </MenuItem>
+          <MenuItem>
+            <ListItemIcon>
+              <EditIcon fontSize="small" />
+            </ListItemIcon>
             <ListItemText onClick={() => alert("TODO")}>
-              Edit Block
+              Adjust Beat/Split
             </ListItemText>
+          </MenuItem>
+        </MenuList>
+        <Divider />
+        <MenuList>
+          <MenuItem>
+            <ListItemIcon>
+              <EditIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText onClick={() => alert("TODO")}>
+              Add at Bottom
+            </ListItemText>
+          </MenuItem>
+          <MenuItem>
+            <ListItemIcon>
+              <EditIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText onClick={() => alert("TODO")}>
+              Insert at Next
+            </ListItemText>
+          </MenuItem>
+          <MenuItem>
+            <ListItemIcon>
+              <EditIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText onClick={() => alert("TODO")}>
+              Merge with Below
+            </ListItemText>
+          </MenuItem>
+          <MenuItem>
+            <ListItemIcon>
+              <EditIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText onClick={() => alert("TODO")}>Delete</ListItemText>
           </MenuItem>
         </MenuList>
       </Menu>
