@@ -32,6 +32,8 @@ import VolumeOffIcon from "@mui/icons-material/VolumeOff";
 import VolumeDownIcon from "@mui/icons-material/VolumeDown";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import VolumeMuteIcon from "@mui/icons-material/VolumeMute";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { Block, Zoom } from "../types/chart";
 
 function MenuBar() {
@@ -90,7 +92,7 @@ function MenuBar() {
           onClick={() => setIsOpenedMenuDrawer(!isOpenedMenuDrawer)}
           edge="start"
         >
-          <MenuIcon />
+          {isOpenedMenuDrawer ? <ChevronLeftIcon /> : <ChevronRightIcon />}
         </IconButton>
         <Box flexGrow={1} ml={4}>
           <Typography variant="h6" noWrap component="div">
