@@ -1,15 +1,22 @@
-import { memo, useCallback, useMemo } from "react";
+import { MouseEvent, memo, useCallback, useMemo, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { noteSizeState } from "../service/atoms";
 import {
   Card,
   CardActionArea,
   CardContent,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
+  MenuList,
+  PopoverPosition,
   Stack,
   Typography,
 } from "@mui/material";
 import ChartBorderLine from "./ChartBorderLine";
 import { BlockControllerButtonProps } from "../types/props";
+import EditIcon from "@mui/icons-material/Edit";
 
 function BlockControllerButton({
   blockHeight,
@@ -18,6 +25,9 @@ function BlockControllerButton({
   isLastBlock,
   split,
 }: BlockControllerButtonProps) {
+  const [anchorPosition, setAnchorPosition] = useState<
+    PopoverPosition | undefined
+  >(undefined);
   const noteSize = useRecoilValue<number>(noteSizeState);
 
   // 枠線のサイズ(px単位)をnoteSizeの0.05倍(小数点以下切り捨て、最小値は1)として計算
@@ -27,14 +37,28 @@ function BlockControllerButton({
     [blockHeight, length, noteSize]
   );
 
-  const onClick = useCallback(() => {
-    alert("TODO");
-  }, []);
+  // 押下したマウスの座標にMenuを表示
+  const onClickCardActionArea = useCallback(
+    (event: MouseEvent<HTMLElement>) => {
+      event.preventDefault();
+      setAnchorPosition({
+        top: event.clientY,
+        left: event.clientX,
+      });
+    },
+    [setAnchorPosition]
+  );
+
+  // Menuを非表示
+  const onCloseMenu = useCallback(
+    () => setAnchorPosition(undefined),
+    [setAnchorPosition]
+  );
 
   return (
     <>
       <Card raised square>
-        <CardActionArea onClick={onClick}>
+        <CardActionArea onClick={onClickCardActionArea}>
           <CardContent
             sx={{
               height: blockHeight - (isLastBlock ? 0 : borderSize),
@@ -48,6 +72,24 @@ function BlockControllerButton({
           </CardContent>
         </CardActionArea>
       </Card>
+      <Menu
+        anchorReference={anchorPosition && "anchorPosition"}
+        anchorPosition={anchorPosition}
+        disableRestoreFocus
+        onClose={onCloseMenu}
+        open={!!anchorPosition}
+      >
+        <MenuList>
+          <MenuItem>
+            <ListItemIcon>
+              <EditIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText onClick={() => alert("TODO")}>
+              Edit Block
+            </ListItemText>
+          </MenuItem>
+        </MenuList>
+      </Menu>
       {/* 譜面のブロックごとに分割する枠線 */}
       {!isLastBlock && <ChartBorderLine width="100%" height={borderSize} />}
     </>
