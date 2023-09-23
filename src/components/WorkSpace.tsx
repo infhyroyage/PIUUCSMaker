@@ -8,8 +8,8 @@ import {
   noteSizeState,
 } from "../service/atoms";
 import Chart from "./Chart";
-import BlockControllers from "./BlockControllers";
 import RectangleIdentifiers from "./RectangleIdentifiers";
+import BlockController from "./BlockController";
 
 function WorkSpace() {
   const blocks = useRecoilValue<Block[]>(blocksState);
@@ -53,7 +53,7 @@ function WorkSpace() {
       <div style={{ display: "flex" }}>
         <RectangleIdentifiers />
         <Chart />
-        <BlockControllers />
+        <BlockController />
       </div>
       <span
         style={{

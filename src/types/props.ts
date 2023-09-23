@@ -1,6 +1,33 @@
 import { MouseDown, Note } from "./chart";
 import { Indicator } from "./chart";
 
+export type BlockControllerButtonProps = {
+  /**
+   * 譜面のブロックの高さ(px単位)
+   */
+  blockHeight: number;
+
+  /**
+   * 譜面のブロックのBPM値
+   */
+  bpm: number;
+
+  /**
+   * 譜面のブロックのDelay値
+   */
+  delay: number;
+
+  /**
+   * 全譜面のブロックのうち自身が最後の場合はtrue、そうでない場合はfalse
+   */
+  isLastBlock: boolean;
+
+  /**
+   * 譜面のブロックのSplit値
+   */
+  split: number;
+};
+
 export type ChartBorderLineProps = {
   /**
    * 高さ(px単位)
