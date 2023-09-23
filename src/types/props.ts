@@ -3,29 +3,15 @@ import { Indicator } from "./chart";
 
 export type BlockControllerButtonProps = {
   /**
-   * 譜面のブロックのBeat値
-   */
-  beat: number;
-
-  /**
    * 譜面のブロックの高さ(px単位)
    */
   blockHeight: number;
 
   /**
-   * 譜面のブロックのインデックス
+   * 「Edit」選択時の動作
+   * @returns
    */
-  blockIdx: number;
-
-  /**
-   * 譜面のブロックのBPM値
-   */
-  bpm: number;
-
-  /**
-   * 譜面のブロックのDelay値
-   */
-  delay: number;
+  handleEdit: () => void;
 
   /**
    * 全譜面のブロックのうち自身が最後の場合はtrue、そうでない場合はfalse
@@ -33,9 +19,14 @@ export type BlockControllerButtonProps = {
   isLastBlock: boolean;
 
   /**
-   * 譜面のブロックのSplit値
+   * ボタンのテキスト(1段落目)
    */
-  split: number;
+  textFirst: string;
+
+  /**
+   * ボタンのテキスト(2段落目)
+   */
+  textSecond: string;
 };
 
 export type ChartBorderLineProps = {
