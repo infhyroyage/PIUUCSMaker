@@ -1,6 +1,6 @@
 import { MouseEvent, memo, useCallback, useMemo, useState } from "react";
-import { useRecoilValue } from "recoil";
-import { noteSizeState } from "../service/atoms";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { editBlockDialogFormState, noteSizeState } from "../service/atoms";
 import {
   Card,
   CardActionArea,
@@ -18,9 +18,12 @@ import {
 import ChartBorderLine from "./ChartBorderLine";
 import { BlockControllerButtonProps } from "../types/props";
 import EditIcon from "@mui/icons-material/Edit";
+import { EditBlockDialogForm } from "../types/form";
 
 function BlockControllerButton({
+  beat,
   blockHeight,
+  blockIdx,
   bpm,
   delay,
   isLastBlock,
@@ -30,6 +33,9 @@ function BlockControllerButton({
     PopoverPosition | undefined
   >(undefined);
   const noteSize = useRecoilValue<number>(noteSizeState);
+  const setEditBlockDialogForm = useSetRecoilState<EditBlockDialogForm>(
+    editBlockDialogFormState
+  );
 
   // 枠線のサイズ(px単位)をnoteSizeの0.05倍(小数点以下切り捨て、最小値は1)として計算
   // ただし、譜面のブロックの高さが枠線のサイズより小さい場合、例外的に譜面のブロックの高さと同一とする
@@ -85,7 +91,21 @@ function BlockControllerButton({
             <ListItemIcon>
               <EditIcon fontSize="small" />
             </ListItemIcon>
-            <ListItemText onClick={() => alert("TODO")}>Edit</ListItemText>
+            <ListItemText
+              onClick={() => {
+                setEditBlockDialogForm({
+                  beat: `${beat}`,
+                  blockIdx,
+                  bpm: `${bpm}`,
+                  delay: `${delay}`,
+                  open: true,
+                  split: `${split}`,
+                });
+                setAnchorPosition(undefined);
+              }}
+            >
+              Edit
+            </ListItemText>
           </MenuItem>
           <MenuItem>
             <ListItemIcon>

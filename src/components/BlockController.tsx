@@ -14,10 +14,12 @@ function BlockController() {
       {blocks.map((block: Block, blockIdx: number) => (
         <BlockControllerButton
           key={blockIdx}
+          beat={block.beat}
           blockHeight={
             (2.0 * noteSize * ZOOM_VALUES[zoom.idx] * block.length) /
             block.split
           }
+          blockIdx={blockIdx}
           bpm={block.bpm}
           delay={block.delay}
           isLastBlock={blockIdx === blocks.length - 1}

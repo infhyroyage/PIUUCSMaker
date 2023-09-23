@@ -11,6 +11,7 @@ import { useRecoilState, useSetRecoilState } from "recoil";
 import { isDarkModeState, mouseDownsState } from "./service/atoms";
 import { MouseDown } from "./types/chart";
 import SuccessSnackbar from "./components/SuccessSnackbar";
+import EditBlockDialog from "./components/EditBlockDialog";
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useRecoilState<boolean>(isDarkModeState);
@@ -50,6 +51,7 @@ function App() {
           <WorkSpace />
         </div>
         <NewUCSDialog />
+        <EditBlockDialog />
         <SuccessSnackbar />
         <UserErrorSnackbar />
         <SystemErrorSnackbar />

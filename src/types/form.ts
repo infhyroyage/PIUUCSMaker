@@ -1,5 +1,16 @@
 import { Block, Note } from "./chart";
 
+export type EditBlockDialogError = "bpm" | "delay" | "beat" | "split";
+
+export type EditBlockDialogForm = {
+  beat: string;
+  blockIdx: number;
+  bpm: string;
+  delay: string;
+  open: boolean;
+  split: string;
+};
+
 export type NewUCSDialogErrors =
   | "ucsName"
   | "mode"

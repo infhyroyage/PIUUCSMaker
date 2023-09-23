@@ -3,9 +3,19 @@ import { Indicator } from "./chart";
 
 export type BlockControllerButtonProps = {
   /**
+   * 譜面のブロックのBeat値
+   */
+  beat: number;
+
+  /**
    * 譜面のブロックの高さ(px単位)
    */
   blockHeight: number;
+
+  /**
+   * 譜面のブロックのインデックス
+   */
+  blockIdx: number;
 
   /**
    * 譜面のブロックのBPM値
