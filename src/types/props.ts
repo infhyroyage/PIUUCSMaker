@@ -8,21 +8,52 @@ export type BlockControllerButtonProps = {
   blockHeight: number;
 
   /**
-   * 「Delete」選択時の動作
-   * 譜面のブロックが1個しか存在しない場合はnull
+   * 譜面のブロックのインデックス
    */
-  handleDelete: (() => void) | null;
+  blockIdx: number;
 
   /**
-   * 「Edit」選択時の動作
-   * @returns
+   * 譜面のブロックが1個しか存在しない場合はtrue、2個以上の場合はfalse
    */
-  handleEdit: () => void;
+  isDisabledDelete: boolean;
 
   /**
    * 全譜面のブロックのうち自身が最後の場合はtrue、そうでない場合はfalse
    */
   isLastBlock: boolean;
+
+  /**
+   * メニュー選択時の動作
+   */
+  menuHandler: {
+    /**
+     * 「Delete」選択時の動作
+     * @param {number} blockIdx 譜面のブロックのインデックス
+     * @returns
+     */
+    delete: (blockIdx: number) => void;
+
+    /**
+     * 「Edit」選択時の動作
+     * @param {number} blockIdx 譜面のブロックのインデックス
+     * @returns
+     */
+    edit: (blockIdx: number) => void;
+
+    /**
+     * 「Merge with Above」選択時の動作
+     * @param {number} blockIdx 譜面のブロックのインデックス
+     * @returns
+     */
+    mergeAbove: (blockIdx: number) => void;
+
+    /**
+     * 「Merge with Below」選択時の動作
+     * @param {number} blockIdx 譜面のブロックのインデックス
+     * @returns
+     */
+    mergeBelow: (blockIdx: number) => void;
+  };
 
   /**
    * ボタンのテキスト(1段落目)

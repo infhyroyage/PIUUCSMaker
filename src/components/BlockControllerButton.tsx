@@ -18,9 +18,10 @@ import { BlockControllerButtonProps } from "../types/props";
 
 function BlockControllerButton({
   blockHeight,
-  handleDelete,
-  handleEdit,
+  blockIdx,
+  isDisabledDelete,
   isLastBlock,
+  menuHandler,
   textFirst,
   textSecond,
 }: BlockControllerButtonProps) {
@@ -81,23 +82,41 @@ function BlockControllerButton({
         <MenuList>
           <MenuItem
             onClick={() => {
-              handleEdit();
+              menuHandler.edit(blockIdx);
               setAnchorPosition(undefined);
             }}
           >
             Edit
           </MenuItem>
+          <MenuItem onClick={() => alert("TODO")}>Resize</MenuItem>
           <MenuItem onClick={() => alert("TODO")}>Adjust Beat/Split</MenuItem>
         </MenuList>
         <Divider />
         <MenuList>
           <MenuItem onClick={() => alert("TODO")}>Add at Bottom</MenuItem>
-          <MenuItem onClick={() => alert("TODO")}>Insert at Next</MenuItem>
-          <MenuItem onClick={() => alert("TODO")}>Merge with Below</MenuItem>
+          <MenuItem onClick={() => alert("TODO")}>Insert into Next</MenuItem>
           <MenuItem
-            disabled={handleDelete === null}
+            disabled={blockIdx === 0}
             onClick={() => {
-              if (handleDelete !== null) handleDelete();
+              menuHandler.mergeAbove(blockIdx);
+              setAnchorPosition(undefined);
+            }}
+          >
+            Merge with Above
+          </MenuItem>
+          <MenuItem
+            disabled={blockIdx === 0}
+            onClick={() => {
+              menuHandler.mergeBelow(blockIdx);
+              setAnchorPosition(undefined);
+            }}
+          >
+            Merge with Below
+          </MenuItem>
+          <MenuItem
+            disabled={isDisabledDelete}
+            onClick={() => {
+              menuHandler.delete(blockIdx);
               setAnchorPosition(undefined);
             }}
           >
