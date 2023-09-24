@@ -21,6 +21,15 @@ function BlockController() {
     editBlockDialogFormState
   );
 
+  const handleAdd = useCallback(
+    (blockIdx: number) => {
+      const updatedBlocks: Block[] = [...blocks];
+      updatedBlocks.push(blocks[blockIdx]);
+      setBlocks(updatedBlocks);
+    },
+    [blocks]
+  );
+
   const handleEdit = useCallback(
     (blockIdx: number) =>
       setEditBlockDialogForm({
@@ -93,6 +102,7 @@ function BlockController() {
           isDisabledDelete={blocks.length < 2}
           isLastBlock={blockIdx === blocks.length - 1}
           handler={{
+            add: handleAdd,
             delete: handleDelete,
             edit: handleEdit,
             mergeAbove: handleMergeAbove,

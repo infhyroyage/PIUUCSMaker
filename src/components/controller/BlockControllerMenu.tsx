@@ -19,7 +19,6 @@ function BlockControllerMenu({
     blockControllerMenuPositionState
   );
 
-  // Menuを非表示
   const onCloseMenu = useCallback(() => setPosition(undefined), [setPosition]);
 
   return (
@@ -44,7 +43,14 @@ function BlockControllerMenu({
       </MenuList>
       <Divider />
       <MenuList>
-        <MenuItem onClick={() => alert("TODO")}>Add at Bottom</MenuItem>
+        <MenuItem
+          onClick={() => {
+            handler.add(blockIdx);
+            setPosition(undefined);
+          }}
+        >
+          Add at Bottom
+        </MenuItem>
         <MenuItem onClick={() => alert("TODO")}>Insert into Next</MenuItem>
         <MenuItem
           disabled={blockIdx === 0}

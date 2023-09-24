@@ -3,6 +3,13 @@ import { Indicator } from "./chart";
 
 type BlockControllerMenuHandler = {
   /**
+   * 「Add at Bottom」選択時の動作
+   * @param {number} blockIdx 譜面のブロックのインデックス
+   * @returns
+   */
+  add: (blockIdx: number) => void;
+
+  /**
    * 「Delete」選択時の動作
    * @param {number} blockIdx 譜面のブロックのインデックス
    * @returns
