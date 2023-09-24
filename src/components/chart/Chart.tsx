@@ -10,11 +10,11 @@ import {
   noteSizeState,
   notesState,
   zoomState,
-} from "../service/atoms";
-import ChartBorderLine from "./ChartBorderLine";
+} from "../../service/atoms";
+import BorderLine from "../BorderLine";
 import ChartVertical from "./ChartVertical";
-import { Block, Indicator, MouseDown, Note, Zoom } from "../types/chart";
-import { ZOOM_VALUES } from "../service/zoom";
+import { Block, Indicator, MouseDown, Note, Zoom } from "../../types/chart";
+import { ZOOM_VALUES } from "../../service/zoom";
 
 function Chart() {
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
@@ -244,7 +244,7 @@ function Chart() {
 
   return [...Array(columns)].map((_, column: number) => (
     <React.Fragment key={column}>
-      {column === 0 && <ChartBorderLine width={borderSize} height="100%" />}
+      {column === 0 && <BorderLine width={borderSize} height="100%" />}
       <span
         style={{
           width: noteSize,
@@ -266,7 +266,7 @@ function Chart() {
           notes={notes[column]}
         />
       </span>
-      <ChartBorderLine width={borderSize} height="100%" />
+      <BorderLine width={borderSize} height="100%" />
     </React.Fragment>
   ));
 }

@@ -16,14 +16,14 @@ import {
   columnsState,
   isPerformanceState,
   ucsNameState,
-} from "../service/atoms";
+} from "../../service/atoms";
 import { ChangeEvent, useState, useTransition } from "react";
 import {
   NewUCSDialogErrors,
   NewUCSDialogForm,
   NewUCSValidation,
-} from "../types/form";
-import { Block, Note } from "../types/chart";
+} from "../../types/form";
+import { Block, Note } from "../../types/chart";
 
 const validateAndLoadUCS = (
   form: NewUCSDialogForm

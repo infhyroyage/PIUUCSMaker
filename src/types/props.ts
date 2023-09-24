@@ -66,7 +66,7 @@ export type BlockControllerButtonProps = {
   textSecond: string;
 };
 
-export type ChartBorderLineProps = {
+export type BorderLineProps = {
   /**
    * 高さ(px単位)
    */
@@ -99,21 +99,6 @@ export type ChartIndicatorProps = {
    * マウス押下していない場合はnull
    */
   mouseDown: MouseDown;
-};
-
-/**
- * ChartRectangleのprops
- */
-export type ChartRectangleProps = {
-  /**
-   * 全譜面のブロックのうち自身が偶数番目の場合はtrue、奇数番目の場合はfalse
-   */
-  isEven: boolean;
-
-  /**
-   * 高さ(px単位)
-   */
-  height: number;
 };
 
 /**

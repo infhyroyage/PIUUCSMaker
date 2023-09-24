@@ -1,7 +1,7 @@
 import { memo } from "react";
-import { ChartBorderLineProps } from "../types/props";
+import { BorderLineProps } from "../types/props";
 
-function ChartBorderLine({ height, width }: ChartBorderLineProps) {
+function BorderLine({ height, width }: BorderLineProps) {
   return (
     <span
       style={{
@@ -14,4 +14,4 @@ function ChartBorderLine({ height, width }: ChartBorderLineProps) {
   );
 }
 
-export default memo(ChartBorderLine);
+export default memo(BorderLine);

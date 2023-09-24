@@ -1,11 +1,11 @@
 import React, { useMemo } from "react";
-import { RectangleBlockIdentifierProps } from "../types/props";
+import { RectangleBlockIdentifierProps } from "../../types/props";
 import { useRecoilValue } from "recoil";
-import { Zoom } from "../types/chart";
-import { noteSizeState, zoomState } from "../service/atoms";
-import { ZOOM_VALUES } from "../service/zoom";
+import { Zoom } from "../../types/chart";
+import { noteSizeState, zoomState } from "../../service/atoms";
+import { ZOOM_VALUES } from "../../service/zoom";
 import { Paper, Typography } from "@mui/material";
-import ChartBorderLine from "./ChartBorderLine";
+import BorderLine from "../BorderLine";
 
 function RectangleBlockIdentifier({
   beat,
@@ -31,9 +31,9 @@ function RectangleBlockIdentifier({
     [length, noteSize, unitRowHeight]
   );
 
-  // 各ChartRectangleの高さ(px単位)を枠線の配置を考慮して計算
+  // 譜面のブロック内の各節のブロックの高さ(px単位)を枠線の配置を考慮して計算
   const rectangleHeights = useMemo(() => {
-    // ChartRectangleの個数
+    // 譜面のブロック内の節のブロックの個数
     const rectangleLength: number = Math.ceil(length / (beat * split));
 
     // 譜面のブロックの高さ(px単位)
@@ -69,12 +69,12 @@ function RectangleBlockIdentifier({
           </Paper>
           {/* 譜面のブロック内の節ごとに分割する枠線 */}
           {rectangleIdx < rectangleHeights.length - 1 && (
-            <ChartBorderLine width="100%" height={borderSize} />
+            <BorderLine width="100%" height={borderSize} />
           )}
         </React.Fragment>
       ))}
       {/* 譜面のブロックごとに分割する枠線 */}
-      {!isLastBlock && <ChartBorderLine width="100%" height={borderSize} />}
+      {!isLastBlock && <BorderLine width="100%" height={borderSize} />}
     </>
   );
 }

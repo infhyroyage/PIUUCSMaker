@@ -1,11 +1,10 @@
 import React, { memo, useMemo } from "react";
 import { useRecoilValue } from "recoil";
-import { noteSizeState, zoomState } from "../service/atoms";
-import { ChartVerticalRectanglesProps } from "../types/props";
-import ChartBorderLine from "./ChartBorderLine";
-import ChartRectangle from "./ChartRectangle";
-import { Zoom } from "../types/chart";
-import { ZOOM_VALUES } from "../service/zoom";
+import { noteSizeState, zoomState } from "../../service/atoms";
+import { ChartVerticalRectanglesProps } from "../../types/props";
+import BorderLine from "../BorderLine";
+import { Zoom } from "../../types/chart";
+import { ZOOM_VALUES } from "../../service/zoom";
 
 function ChartVerticalRectangles({
   beat,
@@ -31,9 +30,9 @@ function ChartVerticalRectangles({
     [length, noteSize, unitRowHeight]
   );
 
-  // 各ChartRectangleの高さ(px単位)を枠線の配置を考慮して計算
+  // 譜面のブロック内の各節のブロックの高さ(px単位)を枠線の配置を考慮して計算
   const rectangleHeights = useMemo(() => {
-    // ChartRectangleの個数
+    // 譜面のブロック内の節のブロックの個数
     const rectangleLength = Math.ceil(length / (beat * split));
 
     // 譜面のブロックの高さ(px単位)
@@ -61,15 +60,23 @@ function ChartVerticalRectangles({
     <>
       {rectangleHeights.map((rectangleHeight: number, rectangleIdx: number) => (
         <React.Fragment key={rectangleIdx}>
-          <ChartRectangle height={rectangleHeight} isEven={isEven} />
+          <span
+            style={{
+              width: "100%",
+              height: rectangleHeight,
+              backgroundColor: isEven
+                ? "rgb(255, 255, 170)"
+                : "rgb(170, 255, 255)",
+            }}
+          />
           {/* 譜面のブロック内の節ごとに分割する枠線 */}
           {rectangleIdx < rectangleHeights.length - 1 && (
-            <ChartBorderLine width={noteSize} height={borderSize} />
+            <BorderLine width={noteSize} height={borderSize} />
           )}
         </React.Fragment>
       ))}
       {/* 譜面のブロックごとに分割する枠線 */}
-      {!isLastBlock && <ChartBorderLine width={noteSize} height={borderSize} />}
+      {!isLastBlock && <BorderLine width={noteSize} height={borderSize} />}
     </>
   );
 }

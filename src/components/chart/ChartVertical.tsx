@@ -1,8 +1,11 @@
 import { memo } from "react";
-import { ChartVerticalProps } from "../types/props";
-import { Block, Note } from "../types/chart";
+import { ChartVerticalProps } from "../../types/props";
+import { Block, Note } from "../../types/chart";
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import { blocksState, isShownSystemErrorSnackbarState } from "../service/atoms";
+import {
+  blocksState,
+  isShownSystemErrorSnackbarState,
+} from "../../service/atoms";
 import ChartIndicator from "./ChartIndicator";
 import ChartVerticalNoteImages from "./ChartVerticalNoteImages";
 import ChartVerticalRectangles from "./ChartVerticalRectangles";

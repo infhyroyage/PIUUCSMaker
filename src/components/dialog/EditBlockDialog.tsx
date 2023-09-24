@@ -4,7 +4,7 @@ import {
   blocksState,
   editBlockDialogFormState,
   isShownSystemErrorSnackbarState,
-} from "../service/atoms";
+} from "../../service/atoms";
 import {
   Button,
   Dialog,
@@ -14,8 +14,8 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import { EditBlockDialogError, EditBlockDialogForm } from "../types/form";
-import { Block } from "../types/chart";
+import { EditBlockDialogError, EditBlockDialogForm } from "../../types/form";
+import { Block } from "../../types/chart";
 
 const validate = (form: EditBlockDialogForm): EditBlockDialogError | null => {
   // BPMのチェック

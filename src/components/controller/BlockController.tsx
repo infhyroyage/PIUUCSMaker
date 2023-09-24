@@ -1,15 +1,15 @@
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import { Block, Note, Zoom } from "../types/chart";
+import { Block, Note, Zoom } from "../../types/chart";
 import {
   blocksState,
   editBlockDialogFormState,
   noteSizeState,
   notesState,
   zoomState,
-} from "../service/atoms";
+} from "../../service/atoms";
 import BlockControllerButton from "./BlockControllerButton";
-import { ZOOM_VALUES } from "../service/zoom";
-import { EditBlockDialogForm } from "../types/form";
+import { ZOOM_VALUES } from "../../service/zoom";
+import { EditBlockDialogForm } from "../../types/form";
 import { useCallback } from "react";
 
 function BlockController() {

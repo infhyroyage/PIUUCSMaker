@@ -3,15 +3,15 @@ import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import SystemErrorSnackbar from "./components/SystemErrorSnackbar";
 import UserErrorSnackbar from "./components/UserErrorSnackbar";
 import WorkSpace from "./components/WorkSpace";
-import MenuDrawer from "./components/MenuDrawer";
-import NewUCSDialog from "./components/NewUCSDialog";
+import MenuDrawer from "./components/drawer/MenuDrawer";
+import NewUCSDialog from "./components/dialog/NewUCSDialog";
 import { MUI_DEFAULT_Z_INDEX } from "./service/styles";
 import MenuBar from "./components/MenuBar";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import { isDarkModeState, mouseDownsState } from "./service/atoms";
 import { MouseDown } from "./types/chart";
-import SuccessSnackbar from "./components/SuccessSnackbar";
-import EditBlockDialog from "./components/EditBlockDialog";
+import SuccessSnackbar from "./components/snackbar/SuccessSnackbar";
+import EditBlockDialog from "./components/dialog/EditBlockDialog";
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useRecoilState<boolean>(isDarkModeState);

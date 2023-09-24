@@ -1,10 +1,14 @@
 import { memo, useMemo } from "react";
-import { IMAGE_BINARIES } from "../service/assets";
-import { ChartVerticalNoteImagesProps } from "../types/props";
+import { IMAGE_BINARIES } from "../../service/assets";
+import { ChartVerticalNoteImagesProps } from "../../types/props";
 import { useRecoilValue } from "recoil";
-import { menuBarHeightState, noteSizeState, zoomState } from "../service/atoms";
-import { ZOOM_VALUES } from "../service/zoom";
-import { Zoom } from "../types/chart";
+import {
+  menuBarHeightState,
+  noteSizeState,
+  zoomState,
+} from "../../service/atoms";
+import { ZOOM_VALUES } from "../../service/zoom";
+import { Zoom } from "../../types/chart";
 
 function ChartVerticalNoteImages({
   accumulatedLength,

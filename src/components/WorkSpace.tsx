@@ -6,9 +6,9 @@ import {
   noteSizeState,
   ucsNameState,
 } from "../service/atoms";
-import Chart from "./Chart";
+import Chart from "./chart/Chart";
 import RectangleIdentifier from "./RectangleIdentifier";
-import BlockController from "./BlockController";
+import BlockController from "./controller/BlockController";
 
 function WorkSpace() {
   const menuBarHeight = useRecoilValue<number>(menuBarHeightState);

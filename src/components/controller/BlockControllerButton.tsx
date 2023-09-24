@@ -1,6 +1,6 @@
 import { MouseEvent, memo, useCallback, useMemo, useState } from "react";
 import { useRecoilValue } from "recoil";
-import { noteSizeState } from "../service/atoms";
+import { noteSizeState } from "../../service/atoms";
 import {
   Card,
   CardActionArea,
@@ -13,8 +13,8 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import ChartBorderLine from "./ChartBorderLine";
-import { BlockControllerButtonProps } from "../types/props";
+import BorderLine from "../BorderLine";
+import { BlockControllerButtonProps } from "../../types/props";
 
 function BlockControllerButton({
   blockHeight,
@@ -125,7 +125,7 @@ function BlockControllerButton({
         </MenuList>
       </Menu>
       {/* 譜面のブロックごとに分割する枠線 */}
-      {!isLastBlock && <ChartBorderLine width="100%" height={borderSize} />}
+      {!isLastBlock && <BorderLine width="100%" height={borderSize} />}
     </>
   );
 }

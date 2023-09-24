@@ -1,9 +1,9 @@
 import { memo } from "react";
-import { ChartIndicatorProps } from "../types/props";
+import { ChartIndicatorProps } from "../../types/props";
 import { Theme, useTheme } from "@mui/material";
-import { IMAGE_BINARIES } from "../service/assets";
+import { IMAGE_BINARIES } from "../../service/assets";
 import { useRecoilValue } from "recoil";
-import { noteSizeState } from "../service/atoms";
+import { noteSizeState } from "../../service/atoms";
 
 function ChartIndicator({ column, indicator, mouseDown }: ChartIndicatorProps) {
   const noteSize = useRecoilValue<number>(noteSizeState);
