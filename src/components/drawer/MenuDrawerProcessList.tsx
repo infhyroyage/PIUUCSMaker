@@ -7,12 +7,12 @@ import {
 } from "@mui/material";
 import UndoIcon from "@mui/icons-material/Undo";
 import RedoIcon from "@mui/icons-material/Redo";
-import { isOpenedMenuDrawerState, isPlayingState } from "../service/atoms";
+import { isOpenedMenuDrawerState, isPlayingState } from "../../service/atoms";
 import { useRecoilValue } from "recoil";
 import {
   generateListItemButtonStyle,
   generateListItemIconStyle,
-} from "../service/styles";
+} from "../../service/styles";
 
 function MenuDrawerProcessList() {
   const isOpenedMenuDrawer = useRecoilValue<boolean>(isOpenedMenuDrawerState);

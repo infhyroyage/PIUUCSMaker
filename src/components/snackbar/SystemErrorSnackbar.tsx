@@ -1,6 +1,6 @@
 import { Alert, Snackbar } from "@mui/material";
 import { useRecoilState } from "recoil";
-import { isShownSystemErrorSnackbarState } from "../service/atoms";
+import { isShownSystemErrorSnackbarState } from "../../service/atoms";
 
 function SystemErrorSnackbar() {
   const [isShownSystemErrorSnackbar, setIsShownSystemErrorSnackbar] =

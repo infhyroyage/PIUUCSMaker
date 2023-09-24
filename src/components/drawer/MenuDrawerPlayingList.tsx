@@ -16,12 +16,12 @@ import {
   isOpenedMenuDrawerState,
   isPlayingState,
   ucsNameState,
-} from "../service/atoms";
-import usePlayingMusic from "../hooks/usePlayingMusic";
+} from "../../service/atoms";
+import usePlayingMusic from "../../hooks/usePlayingMusic";
 import {
   generateListItemButtonStyle,
   generateListItemIconStyle,
-} from "../service/styles";
+} from "../../service/styles";
 
 function MenuDrawerPlayingList() {
   const [isMuteBeats, setIsMuteBeats] =

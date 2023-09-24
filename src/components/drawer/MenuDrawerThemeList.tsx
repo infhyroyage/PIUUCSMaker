@@ -7,12 +7,12 @@ import {
 } from "@mui/material";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
-import { isDarkModeState, isOpenedMenuDrawerState } from "../service/atoms";
+import { isDarkModeState, isOpenedMenuDrawerState } from "../../service/atoms";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
   generateListItemButtonStyle,
   generateListItemIconStyle,
-} from "../service/styles";
+} from "../../service/styles";
 
 function MenuDrawerThemeList() {
   const [isDarkMode, setIsDarkMode] = useRecoilState<boolean>(isDarkModeState);

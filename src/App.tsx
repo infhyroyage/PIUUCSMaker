@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from "react";
 import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
-import SystemErrorSnackbar from "./components/SystemErrorSnackbar";
-import UserErrorSnackbar from "./components/UserErrorSnackbar";
+import UserErrorSnackbar from "./components/snackbar/UserErrorSnackbar";
+import SystemErrorSnackbar from "./components/snackbar/SystemErrorSnackbar";
 import WorkSpace from "./components/WorkSpace";
 import MenuDrawer from "./components/drawer/MenuDrawer";
 import NewUCSDialog from "./components/dialog/NewUCSDialog";

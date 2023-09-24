@@ -11,15 +11,15 @@ import {
   isOpenedMenuDrawerState,
   isPlayingState,
   zoomState,
-} from "../service/atoms";
+} from "../../service/atoms";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { ZOOM_VALUES } from "../service/zoom";
-import { Zoom } from "../types/chart";
+import { ZOOM_VALUES } from "../../service/zoom";
+import { Zoom } from "../../types/chart";
 import { useEffect } from "react";
 import {
   generateListItemButtonStyle,
   generateListItemIconStyle,
-} from "../service/styles";
+} from "../../service/styles";
 
 function MenuDrawerZoomList() {
   const isOpenedMenuDrawer = useRecoilValue<boolean>(isOpenedMenuDrawerState);

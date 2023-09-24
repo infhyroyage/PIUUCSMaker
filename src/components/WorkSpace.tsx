@@ -7,7 +7,7 @@ import {
   ucsNameState,
 } from "../service/atoms";
 import Chart from "./chart/Chart";
-import RectangleIdentifier from "./RectangleIdentifier";
+import RectangleIdentifier from "./identifier/RectangleIdentifier";
 import BlockController from "./controller/BlockController";
 
 function WorkSpace() {

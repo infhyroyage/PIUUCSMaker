@@ -39,7 +39,7 @@ function BlockControllerButton({
 
   // 押下したマウスの座標にBlockControllerMenuを表示
   const onClickCardActionArea = useCallback(
-    (event: MouseEvent<HTMLElement>) => {
+    (event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => {
       event.preventDefault();
       setPosition({
         top: event.clientY,

@@ -1,6 +1,6 @@
 import { useRecoilValue } from "recoil";
-import { Block } from "../types/chart";
-import { blocksState } from "../service/atoms";
+import { Block } from "../../types/chart";
+import { blocksState } from "../../service/atoms";
 import RectangleBlockIdentifier from "./RectangleBlockIdentifier";
 
 function RectangleIdentifier() {
@@ -10,6 +10,7 @@ function RectangleIdentifier() {
     <div>
       {blocks.map((block: Block, blockIdx: number) => (
         <RectangleBlockIdentifier
+          key={blockIdx}
           beat={block.beat}
           blockIdx={blockIdx}
           isLastBlock={blockIdx === blocks.length - 1}
