@@ -2,6 +2,7 @@ import React, { useCallback, useMemo } from "react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
   blocksState,
+  chartIndicatorMenuPositionState,
   columnsState,
   indicatorsState,
   isPlayingState,
@@ -15,10 +16,14 @@ import BorderLine from "../BorderLine";
 import ChartVertical from "./ChartVertical";
 import { Block, Indicator, MouseDown, Note, Zoom } from "../../types/chart";
 import { ZOOM_VALUES } from "../../service/zoom";
+import { PopoverPosition } from "@mui/material";
 
 function Chart() {
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
   const blocks = useRecoilValue<Block[]>(blocksState);
+  const position = useRecoilValue<PopoverPosition | undefined>(
+    chartIndicatorMenuPositionState
+  );
   const columns = useRecoilValue<5 | 10>(columnsState);
   const indicators = useRecoilValue<Indicator[]>(indicatorsState);
   const isPlaying = useRecoilValue<boolean>(isPlayingState);
@@ -58,8 +63,8 @@ function Chart() {
 
   const handleMouseMove = useCallback(
     (event: React.MouseEvent<HTMLSpanElement, MouseEvent>, column: number) => {
-      // 再生中の場合はNOP
-      if (isPlaying) return;
+      // ChartIndicatorMenu表示中/再生中の場合はNOP
+      if (!!position || isPlaying) return;
 
       // マウスホバーしたy座標を取得
       const y: number = Math.floor(
@@ -109,23 +114,24 @@ function Chart() {
       isPlaying,
       menuBarHeight,
       noteSize,
+      position,
       zoom.idx,
       setIndicators,
     ]
   );
 
   const handleMouseLeave = useCallback(() => {
-    // 再生中の場合はNOP
-    if (isPlaying) return;
+    // ChartIndicatorMenu表示中/再生中の場合はNOP
+    if (!!position || isPlaying) return;
 
     // インディケーターを非表示
     setIndicators(new Array<Indicator>(10).fill(null));
-  }, [isPlaying, setIndicators]);
+  }, [isPlaying, position, setIndicators]);
 
   const handleMouseDown = useCallback(
     (column: number) => {
-      // 再生中の場合はNOP
-      if (isPlaying) return;
+      // ChartIndicatorMenu表示中/再生中の場合はNOP
+      if (!!position || isPlaying) return;
 
       // 押下した瞬間にインディケーターが非表示である場合はNOP
       const indicator: Indicator = indicators[column];
@@ -141,13 +147,13 @@ function Chart() {
       };
       setMouseDowns(updatedMouseDowns);
     },
-    [indicators, isPlaying, setMouseDowns]
+    [indicators, isPlaying, position, setMouseDowns]
   );
 
   const handleMouseUp = useCallback(
     (column: number) => {
-      // 再生中の場合はNOP
-      if (isPlaying) return;
+      // ChartIndicatorMenu表示中/再生中の場合はNOP
+      if (!!position || isPlaying) return;
 
       // 同一列内でのマウス操作の場合のみ、譜面の更新を行う
       const indicator: Indicator = indicators[column];
@@ -239,7 +245,15 @@ function Chart() {
         );
       }
     },
-    [indicators, isPlaying, mouseDowns, notes, setNotes, setMouseDowns]
+    [
+      indicators,
+      isPlaying,
+      mouseDowns,
+      notes,
+      position,
+      setNotes,
+      setMouseDowns,
+    ]
   );
 
   return [...Array(columns)].map((_, column: number) => (

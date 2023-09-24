@@ -1,14 +1,33 @@
-import { memo } from "react";
+import { MouseEvent, memo, useCallback } from "react";
 import { ChartIndicatorProps } from "../../types/props";
-import { Theme, useTheme } from "@mui/material";
+import { PopoverPosition, Theme, useTheme } from "@mui/material";
 import { IMAGE_BINARIES } from "../../service/assets";
-import { useRecoilValue } from "recoil";
-import { noteSizeState } from "../../service/atoms";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import {
+  chartIndicatorMenuPositionState,
+  noteSizeState,
+} from "../../service/atoms";
+import ChartIndicatorMenu from "./ChartIndicatorMenu";
 
 function ChartIndicator({ column, indicator, mouseDown }: ChartIndicatorProps) {
   const noteSize = useRecoilValue<number>(noteSizeState);
+  const setPosition = useSetRecoilState<PopoverPosition | undefined>(
+    chartIndicatorMenuPositionState
+  );
 
   const theme: Theme = useTheme();
+
+  // 右クリックしたマウスの座標にChartIndicatorMenuを表示
+  const handleRightClick = useCallback(
+    (event: MouseEvent<HTMLSpanElement, globalThis.MouseEvent>) => {
+      event.preventDefault();
+      setPosition({
+        top: event.clientY,
+        left: event.clientX,
+      });
+    },
+    [setPosition]
+  );
 
   return (
     indicator && (
@@ -52,6 +71,7 @@ function ChartIndicator({ column, indicator, mouseDown }: ChartIndicatorProps) {
           </>
         )}
         <span
+          onContextMenu={handleRightClick}
           style={{
             display: "block",
             position: "absolute",
@@ -62,6 +82,7 @@ function ChartIndicator({ column, indicator, mouseDown }: ChartIndicatorProps) {
             zIndex: theme.zIndex.drawer - 1,
           }}
         />
+        <ChartIndicatorMenu />
       </>
     )
   );

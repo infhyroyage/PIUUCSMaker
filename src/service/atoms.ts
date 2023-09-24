@@ -18,6 +18,13 @@ export const blocksState = atom<Block[]>({
   default: [],
 });
 
+export const chartIndicatorMenuPositionState = atom<
+  PopoverPosition | undefined
+>({
+  key: "chartIndicatorMenuPosition",
+  default: undefined,
+});
+
 /**
  * 列数
  * Single/SinglePerformance譜面の場合は5、Double/DoublePerformance譜面の場合は10
