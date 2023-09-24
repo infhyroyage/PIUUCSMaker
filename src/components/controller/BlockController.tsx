@@ -92,7 +92,7 @@ function BlockController() {
           blockIdx={blockIdx}
           isDisabledDelete={blocks.length < 2}
           isLastBlock={blockIdx === blocks.length - 1}
-          menuHandler={{
+          handler={{
             delete: handleDelete,
             edit: handleEdit,
             mergeAbove: handleMergeAbove,

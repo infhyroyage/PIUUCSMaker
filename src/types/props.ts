@@ -1,6 +1,36 @@
 import { MouseDown, Note } from "./chart";
 import { Indicator } from "./chart";
 
+type BlockControllerMenuHandler = {
+  /**
+   * 「Delete」選択時の動作
+   * @param {number} blockIdx 譜面のブロックのインデックス
+   * @returns
+   */
+  delete: (blockIdx: number) => void;
+
+  /**
+   * 「Edit」選択時の動作
+   * @param {number} blockIdx 譜面のブロックのインデックス
+   * @returns
+   */
+  edit: (blockIdx: number) => void;
+
+  /**
+   * 「Merge with Above」選択時の動作
+   * @param {number} blockIdx 譜面のブロックのインデックス
+   * @returns
+   */
+  mergeAbove: (blockIdx: number) => void;
+
+  /**
+   * 「Merge with Below」選択時の動作
+   * @param {number} blockIdx 譜面のブロックのインデックス
+   * @returns
+   */
+  mergeBelow: (blockIdx: number) => void;
+};
+
 export type BlockControllerButtonProps = {
   /**
    * 譜面のブロックの高さ(px単位)
@@ -25,35 +55,7 @@ export type BlockControllerButtonProps = {
   /**
    * メニュー選択時の動作
    */
-  menuHandler: {
-    /**
-     * 「Delete」選択時の動作
-     * @param {number} blockIdx 譜面のブロックのインデックス
-     * @returns
-     */
-    delete: (blockIdx: number) => void;
-
-    /**
-     * 「Edit」選択時の動作
-     * @param {number} blockIdx 譜面のブロックのインデックス
-     * @returns
-     */
-    edit: (blockIdx: number) => void;
-
-    /**
-     * 「Merge with Above」選択時の動作
-     * @param {number} blockIdx 譜面のブロックのインデックス
-     * @returns
-     */
-    mergeAbove: (blockIdx: number) => void;
-
-    /**
-     * 「Merge with Below」選択時の動作
-     * @param {number} blockIdx 譜面のブロックのインデックス
-     * @returns
-     */
-    mergeBelow: (blockIdx: number) => void;
-  };
+  handler: BlockControllerMenuHandler;
 
   /**
    * ボタンのテキスト(1段落目)
@@ -64,6 +66,23 @@ export type BlockControllerButtonProps = {
    * ボタンのテキスト(2段落目)
    */
   textSecond: string;
+};
+
+export type BlockControllerMenuProps = {
+  /**
+   * 譜面のブロックのインデックス
+   */
+  blockIdx: number;
+
+  /**
+   * 譜面のブロックが1個しか存在しない場合はtrue、2個以上の場合はfalse
+   */
+  isDisabledDelete: boolean;
+
+  /**
+   * メニュー選択時の動作
+   */
+  handler: BlockControllerMenuHandler;
 };
 
 export type BorderLineProps = {

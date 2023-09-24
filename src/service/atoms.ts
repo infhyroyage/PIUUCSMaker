@@ -4,6 +4,14 @@ import { Zoom } from "../types/chart";
 import { MouseDown } from "../types/chart";
 import { Indicator } from "../types/chart";
 import { EditBlockDialogForm } from "../types/form";
+import { PopoverPosition } from "@mui/material";
+
+export const blockControllerMenuPositionState = atom<
+  PopoverPosition | undefined
+>({
+  key: "blockControllerMenuPosition",
+  default: undefined,
+});
 
 export const blocksState = atom<Block[]>({
   key: "blocks",
