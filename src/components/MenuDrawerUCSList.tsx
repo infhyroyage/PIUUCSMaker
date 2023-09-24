@@ -20,6 +20,7 @@ import {
   generateListItemButtonStyle,
   generateListItemIconStyle,
 } from "../service/styles";
+import useDownloadingUCS from "../hooks/useDownloadingUCS";
 
 function MenuDrawerUCSList() {
   const isOpenedMenuDrawer = useRecoilValue<boolean>(isOpenedMenuDrawerState);
@@ -30,12 +31,13 @@ function MenuDrawerUCSList() {
   );
 
   const { isUploadingUCS, uploadUCS } = useUploadingUCS();
+  const { isDownloadingUCS, downloadUCS } = useDownloadingUCS();
 
   return (
     <List>
       <ListItem disablePadding sx={{ display: "block" }}>
         <ListItemButton
-          disabled={isPlaying || isUploadingUCS}
+          disabled={isPlaying || isUploadingUCS || isDownloadingUCS}
           onClick={() => setIsOpenedNewUCSDialog(true)}
           sx={generateListItemButtonStyle(isOpenedMenuDrawer)}
         >
@@ -50,7 +52,7 @@ function MenuDrawerUCSList() {
       <ListItem disablePadding sx={{ display: "block" }}>
         <ListItemButton
           component="label"
-          disabled={isPlaying || isUploadingUCS}
+          disabled={isPlaying || isUploadingUCS || isDownloadingUCS}
           htmlFor="upload-ucs"
           sx={generateListItemButtonStyle(isOpenedMenuDrawer)}
         >
@@ -74,15 +76,20 @@ function MenuDrawerUCSList() {
       </ListItem>
       <ListItem disablePadding sx={{ display: "block" }}>
         <ListItemButton
-          disabled={ucsName === null || isPlaying || isUploadingUCS}
-          onClick={() => alert("TODO")}
+          disabled={
+            ucsName === null || isPlaying || isUploadingUCS || isDownloadingUCS
+          }
+          onClick={downloadUCS}
           sx={generateListItemButtonStyle(isOpenedMenuDrawer)}
         >
           <ListItemIcon sx={generateListItemIconStyle(isOpenedMenuDrawer)}>
             <DownloadIcon />
           </ListItemIcon>
           {isOpenedMenuDrawer && (
-            <ListItemText primary="Download UCS" sx={{ opacity: 1 }} />
+            <ListItemText
+              primary={isDownloadingUCS ? "Ready..." : "Download UCS"}
+              sx={{ opacity: 1 }}
+            />
           )}
         </ListItemButton>
       </ListItem>
