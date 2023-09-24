@@ -24,19 +24,15 @@ function ChartIndicatorMenu() {
       onClose={onCloseMenu}
       open={!!position}
     >
-      <MenuList>
+      <MenuList dense>
         <MenuItem onClick={() => alert("TODO")}>Cut</MenuItem>
         <MenuItem onClick={() => alert("TODO")}>Copy</MenuItem>
         <MenuItem onClick={() => alert("TODO")}>Paste</MenuItem>
-      </MenuList>
-      <Divider />
-      <MenuList>
+        <Divider />
         <MenuItem onClick={() => alert("TODO")}>Flip Horizontal</MenuItem>
         <MenuItem onClick={() => alert("TODO")}>Flip Vertical</MenuItem>
         <MenuItem onClick={() => alert("TODO")}>Mirror</MenuItem>
-      </MenuList>
-      <Divider />
-      <MenuList>
+        <Divider />
         <MenuItem onClick={() => alert("TODO")}>Split Block</MenuItem>
       </MenuList>
     </Menu>

@@ -26,7 +26,7 @@ function BlockControllerMenu({
       onClose={onCloseMenu}
       open={!!menuPosition}
     >
-      <MenuList>
+      <MenuList dense>
         <MenuItem
           onClick={() => {
             if (menuPosition) {
@@ -39,9 +39,7 @@ function BlockControllerMenu({
         </MenuItem>
         <MenuItem onClick={() => alert("TODO")}>Resize</MenuItem>
         <MenuItem onClick={() => alert("TODO")}>Adjust Beat/Split</MenuItem>
-      </MenuList>
-      <Divider />
-      <MenuList>
+        <Divider />
         <MenuItem
           onClick={() => {
             if (menuPosition) {
