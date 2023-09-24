@@ -154,9 +154,7 @@ function usePlayingMusic() {
     };
     const scrollParam: ScrollParam = blocks.reduce(
       (prev: ScrollParam, block: Block, blockIdx: number) => {
-        // 各譜面のブロックの1行あたりの高さをpx単位で計算
-        // 譜面のブロックの1行あたりの高さ := 2 * noteSize * 倍率 / 譜面のブロックのSplit
-        // 例えば、この高さに譜面のブロックの行数を乗ずると、譜面のブロックの高さとなる
+        // 各譜面のブロックの1行あたりの高さ(px単位)を計算
         const unitRowHeight: number =
           (2.0 * noteSize * ZOOM_VALUES[zoom.idx]) / block.split;
 
@@ -264,15 +262,34 @@ function usePlayingMusic() {
         // 最後の譜面のブロックをスクロールし終えたら停止
         stop();
       } else {
-        // 最後にスクロールしてからの現在時刻からスクロール間の時間(ms)であるelapsedTimeを計算
+        // 最後にスクロールした時刻から現在時刻までのスクロール間の時間(ms)elapsedTimeを計算
         // この時間は理論上は1000 / FPSと一致するが、実動作上は必ずしも一致しない
         currentScrollTime.current = Date.now();
-        const elapsedScrollTime: number =
+        let elapsedScrollTime: number =
           currentScrollTime.current - previousScrollTime.current;
         previousScrollTime.current = currentScrollTime.current;
 
-        // スクロール後のブラウザの画面のy座標(px)を計算し、下へスクロール
-        top += scrollParam.verocities[verocityIdx].verocity * elapsedScrollTime;
+        // スクロール後のブラウザの画面のy座標(px)を計算し、スクロール速度を変更しながら下へスクロール
+        while (verocityIdx < scrollParam.verocities.length) {
+          if (
+            top +
+              scrollParam.verocities[verocityIdx].verocity *
+                elapsedScrollTime <=
+            scrollParam.verocities[verocityIdx].border
+          ) {
+            // スクロール前後で譜面のブロックを跨がらない場合は、スクロール後のブラウザの画面のy座標(px)の計算をして終了
+            top +=
+              scrollParam.verocities[verocityIdx].verocity * elapsedScrollTime;
+            break;
+          } else {
+            // スクロール前後で譜面のブロックを跨ぐ場合は、スクロール速度を変更しながらスクロール後のブラウザの画面のy座標(px)を再計算
+            elapsedScrollTime -=
+              (scrollParam.verocities[verocityIdx].border - top) /
+              scrollParam.verocities[verocityIdx].verocity;
+            top = scrollParam.verocities[verocityIdx].border;
+            verocityIdx += 1;
+          }
+        }
         window.scrollTo({ top });
 
         // ブラウザの画面のy座標に応じてビート音を再生
@@ -288,11 +305,6 @@ function usePlayingMusic() {
           beatGainNode.current.connect(audioContext.current.destination);
           beatSourceNode.current.start();
           beatTopIdx += 1;
-        }
-
-        // ブラウザの画面のy座標に応じてスクロール速度を変更
-        if (scrollParam.verocities[verocityIdx].border <= top) {
-          verocityIdx += 1;
         }
       }
     }, 1000 / FPS);
