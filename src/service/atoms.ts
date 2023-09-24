@@ -110,7 +110,7 @@ export const mouseDownsState = atom<MouseDown[]>({
 
 /**
  * mp3ファイル名(拡張子込)
- * 未アップロード時はundefined
+ * 未アップロード時はnull
  */
 export const mp3NameState = atom<string | null>({
   key: "mp3Name",
@@ -137,7 +137,7 @@ export const successMessageState = atom<string>({
 
 /**
  * ucsファイル名(拡張子込)
- * 未アップロード時はundefined
+ * 未アップロード時はnull
  */
 export const ucsNameState = atom<string | null>({
   key: "ucsName",

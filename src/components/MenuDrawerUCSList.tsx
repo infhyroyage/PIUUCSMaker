@@ -10,22 +10,21 @@ import UploadIcon from "@mui/icons-material/Upload";
 import DownloadIcon from "@mui/icons-material/Download";
 import useUploadingUCS from "../hooks/useUploadingUCS";
 import {
-  blocksState,
   isOpenedMenuDrawerState,
   isOpenedNewUCSDialogState,
   isPlayingState,
+  ucsNameState,
 } from "../service/atoms";
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import { Block } from "../types/chart";
 import {
   generateListItemButtonStyle,
   generateListItemIconStyle,
 } from "../service/styles";
 
 function MenuDrawerUCSList() {
-  const blocks = useRecoilValue<Block[]>(blocksState);
   const isOpenedMenuDrawer = useRecoilValue<boolean>(isOpenedMenuDrawerState);
   const isPlaying = useRecoilValue<boolean>(isPlayingState);
+  const ucsName = useRecoilValue<string | null>(ucsNameState);
   const setIsOpenedNewUCSDialog = useSetRecoilState<boolean>(
     isOpenedNewUCSDialogState
   );
@@ -75,7 +74,7 @@ function MenuDrawerUCSList() {
       </ListItem>
       <ListItem disablePadding sx={{ display: "block" }}>
         <ListItemButton
-          disabled={blocks.length === 0 || isPlaying || isUploadingUCS}
+          disabled={ucsName === null || isPlaying || isUploadingUCS}
           onClick={() => alert("TODO")}
           sx={generateListItemButtonStyle(isOpenedMenuDrawer)}
         >

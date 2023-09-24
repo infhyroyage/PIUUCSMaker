@@ -1,19 +1,18 @@
 import { useEffect } from "react";
-import { Block } from "../types/chart";
 import ReadyUCS from "./ReadyUCS";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import {
-  blocksState,
   menuBarHeightState,
   noteSizeState,
+  ucsNameState,
 } from "../service/atoms";
 import Chart from "./Chart";
 import RectangleIdentifiers from "./RectangleIdentifiers";
 import BlockController from "./BlockController";
 
 function WorkSpace() {
-  const blocks = useRecoilValue<Block[]>(blocksState);
   const menuBarHeight = useRecoilValue<number>(menuBarHeightState);
+  const ucsName = useRecoilValue<string | null>(ucsNameState);
   const setNoteSize = useSetRecoilState<number>(noteSizeState);
 
   // ウィンドウサイズを監視し、正方形である単ノートの1辺のサイズ(noteSize)を以下で計算
@@ -36,7 +35,7 @@ function WorkSpace() {
     return () => window.removeEventListener("resize", handleWindowResize);
   }, []);
 
-  return blocks.length === 0 ? (
+  return ucsName === null ? (
     <ReadyUCS />
   ) : (
     <div

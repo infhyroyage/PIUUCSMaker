@@ -1,4 +1,3 @@
-import MenuIcon from "@mui/icons-material/Menu";
 import { ZOOM_VALUES } from "../service/zoom";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
@@ -11,7 +10,6 @@ import {
   ucsNameState,
   columnsState,
   isPerformanceState,
-  blocksState,
 } from "../service/atoms";
 import {
   AppBar,
@@ -34,7 +32,7 @@ import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import VolumeMuteIcon from "@mui/icons-material/VolumeMute";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import { Block, Zoom } from "../types/chart";
+import { Zoom } from "../types/chart";
 
 function MenuBar() {
   const [muteVolBuf, setMuteVolBuf] = useState<number | null>(null);
@@ -47,7 +45,6 @@ function MenuBar() {
   const [volumeValue, setVolumeValue] =
     useRecoilState<number>(volumeValueState);
   const [zoom, setZoom] = useRecoilState<Zoom>(zoomState);
-  const blocks = useRecoilValue<Block[]>(blocksState);
   const columns = useRecoilValue<5 | 10>(columnsState);
   const isPerformance = useRecoilValue<boolean>(isPerformanceState);
   const mp3Name = useRecoilValue<string | null>(mp3NameState);
@@ -98,7 +95,7 @@ function MenuBar() {
           <Typography variant="h6" noWrap component="div">
             {ucsName || "PIU UCS Maker"}
           </Typography>
-          {blocks.length > 0 && (
+          {ucsName !== null && (
             <Typography variant="caption" noWrap component="div">
               {`${columns === 5 ? "Single" : "Double"} ${
                 isPerformance ? "Performance" : ""

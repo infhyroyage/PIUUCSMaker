@@ -12,24 +12,23 @@ import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import StopIcon from "@mui/icons-material/Stop";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
-  blocksState,
   isMuteBeatsState,
   isOpenedMenuDrawerState,
   isPlayingState,
+  ucsNameState,
 } from "../service/atoms";
 import usePlayingMusic from "../hooks/usePlayingMusic";
 import {
   generateListItemButtonStyle,
   generateListItemIconStyle,
 } from "../service/styles";
-import { Block } from "../types/chart";
 
 function MenuDrawerPlayingList() {
-  const blocks = useRecoilValue<Block[]>(blocksState);
   const [isMuteBeats, setIsMuteBeats] =
     useRecoilState<boolean>(isMuteBeatsState);
   const isOpenedMenuDrawer = useRecoilValue<boolean>(isOpenedMenuDrawerState);
   const isPlaying = useRecoilValue<boolean>(isPlayingState);
+  const ucsName = useRecoilValue<string | null>(ucsNameState);
 
   const { isUploadingMP3, start, stop, uploadMP3 } = usePlayingMusic();
 
@@ -78,7 +77,7 @@ function MenuDrawerPlayingList() {
       </ListItem>
       <ListItem disablePadding sx={{ display: "block" }}>
         <ListItemButton
-          disabled={blocks.length === 0 || isUploadingMP3}
+          disabled={ucsName === null || isUploadingMP3}
           onClick={() => (isPlaying ? stop() : start())}
           sx={generateListItemButtonStyle(isOpenedMenuDrawer)}
         >
