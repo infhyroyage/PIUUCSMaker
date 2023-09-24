@@ -8,25 +8,22 @@ import {
   Card,
   CardActionArea,
   CardContent,
-  PopoverPosition,
   Stack,
   Typography,
 } from "@mui/material";
 import BorderLine from "../BorderLine";
 import { BlockControllerButtonProps } from "../../types/props";
-import BlockControllerMenu from "./BlockControllerMenu";
+import { MenuPosition } from "../../types/controller";
 
 function BlockControllerButton({
   blockHeight,
   blockIdx,
-  isDisabledDelete,
   isLastBlock,
-  handler,
   textFirst,
   textSecond,
 }: BlockControllerButtonProps) {
   const noteSize = useRecoilValue<number>(noteSizeState);
-  const setPosition = useSetRecoilState<PopoverPosition | undefined>(
+  const setMenuPosition = useSetRecoilState<MenuPosition>(
     blockControllerMenuPositionState
   );
 
@@ -41,12 +38,12 @@ function BlockControllerButton({
   const onClickCardActionArea = useCallback(
     (event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => {
       event.preventDefault();
-      setPosition({
-        top: event.clientY,
-        left: event.clientX,
+      setMenuPosition({
+        blockIdx,
+        position: { top: event.clientY, left: event.clientX },
       });
     },
-    [setPosition]
+    [setMenuPosition]
   );
 
   return (
@@ -66,11 +63,6 @@ function BlockControllerButton({
           </CardContent>
         </CardActionArea>
       </Card>
-      <BlockControllerMenu
-        blockIdx={blockIdx}
-        isDisabledDelete={isDisabledDelete}
-        handler={handler}
-      />
       {/* 譜面のブロックごとに分割する枠線 */}
       {!isLastBlock && <BorderLine width="100%" height={borderSize} />}
     </>

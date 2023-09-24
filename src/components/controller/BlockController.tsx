@@ -11,6 +11,7 @@ import BlockControllerButton from "./BlockControllerButton";
 import { ZOOM_VALUES } from "../../service/zoom";
 import { EditBlockDialogForm } from "../../types/form";
 import { useCallback } from "react";
+import BlockControllerMenu from "./BlockControllerMenu";
 
 function BlockController() {
   const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
@@ -99,19 +100,21 @@ function BlockController() {
             block.split
           }
           blockIdx={blockIdx}
-          isDisabledDelete={blocks.length < 2}
           isLastBlock={blockIdx === blocks.length - 1}
-          handler={{
-            add: handleAdd,
-            delete: handleDelete,
-            edit: handleEdit,
-            mergeAbove: handleMergeAbove,
-            mergeBelow: handleMergeBelow,
-          }}
           textFirst={`${block.bpm}BPM, 1/${block.split}`}
           textSecond={`Delay: ${block.delay}(ms)`}
         />
       ))}
+      <BlockControllerMenu
+        isDisabledDelete={blocks.length < 2}
+        handler={{
+          add: handleAdd,
+          delete: handleDelete,
+          edit: handleEdit,
+          mergeAbove: handleMergeAbove,
+          mergeBelow: handleMergeBelow,
+        }}
+      />
     </div>
   );
 }

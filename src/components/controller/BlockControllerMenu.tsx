@@ -1,39 +1,38 @@
 import { memo, useCallback } from "react";
-import {
-  Divider,
-  Menu,
-  MenuItem,
-  MenuList,
-  PopoverPosition,
-} from "@mui/material";
+import { Divider, Menu, MenuItem, MenuList } from "@mui/material";
 import { useRecoilState } from "recoil";
 import { blockControllerMenuPositionState } from "../../service/atoms";
 import { BlockControllerMenuProps } from "../../types/props";
+import { MenuPosition } from "../../types/controller";
 
 function BlockControllerMenu({
-  blockIdx,
   isDisabledDelete,
   handler,
 }: BlockControllerMenuProps) {
-  const [position, setPosition] = useRecoilState<PopoverPosition | undefined>(
+  const [menuPosition, setMenuPosition] = useRecoilState<MenuPosition>(
     blockControllerMenuPositionState
   );
 
-  const onCloseMenu = useCallback(() => setPosition(undefined), [setPosition]);
+  const onCloseMenu = useCallback(
+    () => setMenuPosition(undefined),
+    [setMenuPosition]
+  );
 
   return (
     <Menu
-      anchorReference={position && "anchorPosition"}
-      anchorPosition={position}
+      anchorReference={menuPosition && "anchorPosition"}
+      anchorPosition={menuPosition && menuPosition.position}
       disableRestoreFocus
       onClose={onCloseMenu}
-      open={!!position}
+      open={!!menuPosition}
     >
       <MenuList>
         <MenuItem
           onClick={() => {
-            handler.edit(blockIdx);
-            setPosition(undefined);
+            if (menuPosition) {
+              handler.edit(menuPosition.blockIdx);
+              setMenuPosition(undefined);
+            }
           }}
         >
           Edit
@@ -45,27 +44,33 @@ function BlockControllerMenu({
       <MenuList>
         <MenuItem
           onClick={() => {
-            handler.add(blockIdx);
-            setPosition(undefined);
+            if (menuPosition) {
+              handler.add(menuPosition.blockIdx);
+              setMenuPosition(undefined);
+            }
           }}
         >
           Add at Bottom
         </MenuItem>
         <MenuItem onClick={() => alert("TODO")}>Insert into Next</MenuItem>
         <MenuItem
-          disabled={blockIdx === 0}
+          disabled={menuPosition && menuPosition.blockIdx === 0}
           onClick={() => {
-            handler.mergeAbove(blockIdx);
-            setPosition(undefined);
+            if (menuPosition) {
+              handler.mergeAbove(menuPosition.blockIdx);
+              setMenuPosition(undefined);
+            }
           }}
         >
           Merge with Above
         </MenuItem>
         <MenuItem
-          disabled={blockIdx === 0}
+          disabled={menuPosition && menuPosition.blockIdx === 0}
           onClick={() => {
-            handler.mergeBelow(blockIdx);
-            setPosition(undefined);
+            if (menuPosition) {
+              handler.mergeBelow(menuPosition.blockIdx);
+              setMenuPosition(undefined);
+            }
           }}
         >
           Merge with Below
@@ -73,8 +78,10 @@ function BlockControllerMenu({
         <MenuItem
           disabled={isDisabledDelete}
           onClick={() => {
-            handler.delete(blockIdx);
-            setPosition(undefined);
+            if (menuPosition) {
+              handler.delete(menuPosition.blockIdx);
+              setMenuPosition(undefined);
+            }
           }}
         >
           Delete

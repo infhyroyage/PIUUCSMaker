@@ -50,19 +50,9 @@ export type BlockControllerButtonProps = {
   blockIdx: number;
 
   /**
-   * 譜面のブロックが1個しか存在しない場合はtrue、2個以上の場合はfalse
-   */
-  isDisabledDelete: boolean;
-
-  /**
    * 全譜面のブロックのうち自身が最後の場合はtrue、そうでない場合はfalse
    */
   isLastBlock: boolean;
-
-  /**
-   * メニュー選択時の動作
-   */
-  handler: BlockControllerMenuHandler;
 
   /**
    * ボタンのテキスト(1段落目)
@@ -76,11 +66,6 @@ export type BlockControllerButtonProps = {
 };
 
 export type BlockControllerMenuProps = {
-  /**
-   * 譜面のブロックのインデックス
-   */
-  blockIdx: number;
-
   /**
    * 譜面のブロックが1個しか存在しない場合はtrue、2個以上の場合はfalse
    */

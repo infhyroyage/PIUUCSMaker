@@ -5,10 +5,9 @@ import { MouseDown } from "../types/chart";
 import { Indicator } from "../types/chart";
 import { EditBlockDialogForm } from "../types/form";
 import { PopoverPosition } from "@mui/material";
+import { MenuPosition } from "../types/controller";
 
-export const blockControllerMenuPositionState = atom<
-  PopoverPosition | undefined
->({
+export const blockControllerMenuPositionState = atom<MenuPosition>({
   key: "blockControllerMenuPosition",
   default: undefined,
 });
