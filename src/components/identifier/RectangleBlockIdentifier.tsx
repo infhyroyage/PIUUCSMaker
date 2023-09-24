@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { memo, useMemo } from "react";
 import { RectangleBlockIdentifierProps } from "../../types/props";
 import { useRecoilValue } from "recoil";
 import { Zoom } from "../../types/chart";
@@ -79,4 +79,4 @@ function RectangleBlockIdentifier({
   );
 }
 
-export default RectangleBlockIdentifier;
+export default memo(RectangleBlockIdentifier);
