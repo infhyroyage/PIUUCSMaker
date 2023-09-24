@@ -24,11 +24,32 @@ function BlockController() {
 
   const handleAdd = useCallback(
     (blockIdx: number) => {
+      // 押下した譜面のブロックのコピーを末尾に追加
       const updatedBlocks: Block[] = [...blocks];
       updatedBlocks.push(blocks[blockIdx]);
       setBlocks(updatedBlocks);
     },
-    [blocks]
+    [blocks, setBlocks]
+  );
+
+  const handleInsert = useCallback(
+    (blockIdx: number) => {
+      const block: Block = blocks[blockIdx];
+      // 押下した譜面のブロックのコピーを(blockIdx + 1)番目に挿入
+      setBlocks(blocks.splice(blockIdx + 1, 0, block));
+
+      // 挿入した譜面のブロックの行数分、単ノート/ホールドの始点/ホールドの中間/ホールドの終点を移動
+      setNotes(
+        notes.map((ns: Note[]) =>
+          ns.map((note: Note) =>
+            note.idx >= block.accumulatedLength + block.length
+              ? { idx: note.idx + block.length, type: note.type }
+              : note
+          )
+        )
+      );
+    },
+    [blocks, notes, setBlocks, setNotes]
   );
 
   const handleEdit = useCallback(
@@ -41,7 +62,7 @@ function BlockController() {
         open: true,
         split: `${blocks[blockIdx].split}`,
       }),
-    [blocks]
+    [blocks, setEditBlockDialogForm]
   );
 
   const handleDelete = useCallback(
@@ -74,7 +95,7 @@ function BlockController() {
       // 1つ前の譜面のブロックの削除
       setBlocks(updatedBlocks.filter((_, idx: number) => idx !== blockIdx - 1));
     },
-    [blocks]
+    [blocks, setBlocks]
   );
 
   const handleMergeBelow = useCallback(
@@ -87,7 +108,7 @@ function BlockController() {
       // 1つ後の譜面のブロックの削除
       setBlocks(updatedBlocks.filter((_, idx: number) => idx !== blockIdx + 1));
     },
-    [blocks]
+    [blocks, setBlocks]
   );
 
   return (
@@ -109,6 +130,7 @@ function BlockController() {
         isDisabledDelete={blocks.length < 2}
         handler={{
           add: handleAdd,
+          insert: handleInsert,
           delete: handleDelete,
           edit: handleEdit,
           mergeAbove: handleMergeAbove,

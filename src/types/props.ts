@@ -24,6 +24,13 @@ type BlockControllerMenuHandler = {
   edit: (blockIdx: number) => void;
 
   /**
+   * 「Insert into Next」選択時の動作
+   * @param {number} blockIdx 譜面のブロックのインデックス
+   * @returns
+   */
+  insert: (blockIdx: number) => void;
+
+  /**
    * 「Merge with Above」選択時の動作
    * @param {number} blockIdx 譜面のブロックのインデックス
    * @returns

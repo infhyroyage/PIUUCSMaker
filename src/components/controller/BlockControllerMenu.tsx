@@ -52,7 +52,16 @@ function BlockControllerMenu({
         >
           Add at Bottom
         </MenuItem>
-        <MenuItem onClick={() => alert("TODO")}>Insert into Next</MenuItem>
+        <MenuItem
+          onClick={() => {
+            if (menuPosition) {
+              handler.insert(menuPosition.blockIdx);
+              setMenuPosition(undefined);
+            }
+          }}
+        >
+          Insert into Next
+        </MenuItem>
         <MenuItem
           disabled={menuPosition && menuPosition.blockIdx === 0}
           onClick={() => {
