@@ -214,3 +214,30 @@ export type ChartVerticalNoteImagesProps = {
    */
   type: "X" | "M" | "H" | "W";
 };
+
+export type RectangleBlockIdentifierProps = {
+  /**
+   * 譜面のブロックのBeat値
+   */
+  beat: number;
+
+  /**
+   * 譜面のブロックのインデックス
+   */
+  blockIdx: number;
+
+  /**
+   * 全譜面のブロックのうち自身が最後の場合はtrue、そうでない場合はfalse
+   */
+  isLastBlock: boolean;
+
+  /**
+   * 譜面のブロックの行数
+   */
+  length: number;
+
+  /**
+   * 譜面のブロックのSplit値
+   */
+  split: number;
+};

@@ -7,7 +7,7 @@ import {
   ucsNameState,
 } from "../service/atoms";
 import Chart from "./Chart";
-import RectangleIdentifiers from "./RectangleIdentifiers";
+import RectangleIdentifier from "./RectangleIdentifier";
 import BlockController from "./BlockController";
 
 function WorkSpace() {
@@ -50,7 +50,7 @@ function WorkSpace() {
       }}
     >
       <div style={{ display: "flex" }}>
-        <RectangleIdentifiers />
+        <RectangleIdentifier />
         <Chart />
         <BlockController />
       </div>
