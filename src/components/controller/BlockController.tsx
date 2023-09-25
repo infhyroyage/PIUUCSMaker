@@ -86,28 +86,31 @@ function BlockController() {
   );
 
   const handleMergeAbove = useCallback(
-    (blockIdx: number) => {
+    (blockIdx: number) =>
       // 1つ前の譜面のブロックの行数を吸収
-      const updatedBlocks: Block[] = [...blocks];
-      updatedBlocks[blockIdx].length += blocks[blockIdx - 1].length;
-      updatedBlocks[blockIdx].accumulatedLength -= blocks[blockIdx - 1].length;
-
-      // 1つ前の譜面のブロックの削除
-      setBlocks(updatedBlocks.filter((_, idx: number) => idx !== blockIdx - 1));
-    },
+      setBlocks([
+        ...blocks.slice(0, blockIdx - 1),
+        {
+          ...blocks[blockIdx],
+          accumulatedLength: blocks[blockIdx - 1].accumulatedLength,
+          length: blocks[blockIdx - 1].length + blocks[blockIdx].length,
+        },
+        ...blocks.slice(blockIdx + 1),
+      ]),
     [blocks, setBlocks]
   );
 
   const handleMergeBelow = useCallback(
-    (blockIdx: number) => {
+    (blockIdx: number) =>
       // 1つ後の譜面のブロックの行数を吸収
-      const updatedBlocks: Block[] = [...blocks];
-      updatedBlocks[blockIdx].length += blocks[blockIdx + 1].length;
-      updatedBlocks[blockIdx].accumulatedLength -= blocks[blockIdx + 1].length;
-
-      // 1つ後の譜面のブロックの削除
-      setBlocks(updatedBlocks.filter((_, idx: number) => idx !== blockIdx + 1));
-    },
+      setBlocks([
+        ...blocks.slice(0, blockIdx),
+        {
+          ...blocks[blockIdx],
+          length: blocks[blockIdx].length + blocks[blockIdx + 1].length,
+        },
+        ...blocks.slice(blockIdx + 2),
+      ]),
     [blocks, setBlocks]
   );
 
@@ -127,7 +130,7 @@ function BlockController() {
         />
       ))}
       <BlockControllerMenu
-        isDisabledDelete={blocks.length < 2}
+        blockNum={blocks.length}
         handler={{
           add: handleAdd,
           insert: handleInsert,

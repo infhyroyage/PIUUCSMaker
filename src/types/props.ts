@@ -74,9 +74,9 @@ type BlockControllerMenuHandler = {
 
 export type BlockControllerMenuProps = {
   /**
-   * 譜面のブロックが1個しか存在しない場合はtrue、2個以上の場合はfalse
+   * 譜面のブロックの個数
    */
-  isDisabledDelete: boolean;
+  blockNum: number;
 
   /**
    * メニュー選択時の動作

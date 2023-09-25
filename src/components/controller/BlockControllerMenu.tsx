@@ -5,10 +5,7 @@ import { blockControllerMenuPositionState } from "../../service/atoms";
 import { BlockControllerMenuProps } from "../../types/props";
 import { MenuPosition } from "../../types/controller";
 
-function BlockControllerMenu({
-  isDisabledDelete,
-  handler,
-}: BlockControllerMenuProps) {
+function BlockControllerMenu({ blockNum, handler }: BlockControllerMenuProps) {
   const [menuPosition, setMenuPosition] = useRecoilState<MenuPosition>(
     blockControllerMenuPositionState
   );
@@ -72,7 +69,7 @@ function BlockControllerMenu({
           Merge with Above
         </MenuItem>
         <MenuItem
-          disabled={menuPosition && menuPosition.blockIdx === 0}
+          disabled={menuPosition && menuPosition.blockIdx === blockNum - 1}
           onClick={() => {
             if (menuPosition) {
               handler.mergeBelow(menuPosition.blockIdx);
@@ -83,7 +80,7 @@ function BlockControllerMenu({
           Merge with Below
         </MenuItem>
         <MenuItem
-          disabled={isDisabledDelete}
+          disabled={blockNum < 2}
           onClick={() => {
             if (menuPosition) {
               handler.delete(menuPosition.blockIdx);
