@@ -23,12 +23,17 @@ function BlockController() {
   );
 
   const handleAdd = useCallback(
-    (blockIdx: number) => {
+    (blockIdx: number) =>
       // 押下した譜面のブロックのコピーを末尾に追加
-      const updatedBlocks: Block[] = [...blocks];
-      updatedBlocks.push(blocks[blockIdx]);
-      setBlocks(updatedBlocks);
-    },
+      setBlocks([
+        ...blocks,
+        {
+          ...blocks[blockIdx],
+          accumulatedLength:
+            blocks[blocks.length - 1].accumulatedLength +
+            blocks[blocks.length - 1].length,
+        },
+      ]),
     [blocks, setBlocks]
   );
 
