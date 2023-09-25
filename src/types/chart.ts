@@ -97,6 +97,44 @@ export type Note = {
 };
 
 /**
+ * 選択領域のパラメーター
+ * 選択領域非表示の場合はnull
+ */
+export type Selector = null | {
+  /**
+   * 選択領域の縦方向における終点の列インデックス
+   * Single/SinglePerformance譜面の場合は0〜4、Double/DoublePerformance譜面の場合は0〜9
+   */
+  goalColumn: number;
+
+  /**
+   * 選択領域の縦方向における終点の譜面全体での行インデックス
+   */
+  goalRowIdx: number;
+
+  /**
+   * 選択領域の終点のtop値
+   */
+  goalTop: number;
+
+  /**
+   * 選択領域の縦方向における始点の列インデックス
+   * Single/SinglePerformance譜面の場合は0〜4、Double/DoublePerformance譜面の場合は0〜9
+   */
+  startColumn: number;
+
+  /**
+   * 選択領域の縦方向における始点の譜面全体での行インデックス
+   */
+  startRowIdx: number;
+
+  /**
+   * 選択領域の始点のtop値
+   */
+  startTop: number;
+};
+
+/**
  * 拡大/縮小時のパラメーター
  */
 export type Zoom = {

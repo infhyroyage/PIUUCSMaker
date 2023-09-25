@@ -1,5 +1,5 @@
 import { atom } from "recoil";
-import { Block, Note } from "../types/chart";
+import { Block, Note, Selector } from "../types/chart";
 import { Zoom } from "../types/chart";
 import { MouseDown } from "../types/chart";
 import { Indicator } from "../types/chart";
@@ -134,6 +134,19 @@ export const notesState = atom<Note[][]>({
 export const noteSizeState = atom<number>({
   key: "noteSize",
   default: 0,
+});
+
+/**
+ * RectangleIdentifierの横の長さ(px単位)
+ */
+export const rectangleIdentifierWidthState = atom<number>({
+  key: "rectangleIdentifierWidth",
+  default: 0,
+});
+
+export const selectorState = atom<Selector>({
+  key: "selector",
+  default: null,
 });
 
 export const successMessageState = atom<string>({

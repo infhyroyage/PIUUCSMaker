@@ -16,6 +16,7 @@ import ChartVertical from "./ChartVertical";
 import { Block, Indicator, MouseDown, Note, Zoom } from "../../types/chart";
 import { ZOOM_VALUES } from "../../service/zoom";
 import { PopoverPosition } from "@mui/material";
+import ChartSelector from "./ChartSelector";
 
 function Chart() {
   const [indicators, setIndicators] =
@@ -257,33 +258,38 @@ function Chart() {
     ]
   );
 
-  return [...Array(columns)].map((_, column: number) => (
-    <React.Fragment key={column}>
-      {column === 0 && <BorderLine width={borderSize} height="100%" />}
-      <span
-        style={{
-          width: noteSize,
-          display: "flex",
-          flexDirection: "column",
-        }}
-        onMouseMove={(event: React.MouseEvent<HTMLSpanElement, MouseEvent>) =>
-          handleMouseMove(event, column)
-        }
-        onMouseLeave={() => handleMouseLeave()}
-        onMouseDown={() => handleMouseDown(column)}
-        onMouseUp={() => handleMouseUp(column)}
-      >
-        <ChartVertical
-          blockYDists={blockYDists}
-          column={column}
-          indicator={indicators[column]}
-          mouseDown={mouseDowns[column]}
-          notes={notes[column]}
-        />
-      </span>
-      <BorderLine width={borderSize} height="100%" />
-    </React.Fragment>
-  ));
+  return (
+    <>
+      {[...Array(columns)].map((_, column: number) => (
+        <React.Fragment key={column}>
+          {column === 0 && <BorderLine width={borderSize} height="100%" />}
+          <span
+            style={{
+              width: noteSize,
+              display: "flex",
+              flexDirection: "column",
+            }}
+            onMouseMove={(
+              event: React.MouseEvent<HTMLSpanElement, MouseEvent>
+            ) => handleMouseMove(event, column)}
+            onMouseLeave={() => handleMouseLeave()}
+            onMouseDown={() => handleMouseDown(column)}
+            onMouseUp={() => handleMouseUp(column)}
+          >
+            <ChartVertical
+              blockYDists={blockYDists}
+              column={column}
+              indicator={indicators[column]}
+              mouseDown={mouseDowns[column]}
+              notes={notes[column]}
+            />
+          </span>
+          <BorderLine width={borderSize} height="100%" />
+        </React.Fragment>
+      ))}
+      <ChartSelector />
+    </>
+  );
 }
 
 export default Chart;
