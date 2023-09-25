@@ -34,16 +34,30 @@ function BlockController() {
 
   const handleInsert = useCallback(
     (blockIdx: number) => {
-      const block: Block = blocks[blockIdx];
-      // 押下した譜面のブロックのコピーを(blockIdx + 1)番目に挿入
-      setBlocks(blocks.splice(blockIdx + 1, 0, block));
+      // 押下したblockIdx番目の譜面のブロックのコピーを(blockIdx + 1)番目に挿入
+      setBlocks([
+        ...blocks.slice(0, blockIdx + 1),
+        {
+          ...blocks[blockIdx],
+          accumulatedLength:
+            blocks[blockIdx].accumulatedLength + blocks[blockIdx].length,
+        },
+        ...blocks.slice(blockIdx + 1).map((block: Block) => {
+          return {
+            ...block,
+            accumulatedLength:
+              block.accumulatedLength + blocks[blockIdx].length,
+          };
+        }),
+      ]);
 
       // 挿入した譜面のブロックの行数分、単ノート/ホールドの始点/ホールドの中間/ホールドの終点を移動
       setNotes(
         notes.map((ns: Note[]) =>
           ns.map((note: Note) =>
-            note.idx >= block.accumulatedLength + block.length
-              ? { idx: note.idx + block.length, type: note.type }
+            note.idx >=
+            blocks[blockIdx].accumulatedLength + blocks[blockIdx].length
+              ? { idx: note.idx + blocks[blockIdx].length, type: note.type }
               : note
           )
         )
