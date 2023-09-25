@@ -78,7 +78,6 @@ function ChartIndicator({
         <span
           onContextMenu={handleRightClick}
           style={{
-            display: "block",
             position: "absolute",
             top: indicator.top,
             width: noteSize,

@@ -49,7 +49,7 @@ function WorkSpace() {
         userSelect: "none",
       }}
     >
-      <div style={{ display: "flex" }}>
+      <div style={{ display: "flex", position: "relative" }}>
         <RectangleIdentifier />
         <Chart />
         <BlockController />

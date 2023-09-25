@@ -1,12 +1,11 @@
 import React, { useCallback, useMemo } from "react";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import {
   blocksState,
   chartIndicatorMenuPositionState,
   columnsState,
   indicatorsState,
   isPlayingState,
-  menuBarHeightState,
   mouseDownsState,
   noteSizeState,
   notesState,
@@ -30,7 +29,6 @@ function Chart() {
   );
   const columns = useRecoilValue<5 | 10>(columnsState);
   const isPlaying = useRecoilValue<boolean>(isPlayingState);
-  const menuBarHeight = useRecoilValue<number>(menuBarHeightState);
   const noteSize = useRecoilValue<number>(noteSizeState);
   const zoom = useRecoilValue<Zoom>(zoomState);
 
@@ -81,11 +79,10 @@ function Chart() {
         // 譜面のブロックの高さ(px単位)
         const blockHeight: number = unitRowHeight * blocks[blockIdx].length;
         if (y < blockYDists[blockIdx] + blockHeight) {
-          const top: number =
-            y - ((y - blockYDists[blockIdx]) % unitRowHeight) + menuBarHeight;
+          const top: number = y - ((y - blockYDists[blockIdx]) % unitRowHeight);
           const rowIdx: number =
             blocks[blockIdx].accumulatedLength +
-            (top - menuBarHeight - blockYDists[blockIdx]) / unitRowHeight;
+            (top - blockYDists[blockIdx]) / unitRowHeight;
           updatedIndicator = {
             blockAccumulatedLength: blocks[blockIdx].accumulatedLength,
             blockIdx,
@@ -117,7 +114,6 @@ function Chart() {
       blocks,
       indicators,
       isPlaying,
-      menuBarHeight,
       noteSize,
       position,
       zoom.idx,

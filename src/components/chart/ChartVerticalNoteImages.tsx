@@ -2,11 +2,7 @@ import { memo, useMemo } from "react";
 import { IMAGE_BINARIES } from "../../service/assets";
 import { ChartVerticalNoteImagesProps } from "../../types/props";
 import { useRecoilValue } from "recoil";
-import {
-  menuBarHeightState,
-  noteSizeState,
-  zoomState,
-} from "../../service/atoms";
+import { noteSizeState, zoomState } from "../../service/atoms";
 import { ZOOM_VALUES } from "../../service/zoom";
 import { Zoom } from "../../types/chart";
 
@@ -18,7 +14,6 @@ function ChartVerticalNoteImages({
   split,
   type,
 }: ChartVerticalNoteImagesProps) {
-  const menuBarHeight = useRecoilValue<number>(menuBarHeightState);
   const noteSize = useRecoilValue<number>(noteSizeState);
   const zoom = useRecoilValue<Zoom>(zoomState);
 
@@ -32,9 +27,8 @@ function ChartVerticalNoteImages({
   // 単ノート/ホールドの始点/ホールドの中間/ホールドの終点の譜面全体での行インデックスでの
   // ブラウザの画面のy座標(px単位)を計算
   const top = useMemo(
-    () =>
-      menuBarHeight + blockYDist + unitRowHeight * (idx - accumulatedLength),
-    [accumulatedLength, blockYDist, idx, menuBarHeight, unitRowHeight]
+    () => blockYDist + unitRowHeight * (idx - accumulatedLength),
+    [accumulatedLength, blockYDist, idx, unitRowHeight]
   );
 
   switch (type) {
