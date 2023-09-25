@@ -1,6 +1,33 @@
 import { MouseDown, Note } from "./chart";
 import { Indicator } from "./chart";
 
+export type BlockControllerButtonProps = {
+  /**
+   * 譜面のブロックの高さ(px単位)
+   */
+  blockHeight: number;
+
+  /**
+   * 譜面のブロックのインデックス
+   */
+  blockIdx: number;
+
+  /**
+   * 全譜面のブロックのうち自身が最後の場合はtrue、そうでない場合はfalse
+   */
+  isLastBlock: boolean;
+
+  /**
+   * ボタンのテキスト(1段落目)
+   */
+  textFirst: string;
+
+  /**
+   * ボタンのテキスト(2段落目)
+   */
+  textSecond: string;
+};
+
 type BlockControllerMenuHandler = {
   /**
    * 「Add at Bottom」選択時の動作
@@ -45,33 +72,6 @@ type BlockControllerMenuHandler = {
   mergeBelow: (blockIdx: number) => void;
 };
 
-export type BlockControllerButtonProps = {
-  /**
-   * 譜面のブロックの高さ(px単位)
-   */
-  blockHeight: number;
-
-  /**
-   * 譜面のブロックのインデックス
-   */
-  blockIdx: number;
-
-  /**
-   * 全譜面のブロックのうち自身が最後の場合はtrue、そうでない場合はfalse
-   */
-  isLastBlock: boolean;
-
-  /**
-   * ボタンのテキスト(1段落目)
-   */
-  textFirst: string;
-
-  /**
-   * ボタンのテキスト(2段落目)
-   */
-  textSecond: string;
-};
-
 export type BlockControllerMenuProps = {
   /**
    * 譜面のブロックが1個しか存在しない場合はtrue、2個以上の場合はfalse
@@ -96,6 +96,15 @@ export type BorderLineProps = {
   width: number | string;
 };
 
+type ChartIndicatorMenuHandler = {
+  /**
+   * Split Block」選択時の動作
+   * @param {Indicator} indicator インディケーターの表示パラメーター(インディケーター非表示の場合はnull)
+   * @returns
+   */
+  split: (indicator: Indicator) => void;
+};
+
 /**
  * ChartIndicatorのprops
  */
@@ -105,6 +114,11 @@ export type ChartIndicatorProps = {
    * Single/SinglePerformance譜面の場合は0〜4、Double/DoublePerformance譜面の場合は0〜9
    */
   column: number;
+
+  /**
+   * メニュー選択時の動作
+   */
+  handler: ChartIndicatorMenuHandler;
 
   /**
    * インディケーターの表示パラメーター
@@ -117,6 +131,22 @@ export type ChartIndicatorProps = {
    * マウス押下していない場合はnull
    */
   mouseDown: MouseDown;
+};
+
+/**
+ * ChartIndicatorMenuのprops
+ */
+export type ChartIndicatorMenuProps = {
+  /**
+   * メニュー選択時の動作
+   */
+  handler: ChartIndicatorMenuHandler;
+
+  /**
+   * 列インデックスcolumnにおける、インディケーターの表示パラメーター
+   * インディケーター非表示の場合はnull
+   */
+  indicator: Indicator;
 };
 
 /**

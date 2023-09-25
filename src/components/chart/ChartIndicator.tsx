@@ -9,7 +9,12 @@ import {
 } from "../../service/atoms";
 import ChartIndicatorMenu from "./ChartIndicatorMenu";
 
-function ChartIndicator({ column, indicator, mouseDown }: ChartIndicatorProps) {
+function ChartIndicator({
+  column,
+  handler,
+  indicator,
+  mouseDown,
+}: ChartIndicatorProps) {
   const noteSize = useRecoilValue<number>(noteSizeState);
   const setPosition = useSetRecoilState<PopoverPosition | undefined>(
     chartIndicatorMenuPositionState
@@ -82,7 +87,7 @@ function ChartIndicator({ column, indicator, mouseDown }: ChartIndicatorProps) {
             zIndex: theme.zIndex.drawer - 1,
           }}
         />
-        <ChartIndicatorMenu />
+        <ChartIndicatorMenu handler={handler} indicator={indicator} />
       </>
     )
   );

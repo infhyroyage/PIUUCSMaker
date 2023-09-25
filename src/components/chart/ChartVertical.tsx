@@ -1,7 +1,7 @@
-import { memo } from "react";
+import { memo, useCallback } from "react";
 import { ChartVerticalProps } from "../../types/props";
-import { Block, Note } from "../../types/chart";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { Block, Indicator, Note } from "../../types/chart";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import {
   blocksState,
   isShownSystemErrorSnackbarState,
@@ -17,9 +17,35 @@ function ChartVertical({
   mouseDown,
   notes,
 }: ChartVerticalProps) {
-  const blocks = useRecoilValue<Block[]>(blocksState);
+  const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
   const setIsShownSystemErrorSnackbar = useSetRecoilState<boolean>(
     isShownSystemErrorSnackbarState
+  );
+
+  const handleSplit = useCallback(
+    (indicator: Indicator) => {
+      // インディケーターが非表示の場合はNOP
+      if (indicator === null) return;
+
+      // blockIdx番目の譜面のブロックを、(rowIdx- 1)番目以前とrowIdx番目とで分割
+      setBlocks([
+        ...blocks.slice(0, indicator.blockIdx),
+        {
+          ...blocks[indicator.blockIdx],
+          length: indicator.rowIdx - indicator.blockAccumulatedLength,
+        },
+        {
+          ...blocks[indicator.blockIdx],
+          accumulatedLength: indicator.rowIdx,
+          length:
+            blocks[indicator.blockIdx].length +
+            indicator.blockAccumulatedLength -
+            indicator.rowIdx,
+        },
+        ...blocks.slice(indicator.blockIdx + 1),
+      ]);
+    },
+    [blocks, setBlocks]
   );
 
   return (
@@ -59,6 +85,9 @@ function ChartVertical({
       })}
       <ChartIndicator
         column={column}
+        handler={{
+          split: handleSplit,
+        }}
         indicator={indicator}
         mouseDown={mouseDown}
       />

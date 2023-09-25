@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { memo, useCallback } from "react";
 import {
   Divider,
   Menu,
@@ -8,8 +8,9 @@ import {
 } from "@mui/material";
 import { useRecoilState } from "recoil";
 import { chartIndicatorMenuPositionState } from "../../service/atoms";
+import { ChartIndicatorMenuProps } from "../../types/props";
 
-function ChartIndicatorMenu() {
+function ChartIndicatorMenu({ handler, indicator }: ChartIndicatorMenuProps) {
   const [position, setPosition] = useRecoilState<PopoverPosition | undefined>(
     chartIndicatorMenuPositionState
   );
@@ -33,10 +34,21 @@ function ChartIndicatorMenu() {
         <MenuItem onClick={() => alert("TODO")}>Flip Vertical</MenuItem>
         <MenuItem onClick={() => alert("TODO")}>Mirror</MenuItem>
         <Divider />
-        <MenuItem onClick={() => alert("TODO")}>Split Block</MenuItem>
+        <MenuItem
+          disabled={
+            indicator !== null &&
+            indicator.rowIdx === indicator.blockAccumulatedLength
+          }
+          onClick={() => {
+            handler.split(indicator);
+            setPosition(undefined);
+          }}
+        >
+          Split Block
+        </MenuItem>
       </MenuList>
     </Menu>
   );
 }
 
-export default ChartIndicatorMenu;
+export default memo(ChartIndicatorMenu);

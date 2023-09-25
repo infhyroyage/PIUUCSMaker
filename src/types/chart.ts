@@ -3,6 +3,18 @@
  */
 export type Block = {
   /**
+   * 以前までの譜面のブロックの行数の総和
+   * 0番目の譜面のブロックの場合は0
+   */
+  accumulatedLength: number;
+
+  /**
+   * Beat値
+   * 1〜64が有効範囲
+   */
+  beat: number;
+
+  /**
    * BPM値
    * 有効数字7桁までの0.1〜999が有効範囲
    */
@@ -16,27 +28,15 @@ export type Block = {
   delay: number;
 
   /**
-   * Beat値
-   * 1〜64が有効範囲
+   * 行数
    */
-  beat: number;
+  length: number;
 
   /**
    * Split値
    * 1〜128が有効範囲
    */
   split: number;
-
-  /**
-   * 行数
-   */
-  length: number;
-
-  /**
-   * 以前までの譜面のブロックの行数の総和
-   * 0番目の譜面のブロックの場合は0
-   */
-  accumulatedLength: number;
 };
 
 /**
@@ -44,6 +44,11 @@ export type Block = {
  * インディケーター非表示の場合はnull
  */
 export type Indicator = null | {
+  /**
+   * インディケーターの示す譜面のブロックから以前までの譜面のブロックの行数の総和
+   */
+  blockAccumulatedLength: number;
+
   /**
    * インディケーターの示す譜面のブロックのインデックス
    */

@@ -19,20 +19,20 @@ import { ZOOM_VALUES } from "../../service/zoom";
 import { PopoverPosition } from "@mui/material";
 
 function Chart() {
+  const [indicators, setIndicators] =
+    useRecoilState<Indicator[]>(indicatorsState);
+  const [mouseDowns, setMouseDowns] =
+    useRecoilState<MouseDown[]>(mouseDownsState);
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
   const blocks = useRecoilValue<Block[]>(blocksState);
   const position = useRecoilValue<PopoverPosition | undefined>(
     chartIndicatorMenuPositionState
   );
   const columns = useRecoilValue<5 | 10>(columnsState);
-  const indicators = useRecoilValue<Indicator[]>(indicatorsState);
   const isPlaying = useRecoilValue<boolean>(isPlayingState);
   const menuBarHeight = useRecoilValue<number>(menuBarHeightState);
-  const mouseDowns = useRecoilValue<MouseDown[]>(mouseDownsState);
   const noteSize = useRecoilValue<number>(noteSizeState);
   const zoom = useRecoilValue<Zoom>(zoomState);
-  const setIndicators = useSetRecoilState<Indicator[]>(indicatorsState);
-  const setMouseDowns = useSetRecoilState<MouseDown[]>(mouseDownsState);
 
   // 各譜面のブロックを設置するトップバーからのy座標の距離(px単位)を計算
   const blockYDists: number[] = useMemo(
@@ -86,7 +86,12 @@ function Chart() {
           const rowIdx: number =
             blocks[blockIdx].accumulatedLength +
             (top - menuBarHeight - blockYDists[blockIdx]) / unitRowHeight;
-          updatedIndicator = { blockIdx, rowIdx, top };
+          updatedIndicator = {
+            blockAccumulatedLength: blocks[blockIdx].accumulatedLength,
+            blockIdx,
+            rowIdx,
+            top,
+          };
           break;
         }
       }
