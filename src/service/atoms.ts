@@ -102,14 +102,6 @@ export const isPlayingState = atom<boolean>({
 });
 
 /**
- * SystemErrorSnackbarを表示する場合はtrue、表示しない場合はfalse
- */
-export const isShownSystemErrorSnackbarState = atom<boolean>({
-  key: "isShownSystemErrorSnackbar",
-  default: false,
-});
-
-/**
  * MenuBarの高さ(px単位)
  */
 export const menuBarHeightState = atom<number>({

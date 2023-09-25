@@ -1,10 +1,6 @@
 import { useState } from "react";
-import { useRecoilState, useSetRecoilState } from "recoil";
-import {
-  blocksState,
-  editBlockDialogFormState,
-  isShownSystemErrorSnackbarState,
-} from "../../service/atoms";
+import { useRecoilState } from "recoil";
+import { blocksState, editBlockDialogFormState } from "../../service/atoms";
 import {
   Button,
   Dialog,
@@ -61,17 +57,8 @@ function EditBlockDialog() {
   const [form, setForm] = useRecoilState<EditBlockDialogForm>(
     editBlockDialogFormState
   );
-  const setIsShownSystemErrorSnackbar = useSetRecoilState<boolean>(
-    isShownSystemErrorSnackbarState
-  );
 
   const onEdit = () => {
-    // 内部矛盾チェック
-    if (!form) {
-      setIsShownSystemErrorSnackbar(true);
-      return;
-    }
-
     const result: EditBlockDialogError | null = validate(form);
     if (result === null) {
       const updatedBlocks: Block[] = [...blocks];
@@ -120,16 +107,14 @@ function EditBlockDialog() {
             label="BPM"
             margin="dense"
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              setForm(
-                form && {
-                  ...form,
-                  bpm: event.target.value,
-                }
-              );
+              setForm({
+                ...form,
+                bpm: event.target.value,
+              });
             }}
             size="small"
             type="number"
-            value={form && form.bpm}
+            value={form.bpm}
           />
           <TextField
             error={resultError === "delay"}
@@ -138,16 +123,14 @@ function EditBlockDialog() {
             label="Delay(ms)"
             margin="dense"
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              setForm(
-                form && {
-                  ...form,
-                  delay: event.target.value,
-                }
-              );
+              setForm({
+                ...form,
+                delay: event.target.value,
+              });
             }}
             size="small"
             type="number"
-            value={form && form.delay}
+            value={form.delay}
           />
           <TextField
             error={resultError === "beat"}
@@ -156,16 +139,14 @@ function EditBlockDialog() {
             label="Beat"
             margin="dense"
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              setForm(
-                form && {
-                  ...form,
-                  beat: event.target.value,
-                }
-              );
+              setForm({
+                ...form,
+                beat: event.target.value,
+              });
             }}
             size="small"
             type="number"
-            value={form && form.beat}
+            value={form.beat}
           />
           <TextField
             error={resultError === "split"}
@@ -174,16 +155,14 @@ function EditBlockDialog() {
             label="Split"
             margin="dense"
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              setForm(
-                form && {
-                  ...form,
-                  split: event.target.value,
-                }
-              );
+              setForm({
+                ...form,
+                split: event.target.value,
+              });
             }}
             size="small"
             type="number"
-            value={form && form.split}
+            value={form.split}
           />
         </Stack>
       </DialogContent>

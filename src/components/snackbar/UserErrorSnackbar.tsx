@@ -23,7 +23,7 @@ function UserErrorSnackbar() {
     >
       <Alert
         variant="filled"
-        severity="warning"
+        severity="error"
         onClose={onClose}
         sx={{ width: "100%" }}
       >

@@ -1,11 +1,8 @@
 import { memo, useCallback } from "react";
 import { ChartVerticalProps } from "../../types/props";
 import { Block, Indicator, Note } from "../../types/chart";
-import { useRecoilState, useSetRecoilState } from "recoil";
-import {
-  blocksState,
-  isShownSystemErrorSnackbarState,
-} from "../../service/atoms";
+import { useRecoilState } from "recoil";
+import { blocksState } from "../../service/atoms";
 import ChartIndicator from "./ChartIndicator";
 import ChartVerticalNoteImages from "./ChartVerticalNoteImages";
 import ChartVerticalRectangles from "./ChartVerticalRectangles";
@@ -18,9 +15,6 @@ function ChartVertical({
   notes,
 }: ChartVerticalProps) {
   const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
-  const setIsShownSystemErrorSnackbar = useSetRecoilState<boolean>(
-    isShownSystemErrorSnackbarState
-  );
 
   const handleSplit = useCallback(
     (indicator: Indicator) => {
@@ -62,14 +56,11 @@ function ChartVertical({
       ))}
       {notes.map((note: Note, i: number) => {
         // noteが属する譜面のブロックのインデックスを取得
+        // どの譜面のブロックにも属さない場合はChartVerticalNoteImagesのレンダリング対象外とする
         const blockIdx: number = blocks.findIndex(
           (block: Block) => note.idx < block.accumulatedLength + block.length
         );
-        // 内部矛盾チェック
-        if (blockIdx === -1) {
-          setIsShownSystemErrorSnackbar(true);
-          return;
-        }
+        if (blockIdx === -1) return;
 
         return (
           <ChartVerticalNoteImages

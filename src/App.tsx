@@ -1,7 +1,6 @@
 import { useEffect, useMemo } from "react";
 import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import UserErrorSnackbar from "./components/snackbar/UserErrorSnackbar";
-import SystemErrorSnackbar from "./components/snackbar/SystemErrorSnackbar";
 import WorkSpace from "./components/WorkSpace";
 import MenuDrawer from "./components/drawer/MenuDrawer";
 import NewUCSDialog from "./components/dialog/NewUCSDialog";
@@ -54,7 +53,6 @@ function App() {
         <EditBlockDialog />
         <SuccessSnackbar />
         <UserErrorSnackbar />
-        <SystemErrorSnackbar />
       </div>
     </ThemeProvider>
   );

@@ -1,10 +1,9 @@
 import { useTransition } from "react";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilValue } from "recoil";
 import {
   blocksState,
   columnsState,
   isPerformanceState,
-  isShownSystemErrorSnackbarState,
   notesState,
   ucsNameState,
 } from "../service/atoms";
@@ -16,18 +15,12 @@ function useDownloadingUCS() {
   const isPerformance = useRecoilValue<boolean>(isPerformanceState);
   const notes = useRecoilValue<Note[][]>(notesState);
   const ucsName = useRecoilValue<string | null>(ucsNameState);
-  const setIsShownSystemErrorSnackbar = useSetRecoilState<boolean>(
-    isShownSystemErrorSnackbarState
-  );
 
   const [isPending, startTransition] = useTransition();
 
   const downloadUCS = () => {
-    // 内部矛盾チェック
-    if (ucsName === null) {
-      setIsShownSystemErrorSnackbar(true);
-      return;
-    }
+    // ucsファイル名未設定の場合はNOP(通常は発生し得ない)
+    if (ucsName === null) return;
 
     startTransition(() => {
       // UCSファイルを生成
