@@ -2,7 +2,6 @@ import { atom } from "recoil";
 import { Block, Note, Selector } from "../types/chart";
 import { Zoom } from "../types/chart";
 import { MouseDown } from "../types/chart";
-import { Indicator } from "../types/chart";
 import { EditBlockDialogForm } from "../types/form";
 import { PopoverPosition } from "@mui/material";
 import { MenuPosition } from "../types/controller";
@@ -46,11 +45,6 @@ export const editBlockDialogFormState = atom<EditBlockDialogForm>({
     open: false,
     split: "",
   },
-});
-
-export const indicatorsState = atom<Indicator[]>({
-  key: "indicators",
-  default: new Array<Indicator>(10).fill(null),
 });
 
 /**
@@ -109,9 +103,9 @@ export const menuBarHeightState = atom<number>({
   default: 0,
 });
 
-export const mouseDownsState = atom<MouseDown[]>({
+export const mouseDownState = atom<MouseDown>({
   key: "mouseDowns",
-  default: new Array<MouseDown>(10).fill(null),
+  default: null,
 });
 
 /**

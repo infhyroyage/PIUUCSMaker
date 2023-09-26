@@ -1,12 +1,11 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
   blocksState,
   chartIndicatorMenuPositionState,
   columnsState,
-  indicatorsState,
   isPlayingState,
-  mouseDownsState,
+  mouseDownState,
   noteSizeState,
   notesState,
   zoomState,
@@ -17,15 +16,15 @@ import { Block, Indicator, MouseDown, Note, Zoom } from "../../types/chart";
 import { ZOOM_VALUES } from "../../service/zoom";
 import { PopoverPosition } from "@mui/material";
 import ChartSelector from "./ChartSelector";
+import ChartIndicator from "./ChartIndicator";
+import ChartIndicatorMenu from "./ChartIndicatorMenu";
 
 function Chart() {
-  const [indicators, setIndicators] =
-    useRecoilState<Indicator[]>(indicatorsState);
-  const [mouseDowns, setMouseDowns] =
-    useRecoilState<MouseDown[]>(mouseDownsState);
+  const [indicator, setIndicator] = useState<Indicator>(null);
+  const [mouseDown, setMouseDown] = useRecoilState<MouseDown>(mouseDownState);
+  const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
-  const blocks = useRecoilValue<Block[]>(blocksState);
-  const position = useRecoilValue<PopoverPosition | undefined>(
+  const [position, setPosition] = useRecoilState<PopoverPosition | undefined>(
     chartIndicatorMenuPositionState
   );
   const columns = useRecoilValue<5 | 10>(columnsState);
@@ -87,6 +86,7 @@ function Chart() {
           updatedIndicator = {
             blockAccumulatedLength: blocks[blockIdx].accumulatedLength,
             blockIdx,
+            column,
             rowIdx,
             top,
           };
@@ -94,168 +94,182 @@ function Chart() {
         }
       }
 
-      // 無駄な再レンダリングを避けるため、マウスホバーした場所の譜面全体での行のインデックスが
-      // 現在のインディケーターの譜面全体での行のインデックスと同じ場合は、indicatorsの状態を更新しない
-      const indicator: Indicator = indicators[column];
+      // 無駄な再レンダリングを避けるため、マウスホバーした場所の列インデックス・譜面全体での行のインデックスが
+      // 現在のインディケーターの列インデックス・譜面全体での行のインデックスとすべて同じである場合、indicatorsの状態を更新しない
       if (
         (indicator !== null || updatedIndicator !== null) &&
         (indicator === null ||
           updatedIndicator === null ||
+          indicator.column !== updatedIndicator.column ||
           indicator.rowIdx !== updatedIndicator.rowIdx)
       ) {
-        const updatedIndicators: Indicator[] = new Array<Indicator>(10).fill(
-          null
-        );
-        updatedIndicators[column] = updatedIndicator;
-        setIndicators(updatedIndicators);
+        setIndicator(updatedIndicator);
       }
     },
     [
       blockYDists,
       blocks,
-      indicators,
+      indicator,
       isPlaying,
       noteSize,
       position,
       zoom.idx,
-      setIndicators,
+      setIndicator,
     ]
   );
 
   const handleMouseLeave = useCallback(() => {
-    // ChartIndicatorMenu表示中/再生中の場合はNOP
+    // ChartIndicatorMenu表示中/再生中/の場合はNOP
     if (!!position || isPlaying) return;
 
     // インディケーターを非表示
-    setIndicators(new Array<Indicator>(10).fill(null));
-  }, [isPlaying, position, setIndicators]);
+    setIndicator(null);
+  }, [isPlaying, position, setIndicator]);
 
-  const handleMouseDown = useCallback(
-    (column: number) => {
-      // ChartIndicatorMenu表示中/再生中の場合はNOP
-      if (!!position || isPlaying) return;
+  const handleMouseDown = useCallback(() => {
+    // ChartIndicatorMenu表示中/再生中の場合はNOP
+    if (!!position || isPlaying) return;
 
-      // 押下した瞬間にインディケーターが非表示である場合はNOP
-      const indicator: Indicator = indicators[column];
-      if (indicator === null) return;
+    // 押下した瞬間にインディケーターが非表示である場合はNOP
+    if (indicator === null) return;
 
-      // マウス押下時のパラメーターを保持
-      const updatedMouseDowns: MouseDown[] = new Array<MouseDown>(10).fill(
-        null
-      );
-      updatedMouseDowns[column] = {
-        rowIdx: indicator.rowIdx,
-        top: indicator.top,
-      };
-      setMouseDowns(updatedMouseDowns);
-    },
-    [indicators, isPlaying, position, setMouseDowns]
-  );
+    // マウス押下時のパラメーターを保持
+    setMouseDown({
+      column: indicator.column,
+      rowIdx: indicator.rowIdx,
+      top: indicator.top,
+    });
+  }, [indicator, isPlaying, position, setMouseDown]);
 
-  const handleMouseUp = useCallback(
-    (column: number) => {
-      // ChartIndicatorMenu表示中/再生中の場合はNOP
-      if (!!position || isPlaying) return;
+  const handleMouseUp = useCallback(() => {
+    // ChartIndicatorMenu表示中/再生中の場合はNOP
+    if (!!position || isPlaying) return;
 
-      // 同一列内でのマウス操作の場合のみ、譜面の更新を行う
-      const indicator: Indicator = indicators[column];
-      const mouseDown: MouseDown = mouseDowns[column];
-      if (indicator !== null && mouseDown !== null) {
-        // 単ノート/ホールドの始点start、終点goalの譜面全体での行インデックスを取得
-        const start: number = Math.min(indicator.rowIdx, mouseDown.rowIdx);
-        const goal: number = Math.max(indicator.rowIdx, mouseDown.rowIdx);
+    // 同一列内でのマウス操作の場合のみ、譜面の更新を行う
+    if (
+      indicator !== null &&
+      mouseDown !== null &&
+      indicator.column === mouseDown.column
+    ) {
+      // 単ノート/ホールドの始点start、終点goalの譜面全体での行インデックスを取得
+      const start: number = Math.min(indicator.rowIdx, mouseDown.rowIdx);
+      const goal: number = Math.max(indicator.rowIdx, mouseDown.rowIdx);
 
-        // 譜面全体での行インデックスmouseDown.rowIdxで押下した後に
-        // 譜面全体での行インデックスindicator.rowIdxで押下を離した際の
-        // 列インデックスcolumnにて、単ノート/ホールドの追加・削除を行う
-        let updatedNotes: Note[];
-        if (start === goal) {
-          // startの場所に単ノートを新規追加
-          // ただし、その場所に単ノート/ホールドが含む場合は、それを削除する(単ノートは新規追加しない)
-          const foundNote: Note | undefined = notes[column].find(
-            (note: Note) => note.idx === start
+      // 譜面全体での行インデックスmouseDown.rowIdxで押下した後に
+      // 譜面全体での行インデックスindicator.rowIdxで押下を離した際の
+      // 列インデックスindicator.columnにて、単ノート/ホールドの追加・削除を行う
+      let updatedNotes: Note[];
+      if (start === goal) {
+        // startの場所に単ノートを新規追加
+        // ただし、その場所に単ノート/ホールドが含む場合は、それを削除する(単ノートは新規追加しない)
+        const foundNote: Note | undefined = notes[indicator.column].find(
+          (note: Note) => note.idx === start
+        );
+        if (foundNote && foundNote.type === "X") {
+          updatedNotes = notes[indicator.column].filter(
+            (note: Note) => note.idx !== start
           );
-          if (foundNote && foundNote.type === "X") {
-            updatedNotes = notes[column].filter(
-              (note: Note) => note.idx !== start
-            );
-          } else if (foundNote && foundNote.type === "M") {
-            const goalHoldNote: Note | undefined = notes[column].find(
-              (note: Note) => note.idx > start && note.type === "W"
-            );
-            updatedNotes = [
-              ...notes[column].filter((note: Note) => note.idx < start),
-              ...notes[column].filter((note: Note) =>
-                goalHoldNote ? note.idx > goalHoldNote.idx : false
-              ),
-            ];
-          } else if (foundNote && foundNote.type === "H") {
-            const startHoldNote: Note | undefined = [...notes[column]]
-              .reverse()
-              .find((note: Note) => note.idx < start && note.type === "M");
-            const goalHoldNote: Note | undefined = notes[column].find(
-              (note: Note) => note.idx > start && note.type === "W"
-            );
-            updatedNotes = [
-              ...notes[column].filter((note: Note) =>
-                startHoldNote ? note.idx < startHoldNote.idx : false
-              ),
-              ...notes[column].filter((note: Note) =>
-                goalHoldNote ? note.idx > goalHoldNote.idx : false
-              ),
-            ];
-          } else if (foundNote && foundNote.type === "W") {
-            const startHoldNote: Note | undefined = [...notes[column]]
-              .reverse()
-              .find((note: Note) => note.idx < start && note.type === "M");
-            updatedNotes = [
-              ...notes[column].filter((note: Note) =>
-                startHoldNote ? note.idx < startHoldNote.idx : false
-              ),
-              ...notes[column].filter((note: Note) => note.idx > start),
-            ];
-          } else {
-            updatedNotes = [
-              ...notes[column].filter((note: Note) => note.idx < start),
-              { idx: start, type: "X" },
-              ...notes[column].filter((note: Note) => note.idx > start),
-            ];
-          }
-        } else {
-          // startとgoalとの間にホールドを新規追加
-          // ただし、その間の場所に単ノート/ホールドが含む場合は、それをすべて削除してから新規追加する
+        } else if (foundNote && foundNote.type === "M") {
+          const goalHoldNote: Note | undefined = notes[indicator.column].find(
+            (note: Note) => note.idx > start && note.type === "W"
+          );
           updatedNotes = [
-            ...notes[column].filter((note: Note) => note.idx < start),
-            ...Array.from<any, Note>(
-              { length: goal - start + 1 },
-              (_, idx: number) => {
-                return {
-                  idx: start + idx,
-                  type: idx === 0 ? "M" : idx === goal - start ? "W" : "H",
-                };
-              }
+            ...notes[indicator.column].filter((note: Note) => note.idx < start),
+            ...notes[indicator.column].filter((note: Note) =>
+              goalHoldNote ? note.idx > goalHoldNote.idx : false
             ),
-            ...notes[column].filter((note: Note) => note.idx > goal),
+          ];
+        } else if (foundNote && foundNote.type === "H") {
+          const startHoldNote: Note | undefined = [...notes[indicator.column]]
+            .reverse()
+            .find((note: Note) => note.idx < start && note.type === "M");
+          const goalHoldNote: Note | undefined = notes[indicator.column].find(
+            (note: Note) => note.idx > start && note.type === "W"
+          );
+          updatedNotes = [
+            ...notes[indicator.column].filter((note: Note) =>
+              startHoldNote ? note.idx < startHoldNote.idx : false
+            ),
+            ...notes[indicator.column].filter((note: Note) =>
+              goalHoldNote ? note.idx > goalHoldNote.idx : false
+            ),
+          ];
+        } else if (foundNote && foundNote.type === "W") {
+          const startHoldNote: Note | undefined = [...notes[indicator.column]]
+            .reverse()
+            .find((note: Note) => note.idx < start && note.type === "M");
+          updatedNotes = [
+            ...notes[indicator.column].filter((note: Note) =>
+              startHoldNote ? note.idx < startHoldNote.idx : false
+            ),
+            ...notes[indicator.column].filter((note: Note) => note.idx > start),
+          ];
+        } else {
+          updatedNotes = [
+            ...notes[indicator.column].filter((note: Note) => note.idx < start),
+            { idx: start, type: "X" },
+            ...notes[indicator.column].filter((note: Note) => note.idx > start),
           ];
         }
-        // 単ノート/ホールドの追加・削除を行った譜面に更新
-        setMouseDowns(new Array<MouseDown>(10).fill(null));
-        setNotes(
-          notes.map((notes: Note[], i: number) =>
-            i === column ? updatedNotes : notes
-          )
-        );
+      } else {
+        // startとgoalとの間にホールドを新規追加
+        // ただし、その間の場所に単ノート/ホールドが含む場合は、それをすべて削除してから新規追加する
+        updatedNotes = [
+          ...notes[indicator.column].filter((note: Note) => note.idx < start),
+          ...Array.from<any, Note>(
+            { length: goal - start + 1 },
+            (_, idx: number) => {
+              return {
+                idx: start + idx,
+                type: idx === 0 ? "M" : idx === goal - start ? "W" : "H",
+              };
+            }
+          ),
+          ...notes[indicator.column].filter((note: Note) => note.idx > goal),
+        ];
       }
+      // 単ノート/ホールドの追加・削除を行った譜面に更新
+      setMouseDown(null);
+      setNotes(
+        notes.map((notes: Note[], column: number) =>
+          column === indicator.column ? updatedNotes : notes
+        )
+      );
+    }
+  }, [
+    indicator,
+    isPlaying,
+    mouseDown,
+    notes,
+    position,
+    setNotes,
+    setMouseDown,
+  ]);
+
+  const handleSplit = useCallback(
+    (indicator: Indicator) => {
+      // インディケーターが非表示の場合はNOP
+      if (indicator === null) return;
+
+      // blockIdx番目の譜面のブロックを、(rowIdx- 1)番目以前とrowIdx番目とで分割
+      setBlocks([
+        ...blocks.slice(0, indicator.blockIdx),
+        {
+          ...blocks[indicator.blockIdx],
+          length: indicator.rowIdx - indicator.blockAccumulatedLength,
+        },
+        {
+          ...blocks[indicator.blockIdx],
+          accumulatedLength: indicator.rowIdx,
+          length:
+            blocks[indicator.blockIdx].length +
+            indicator.blockAccumulatedLength -
+            indicator.rowIdx,
+        },
+        ...blocks.slice(indicator.blockIdx + 1),
+      ]);
     },
-    [
-      indicators,
-      isPlaying,
-      mouseDowns,
-      notes,
-      position,
-      setNotes,
-      setMouseDowns,
-    ]
+    [blocks, setBlocks]
   );
 
   return (
@@ -269,24 +283,38 @@ function Chart() {
               display: "flex",
               flexDirection: "column",
             }}
+            onContextMenu={(
+              event: React.MouseEvent<HTMLSpanElement, MouseEvent>
+            ) => {
+              event.preventDefault();
+              setPosition({
+                top: event.clientY,
+                left: event.clientX,
+              });
+            }}
             onMouseMove={(
               event: React.MouseEvent<HTMLSpanElement, MouseEvent>
             ) => handleMouseMove(event, column)}
             onMouseLeave={() => handleMouseLeave()}
-            onMouseDown={() => handleMouseDown(column)}
-            onMouseUp={() => handleMouseUp(column)}
+            onMouseDown={() => handleMouseDown()}
+            onMouseUp={() => handleMouseUp()}
           >
             <ChartVertical
               blockYDists={blockYDists}
               column={column}
-              indicator={indicators[column]}
-              mouseDown={mouseDowns[column]}
               notes={notes[column]}
             />
           </span>
           <BorderLine width={borderSize} height="100%" />
         </React.Fragment>
       ))}
+      <ChartIndicator indicator={indicator} mouseDown={mouseDown} />
+      <ChartIndicatorMenu
+        handler={{
+          split: handleSplit,
+        }}
+        indicator={indicator}
+      />
       <ChartSelector />
     </>
   );

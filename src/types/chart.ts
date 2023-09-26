@@ -55,6 +55,11 @@ export type Indicator = null | {
   blockIdx: number;
 
   /**
+   * インディケーターの列インデックス
+   */
+  column: number;
+
+  /**
    * インディケーターの示す譜面全体での行のインデックス
    */
   rowIdx: number;
@@ -70,6 +75,11 @@ export type Indicator = null | {
  * 譜面にマウスを押下していない場合はnull
  */
 export type MouseDown = null | {
+  /**
+   * マウス押下時の列インデックス
+   */
+  column: number;
+
   /**
    * マウス押下時の譜面全体での行のインデックス
    */

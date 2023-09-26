@@ -7,14 +7,14 @@ import NewUCSDialog from "./components/dialog/NewUCSDialog";
 import { MUI_DEFAULT_Z_INDEX } from "./service/styles";
 import MenuBar from "./components/MenuBar";
 import { useRecoilState, useSetRecoilState } from "recoil";
-import { isDarkModeState, mouseDownsState } from "./service/atoms";
+import { isDarkModeState, mouseDownState } from "./service/atoms";
 import { MouseDown } from "./types/chart";
 import SuccessSnackbar from "./components/snackbar/SuccessSnackbar";
 import EditBlockDialog from "./components/dialog/EditBlockDialog";
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useRecoilState<boolean>(isDarkModeState);
-  const setMouseDowns = useSetRecoilState<MouseDown[]>(mouseDownsState);
+  const setMouseDown = useSetRecoilState<MouseDown>(mouseDownState);
 
   const theme = useMemo(
     () =>
@@ -43,7 +43,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <div onMouseUp={() => setMouseDowns(new Array<MouseDown>(10).fill(null))}>
+      <div onMouseUp={() => setMouseDown(null)}>
         <MenuBar />
         <div style={{ display: "flex" }}>
           <MenuDrawer />

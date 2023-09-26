@@ -1,46 +1,13 @@
-import { memo, useCallback } from "react";
+import { memo } from "react";
 import { ChartVerticalProps } from "../../types/props";
-import { Block, Indicator, Note } from "../../types/chart";
-import { useRecoilState } from "recoil";
+import { Block, Note } from "../../types/chart";
+import { useRecoilValue } from "recoil";
 import { blocksState } from "../../service/atoms";
-import ChartIndicator from "./ChartIndicator";
 import ChartVerticalNoteImages from "./ChartVerticalNoteImages";
 import ChartVerticalRectangles from "./ChartVerticalRectangles";
 
-function ChartVertical({
-  blockYDists,
-  column,
-  indicator,
-  mouseDown,
-  notes,
-}: ChartVerticalProps) {
-  const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
-
-  const handleSplit = useCallback(
-    (indicator: Indicator) => {
-      // インディケーターが非表示の場合はNOP
-      if (indicator === null) return;
-
-      // blockIdx番目の譜面のブロックを、(rowIdx- 1)番目以前とrowIdx番目とで分割
-      setBlocks([
-        ...blocks.slice(0, indicator.blockIdx),
-        {
-          ...blocks[indicator.blockIdx],
-          length: indicator.rowIdx - indicator.blockAccumulatedLength,
-        },
-        {
-          ...blocks[indicator.blockIdx],
-          accumulatedLength: indicator.rowIdx,
-          length:
-            blocks[indicator.blockIdx].length +
-            indicator.blockAccumulatedLength -
-            indicator.rowIdx,
-        },
-        ...blocks.slice(indicator.blockIdx + 1),
-      ]);
-    },
-    [blocks, setBlocks]
-  );
+function ChartVertical({ blockYDists, column, notes }: ChartVerticalProps) {
+  const blocks = useRecoilValue<Block[]>(blocksState);
 
   return (
     <>
@@ -74,14 +41,6 @@ function ChartVertical({
           />
         );
       })}
-      <ChartIndicator
-        column={column}
-        handler={{
-          split: handleSplit,
-        }}
-        indicator={indicator}
-        mouseDown={mouseDown}
-      />
     </>
   );
 }

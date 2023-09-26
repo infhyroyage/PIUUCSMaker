@@ -110,17 +110,6 @@ type ChartIndicatorMenuHandler = {
  */
 export type ChartIndicatorProps = {
   /**
-   * 列インデックス
-   * Single/SinglePerformance譜面の場合は0〜4、Double/DoublePerformance譜面の場合は0〜9
-   */
-  column: number;
-
-  /**
-   * メニュー選択時の動作
-   */
-  handler: ChartIndicatorMenuHandler;
-
-  /**
    * インディケーターの表示パラメーター
    * インディケーター非表示の場合はnull
    */
@@ -163,18 +152,6 @@ export type ChartVerticalProps = {
    * Single/SinglePerformance譜面の場合は0〜4、Double/DoublePerformance譜面の場合は0〜9
    */
   column: number;
-
-  /**
-   * 列インデックスcolumnにおける、インディケーターの表示パラメーター
-   * インディケーター非表示の場合はnull
-   */
-  indicator: Indicator;
-
-  /**
-   * 列インデックスcolumnにおける、マウス押下時のパラメーター
-   * マウス押下していない場合はnull
-   */
-  mouseDown: MouseDown;
 
   /**
    * 列インデックスcolumnにおける、単ノート/ホールドの始点/ホールドの中間/ホールドの終点の集合
