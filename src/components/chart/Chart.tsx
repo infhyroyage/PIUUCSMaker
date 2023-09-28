@@ -62,9 +62,9 @@ function Chart() {
     [blocks, noteSize, zoom.idx]
   );
 
-  // 枠線のサイズ(px単位)をnoteSizeの0.05倍(小数点以下切り捨て、最小値は1)として計算
-  const borderSize: number = useMemo(
-    () => Math.max(Math.floor(noteSize / 20), 1),
+  // 縦の枠線のサイズ(px単位)をnoteSizeの0.05倍(偶数に丸めるように切り捨て、最小値は1)として計算
+  const verticalBorderSize = useMemo(
+    () => Math.max(Math.floor(noteSize * 0.025) * 2, 1),
     [noteSize]
   );
 
@@ -350,7 +350,9 @@ function Chart() {
     <>
       {[...Array(columns)].map((_, column: number) => (
         <React.Fragment key={column}>
-          {column === 0 && <BorderLine width={borderSize} height="100%" />}
+          {column === 0 && (
+            <BorderLine width={verticalBorderSize} height="100%" />
+          )}
           <span
             style={{
               width: noteSize,
@@ -379,7 +381,7 @@ function Chart() {
               notes={notes[column]}
             />
           </span>
-          <BorderLine width={borderSize} height="100%" />
+          <BorderLine width={verticalBorderSize} height="100%" />
         </React.Fragment>
       ))}
       <ChartIndicator indicator={indicator} mouseDown={mouseDown} />

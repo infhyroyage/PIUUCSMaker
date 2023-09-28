@@ -16,13 +16,13 @@ function WorkSpace() {
   const setNoteSize = useSetRecoilState<number>(noteSizeState);
 
   // ウィンドウサイズを監視し、正方形である単ノートの1辺のサイズ(noteSize)を以下で計算
-  // noteSize := min(ウィンドウサイズの横幅, ウィンドウサイズの高さ) / 13
-  // ただし、noteSizeの最小値は20とする
+  // noteSize := min(ウィンドウサイズの横幅, ウィンドウサイズの高さ) / 15
+  // ただし、noteSizeは小数点以下を切り捨てとし、最小値が20とする
   useEffect(() => {
     const handleWindowResize = () =>
       setNoteSize(
         Math.max(
-          Math.floor(Math.min(window.innerWidth, window.innerHeight) / 13),
+          Math.floor(Math.min(window.innerWidth, window.innerHeight) / 15),
           20
         )
       );

@@ -14,9 +14,9 @@ function ChartIndicator({ indicator, mouseDown }: ChartIndicatorProps) {
     rectangleIdentifierWidthState
   );
 
-  // 枠線のサイズ(px単位)をnoteSizeの0.05倍(小数点以下切り捨て、最小値は1)として計算
-  const borderSize: number = useMemo(
-    () => Math.max(Math.floor(noteSize / 20), 1),
+  // 縦の枠線のサイズ(px単位)をnoteSizeの0.05倍(偶数に丸めるように切り捨て、最小値は1)として計算
+  const verticalBorderSize = useMemo(
+    () => Math.max(Math.floor(noteSize * 0.025) * 2, 1),
     [noteSize]
   );
 
@@ -40,8 +40,8 @@ function ChartIndicator({ indicator, mouseDown }: ChartIndicatorProps) {
                   top: Math.min(indicator.top, mouseDown.top),
                   left:
                     rectangleIdentifierWidth +
-                    borderSize +
-                    (borderSize + noteSize) * indicator.column,
+                    verticalBorderSize +
+                    (verticalBorderSize + noteSize) * indicator.column,
                   pointerEvents: "none",
                   zIndex: theme.zIndex.drawer - 4,
                 }}
@@ -56,8 +56,8 @@ function ChartIndicator({ indicator, mouseDown }: ChartIndicatorProps) {
                   top: Math.min(indicator.top, mouseDown.top) + noteSize * 0.5,
                   left:
                     rectangleIdentifierWidth +
-                    borderSize +
-                    (borderSize + noteSize) * indicator.column,
+                    verticalBorderSize +
+                    (verticalBorderSize + noteSize) * indicator.column,
                   pointerEvents: "none",
                   zIndex: theme.zIndex.drawer - 3,
                 }}
@@ -72,8 +72,8 @@ function ChartIndicator({ indicator, mouseDown }: ChartIndicatorProps) {
                   top: Math.max(indicator.top, mouseDown.top),
                   left:
                     rectangleIdentifierWidth +
-                    borderSize +
-                    (borderSize + noteSize) * indicator.column,
+                    verticalBorderSize +
+                    (verticalBorderSize + noteSize) * indicator.column,
                   pointerEvents: "none",
                   zIndex: theme.zIndex.drawer - 2,
                 }}
@@ -86,8 +86,8 @@ function ChartIndicator({ indicator, mouseDown }: ChartIndicatorProps) {
             top: indicator.top,
             left:
               rectangleIdentifierWidth +
-              borderSize +
-              (borderSize + noteSize) * indicator.column,
+              verticalBorderSize +
+              (verticalBorderSize + noteSize) * indicator.column,
             width: noteSize,
             height: noteSize,
             backgroundColor: "rgba(170, 170, 170, 0.5)",

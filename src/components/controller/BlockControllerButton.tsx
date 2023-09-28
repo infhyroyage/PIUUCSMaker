@@ -27,10 +27,10 @@ function BlockControllerButton({
     blockControllerMenuPositionState
   );
 
-  // 枠線のサイズ(px単位)をnoteSizeの0.05倍(小数点以下切り捨て、最小値は1)として計算
-  // ただし、譜面のブロックの高さが枠線のサイズより小さい場合、例外的に譜面のブロックの高さと同一とする
-  const borderSize: number = useMemo(
-    () => Math.min(Math.max(Math.floor(noteSize / 20), 1), blockHeight),
+  // 横の枠線のサイズ(px単位)をnoteSizeの0.05倍(偶数に丸めるように切り捨て、最小値は1)として計算
+  // ただし、譜面のブロックの高さが横の枠線のサイズより小さい場合、例外的に譜面のブロックの高さと同一とする
+  const horizontalBorderSize = useMemo(
+    () => Math.min(Math.max(Math.floor(noteSize * 0.025) * 2, 1), blockHeight),
     [blockHeight, noteSize]
   );
 
@@ -58,7 +58,7 @@ function BlockControllerButton({
         >
           <CardContent
             sx={{
-              height: blockHeight - (isLastBlock ? 0 : borderSize),
+              height: blockHeight - (isLastBlock ? 0 : horizontalBorderSize),
               padding: 0,
             }}
           >
@@ -70,7 +70,9 @@ function BlockControllerButton({
         </CardActionArea>
       </Card>
       {/* 譜面のブロックごとに分割する枠線 */}
-      {!isLastBlock && <BorderLine width="100%" height={borderSize} />}
+      {!isLastBlock && (
+        <BorderLine width="100%" height={horizontalBorderSize} />
+      )}
     </>
   );
 }
