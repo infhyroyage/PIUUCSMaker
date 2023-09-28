@@ -351,14 +351,10 @@ function Chart() {
       {[...Array(columns)].map((_, column: number) => (
         <React.Fragment key={column}>
           {column === 0 && (
-            <BorderLine width={verticalBorderSize} height="100%" />
+            <BorderLine width={verticalBorderSize * 0.5} height="100%" />
           )}
-          <span
-            style={{
-              width: noteSize,
-              display: "flex",
-              flexDirection: "column",
-            }}
+          <div
+            style={{ display: "flex" }}
             onContextMenu={(
               event: React.MouseEvent<HTMLSpanElement, MouseEvent>
             ) => {
@@ -375,13 +371,25 @@ function Chart() {
             onMouseDown={onMouseDown}
             onMouseUp={onMouseUp}
           >
-            <ChartVertical
-              blockYDists={blockYDists}
-              column={column}
-              notes={notes[column]}
-            />
-          </span>
-          <BorderLine width={verticalBorderSize} height="100%" />
+            <BorderLine width={verticalBorderSize * 0.5} height="100%" />
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                width: noteSize - verticalBorderSize,
+              }}
+            >
+              <ChartVertical
+                blockYDists={blockYDists}
+                column={column}
+                notes={notes[column]}
+              />
+            </div>
+            <BorderLine width={verticalBorderSize * 0.5} height="100%" />
+          </div>
+          {column === columns - 1 && (
+            <BorderLine width={verticalBorderSize * 0.5} height="100%" />
+          )}
         </React.Fragment>
       ))}
       <ChartIndicator indicator={indicator} mouseDown={mouseDown} />

@@ -30,15 +30,13 @@ function ChartSelector({ cords }: ChartSelectorProps) {
           top: Math.min(cords.mouseDownTop, cords.mouseUpTop),
           left:
             rectangleIdentifierWidth +
-            verticalBorderSize +
-            (verticalBorderSize + noteSize) *
-              Math.min(cords.mouseDownColumn, cords.mouseUpColumn),
+            verticalBorderSize * 0.5 +
+            noteSize * Math.min(cords.mouseDownColumn, cords.mouseUpColumn),
           width:
-            (verticalBorderSize + noteSize) *
-              (Math.max(cords.mouseDownColumn, cords.mouseUpColumn) +
-                1 -
-                Math.min(cords.mouseDownColumn, cords.mouseUpColumn)) -
-            verticalBorderSize,
+            noteSize *
+            (Math.max(cords.mouseDownColumn, cords.mouseUpColumn) +
+              1 -
+              Math.min(cords.mouseDownColumn, cords.mouseUpColumn)),
           height:
             Math.max(cords.mouseDownTop, cords.mouseUpTop) +
             noteSize -

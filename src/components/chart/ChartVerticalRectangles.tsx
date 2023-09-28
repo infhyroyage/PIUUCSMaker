@@ -66,7 +66,6 @@ function ChartVerticalRectangles({
         <React.Fragment key={rectangleIdx}>
           <span
             style={{
-              width: "100%",
               height: rectangleHeight,
               backgroundColor: isEven
                 ? "rgb(255, 255, 170)"

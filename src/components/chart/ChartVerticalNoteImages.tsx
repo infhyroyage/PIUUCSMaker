@@ -2,7 +2,11 @@ import { memo, useMemo } from "react";
 import { IMAGE_BINARIES } from "../../service/assets";
 import { ChartVerticalNoteImagesProps } from "../../types/props";
 import { useRecoilValue } from "recoil";
-import { noteSizeState, zoomState } from "../../service/atoms";
+import {
+  noteSizeState,
+  rectangleIdentifierWidthState,
+  zoomState,
+} from "../../service/atoms";
 import { ZOOM_VALUES } from "../../service/zoom";
 import { Zoom } from "../../types/chart";
 
@@ -15,6 +19,9 @@ function ChartVerticalNoteImages({
   type,
 }: ChartVerticalNoteImagesProps) {
   const noteSize = useRecoilValue<number>(noteSizeState);
+  const rectangleIdentifierWidth = useRecoilValue<number>(
+    rectangleIdentifierWidthState
+  );
   const zoom = useRecoilValue<Zoom>(zoomState);
 
   // 単ノート/ホールドの始点/ホールドの中間/ホールドの終点が属する
@@ -22,6 +29,12 @@ function ChartVerticalNoteImages({
   const unitRowHeight = useMemo(
     () => (2.0 * noteSize * ZOOM_VALUES[zoom.idx]) / split,
     [noteSize, split, zoom.idx]
+  );
+
+  // 縦の枠線のサイズ(px単位)をnoteSizeの0.05倍(偶数に丸めるように切り捨て、最小値は1)として計算
+  const verticalBorderSize = useMemo(
+    () => Math.max(Math.floor(noteSize * 0.025) * 2, 1),
+    [noteSize]
   );
 
   // 単ノート/ホールドの始点/ホールドの中間/ホールドの終点の譜面全体での行インデックスでの
@@ -43,6 +56,10 @@ function ChartVerticalNoteImages({
           style={{
             position: "absolute",
             top,
+            left:
+              rectangleIdentifierWidth +
+              verticalBorderSize * 0.5 +
+              noteSize * column,
             zIndex: (idx + 1) * 10,
           }}
         />
@@ -59,6 +76,10 @@ function ChartVerticalNoteImages({
             style={{
               position: "absolute",
               top,
+              left:
+                rectangleIdentifierWidth +
+                verticalBorderSize * 0.5 +
+                noteSize * column,
               zIndex: (idx + 1) * 10,
             }}
           />
@@ -70,6 +91,10 @@ function ChartVerticalNoteImages({
             style={{
               position: "absolute",
               top: top + noteSize * 0.5,
+              left:
+                rectangleIdentifierWidth +
+                verticalBorderSize * 0.5 +
+                noteSize * column,
               zIndex: (idx + 1) * 10 + 1,
             }}
           />
@@ -86,6 +111,10 @@ function ChartVerticalNoteImages({
           style={{
             position: "absolute",
             top: top + noteSize * 0.5,
+            left:
+              rectangleIdentifierWidth +
+              verticalBorderSize * 0.5 +
+              noteSize * column,
             zIndex: (idx + 1) * 10,
           }}
         />
@@ -101,6 +130,10 @@ function ChartVerticalNoteImages({
           style={{
             position: "absolute",
             top,
+            left:
+              rectangleIdentifierWidth +
+              verticalBorderSize * 0.5 +
+              noteSize * column,
             zIndex: (idx + 1) * 10,
           }}
         />

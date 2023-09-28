@@ -40,8 +40,8 @@ function ChartIndicator({ indicator, mouseDown }: ChartIndicatorProps) {
                   top: Math.min(indicator.top, mouseDown.top),
                   left:
                     rectangleIdentifierWidth +
-                    verticalBorderSize +
-                    (verticalBorderSize + noteSize) * indicator.column,
+                    verticalBorderSize * 0.5 +
+                    noteSize * indicator.column,
                   pointerEvents: "none",
                   zIndex: theme.zIndex.drawer - 4,
                 }}
@@ -56,8 +56,8 @@ function ChartIndicator({ indicator, mouseDown }: ChartIndicatorProps) {
                   top: Math.min(indicator.top, mouseDown.top) + noteSize * 0.5,
                   left:
                     rectangleIdentifierWidth +
-                    verticalBorderSize +
-                    (verticalBorderSize + noteSize) * indicator.column,
+                    verticalBorderSize * 0.5 +
+                    noteSize * indicator.column,
                   pointerEvents: "none",
                   zIndex: theme.zIndex.drawer - 3,
                 }}
@@ -72,8 +72,8 @@ function ChartIndicator({ indicator, mouseDown }: ChartIndicatorProps) {
                   top: Math.max(indicator.top, mouseDown.top),
                   left:
                     rectangleIdentifierWidth +
-                    verticalBorderSize +
-                    (verticalBorderSize + noteSize) * indicator.column,
+                    verticalBorderSize * 0.5 +
+                    noteSize * indicator.column,
                   pointerEvents: "none",
                   zIndex: theme.zIndex.drawer - 2,
                 }}
@@ -86,8 +86,8 @@ function ChartIndicator({ indicator, mouseDown }: ChartIndicatorProps) {
             top: indicator.top,
             left:
               rectangleIdentifierWidth +
-              verticalBorderSize +
-              (verticalBorderSize + noteSize) * indicator.column,
+              verticalBorderSize * 0.5 +
+              noteSize * indicator.column,
             width: noteSize,
             height: noteSize,
             backgroundColor: "rgba(170, 170, 170, 0.5)",
