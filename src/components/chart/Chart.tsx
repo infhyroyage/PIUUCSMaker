@@ -8,25 +8,34 @@ import {
   mouseDownState,
   noteSizeState,
   notesState,
+  selectorState,
   zoomState,
 } from "../../service/atoms";
 import BorderLine from "../BorderLine";
 import ChartVertical from "./ChartVertical";
-import { Block, Indicator, MouseDown, Note, Zoom } from "../../types/chart";
+import {
+  Block,
+  Indicator,
+  MouseDown,
+  Note,
+  Selector,
+  Zoom,
+} from "../../types/chart";
 import { ZOOM_VALUES } from "../../service/zoom";
 import { PopoverPosition } from "@mui/material";
-import ChartSelector from "./ChartSelector";
 import ChartIndicator from "./ChartIndicator";
 import ChartIndicatorMenu from "./ChartIndicatorMenu";
+import ChartSelector from "./ChartSelector";
 
 function Chart() {
   const [indicator, setIndicator] = useState<Indicator>(null);
-  const [mouseDown, setMouseDown] = useRecoilState<MouseDown>(mouseDownState);
   const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
+  const [mouseDown, setMouseDown] = useRecoilState<MouseDown>(mouseDownState);
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
   const [position, setPosition] = useRecoilState<PopoverPosition | undefined>(
     chartIndicatorMenuPositionState
   );
+  const [selector, setSelector] = useRecoilState<Selector>(selectorState);
   const columns = useRecoilValue<5 | 10>(columnsState);
   const isPlaying = useRecoilValue<boolean>(isPlayingState);
   const noteSize = useRecoilValue<number>(noteSizeState);
@@ -59,93 +68,155 @@ function Chart() {
     [noteSize]
   );
 
-  const handleMouseMove = useCallback(
-    (event: React.MouseEvent<HTMLSpanElement, MouseEvent>, column: number) => {
-      // ChartIndicatorMenu表示中/再生中の場合はNOP
-      if (!!position || isPlaying) return;
+  const handleMouseMove = (
+    event: React.MouseEvent<HTMLSpanElement, MouseEvent>,
+    column: number
+  ) => {
+    // ChartIndicatorMenu表示中/再生中の場合はNOP
+    if (!!position || isPlaying) return;
 
-      // マウスホバーしたy座標を取得
-      const y: number = Math.floor(
-        event.clientY - event.currentTarget.getBoundingClientRect().top
-      );
+    // マウスホバーしたy座標を取得
+    const y: number = Math.floor(
+      event.clientY - event.currentTarget.getBoundingClientRect().top
+    );
 
-      // 譜面のブロックのマウスホバーした際に、マウスの行インデックスの場所にインディケーターを表示
-      // 譜面のブロックのマウスホバーが外れた際に、インディケーターを非表示
-      let updatedIndicator: Indicator = null;
-      for (let blockIdx = 0; blockIdx < blocks.length; blockIdx++) {
-        // 譜面のブロックの1行あたりの高さ(px単位)
-        const unitRowHeight: number =
-          (2.0 * noteSize * ZOOM_VALUES[zoom.idx]) / blocks[blockIdx].split;
-        // 譜面のブロックの高さ(px単位)
-        const blockHeight: number = unitRowHeight * blocks[blockIdx].length;
-        if (y < blockYDists[blockIdx] + blockHeight) {
-          const top: number = y - ((y - blockYDists[blockIdx]) % unitRowHeight);
-          const rowIdx: number =
-            blocks[blockIdx].accumulatedLength +
-            (top - blockYDists[blockIdx]) / unitRowHeight;
-          updatedIndicator = {
+    // 譜面のブロックのマウスホバーした行インデックスの場所での、マウスのブラウザの画面のy座標、行インデックスを取得
+    // 譜面のブロックのマウスホバーが外れた場合、ともにnullとする
+    let top: number | null = null;
+    let rowIdx: number | null = null;
+    let blockIdx = 0;
+    for (; blockIdx < blocks.length; blockIdx++) {
+      // 譜面のブロックの1行あたりの高さ(px単位)
+      const unitRowHeight: number =
+        (2.0 * noteSize * ZOOM_VALUES[zoom.idx]) / blocks[blockIdx].split;
+      // 譜面のブロックの高さ(px単位)
+      const blockHeight: number = unitRowHeight * blocks[blockIdx].length;
+      if (y < blockYDists[blockIdx] + blockHeight) {
+        top = y - ((y - blockYDists[blockIdx]) % unitRowHeight);
+        rowIdx =
+          blocks[blockIdx].accumulatedLength +
+          (top - blockYDists[blockIdx]) / unitRowHeight;
+        break;
+      }
+    }
+
+    // 無駄な再レンダリングを避けるため、マウスホバーした場所の列インデックス・譜面全体での行のインデックスが
+    // 現在のインディケーターの列インデックス・譜面全体での行のインデックスとすべて同じである場合、indicatorの状態を更新しない
+    const updatedIndicator: Indicator =
+      top !== null && rowIdx !== null
+        ? {
             blockAccumulatedLength: blocks[blockIdx].accumulatedLength,
             blockIdx,
             column,
             rowIdx,
             top,
-          };
-          break;
-        }
-      }
+          }
+        : null;
+    if (
+      (indicator !== null || updatedIndicator !== null) &&
+      (indicator === null ||
+        updatedIndicator === null ||
+        indicator.column !== updatedIndicator.column ||
+        indicator.rowIdx !== updatedIndicator.rowIdx)
+    ) {
+      setIndicator(updatedIndicator);
+    }
 
-      // 無駄な再レンダリングを避けるため、マウスホバーした場所の列インデックス・譜面全体での行のインデックスが
-      // 現在のインディケーターの列インデックス・譜面全体での行のインデックスとすべて同じである場合、indicatorsの状態を更新しない
-      if (
-        (indicator !== null || updatedIndicator !== null) &&
-        (indicator === null ||
-          updatedIndicator === null ||
-          indicator.column !== updatedIndicator.column ||
-          indicator.rowIdx !== updatedIndicator.rowIdx)
-      ) {
-        setIndicator(updatedIndicator);
-      }
-    },
-    [
-      blockYDists,
-      blocks,
-      indicator,
-      isPlaying,
-      noteSize,
-      position,
-      zoom.idx,
-      setIndicator,
-    ]
-  );
+    if (
+      event.shiftKey &&
+      selector.changingCords !== null &&
+      (column !== selector.changingCords.mouseUpColumn ||
+        rowIdx !== selector.changingCords.mouseUpRowIdx ||
+        top !== selector.changingCords.mouseUpTop)
+    ) {
+      // 選択領域入力時の場合は選択領域を更新
+      setSelector({
+        changingCords: {
+          ...selector.changingCords,
+          mouseUpColumn: column,
+          mouseUpRowIdx: rowIdx,
+          mouseUpTop: top,
+        },
+        completedCords: null,
+      });
+    } else if (!event.shiftKey && selector.changingCords !== null) {
+      // Shift未入力、かつ、選択領域入力時は選択領域のパラメーターを非表示
+      setSelector({ changingCords: null, completedCords: null });
+    }
+  };
 
-  const handleMouseLeave = useCallback(() => {
+  const onMouseLeave = (
+    event: React.MouseEvent<HTMLSpanElement, MouseEvent>
+  ) => {
     // ChartIndicatorMenu表示中/再生中/の場合はNOP
     if (!!position || isPlaying) return;
 
     // インディケーターを非表示
     setIndicator(null);
-  }, [isPlaying, position, setIndicator]);
 
-  const handleMouseDown = useCallback(() => {
-    // ChartIndicatorMenu表示中/再生中の場合はNOP
-    if (!!position || isPlaying) return;
+    if (event.shiftKey && selector.changingCords !== null) {
+      // 選択領域入力時の場合は選択領域を非表示
+      setSelector({
+        changingCords: {
+          ...selector.changingCords,
+          mouseUpColumn: null,
+          mouseUpRowIdx: null,
+          mouseUpTop: null,
+        },
+        completedCords: null,
+      });
+    } else if (!event.shiftKey && selector.changingCords !== null) {
+      // Shift未入力、かつ、選択領域入力時は選択領域のパラメーターを非表示
+      setSelector({ changingCords: null, completedCords: null });
+    }
+  };
 
-    // 押下した瞬間にインディケーターが非表示である場合はNOP
-    if (indicator === null) return;
+  const onMouseDown = (
+    event: React.MouseEvent<HTMLSpanElement, MouseEvent>
+  ) => {
+    // 左クリック以外/ChartIndicatorMenu表示中/再生中/押下した瞬間にインディケーターが非表示の場合はNOP
+    if (event.button !== 0 || !!position || isPlaying || indicator === null)
+      return;
 
-    // マウス押下時のパラメーターを保持
-    setMouseDown({
-      column: indicator.column,
-      rowIdx: indicator.rowIdx,
-      top: indicator.top,
-    });
-  }, [indicator, isPlaying, position, setMouseDown]);
+    // Shift未入力の場合のみマウス押下時のパラメーターを保持
+    if (!event.shiftKey) {
+      setMouseDown({
+        column: indicator.column,
+        rowIdx: indicator.rowIdx,
+        top: indicator.top,
+      });
+    }
 
-  const handleMouseUp = useCallback(() => {
-    // ChartIndicatorMenu表示中/再生中の場合はNOP
-    if (!!position || isPlaying) return;
+    if (event.shiftKey) {
+      // Shift入力時の場合は選択領域入力時のみパラメーターを設定
+      setSelector({
+        changingCords: {
+          mouseDownColumn: indicator.column,
+          mouseDownRowIdx: indicator.rowIdx,
+          mouseDownTop: indicator.top,
+          mouseUpColumn: indicator.column,
+          mouseUpRowIdx: indicator.rowIdx,
+          mouseUpTop: indicator.top,
+        },
+        completedCords: null,
+      });
+    } else if (
+      selector.changingCords !== null ||
+      selector.completedCords !== null
+    ) {
+      // Shift未入力、かつ、選択領域表示時は選択領域のパラメーターを非表示
+      setSelector({ changingCords: null, completedCords: null });
+    }
+  };
 
-    // 同一列内でのマウス操作の場合のみ、譜面の更新を行う
+  const onMouseUp = (event: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
+    // 左クリック以外/ChartIndicatorMenu表示中/再生中/別々の列を跨いだマウス操作の場合はNOP
+    if (event.button !== 0 || !!position || isPlaying) return;
+
+    // 親コンポーネントのAppに設定したonMouseUpへ伝搬しない
+    event.stopPropagation();
+
+    // 同一列内でのクリック操作時は譜面の更新を行う
     if (
       indicator !== null &&
       mouseDown !== null &&
@@ -228,23 +299,26 @@ function Chart() {
           ...notes[indicator.column].filter((note: Note) => note.idx > goal),
         ];
       }
-      // 単ノート/ホールドの追加・削除を行った譜面に更新
+
+      // マウス押下時のパラメーターを初期化
       setMouseDown(null);
+
+      // 単ノート/ホールドの追加・削除を行った譜面に更新
       setNotes(
         notes.map((notes: Note[], column: number) =>
           column === indicator.column ? updatedNotes : notes
         )
       );
     }
-  }, [
-    indicator,
-    isPlaying,
-    mouseDown,
-    notes,
-    position,
-    setNotes,
-    setMouseDown,
-  ]);
+
+    if (selector.changingCords !== null) {
+      // 選択領域入力時の場合は選択領域を入力時→入力後に更新
+      setSelector({
+        changingCords: null,
+        completedCords: { ...selector.changingCords },
+      });
+    }
+  };
 
   const handleSplit = useCallback(
     (indicator: Indicator) => {
@@ -295,9 +369,9 @@ function Chart() {
             onMouseMove={(
               event: React.MouseEvent<HTMLSpanElement, MouseEvent>
             ) => handleMouseMove(event, column)}
-            onMouseLeave={() => handleMouseLeave()}
-            onMouseDown={() => handleMouseDown()}
-            onMouseUp={() => handleMouseUp()}
+            onMouseLeave={onMouseLeave}
+            onMouseDown={onMouseDown}
+            onMouseUp={onMouseUp}
           >
             <ChartVertical
               blockYDists={blockYDists}
@@ -315,7 +389,12 @@ function Chart() {
         }}
         indicator={indicator}
       />
-      <ChartSelector />
+      {selector.changingCords !== null && (
+        <ChartSelector cords={selector.changingCords} />
+      )}
+      {selector.completedCords !== null && (
+        <ChartSelector cords={selector.completedCords} />
+      )}
     </>
   );
 }

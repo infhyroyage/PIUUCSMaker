@@ -36,20 +36,26 @@ function BlockControllerButton({
 
   // 押下したマウスの座標にBlockControllerMenuを表示
   const onClickCardActionArea = useCallback(
-    (event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => {
-      event.preventDefault();
+    (event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) =>
       setMenuPosition({
         blockIdx,
         position: { top: event.clientY, left: event.clientX },
-      });
-    },
+      }),
     [setMenuPosition]
   );
 
   return (
     <>
       <Card raised square>
-        <CardActionArea onClick={onClickCardActionArea}>
+        <CardActionArea
+          onClick={onClickCardActionArea}
+          onMouseUp={(
+            event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>
+          ) => {
+            // 親コンポーネントであるAppでonMouseUpに設定した動作に伝搬しない
+            event.stopPropagation();
+          }}
+        >
           <CardContent
             sx={{
               height: blockHeight - (isLastBlock ? 0 : borderSize),

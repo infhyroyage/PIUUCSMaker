@@ -1,4 +1,4 @@
-import { MouseDown, Note } from "./chart";
+import { MouseDown, Note, Selector, SelectorCords } from "./chart";
 import { Indicator } from "./chart";
 
 export type BlockControllerButtonProps = {
@@ -136,6 +136,16 @@ export type ChartIndicatorMenuProps = {
    * インディケーター非表示の場合はnull
    */
   indicator: Indicator;
+};
+
+/**
+ * ChartSelectorのprops
+ */
+export type ChartSelectorProps = {
+  /**
+   * 選択領域の入力開始時、および、入力時/入力終了時のマウスの各座標を構成するパラメーター
+   */
+  cords: SelectorCords;
 };
 
 /**

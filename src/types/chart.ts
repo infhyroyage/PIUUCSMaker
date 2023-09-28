@@ -107,41 +107,59 @@ export type Note = {
 };
 
 /**
- * 選択領域のパラメーター
- * 選択領域非表示の場合はnull
+ * 選択領域の入力開始時、および、入力時/入力終了時のマウスの各座標を構成するパラメーター
  */
-export type Selector = null | {
+export type SelectorCords = {
   /**
-   * 選択領域の縦方向における終点の列インデックス
+   * 選択領域の入力開始時のマウスの座標での列インデックス
    * Single/SinglePerformance譜面の場合は0〜4、Double/DoublePerformance譜面の場合は0〜9
    */
-  goalColumn: number;
+  mouseDownColumn: number;
 
   /**
-   * 選択領域の縦方向における終点の譜面全体での行インデックス
+   * 選択領域の入力開始時のマウスの座標での譜面全体での行インデックス
    */
-  goalRowIdx: number;
+  mouseDownRowIdx: number;
 
   /**
-   * 選択領域の終点のtop値
+   * 選択領域の入力開始時のマウスの座標でのtop値
    */
-  goalTop: number;
+  mouseDownTop: number;
 
   /**
-   * 選択領域の縦方向における始点の列インデックス
+   * 選択領域の入力時/入力終了時のマウスの座標での列インデックス
    * Single/SinglePerformance譜面の場合は0〜4、Double/DoublePerformance譜面の場合は0〜9
+   * 選択領域の入力時にマウスの座標が譜面から外れた場合はnull
    */
-  startColumn: number;
+  mouseUpColumn: number | null;
 
   /**
-   * 選択領域の縦方向における始点の譜面全体での行インデックス
+   * 選択領域の入力時/入力終了時のマウスの座標での譜面全体での行インデックス
+   * 選択領域の入力時にマウスの座標が譜面から外れた場合はnull
    */
-  startRowIdx: number;
+  mouseUpRowIdx: number | null;
 
   /**
-   * 選択領域の始点のtop値
+   * 選択領域の入力時/入力終了時のマウスの座標でのtop値
+   * 選択領域の入力時にマウスの座標が譜面から外れた場合はnull
    */
-  startTop: number;
+  mouseUpTop: number | null;
+};
+/**
+ * 選択領域のパラメーター
+ */
+export type Selector = {
+  /**
+   * 選択領域の入力時の各座標
+   * 選択領域未入力/入力済の場合はnull
+   */
+  changingCords: null | SelectorCords;
+
+  /**
+   * 選択領域入力後の各座標
+   * 選択領域未入力/入力時の場合はnull
+   */
+  completedCords: null | SelectorCords;
 };
 
 /**

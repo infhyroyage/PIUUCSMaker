@@ -13,7 +13,6 @@ function ChartIndicator({ indicator, mouseDown }: ChartIndicatorProps) {
   const rectangleIdentifierWidth = useRecoilValue<number>(
     rectangleIdentifierWidthState
   );
-  console.log({ indicator, mouseDown });
 
   // 枠線のサイズ(px単位)をnoteSizeの0.05倍(小数点以下切り捨て、最小値は1)として計算
   const borderSize: number = useMemo(

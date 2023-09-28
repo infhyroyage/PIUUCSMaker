@@ -1,16 +1,14 @@
-import { useMemo } from "react";
+import { memo, useMemo } from "react";
 import { Theme, useTheme } from "@mui/material";
 import { useRecoilValue } from "recoil";
 import {
   noteSizeState,
   rectangleIdentifierWidthState,
-  selectorState,
 } from "../../service/atoms";
-import { Selector } from "../../types/chart";
+import { ChartSelectorProps } from "../../types/props";
 
-function ChartSelector() {
+function ChartSelector({ cords }: ChartSelectorProps) {
   const noteSize = useRecoilValue<number>(noteSizeState);
-  const selector = useRecoilValue<Selector>(selectorState);
   const rectangleIdentifierWidth = useRecoilValue<number>(
     rectangleIdentifierWidthState
   );
@@ -24,20 +22,27 @@ function ChartSelector() {
   const theme: Theme = useTheme();
 
   return (
-    selector && (
+    cords.mouseUpColumn !== null &&
+    cords.mouseUpTop !== null && (
       <span
         style={{
           position: "absolute",
-          top: selector.startTop,
+          top: Math.min(cords.mouseDownTop, cords.mouseUpTop),
           left:
             rectangleIdentifierWidth +
             borderSize +
-            (borderSize + noteSize) * selector.startColumn,
+            (borderSize + noteSize) *
+              Math.min(cords.mouseDownColumn, cords.mouseUpColumn),
           width:
             (borderSize + noteSize) *
-              (selector.goalColumn + 1 - selector.startColumn) -
+              (Math.max(cords.mouseDownColumn, cords.mouseUpColumn) +
+                1 -
+                Math.min(cords.mouseDownColumn, cords.mouseUpColumn)) -
             borderSize,
-          height: selector.goalTop + noteSize - selector.startTop,
+          height:
+            Math.max(cords.mouseDownTop, cords.mouseUpTop) +
+            noteSize -
+            Math.min(cords.mouseDownTop, cords.mouseUpTop),
           backgroundColor: "rgba(170, 170, 170, 0.5)",
           pointerEvents: "none",
           zIndex: theme.zIndex.drawer - 5,
@@ -47,4 +52,4 @@ function ChartSelector() {
   );
 }
 
-export default ChartSelector;
+export default memo(ChartSelector);

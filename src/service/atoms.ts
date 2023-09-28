@@ -140,7 +140,7 @@ export const rectangleIdentifierWidthState = atom<number>({
 
 export const selectorState = atom<Selector>({
   key: "selector",
-  default: null,
+  default: { changingCords: null, completedCords: null },
 });
 
 export const successMessageState = atom<string>({
