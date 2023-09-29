@@ -24,6 +24,12 @@ function ChartIndicatorMenu({ handler, indicator }: ChartIndicatorMenuProps) {
       disableRestoreFocus
       onClose={onCloseMenu}
       open={!!position}
+      slotProps={{
+        root: {
+          onMouseUp: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) =>
+            event.stopPropagation(),
+        },
+      }}
     >
       <MenuList dense>
         <MenuItem onClick={() => alert("TODO")}>Cut</MenuItem>
