@@ -1,6 +1,9 @@
 import { Note, SelectorCords } from "./chart";
 import { Indicator } from "./chart";
 
+/**
+ * BlockControllerButtonのprops
+ */
 export type BlockControllerButtonProps = {
   /**
    * 譜面のブロックの高さ(px単位)
@@ -72,6 +75,9 @@ type BlockControllerMenuHandler = {
   mergeBelow: (blockIdx: number) => void;
 };
 
+/**
+ * BlockControllerMenuのprops
+ */
 export type BlockControllerMenuProps = {
   /**
    * 譜面のブロックの個数
@@ -84,16 +90,14 @@ export type BlockControllerMenuProps = {
   handler: BlockControllerMenuHandler;
 };
 
+/**
+ * BorderLineのprops
+ */
 export type BorderLineProps = {
   /**
-   * 高さ(px単位)
+   * インラインスタイル
    */
-  height: number | string;
-
-  /**
-   * 幅(px単位)
-   */
-  width: number | string;
+  style?: React.CSSProperties;
 };
 
 type ChartIndicatorMenuHandler = {
@@ -167,11 +171,6 @@ export type ChartVerticalProps = {
  * ChartVerticalRectanglesのprops
  */
 export type ChartVerticalRectanglesProps = {
-  /**
-   * 譜面のブロックのBeat値
-   */
-  beat: number;
-
   /**
    * 全譜面のブロックのうち自身が偶数番目の場合はtrue、奇数番目の場合はfalse
    */

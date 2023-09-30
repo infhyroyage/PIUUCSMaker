@@ -14,7 +14,6 @@ function ChartVertical({ blockYDists, column, notes }: ChartVerticalProps) {
       {blocks.map((block: Block, blockIdx: number) => (
         <ChartVerticalRectangles
           key={blockIdx}
-          beat={block.beat}
           isEven={blockIdx % 2 === 0}
           isLastBlock={blockIdx === blocks.length - 1}
           length={block.length}

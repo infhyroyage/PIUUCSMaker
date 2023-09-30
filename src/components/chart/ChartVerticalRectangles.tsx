@@ -1,4 +1,4 @@
-import React, { memo, useMemo } from "react";
+import { memo, useMemo } from "react";
 import { useRecoilValue } from "recoil";
 import { noteSizeState, zoomState } from "../../service/atoms";
 import { ChartVerticalRectanglesProps } from "../../types/props";
@@ -7,7 +7,6 @@ import { Zoom } from "../../types/chart";
 import { ZOOM_VALUES } from "../../service/zoom";
 
 function ChartVerticalRectangles({
-  beat,
   isEven,
   isLastBlock,
   length,
@@ -33,56 +32,50 @@ function ChartVerticalRectangles({
     [length, noteSize, unitRowHeight]
   );
 
-  // 譜面のブロック内の各節のブロックの高さ(px単位)を枠線の配置を考慮して計算
-  const rectangleHeights = useMemo(() => {
-    // 譜面のブロック内の節のブロックの個数
-    const rectangleLength = Math.ceil(length / (beat * split));
-
-    // 譜面のブロックの高さ(px単位)
-    // 譜面のブロックごとに分割する枠線を最下部に配置するため、その枠線の高さ分をあらかじめ減算しておく
-    let blockHeight =
-      unitRowHeight * length - (isLastBlock ? 0 : horizontalBorderSize);
-
-    return [...Array(rectangleLength)].reduce(
-      (prev: number[], _, rectangleIdx: number) => {
-        if (blockHeight > 0) {
-          // 譜面のブロック内の節ごとに分割する枠線を配置するため、その枠線の高さ分をあらかじめ減算しておく
-          const rectangleHeight: number =
-            unitRowHeight * beat * split -
-            (rectangleIdx === rectangleLength - 1 ? 0 : horizontalBorderSize);
-
-          prev.push(Math.min(rectangleHeight, blockHeight));
-          blockHeight -= unitRowHeight * beat * split;
-        }
-        return prev;
-      },
-      []
-    );
-  }, [beat, horizontalBorderSize, isLastBlock, length, split, unitRowHeight]);
+  // 譜面のブロック内の1拍単位に分割する各枠線のtop値を計算
+  const beatBorderLineTops = useMemo(
+    () =>
+      [...Array(Math.floor(length / split))].map(
+        (_, beatIdx: number) =>
+          (2.0 * noteSize * ZOOM_VALUES[zoom.idx] - horizontalBorderSize) *
+          (beatIdx + 1)
+      ),
+    [horizontalBorderSize, length, noteSize, split, zoom.idx]
+  );
 
   return (
-    <>
-      {rectangleHeights.map((rectangleHeight: number, rectangleIdx: number) => (
-        <React.Fragment key={rectangleIdx}>
-          <span
-            style={{
-              height: rectangleHeight,
-              backgroundColor: isEven
-                ? "rgb(255, 255, 170)"
-                : "rgb(170, 255, 255)",
-            }}
-          />
-          {/* 譜面のブロック内の節ごとに分割する枠線 */}
-          {rectangleIdx < rectangleHeights.length - 1 && (
-            <BorderLine width={noteSize} height={horizontalBorderSize} />
-          )}
-        </React.Fragment>
+    <div
+      style={{
+        height: unitRowHeight * length,
+        backgroundColor: isEven ? "rgb(255, 255, 170)" : "rgb(170, 255, 255)",
+      }}
+    >
+      {/* 1拍ごとに分割する枠線 */}
+      {beatBorderLineTops.map((top: number, idx: number) => (
+        <BorderLine
+          key={idx}
+          style={{
+            height: horizontalBorderSize,
+            position: "relative",
+            top,
+            width: "100%",
+          }}
+        />
       ))}
       {/* 譜面のブロックごとに分割する枠線 */}
       {!isLastBlock && (
-        <BorderLine width={noteSize} height={horizontalBorderSize} />
+        <BorderLine
+          style={{
+            height: horizontalBorderSize,
+            position: "relative",
+            top:
+              unitRowHeight * length -
+              horizontalBorderSize * (beatBorderLineTops.length + 1),
+            width: "100%",
+          }}
+        />
       )}
-    </>
+    </div>
   );
 }
 

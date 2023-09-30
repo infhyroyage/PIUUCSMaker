@@ -72,13 +72,15 @@ function RectangleBlockIdentifier({
           </Paper>
           {/* 譜面のブロック内の節ごとに分割する枠線 */}
           {rectangleIdx < rectangleHeights.length - 1 && (
-            <BorderLine width="100%" height={horizontalBorderSize} />
+            <BorderLine
+              style={{ height: horizontalBorderSize, width: "100%" }}
+            />
           )}
         </React.Fragment>
       ))}
       {/* 譜面のブロックごとに分割する枠線 */}
       {!isLastBlock && (
-        <BorderLine width="100%" height={horizontalBorderSize} />
+        <BorderLine style={{ height: horizontalBorderSize, width: "100%" }} />
       )}
     </>
   );

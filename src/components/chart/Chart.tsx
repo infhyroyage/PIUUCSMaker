@@ -389,7 +389,9 @@ function Chart() {
       {[...Array(columns)].map((_, column: number) => (
         <React.Fragment key={column}>
           {column === 0 && (
-            <BorderLine width={verticalBorderSize * 0.5} height="100%" />
+            <BorderLine
+              style={{ height: "100%", width: verticalBorderSize * 0.5 }}
+            />
           )}
           <div
             style={{ display: "flex" }}
@@ -409,7 +411,9 @@ function Chart() {
             onMouseDown={onMouseDown}
             onMouseUp={onMouseUp}
           >
-            <BorderLine width={verticalBorderSize * 0.5} height="100%" />
+            <BorderLine
+              style={{ height: "100%", width: verticalBorderSize * 0.5 }}
+            />
             <div
               style={{
                 display: "flex",
@@ -423,10 +427,14 @@ function Chart() {
                 notes={notes[column]}
               />
             </div>
-            <BorderLine width={verticalBorderSize * 0.5} height="100%" />
+            <BorderLine
+              style={{ height: "100%", width: verticalBorderSize * 0.5 }}
+            />
           </div>
           {column === columns - 1 && (
-            <BorderLine width={verticalBorderSize * 0.5} height="100%" />
+            <BorderLine
+              style={{ height: "100%", width: verticalBorderSize * 0.5 }}
+            />
           )}
         </React.Fragment>
       ))}

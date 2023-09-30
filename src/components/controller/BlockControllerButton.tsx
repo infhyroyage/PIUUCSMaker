@@ -71,7 +71,7 @@ function BlockControllerButton({
       </Card>
       {/* 譜面のブロックごとに分割する枠線 */}
       {!isLastBlock && (
-        <BorderLine width="100%" height={horizontalBorderSize} />
+        <BorderLine style={{ height: horizontalBorderSize, width: "100%" }} />
       )}
     </>
   );
