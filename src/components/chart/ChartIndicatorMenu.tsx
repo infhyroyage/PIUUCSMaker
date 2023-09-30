@@ -1,10 +1,12 @@
 import { memo, useCallback, useState } from "react";
 import {
   Divider,
+  ListItemText,
   Menu,
   MenuItem,
   MenuList,
   PopoverPosition,
+  Typography,
 } from "@mui/material";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
@@ -17,10 +19,10 @@ import { ClipBoard, CopiedNote, Note, Selector } from "../../types/chart";
 
 function ChartIndicatorMenu({ handler, indicator }: ChartIndicatorMenuProps) {
   const [clipBoard, setClipBoard] = useState<ClipBoard>(null);
+  const [menuPosition, setMenuPosition] = useRecoilState<
+    PopoverPosition | undefined
+  >(chartIndicatorMenuPositionState);
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
-  const [position, setPosition] = useRecoilState<PopoverPosition | undefined>(
-    chartIndicatorMenuPositionState
-  );
   const selector = useRecoilValue<Selector>(selectorState);
 
   const updateClipBoard = (
@@ -92,8 +94,8 @@ function ChartIndicatorMenu({ handler, indicator }: ChartIndicatorMenuProps) {
       )
     );
 
-    setPosition(undefined);
-  }, [notes, selector.completedCords, setClipBoard, setPosition]);
+    setMenuPosition(undefined);
+  }, [notes, selector.completedCords, setClipBoard, setMenuPosition]);
 
   const onClickCopy = useCallback(() => {
     // 選択領域が非表示/入力中の場合はNOP
@@ -123,8 +125,8 @@ function ChartIndicatorMenu({ handler, indicator }: ChartIndicatorMenuProps) {
     );
 
     updateClipBoard(startColumn, goalColumn, startRowIdx, goalRowIdx);
-    setPosition(undefined);
-  }, [notes, selector.completedCords, setClipBoard, setPosition]);
+    setMenuPosition(undefined);
+  }, [notes, selector.completedCords, setClipBoard, setMenuPosition]);
 
   const onClickPaste = useCallback(() => {
     // インディケーターが非表示である/1度もコピーしていない場合はNOP
@@ -158,21 +160,22 @@ function ChartIndicatorMenu({ handler, indicator }: ChartIndicatorMenuProps) {
       )
     );
 
-    setPosition(undefined);
-  }, [clipBoard, indicator, notes, setNotes, setPosition]);
+    setMenuPosition(undefined);
+  }, [clipBoard, indicator, notes, setNotes, setMenuPosition]);
 
   return (
     <Menu
-      anchorReference={position && "anchorPosition"}
-      anchorPosition={position}
+      anchorReference={menuPosition && "anchorPosition"}
+      anchorPosition={menuPosition}
       disableRestoreFocus
-      onClose={() => setPosition(undefined)}
-      open={!!position}
+      onClose={() => setMenuPosition(undefined)}
+      open={!!menuPosition}
       slotProps={{
         root: {
           onMouseUp: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) =>
             event.stopPropagation(),
         },
+        paper: { sx: { minWidth: 200 } },
       }}
     >
       <MenuList dense>
@@ -184,7 +187,10 @@ function ChartIndicatorMenu({ handler, indicator }: ChartIndicatorMenuProps) {
           }
           onClick={onClickCut}
         >
-          Cut
+          <ListItemText>Cut</ListItemText>
+          <Typography variant="body2" color="text.secondary">
+            Ctrl+X
+          </Typography>
         </MenuItem>
         <MenuItem
           disabled={
@@ -194,9 +200,20 @@ function ChartIndicatorMenu({ handler, indicator }: ChartIndicatorMenuProps) {
           }
           onClick={onClickCopy}
         >
-          Copy
+          <ListItemText>Copy</ListItemText>
+          <Typography variant="body2" color="text.secondary">
+            Ctrl+C
+          </Typography>
         </MenuItem>
-        <MenuItem onClick={onClickPaste}>Paste</MenuItem>
+        <MenuItem
+          disabled={indicator === null || clipBoard === null}
+          onClick={onClickPaste}
+        >
+          <ListItemText>Paste</ListItemText>
+          <Typography variant="body2" color="text.secondary">
+            Ctrl+V
+          </Typography>
+        </MenuItem>
         <Divider />
         <MenuItem
           disabled={
@@ -206,7 +223,10 @@ function ChartIndicatorMenu({ handler, indicator }: ChartIndicatorMenuProps) {
           }
           onClick={() => alert("TODO")}
         >
-          Flip Horizontal
+          <ListItemText>Flip Horizontal</ListItemText>
+          <Typography variant="body2" color="text.secondary">
+            X
+          </Typography>
         </MenuItem>
         <MenuItem
           disabled={
@@ -216,7 +236,10 @@ function ChartIndicatorMenu({ handler, indicator }: ChartIndicatorMenuProps) {
           }
           onClick={() => alert("TODO")}
         >
-          Flip Vertical
+          <ListItemText>Flip Vertical</ListItemText>
+          <Typography variant="body2" color="text.secondary">
+            Y
+          </Typography>
         </MenuItem>
         <MenuItem
           disabled={
@@ -226,7 +249,23 @@ function ChartIndicatorMenu({ handler, indicator }: ChartIndicatorMenuProps) {
           }
           onClick={() => alert("TODO")}
         >
-          Mirror
+          <ListItemText>Mirror</ListItemText>
+          <Typography variant="body2" color="text.secondary">
+            M
+          </Typography>
+        </MenuItem>
+        <MenuItem
+          disabled={
+            selector.completedCords === null ||
+            selector.completedCords.mouseUpColumn === null ||
+            selector.completedCords.mouseUpRowIdx === null
+          }
+          onClick={() => alert("TODO")}
+        >
+          <ListItemText>Delete</ListItemText>
+          <Typography variant="body2" color="text.secondary">
+            Delete
+          </Typography>
         </MenuItem>
         <Divider />
         <MenuItem
@@ -236,7 +275,7 @@ function ChartIndicatorMenu({ handler, indicator }: ChartIndicatorMenuProps) {
           }
           onClick={() => {
             handler.split(indicator);
-            setPosition(undefined);
+            setMenuPosition(undefined);
           }}
         >
           Split Block

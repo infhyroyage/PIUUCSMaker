@@ -1,5 +1,3 @@
 import { PopoverPosition } from "@mui/material";
 
-export type MenuPosition =
-  | { blockIdx: number; position: PopoverPosition }
-  | undefined;
+export type MenuPosition = { blockIdx: number; position?: PopoverPosition };

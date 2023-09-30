@@ -1,4 +1,4 @@
-import { memo, useCallback } from "react";
+import { memo } from "react";
 import { Divider, Menu, MenuItem, MenuList } from "@mui/material";
 import { useRecoilState } from "recoil";
 import { blockControllerMenuPositionState } from "../../service/atoms";
@@ -10,26 +10,19 @@ function BlockControllerMenu({ blockNum, handler }: BlockControllerMenuProps) {
     blockControllerMenuPositionState
   );
 
-  const onCloseMenu = useCallback(
-    () => setMenuPosition(undefined),
-    [setMenuPosition]
-  );
-
   return (
     <Menu
-      anchorReference={menuPosition && "anchorPosition"}
-      anchorPosition={menuPosition && menuPosition.position}
+      anchorReference={menuPosition.position && "anchorPosition"}
+      anchorPosition={menuPosition.position}
       disableRestoreFocus
-      onClose={onCloseMenu}
-      open={!!menuPosition}
+      onClose={() => setMenuPosition({ blockIdx: menuPosition.blockIdx })}
+      open={!!menuPosition.position}
     >
       <MenuList dense>
         <MenuItem
           onClick={() => {
-            if (menuPosition) {
-              handler.edit(menuPosition.blockIdx);
-              setMenuPosition(undefined);
-            }
+            handler.edit(menuPosition.blockIdx);
+            setMenuPosition({ blockIdx: menuPosition.blockIdx });
           }}
         >
           Edit
@@ -39,20 +32,16 @@ function BlockControllerMenu({ blockNum, handler }: BlockControllerMenuProps) {
         <Divider />
         <MenuItem
           onClick={() => {
-            if (menuPosition) {
-              handler.add(menuPosition.blockIdx);
-              setMenuPosition(undefined);
-            }
+            handler.add(menuPosition.blockIdx);
+            setMenuPosition({ blockIdx: menuPosition.blockIdx });
           }}
         >
           Add at Bottom
         </MenuItem>
         <MenuItem
           onClick={() => {
-            if (menuPosition) {
-              handler.insert(menuPosition.blockIdx);
-              setMenuPosition(undefined);
-            }
+            handler.insert(menuPosition.blockIdx);
+            setMenuPosition({ blockIdx: menuPosition.blockIdx });
           }}
         >
           Insert into Next
@@ -60,10 +49,8 @@ function BlockControllerMenu({ blockNum, handler }: BlockControllerMenuProps) {
         <MenuItem
           disabled={menuPosition && menuPosition.blockIdx === 0}
           onClick={() => {
-            if (menuPosition) {
-              handler.mergeAbove(menuPosition.blockIdx);
-              setMenuPosition(undefined);
-            }
+            handler.mergeAbove(menuPosition.blockIdx);
+            setMenuPosition({ blockIdx: menuPosition.blockIdx });
           }}
         >
           Merge with Above
@@ -71,10 +58,8 @@ function BlockControllerMenu({ blockNum, handler }: BlockControllerMenuProps) {
         <MenuItem
           disabled={menuPosition && menuPosition.blockIdx === blockNum - 1}
           onClick={() => {
-            if (menuPosition) {
-              handler.mergeBelow(menuPosition.blockIdx);
-              setMenuPosition(undefined);
-            }
+            handler.mergeBelow(menuPosition.blockIdx);
+            setMenuPosition({ blockIdx: menuPosition.blockIdx });
           }}
         >
           Merge with Below
@@ -82,10 +67,8 @@ function BlockControllerMenu({ blockNum, handler }: BlockControllerMenuProps) {
         <MenuItem
           disabled={blockNum < 2}
           onClick={() => {
-            if (menuPosition) {
-              handler.delete(menuPosition.blockIdx);
-              setMenuPosition(undefined);
-            }
+            handler.delete(menuPosition.blockIdx);
+            setMenuPosition({ blockIdx: menuPosition.blockIdx });
           }}
         >
           Delete
