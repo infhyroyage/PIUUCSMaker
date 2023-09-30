@@ -206,12 +206,13 @@ function Chart() {
     // 左クリック以外/ChartIndicatorMenu表示中/再生中/別々の列を跨いだマウス操作の場合はNOP
     if (event.button !== 0 || !!position || isPlaying) return;
 
-    // 親コンポーネントのAppに設定したonMouseUpへ伝搬しない
+    // 親コンポーネントのWorkspaceに設定したonMouseUpへ伝搬しない
     event.stopPropagation();
 
     // 同一列内でのクリック操作時は譜面の更新を行う
     if (
       indicator !== null &&
+      indicator.mouseDownColumn !== null &&
       indicator.mouseDownRowIdx !== null &&
       indicator.column === indicator.mouseDownColumn
     ) {
@@ -325,20 +326,27 @@ function Chart() {
         updatedNotes = [...beforeNotes, ...hold, ...afterNotes];
       }
 
-      // マウス押下時のパラメーターを初期化
-      setIndicator({
-        ...indicator,
-        mouseDownColumn: null,
-        mouseDownRowIdx: null,
-        mouseDownTop: null,
-      });
-
       // 単ノート/ホールドの追加・削除を行った譜面に更新
       setNotes(
         notes.map((notes: Note[], column: number) =>
           column === indicator.column ? updatedNotes : notes
         )
       );
+    }
+
+    // マウス押下時のパラメーターを初期化
+    if (
+      indicator !== null &&
+      (indicator.mouseDownColumn !== null ||
+        indicator.mouseDownRowIdx !== null ||
+        indicator.mouseDownTop !== null)
+    ) {
+      setIndicator({
+        ...indicator,
+        mouseDownColumn: null,
+        mouseDownRowIdx: null,
+        mouseDownTop: null,
+      });
     }
 
     if (selector.changingCords !== null) {
