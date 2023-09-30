@@ -1,5 +1,5 @@
 import { atom } from "recoil";
-import { Block, Note, Selector } from "../types/chart";
+import { Block, ClipBoard, Note, Selector } from "../types/chart";
 import { Zoom } from "../types/chart";
 import { EditBlockDialogForm } from "../types/form";
 import { PopoverPosition } from "@mui/material";

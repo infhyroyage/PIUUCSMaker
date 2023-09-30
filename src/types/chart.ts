@@ -40,6 +40,47 @@ export type Block = {
 };
 
 /**
+ * コピー時の単ノート/ホールドの始点/ホールドの中間/ホールドの終点
+ */
+export type CopiedNote = {
+  /**
+   * コピー時の選択領域の左上からの列インデックスの増分
+   */
+  deltaColumn: number;
+
+  /**
+   * コピー時の選択領域の左上からの譜面全体での行インデックスの増分
+   */
+  deltaRowIdx: number;
+
+  /**
+   * 単ノートの場合はX、ホールドの始点の場合はM、ホールドの中間の場合はH、ホールドの終点の場合はW
+   */
+  type: "X" | "M" | "H" | "W";
+};
+
+/**
+ * 選択領域に含まれるCopiedNoteの集合をコピーできるクリップボード
+ * 1度もコピーしていない場合はnull
+ */
+export type ClipBoard = null | {
+  /**
+   * コピー時の選択領域の列の長さ
+   */
+  columnLength: number;
+
+  /**
+   * CopiedNoteの集合
+   */
+  copiedNotes: CopiedNote[];
+
+  /**
+   * コピー時の選択領域の行の長さ
+   */
+  rowLength: number;
+};
+
+/**
  * インディケーターの表示パラメーター
  * インディケーター非表示の場合はnull
  */
