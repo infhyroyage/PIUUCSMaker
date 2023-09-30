@@ -283,20 +283,46 @@ function Chart() {
         }
       } else {
         // startとgoalとの間にホールドを新規追加
-        // ただし、その間の場所に単ノート/ホールドが含む場合は、それをすべて削除してから新規追加する
-        updatedNotes = [
-          ...notes[indicator.column].filter((note: Note) => note.idx < start),
-          ...Array.from<any, Note>(
-            { length: goal - start + 1 },
-            (_, idx: number) => {
-              return {
-                idx: start + idx,
-                type: idx === 0 ? "M" : idx === goal - start ? "W" : "H",
-              };
-            }
-          ),
-          ...notes[indicator.column].filter((note: Note) => note.idx > goal),
-        ];
+        // ただし、新規追加するホールドの間に単ノート/ホールド(M/H/W)が含む場合は、事前にすべて削除しておく
+        let beforeNotes: Note[] = notes[indicator.column].filter(
+          (note: Note) => note.idx < start
+        );
+        for (const beforeNote of beforeNotes.reverse()) {
+          if (["X", "W"].includes(beforeNote.type)) {
+            break;
+          } else if (beforeNote.type === "M") {
+            beforeNotes = beforeNotes.filter(
+              (note: Note) => note.idx < beforeNote.idx
+            );
+            break;
+          }
+        }
+
+        const hold: Note[] = Array.from<any, Note>(
+          { length: goal - start + 1 },
+          (_, idx: number) => {
+            return {
+              idx: start + idx,
+              type: idx === 0 ? "M" : idx === goal - start ? "W" : "H",
+            };
+          }
+        );
+
+        let afterNotes: Note[] = notes[indicator.column].filter(
+          (note: Note) => note.idx > goal
+        );
+        for (const afterNote of afterNotes) {
+          if (["X", "M"].includes(afterNote.type)) {
+            break;
+          } else if (afterNote.type === "W") {
+            afterNotes = afterNotes.filter(
+              (note: Note) => note.idx > afterNote.idx
+            );
+            break;
+          }
+        }
+
+        updatedNotes = [...beforeNotes, ...hold, ...afterNotes];
       }
 
       // マウス押下時のパラメーターを初期化
