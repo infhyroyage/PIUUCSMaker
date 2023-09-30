@@ -380,8 +380,13 @@ function Chart() {
         },
         ...blocks.slice(indicator.blockIdx + 1),
       ]);
+      setIndicator({
+        ...indicator,
+        blockIdx: indicator.blockIdx + 1,
+        blockAccumulatedLength: indicator.rowIdx,
+      });
     },
-    [blocks, setBlocks]
+    [blocks, indicator, setBlocks, setIndicator]
   );
 
   return (
