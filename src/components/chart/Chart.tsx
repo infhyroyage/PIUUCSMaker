@@ -126,8 +126,7 @@ function Chart() {
       event.shiftKey &&
       selector.changingCords !== null &&
       (column !== selector.changingCords.mouseUpColumn ||
-        rowIdx !== selector.changingCords.mouseUpRowIdx ||
-        top !== selector.changingCords.mouseUpTop)
+        rowIdx !== selector.changingCords.mouseUpRowIdx)
     ) {
       // 選択領域入力時の場合は選択領域を更新
       setSelector({
@@ -135,7 +134,6 @@ function Chart() {
           ...selector.changingCords,
           mouseUpColumn: column,
           mouseUpRowIdx: rowIdx,
-          mouseUpTop: top,
         },
         completedCords: null,
       });
@@ -161,7 +159,6 @@ function Chart() {
           ...selector.changingCords,
           mouseUpColumn: null,
           mouseUpRowIdx: null,
-          mouseUpTop: null,
         },
         completedCords: null,
       });
@@ -193,10 +190,8 @@ function Chart() {
         changingCords: {
           mouseDownColumn: indicator.column,
           mouseDownRowIdx: indicator.rowIdx,
-          mouseDownTop: indicator.top,
           mouseUpColumn: indicator.column,
           mouseUpRowIdx: indicator.rowIdx,
-          mouseUpTop: indicator.top,
         },
         completedCords: null,
       });

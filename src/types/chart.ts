@@ -122,11 +122,6 @@ export type SelectorCords = {
   mouseDownRowIdx: number;
 
   /**
-   * 選択領域の入力開始時のマウスの座標でのtop値
-   */
-  mouseDownTop: number;
-
-  /**
    * 選択領域の入力時/入力終了時のマウスの座標での列インデックス
    * Single/SinglePerformance譜面の場合は0〜4、Double/DoublePerformance譜面の場合は0〜9
    * 選択領域の入力時にマウスの座標が譜面から外れた場合はnull
@@ -138,12 +133,6 @@ export type SelectorCords = {
    * 選択領域の入力時にマウスの座標が譜面から外れた場合はnull
    */
   mouseUpRowIdx: number | null;
-
-  /**
-   * 選択領域の入力時/入力終了時のマウスの座標でのtop値
-   * 選択領域の入力時にマウスの座標が譜面から外れた場合はnull
-   */
-  mouseUpTop: number | null;
 };
 /**
  * 選択領域のパラメーター
