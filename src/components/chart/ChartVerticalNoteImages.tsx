@@ -31,9 +31,9 @@ function ChartVerticalNoteImages({
     [noteSize, split, zoom.idx]
   );
 
-  // 縦の枠線のサイズ(px単位)をnoteSizeの0.05倍(偶数に丸めるように切り捨て、最小値は1)として計算
+  // 縦の枠線のサイズ(px単位)をnoteSizeの0.05倍(偶数に丸めるように切り捨て、最小値は2)として計算
   const verticalBorderSize = useMemo(
-    () => Math.max(Math.floor(noteSize * 0.025) * 2, 1),
+    () => Math.max(Math.floor(noteSize * 0.025) * 2, 2),
     [noteSize]
   );
 
