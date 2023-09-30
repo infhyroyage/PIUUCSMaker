@@ -60,6 +60,7 @@ function ChartVerticalNoteImages({
               rectangleIdentifierWidth +
               verticalBorderSize * 0.5 +
               noteSize * column,
+            pointerEvents: "none",
             zIndex: (idx + 1) * 10,
           }}
         />
@@ -80,6 +81,7 @@ function ChartVerticalNoteImages({
                 rectangleIdentifierWidth +
                 verticalBorderSize * 0.5 +
                 noteSize * column,
+              pointerEvents: "none",
               zIndex: (idx + 1) * 10,
             }}
           />
@@ -95,6 +97,7 @@ function ChartVerticalNoteImages({
                 rectangleIdentifierWidth +
                 verticalBorderSize * 0.5 +
                 noteSize * column,
+              pointerEvents: "none",
               zIndex: (idx + 1) * 10 + 1,
             }}
           />
@@ -115,6 +118,7 @@ function ChartVerticalNoteImages({
               rectangleIdentifierWidth +
               verticalBorderSize * 0.5 +
               noteSize * column,
+            pointerEvents: "none",
             zIndex: (idx + 1) * 10,
           }}
         />
