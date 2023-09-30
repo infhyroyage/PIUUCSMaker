@@ -8,7 +8,7 @@ import {
   rectangleIdentifierWidthState,
 } from "../../service/atoms";
 
-function ChartIndicator({ indicator, mouseDown }: ChartIndicatorProps) {
+function ChartIndicator({ indicator }: ChartIndicatorProps) {
   const noteSize = useRecoilValue<number>(noteSizeState);
   const rectangleIdentifierWidth = useRecoilValue<number>(
     rectangleIdentifierWidthState
@@ -23,12 +23,12 @@ function ChartIndicator({ indicator, mouseDown }: ChartIndicatorProps) {
   const theme: Theme = useTheme();
 
   return (
-    indicator && (
+    indicator !== null && (
       <>
         {/* 押下中でのホールドのみ画像を表示する(単ノートは表示しない) */}
-        {mouseDown &&
-          mouseDown.column === indicator.column &&
-          mouseDown.rowIdx !== indicator.rowIdx && (
+        {indicator.column === indicator.mouseDownColumn &&
+          indicator.rowIdx !== indicator.mouseDownRowIdx &&
+          indicator.mouseDownTop !== null && (
             <>
               <img
                 src={IMAGE_BINARIES[indicator.column % 5].note}
@@ -37,7 +37,7 @@ function ChartIndicator({ indicator, mouseDown }: ChartIndicatorProps) {
                 height={noteSize}
                 style={{
                   position: "absolute",
-                  top: Math.min(indicator.top, mouseDown.top),
+                  top: Math.min(indicator.top, indicator.mouseDownTop),
                   left:
                     rectangleIdentifierWidth +
                     verticalBorderSize * 0.5 +
@@ -50,10 +50,12 @@ function ChartIndicator({ indicator, mouseDown }: ChartIndicatorProps) {
                 src={IMAGE_BINARIES[indicator.column % 5].hold}
                 alt={`hold${indicator.column % 5}`}
                 width={noteSize}
-                height={Math.abs(indicator.top - mouseDown.top)}
+                height={Math.abs(indicator.top - indicator.mouseDownTop)}
                 style={{
                   position: "absolute",
-                  top: Math.min(indicator.top, mouseDown.top) + noteSize * 0.5,
+                  top:
+                    Math.min(indicator.top, indicator.mouseDownTop) +
+                    noteSize * 0.5,
                   left:
                     rectangleIdentifierWidth +
                     verticalBorderSize * 0.5 +
@@ -69,7 +71,7 @@ function ChartIndicator({ indicator, mouseDown }: ChartIndicatorProps) {
                 height={noteSize}
                 style={{
                   position: "absolute",
-                  top: Math.max(indicator.top, mouseDown.top),
+                  top: Math.max(indicator.top, indicator.mouseDownTop),
                   left:
                     rectangleIdentifierWidth +
                     verticalBorderSize * 0.5 +

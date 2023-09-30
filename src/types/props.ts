@@ -1,4 +1,4 @@
-import { MouseDown, Note, Selector, SelectorCords } from "./chart";
+import { Note, SelectorCords } from "./chart";
 import { Indicator } from "./chart";
 
 export type BlockControllerButtonProps = {
@@ -114,12 +114,6 @@ export type ChartIndicatorProps = {
    * インディケーター非表示の場合はnull
    */
   indicator: Indicator;
-
-  /**
-   * マウス押下時のパラメーター
-   * マウス押下していない場合はnull
-   */
-  mouseDown: MouseDown;
 };
 
 /**

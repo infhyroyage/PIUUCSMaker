@@ -60,33 +60,30 @@ export type Indicator = null | {
   column: number;
 
   /**
+   * マウス押下時の列インデックス
+   * 譜面にマウスを押下していない場合はnull
+   */
+  mouseDownColumn: number | null;
+
+  /**
+   * マウス押下時の譜面全体での行のインデックス
+   * 譜面にマウスを押下していない場合はnull
+   */
+  mouseDownRowIdx: number | null;
+
+  /**
+   * マウス押下時の行のtop値
+   * 譜面にマウスを押下していない場合はnull
+   */
+  mouseDownTop: number | null;
+
+  /**
    * インディケーターの示す譜面全体での行のインデックス
    */
   rowIdx: number;
 
   /**
    * インディケーターのtop値
-   */
-  top: number;
-};
-
-/**
- * 譜面へのマウス押下時のパラメーター
- * 譜面にマウスを押下していない場合はnull
- */
-export type MouseDown = null | {
-  /**
-   * マウス押下時の列インデックス
-   */
-  column: number;
-
-  /**
-   * マウス押下時の譜面全体での行のインデックス
-   */
-  rowIdx: number;
-
-  /**
-   * マウス押下時の行のtop値
    */
   top: number;
 };

@@ -1,7 +1,6 @@
 import { atom } from "recoil";
 import { Block, Note, Selector } from "../types/chart";
 import { Zoom } from "../types/chart";
-import { MouseDown } from "../types/chart";
 import { EditBlockDialogForm } from "../types/form";
 import { PopoverPosition } from "@mui/material";
 import { MenuPosition } from "../types/controller";
@@ -101,11 +100,6 @@ export const isPlayingState = atom<boolean>({
 export const menuBarHeightState = atom<number>({
   key: "menuBarHeight",
   default: 0,
-});
-
-export const mouseDownState = atom<MouseDown>({
-  key: "mouseDowns",
-  default: null,
 });
 
 /**

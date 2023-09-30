@@ -5,7 +5,6 @@ import {
   chartIndicatorMenuPositionState,
   columnsState,
   isPlayingState,
-  mouseDownState,
   noteSizeState,
   notesState,
   selectorState,
@@ -13,14 +12,7 @@ import {
 } from "../../service/atoms";
 import BorderLine from "../BorderLine";
 import ChartVertical from "./ChartVertical";
-import {
-  Block,
-  Indicator,
-  MouseDown,
-  Note,
-  Selector,
-  Zoom,
-} from "../../types/chart";
+import { Block, Indicator, Note, Selector, Zoom } from "../../types/chart";
 import { ZOOM_VALUES } from "../../service/zoom";
 import { PopoverPosition } from "@mui/material";
 import ChartIndicator from "./ChartIndicator";
@@ -30,7 +22,6 @@ import ChartSelector from "./ChartSelector";
 function Chart() {
   const [indicator, setIndicator] = useState<Indicator>(null);
   const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
-  const [mouseDown, setMouseDown] = useRecoilState<MouseDown>(mouseDownState);
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
   const [position, setPosition] = useRecoilState<PopoverPosition | undefined>(
     chartIndicatorMenuPositionState
@@ -102,24 +93,30 @@ function Chart() {
 
     // 無駄な再レンダリングを避けるため、マウスホバーした場所の列インデックス・譜面全体での行のインデックスが
     // 現在のインディケーターの列インデックス・譜面全体での行のインデックスとすべて同じである場合、indicatorの状態を更新しない
-    const updatedIndicator: Indicator =
-      top !== null && rowIdx !== null
-        ? {
-            blockAccumulatedLength: blocks[blockIdx].accumulatedLength,
-            blockIdx,
-            column,
-            rowIdx,
-            top,
-          }
-        : null;
     if (
-      (indicator !== null || updatedIndicator !== null) &&
+      (indicator !== null || (top !== null && rowIdx !== null)) &&
       (indicator === null ||
-        updatedIndicator === null ||
-        indicator.column !== updatedIndicator.column ||
-        indicator.rowIdx !== updatedIndicator.rowIdx)
+        top === null ||
+        rowIdx === null ||
+        indicator.column !== column ||
+        indicator.rowIdx !== rowIdx)
     ) {
-      setIndicator(updatedIndicator);
+      setIndicator(
+        top !== null && rowIdx !== null
+          ? {
+              blockAccumulatedLength: blocks[blockIdx].accumulatedLength,
+              blockIdx,
+              column,
+              mouseDownColumn:
+                indicator === null ? null : indicator.mouseDownColumn,
+              mouseDownRowIdx:
+                indicator === null ? null : indicator.mouseDownRowIdx,
+              mouseDownTop: indicator === null ? null : indicator.mouseDownTop,
+              rowIdx,
+              top,
+            }
+          : null
+      );
     }
 
     if (
@@ -175,17 +172,18 @@ function Chart() {
     if (event.button !== 0 || !!position || isPlaying || indicator === null)
       return;
 
-    // Shift未入力の場合のみマウス押下時のパラメーターを保持
+    // Shift未入力の場合のみ、マウス押下時のパラメーターを保持
     if (!event.shiftKey) {
-      setMouseDown({
-        column: indicator.column,
-        rowIdx: indicator.rowIdx,
-        top: indicator.top,
+      setIndicator({
+        ...indicator,
+        mouseDownColumn: indicator.column,
+        mouseDownRowIdx: indicator.rowIdx,
+        mouseDownTop: indicator.top,
       });
     }
 
     if (event.shiftKey) {
-      // Shift入力時の場合は選択領域入力時のみパラメーターを設定
+      // Shift入力時の場合は、選択領域入力時のみパラメーターを設定
       setSelector({
         changingCords: {
           mouseDownColumn: indicator.column,
@@ -199,7 +197,7 @@ function Chart() {
       selector.changingCords !== null ||
       selector.completedCords !== null
     ) {
-      // Shift未入力、かつ、選択領域表示時は選択領域のパラメーターを非表示
+      // Shift未入力、かつ、選択領域表示時は選択領域を非表示
       setSelector({ changingCords: null, completedCords: null });
     }
   };
@@ -214,14 +212,20 @@ function Chart() {
     // 同一列内でのクリック操作時は譜面の更新を行う
     if (
       indicator !== null &&
-      mouseDown !== null &&
-      indicator.column === mouseDown.column
+      indicator.mouseDownRowIdx !== null &&
+      indicator.column === indicator.mouseDownColumn
     ) {
       // 単ノート/ホールドの始点start、終点goalの譜面全体での行インデックスを取得
-      const start: number = Math.min(indicator.rowIdx, mouseDown.rowIdx);
-      const goal: number = Math.max(indicator.rowIdx, mouseDown.rowIdx);
+      const start: number = Math.min(
+        indicator.rowIdx,
+        indicator.mouseDownRowIdx
+      );
+      const goal: number = Math.max(
+        indicator.rowIdx,
+        indicator.mouseDownRowIdx
+      );
 
-      // 譜面全体での行インデックスmouseDown.rowIdxで押下した後に
+      // 譜面全体での行インデックスindicator.mouseDownRowIdxで押下した後に
       // 譜面全体での行インデックスindicator.rowIdxで押下を離した際の
       // 列インデックスindicator.columnにて、単ノート/ホールドの追加・削除を行う
       let updatedNotes: Note[];
@@ -296,7 +300,12 @@ function Chart() {
       }
 
       // マウス押下時のパラメーターを初期化
-      setMouseDown(null);
+      setIndicator({
+        ...indicator,
+        mouseDownColumn: null,
+        mouseDownRowIdx: null,
+        mouseDownTop: null,
+      });
 
       // 単ノート/ホールドの追加・削除を行った譜面に更新
       setNotes(
@@ -387,7 +396,7 @@ function Chart() {
           )}
         </React.Fragment>
       ))}
-      <ChartIndicator indicator={indicator} mouseDown={mouseDown} />
+      <ChartIndicator indicator={indicator} />
       <ChartIndicatorMenu
         handler={{
           split: handleSplit,
