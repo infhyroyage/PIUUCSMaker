@@ -6,12 +6,11 @@ import {
   MenuList,
   PopoverPosition,
 } from "@mui/material";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import {
   chartIndicatorMenuPositionState,
   notesState,
   selectorState,
-  successMessageState,
 } from "../../service/atoms";
 import { ChartIndicatorMenuProps } from "../../types/props";
 import { ClipBoard, CopiedNote, Note, Selector } from "../../types/chart";
@@ -23,37 +22,13 @@ function ChartIndicatorMenu({ handler, indicator }: ChartIndicatorMenuProps) {
     chartIndicatorMenuPositionState
   );
   const selector = useRecoilValue<Selector>(selectorState);
-  const setSuccessMessage = useSetRecoilState<string>(successMessageState);
 
-  const onCloseMenu = useCallback(() => setPosition(undefined), [setPosition]);
-
-  const onClickCopy = useCallback(() => {
-    // 選択領域が非表示/入力中の場合はNOP
-    if (
-      selector.completedCords === null ||
-      selector.completedCords.mouseUpColumn === null ||
-      selector.completedCords.mouseUpRowIdx === null
-    )
-      return;
-
-    // 選択領域の座標から、始点/終点の列インデックス/譜面全体での行インデックスをそれぞれ取得
-    const startColumn: number = Math.min(
-      selector.completedCords.mouseDownColumn,
-      selector.completedCords.mouseUpColumn
-    );
-    const goalColumn: number = Math.max(
-      selector.completedCords.mouseDownColumn,
-      selector.completedCords.mouseUpColumn
-    );
-    const startRowIdx: number = Math.min(
-      selector.completedCords.mouseDownRowIdx,
-      selector.completedCords.mouseUpRowIdx
-    );
-    const goalRowIdx: number = Math.max(
-      selector.completedCords.mouseDownRowIdx,
-      selector.completedCords.mouseUpRowIdx
-    );
-
+  const updateClipBoard = (
+    startColumn: number,
+    goalColumn: number,
+    startRowIdx: number,
+    goalRowIdx: number
+  ) => {
     setClipBoard({
       columnLength: goalColumn + 1 - startColumn,
       copiedNotes: [...Array(goalColumn - startColumn + 1)]
@@ -73,21 +48,89 @@ function ChartIndicatorMenu({ handler, indicator }: ChartIndicatorMenuProps) {
         .flat(),
       rowLength: goalRowIdx + 1 - startRowIdx,
     });
-    setSuccessMessage("コピーしました");
+  };
+
+  const onClickCut = useCallback(() => {
+    // 選択領域が非表示/入力中の場合はNOP
+    if (
+      selector.completedCords === null ||
+      selector.completedCords.mouseUpColumn === null ||
+      selector.completedCords.mouseUpRowIdx === null
+    )
+      return;
+
+    // 選択領域の始点/終点の列インデックス/譜面全体での行インデックスをそれぞれ取得
+    const startColumn: number = Math.min(
+      selector.completedCords.mouseDownColumn,
+      selector.completedCords.mouseUpColumn
+    );
+    const goalColumn: number = Math.max(
+      selector.completedCords.mouseDownColumn,
+      selector.completedCords.mouseUpColumn
+    );
+    const startRowIdx: number = Math.min(
+      selector.completedCords.mouseDownRowIdx,
+      selector.completedCords.mouseUpRowIdx
+    );
+    const goalRowIdx: number = Math.max(
+      selector.completedCords.mouseDownRowIdx,
+      selector.completedCords.mouseUpRowIdx
+    );
+
+    updateClipBoard(startColumn, goalColumn, startRowIdx, goalRowIdx);
+
+    // 選択領域に含まれる領域のみ、単ノート/ホールドの始点/ホールドの中間/ホールドの終点のカット対象とする
+    setNotes(
+      notes.map((ns: Note[], column: number) =>
+        column < startColumn || column > goalColumn
+          ? ns
+          : [
+              ...ns.filter(
+                (note: Note) => note.idx < startRowIdx || note.idx > goalRowIdx
+              ),
+            ]
+      )
+    );
+
     setPosition(undefined);
-  }, [
-    notes,
-    selector.completedCords,
-    setClipBoard,
-    setSuccessMessage,
-    setPosition,
-  ]);
+  }, [notes, selector.completedCords, setClipBoard, setPosition]);
+
+  const onClickCopy = useCallback(() => {
+    // 選択領域が非表示/入力中の場合はNOP
+    if (
+      selector.completedCords === null ||
+      selector.completedCords.mouseUpColumn === null ||
+      selector.completedCords.mouseUpRowIdx === null
+    )
+      return;
+
+    // 選択領域の始点/終点の列インデックス/譜面全体での行インデックスをそれぞれ取得
+    const startColumn: number = Math.min(
+      selector.completedCords.mouseDownColumn,
+      selector.completedCords.mouseUpColumn
+    );
+    const goalColumn: number = Math.max(
+      selector.completedCords.mouseDownColumn,
+      selector.completedCords.mouseUpColumn
+    );
+    const startRowIdx: number = Math.min(
+      selector.completedCords.mouseDownRowIdx,
+      selector.completedCords.mouseUpRowIdx
+    );
+    const goalRowIdx: number = Math.max(
+      selector.completedCords.mouseDownRowIdx,
+      selector.completedCords.mouseUpRowIdx
+    );
+
+    updateClipBoard(startColumn, goalColumn, startRowIdx, goalRowIdx);
+    setPosition(undefined);
+  }, [notes, selector.completedCords, setClipBoard, setPosition]);
 
   const onClickPaste = useCallback(() => {
     // インディケーターが非表示である/1度もコピーしていない場合はNOP
     if (indicator === null || clipBoard === null) return;
 
-    // インディケーターを左上として、コピー時の選択領域に含まれない列・行のみ
+    // インディケーターの位置を左上としたコピー時の選択領域に含まれる領域のみ、
     // 単ノート/ホールドの始点/ホールドの中間/ホールドの終点のペースト対象とする
     setNotes(
       notes.map((ns: Note[], column: number) =>
@@ -114,6 +157,7 @@ function ChartIndicatorMenu({ handler, indicator }: ChartIndicatorMenuProps) {
             ]
       )
     );
+
     setPosition(undefined);
   }, [clipBoard, indicator, notes, setNotes, setPosition]);
 
@@ -122,7 +166,7 @@ function ChartIndicatorMenu({ handler, indicator }: ChartIndicatorMenuProps) {
       anchorReference={position && "anchorPosition"}
       anchorPosition={position}
       disableRestoreFocus
-      onClose={onCloseMenu}
+      onClose={() => setPosition(undefined)}
       open={!!position}
       slotProps={{
         root: {
@@ -138,7 +182,7 @@ function ChartIndicatorMenu({ handler, indicator }: ChartIndicatorMenuProps) {
             selector.completedCords.mouseUpColumn === null ||
             selector.completedCords.mouseUpRowIdx === null
           }
-          onClick={() => alert("TODO")}
+          onClick={onClickCut}
         >
           Cut
         </MenuItem>
