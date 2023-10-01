@@ -18,6 +18,7 @@ import {
 import { ChartIndicatorMenuProps } from "../../types/props";
 import { ClipBoard, Indicator, Selector } from "../../types/chart";
 import useClipBoard from "../../hooks/useClipBoard";
+import useFlipping from "../../hooks/useFlipping";
 
 function ChartIndicatorMenu({ handler }: ChartIndicatorMenuProps) {
   const clipBoard = useRecoilValue<ClipBoard>(clipBoardState);
@@ -28,6 +29,7 @@ function ChartIndicatorMenu({ handler }: ChartIndicatorMenuProps) {
   const selector = useRecoilValue<Selector>(selectorState);
 
   const { handleCut, handleCopy, handlePaste } = useClipBoard();
+  const { flip } = useFlipping();
 
   return (
     <Menu
@@ -109,7 +111,10 @@ function ChartIndicatorMenu({ handler }: ChartIndicatorMenuProps) {
             selector.completedCords.mouseUpColumn === null ||
             selector.completedCords.mouseUpRowIdx === null
           }
-          onClick={() => alert("TODO")}
+          onClick={() => {
+            flip(true, false);
+            setMenuPosition(undefined);
+          }}
         >
           <ListItemText>Flip Horizontal</ListItemText>
           <Typography variant="body2" color="text.secondary">
@@ -122,7 +127,10 @@ function ChartIndicatorMenu({ handler }: ChartIndicatorMenuProps) {
             selector.completedCords.mouseUpColumn === null ||
             selector.completedCords.mouseUpRowIdx === null
           }
-          onClick={() => alert("TODO")}
+          onClick={() => {
+            flip(false, true);
+            setMenuPosition(undefined);
+          }}
         >
           <ListItemText>Flip Vertical</ListItemText>
           <Typography variant="body2" color="text.secondary">
@@ -135,7 +143,10 @@ function ChartIndicatorMenu({ handler }: ChartIndicatorMenuProps) {
             selector.completedCords.mouseUpColumn === null ||
             selector.completedCords.mouseUpRowIdx === null
           }
-          onClick={() => alert("TODO")}
+          onClick={() => {
+            flip(true, true);
+            setMenuPosition(undefined);
+          }}
         >
           <ListItemText>Mirror</ListItemText>
           <Typography variant="body2" color="text.secondary">
