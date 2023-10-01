@@ -1,20 +1,59 @@
-import { Divider, Drawer, Theme } from "@mui/material";
+import { useEffect } from "react";
+import { Divider, Drawer, List, Theme } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import UploadIcon from "@mui/icons-material/Upload";
+import DownloadIcon from "@mui/icons-material/Download";
+import UndoIcon from "@mui/icons-material/Undo";
+import RedoIcon from "@mui/icons-material/Redo";
+import ZoomInIcon from "@mui/icons-material/ZoomIn";
+import ZoomOutIcon from "@mui/icons-material/ZoomOut";
+import AudioFileIcon from "@mui/icons-material/AudioFile";
+import MusicOffIcon from "@mui/icons-material/MusicOff";
+import MusicNoteIcon from "@mui/icons-material/MusicNote";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import StopIcon from "@mui/icons-material/Stop";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+import LightModeIcon from "@mui/icons-material/LightMode";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
+  isDarkModeState,
+  isMuteBeatsState,
   isOpenedMenuDrawerState,
+  isOpenedNewUCSDialogState,
+  isPlayingState,
   menuBarHeightState,
+  ucsNameState,
+  zoomState,
 } from "../../service/atoms";
-import { useRecoilValue } from "recoil";
-import MenuDrawerUCSList from "./MenuDrawerUCSList";
-import MenuDrawerProcessList from "./MenuDrawerProcessList";
-import MenuDrawerZoomList from "./MenuDrawerZoomList";
-import MenuDrawerPlayingList from "./MenuDrawerPlayingList";
-import MenuDrawerThemeList from "./MenuDrawerThemeList";
-
-const OPENED_DRAWER_WIDTH = 200;
+import MenuDrawerListItem from "./MenuDrawerListItem";
+import { Zoom } from "../../types/chart";
+import { ZOOM_VALUES } from "../../service/zoom";
+import { MENU_DRAWER_OPENED_WIDTH } from "../../service/styles";
+import usePlayingMusic from "../../hooks/usePlayingMusic";
+import useUploadingUCS from "../../hooks/useUploadingUCS";
+import useDownloadingUCS from "../../hooks/useDownloadingUCS";
+import MenuDrawerUploadListItem from "./MenuDrawerUploadListItem";
 
 function MenuDrawer() {
+  const [isDarkMode, setIsDarkMode] = useRecoilState<boolean>(isDarkModeState);
+  const [isMuteBeats, setIsMuteBeats] =
+    useRecoilState<boolean>(isMuteBeatsState);
+  const [zoom, setZoom] = useRecoilState<Zoom>(zoomState);
   const isOpenedMenuDrawer = useRecoilValue<boolean>(isOpenedMenuDrawerState);
+  const isPlaying = useRecoilValue<boolean>(isPlayingState);
   const menuBarHeight = useRecoilValue<number>(menuBarHeightState);
+  const ucsName = useRecoilValue<string | null>(ucsNameState);
+  const setIsOpenedNewUCSDialog = useSetRecoilState<boolean>(
+    isOpenedNewUCSDialogState
+  );
+
+  const { isUploadingUCS, uploadUCS } = useUploadingUCS();
+  const { isDownloadingUCS, downloadUCS } = useDownloadingUCS();
+  const { isUploadingMP3, start, stop, uploadMP3 } = usePlayingMusic();
+
+  useEffect(() => {
+    if (zoom.top !== null) scrollTo({ top: zoom.top });
+  }, [zoom]);
 
   return (
     <Drawer
@@ -22,7 +61,7 @@ function MenuDrawer() {
       open={isOpenedMenuDrawer}
       PaperProps={{ elevation: 3, sx: { marginTop: `${menuBarHeight}px` } }}
       sx={(theme: Theme) => ({
-        width: isOpenedMenuDrawer ? OPENED_DRAWER_WIDTH : menuBarHeight,
+        width: isOpenedMenuDrawer ? MENU_DRAWER_OPENED_WIDTH : menuBarHeight,
         transition: theme.transitions.create("width", {
           easing: theme.transitions.easing.sharp,
           duration: isOpenedMenuDrawer
@@ -34,7 +73,7 @@ function MenuDrawer() {
         boxSizing: "border-box",
         overflowX: "hidden",
         "& .MuiDrawer-paper": {
-          width: isOpenedMenuDrawer ? OPENED_DRAWER_WIDTH : menuBarHeight,
+          width: isOpenedMenuDrawer ? MENU_DRAWER_OPENED_WIDTH : menuBarHeight,
           transition: theme.transitions.create("width", {
             easing: theme.transitions.easing.sharp,
             duration: isOpenedMenuDrawer
@@ -44,15 +83,106 @@ function MenuDrawer() {
         },
       })}
     >
-      <MenuDrawerUCSList />
+      <List>
+        <MenuDrawerListItem
+          disabled={isPlaying || isUploadingUCS || isDownloadingUCS}
+          icon={<AddIcon />}
+          label="New UCS"
+          onClick={() => setIsOpenedNewUCSDialog(true)}
+        />
+        <MenuDrawerUploadListItem
+          disabled={isPlaying || isUploadingUCS || isDownloadingUCS}
+          extension=".ucs"
+          icon={<UploadIcon />}
+          id="upload-ucs"
+          label={isUploadingUCS ? "Ready..." : "Upload UCS"}
+          onChange={uploadUCS}
+        />
+        <MenuDrawerListItem
+          disabled={
+            ucsName === null || isPlaying || isUploadingUCS || isDownloadingUCS
+          }
+          icon={<DownloadIcon />}
+          label={isDownloadingUCS ? "Ready..." : "Download UCS"}
+          onClick={downloadUCS}
+        />
+      </List>
       <Divider />
-      <MenuDrawerProcessList />
+      <List>
+        <MenuDrawerListItem
+          disabled={isPlaying}
+          icon={<UndoIcon />}
+          label="Undo (Ctrl+Z)"
+          onClick={() => alert("TODO")}
+        />
+        <MenuDrawerListItem
+          disabled={isPlaying}
+          icon={<RedoIcon />}
+          label="Redo (Ctrl+Y)"
+          onClick={() => alert("TODO")}
+        />
+      </List>
       <Divider />
-      <MenuDrawerZoomList />
+      <List>
+        <MenuDrawerListItem
+          disabled={zoom.idx === ZOOM_VALUES.length - 1 || isPlaying}
+          icon={<ZoomInIcon />}
+          label="Zoom In"
+          onClick={() =>
+            setZoom({
+              idx: zoom.idx + 1,
+              top:
+                (document.documentElement.scrollTop *
+                  ZOOM_VALUES[zoom.idx + 1]) /
+                ZOOM_VALUES[zoom.idx],
+            })
+          }
+        />
+        <MenuDrawerListItem
+          disabled={zoom.idx === 0 || isPlaying}
+          icon={<ZoomOutIcon />}
+          label="Zoom Out"
+          onClick={() =>
+            setZoom({
+              idx: zoom.idx - 1,
+              top:
+                (document.documentElement.scrollTop *
+                  ZOOM_VALUES[zoom.idx - 1]) /
+                ZOOM_VALUES[zoom.idx],
+            })
+          }
+        />
+      </List>
       <Divider />
-      <MenuDrawerPlayingList />
+      <List>
+        <MenuDrawerUploadListItem
+          disabled={isPlaying || isUploadingMP3}
+          extension=".mp3"
+          icon={<AudioFileIcon />}
+          id="upload-mp3"
+          label={isUploadingUCS ? "Ready..." : "Upload MP3"}
+          onChange={uploadMP3}
+        />
+        <MenuDrawerListItem
+          icon={isMuteBeats ? <MusicOffIcon /> : <MusicNoteIcon />}
+          label={isMuteBeats ? "Mute Beats" : "Unmute Beats"}
+          onClick={() => setIsMuteBeats(!isMuteBeats)}
+        />
+        <MenuDrawerListItem
+          disabled={ucsName === null || isUploadingMP3}
+          icon={isPlaying ? <StopIcon /> : <PlayArrowIcon />}
+          label={isPlaying ? "Stop (Space)" : "Play (Space)"}
+          onClick={() => (isPlaying ? stop() : start())}
+        />
+      </List>
       <Divider />
-      <MenuDrawerThemeList />
+      <List>
+        <MenuDrawerListItem
+          icon={isDarkMode ? <DarkModeIcon /> : <LightModeIcon />}
+          label={isDarkMode ? "Dark" : "Light"}
+          onClick={() => setIsDarkMode(!isDarkMode)}
+        />
+      </List>
     </Drawer>
   );
 }

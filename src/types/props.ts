@@ -228,6 +228,66 @@ export type ChartVerticalNoteImagesProps = {
   type: "X" | "M" | "H" | "W";
 };
 
+/**
+ * MenuDrawerListItemのprops
+ */
+export type MenuDrawerListItemProps = {
+  /**
+   * 無効化する場合はtrue、そうでない場合はfalse
+   */
+  disabled?: boolean;
+
+  /**
+   * アイコンのコンポーネント
+   */
+  icon: React.ReactNode;
+
+  /**
+   * ラベル
+   */
+  label: string;
+
+  /**
+   * 押下時の動作
+   */
+  onClick?: React.MouseEventHandler<HTMLDivElement>;
+};
+
+/**
+ * MenuDrawerUploadListItemのprops
+ */
+export type MenuDrawerUploadListItemProps = {
+  /**
+   * 無効化する場合はtrue、そうでない場合はfalse
+   */
+  disabled?: boolean;
+
+  /**
+   * inputタグのacceptに設定するアップロードに有効な拡張子(冒頭に.を入れること)
+   */
+  extension?: string;
+
+  /**
+   * アイコンのコンポーネント
+   */
+  icon: React.ReactNode;
+
+  /**
+   * inputタグのidに設定するid名
+   */
+  id: string;
+
+  /**
+   * ラベル
+   */
+  label: string;
+
+  /**
+   * 押下時の動作
+   */
+  onChange?: React.ChangeEventHandler<HTMLInputElement>;
+};
+
 export type RectangleBlockIdentifierProps = {
   /**
    * 譜面のブロックのBeat値

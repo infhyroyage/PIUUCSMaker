@@ -38,3 +38,8 @@ export const MUI_DEFAULT_Z_INDEX: Record<string, number> = {
   snackbar: 1400,
   tooltip: 1500,
 };
+
+/**
+ * 展開したMenuDrawerの横幅(px単位)
+ */
+export const MENU_DRAWER_OPENED_WIDTH = 200;
