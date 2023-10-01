@@ -8,7 +8,7 @@ import {
   zoomState,
 } from "../../service/atoms";
 import { ZOOM_VALUES } from "../../service/zoom";
-import { Zoom } from "../../types/chart";
+import { Zoom } from "../../types/ui";
 
 function ChartVerticalNoteImages({
   accumulatedLength,

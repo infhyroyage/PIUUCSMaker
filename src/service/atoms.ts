@@ -1,14 +1,18 @@
 import { atom } from "recoil";
-import { Block, ClipBoard, Indicator, Note, Selector } from "../types/chart";
-import { Zoom } from "../types/chart";
+import { Block, Note } from "../types/chart";
+import { Selector } from "../types/ui";
+import { Indicator } from "../types/ui";
+import { ClipBoard } from "../types/ui";
+import { Zoom } from "../types/ui";
 import { EditBlockDialogForm } from "../types/form";
 import { PopoverPosition } from "@mui/material";
-import { MenuPosition } from "../types/controller";
+import { BlockControllerMenuPosition } from "../types/ui";
 
-export const blockControllerMenuPositionState = atom<MenuPosition>({
-  key: "blockControllerMenuPosition",
-  default: { blockIdx: 0 },
-});
+export const blockControllerMenuPositionState =
+  atom<BlockControllerMenuPosition>({
+    key: "blockControllerMenuPosition",
+    default: { blockIdx: 0 },
+  });
 
 export const blocksState = atom<Block[]>({
   key: "blocks",

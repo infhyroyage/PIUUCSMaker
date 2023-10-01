@@ -1,11 +1,9 @@
 import { useCallback, useEffect } from "react";
-import {
-  ClipBoard,
-  CopiedNote,
-  Indicator,
-  Note,
-  SelectedCords,
-} from "../types/chart";
+import { Note } from "../types/chart";
+import { SelectedCords } from "../types/ui";
+import { Indicator } from "../types/ui";
+import { ClipBoard } from "../types/ui";
+import { CopiedNote } from "../types/chart";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { clipBoardState, indicatorState, notesState } from "../service/atoms";
 import useSelectedCords from "./useSelectedCords";

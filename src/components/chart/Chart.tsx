@@ -13,7 +13,10 @@ import {
 } from "../../service/atoms";
 import BorderLine from "../BorderLine";
 import ChartVertical from "./ChartVertical";
-import { Block, Indicator, Note, Selector, Zoom } from "../../types/chart";
+import { Block, Note } from "../../types/chart";
+import { Zoom } from "../../types/ui";
+import { Selector } from "../../types/ui";
+import { Indicator } from "../../types/ui";
 import { ZOOM_VALUES } from "../../service/zoom";
 import { PopoverPosition } from "@mui/material";
 import ChartIndicator from "./ChartIndicator";

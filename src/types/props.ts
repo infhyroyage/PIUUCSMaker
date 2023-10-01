@@ -1,5 +1,6 @@
-import { Note, SelectorCords } from "./chart";
-import { Indicator } from "./chart";
+import { Note } from "./chart";
+import { SelectorCords } from "./ui";
+import { Indicator } from "./ui";
 
 /**
  * BlockControllerButtonのprops

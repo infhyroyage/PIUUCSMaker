@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import BorderLine from "../BorderLine";
 import { BlockControllerButtonProps } from "../../types/props";
-import { MenuPosition } from "../../types/controller";
+import { BlockControllerMenuPosition } from "../../types/ui";
 
 function BlockControllerButton({
   blockHeight,
@@ -23,7 +23,7 @@ function BlockControllerButton({
   textSecond,
 }: BlockControllerButtonProps) {
   const noteSize = useRecoilValue<number>(noteSizeState);
-  const setMenuPosition = useSetRecoilState<MenuPosition>(
+  const setMenuPosition = useSetRecoilState<BlockControllerMenuPosition>(
     blockControllerMenuPositionState
   );
 

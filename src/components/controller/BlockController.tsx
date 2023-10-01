@@ -1,5 +1,6 @@
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import { Block, Note, Zoom } from "../../types/chart";
+import { Block, Note } from "../../types/chart";
+import { Zoom } from "../../types/ui";
 import {
   blocksState,
   editBlockDialogFormState,

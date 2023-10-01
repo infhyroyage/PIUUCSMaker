@@ -8,7 +8,8 @@ import {
   zoomState,
 } from "../../service/atoms";
 import { ChartSelectorProps } from "../../types/props";
-import { Block, Zoom } from "../../types/chart";
+import { Block } from "../../types/chart";
+import { Zoom } from "../../types/ui";
 import { ZOOM_VALUES } from "../../service/zoom";
 
 function ChartSelector({ cords }: ChartSelectorProps) {

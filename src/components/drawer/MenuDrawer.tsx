@@ -26,7 +26,7 @@ import {
   zoomState,
 } from "../../service/atoms";
 import MenuDrawerListItem from "./MenuDrawerListItem";
-import { Zoom } from "../../types/chart";
+import { Zoom } from "../../types/ui";
 import { ZOOM_VALUES } from "../../service/zoom";
 import { MENU_DRAWER_OPENED_WIDTH } from "../../service/styles";
 import usePlayingMusic from "../../hooks/usePlayingMusic";

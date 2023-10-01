@@ -3,12 +3,13 @@ import { Divider, Menu, MenuItem, MenuList } from "@mui/material";
 import { useRecoilState } from "recoil";
 import { blockControllerMenuPositionState } from "../../service/atoms";
 import { BlockControllerMenuProps } from "../../types/props";
-import { MenuPosition } from "../../types/controller";
+import { BlockControllerMenuPosition } from "../../types/ui";
 
 function BlockControllerMenu({ blockNum, handler }: BlockControllerMenuProps) {
-  const [menuPosition, setMenuPosition] = useRecoilState<MenuPosition>(
-    blockControllerMenuPositionState
-  );
+  const [menuPosition, setMenuPosition] =
+    useRecoilState<BlockControllerMenuPosition>(
+      blockControllerMenuPositionState
+    );
 
   return (
     <Menu

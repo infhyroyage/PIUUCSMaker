@@ -1,7 +1,7 @@
 import React, { memo, useMemo } from "react";
 import { RectangleBlockIdentifierProps } from "../../types/props";
 import { useRecoilValue } from "recoil";
-import { Zoom } from "../../types/chart";
+import { Zoom } from "../../types/ui";
 import { noteSizeState, zoomState } from "../../service/atoms";
 import { ZOOM_VALUES } from "../../service/zoom";
 import { Paper, Typography } from "@mui/material";

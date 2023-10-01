@@ -16,7 +16,9 @@ import {
   selectorState,
 } from "../../service/atoms";
 import { ChartIndicatorMenuProps } from "../../types/props";
-import { ClipBoard, Indicator, Selector } from "../../types/chart";
+import { Selector } from "../../types/ui";
+import { Indicator } from "../../types/ui";
+import { ClipBoard } from "../../types/ui";
 import useClipBoard from "../../hooks/useClipBoard";
 import useSelectedFlipping from "../../hooks/useSelectedFlipping";
 import useSelectedDeleting from "../../hooks/useSelectedDeleting";

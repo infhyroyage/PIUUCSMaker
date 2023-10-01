@@ -7,7 +7,7 @@ import {
   noteSizeState,
   rectangleIdentifierWidthState,
 } from "../../service/atoms";
-import { Indicator } from "../../types/chart";
+import { Indicator } from "../../types/ui";
 
 function ChartIndicator() {
   const indicator = useRecoilValue<Indicator>(indicatorState);

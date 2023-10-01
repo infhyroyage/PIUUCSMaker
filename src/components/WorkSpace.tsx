@@ -10,7 +10,7 @@ import {
 import Chart from "./chart/Chart";
 import RectangleIdentifier from "./identifier/RectangleIdentifier";
 import BlockController from "./controller/BlockController";
-import { Selector } from "../types/chart";
+import { Selector } from "../types/ui";
 
 function WorkSpace() {
   const menuBarHeight = useRecoilValue<number>(menuBarHeightState);
