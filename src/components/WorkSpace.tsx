@@ -18,10 +18,10 @@ function WorkSpace() {
   const setNoteSize = useSetRecoilState<number>(noteSizeState);
   const setSelector = useSetRecoilState<Selector>(selectorState);
 
-  // ウィンドウサイズを監視し、正方形である単ノートの1辺のサイズ(noteSize)を以下で計算
-  // noteSize := min(ウィンドウサイズの横幅, ウィンドウサイズの高さ) / 15
-  // ただし、noteSizeは小数点以下を切り捨てとし、最小値が20とする
   useEffect(() => {
+    // ウィンドウサイズから、正方形である単ノートの1辺のサイズ(noteSize)を以下で計算
+    // noteSize := min(ウィンドウサイズの横幅, ウィンドウサイズの高さ) / 15
+    // ただし、noteSizeは小数点以下を切り捨てとし、最小値が20とする
     const handleWindowResize = () =>
       setNoteSize(
         Math.max(
@@ -29,13 +29,25 @@ function WorkSpace() {
           20
         )
       );
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // ESCキー押下時に、選択領域を非表示
+      if (event.key === "Escape") {
+        setSelector({ changingCords: null, completedCords: null });
+      }
+    };
 
-    // 初回レンダリング時の初期設定
+    // 初回レンダリング時にnoteSizeを初期設定
     handleWindowResize();
-    // ウィンドウサイズ変更の監視
-    window.addEventListener("resize", handleWindowResize);
-    // アンマウント時に上記監視を解除
-    return () => window.removeEventListener("resize", handleWindowResize);
+
+    // イベントリスナーを登録
+    window.addEventListener("resize", handleWindowResize); // noteSize変更
+    window.addEventListener("keydown", handleKeyDown); // キー入力
+
+    // アンマウント時に上記イベントリスナーをすべて解除
+    return () => {
+      window.removeEventListener("resize", handleWindowResize);
+      window.removeEventListener("keydown", handleKeyDown);
+    };
   }, []);
 
   return ucsName === null ? (
@@ -43,7 +55,7 @@ function WorkSpace() {
   ) : (
     <div
       onMouseUp={(event: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
-        // 左クリック時のみ、選択領域のパラメーターを初期化
+        // 左クリック時のみ、選択領域を非表示
         if (event.button === 0) {
           setSelector({ changingCords: null, completedCords: null });
         }
