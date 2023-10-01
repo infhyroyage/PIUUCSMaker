@@ -18,7 +18,8 @@ import {
 import { ChartIndicatorMenuProps } from "../../types/props";
 import { ClipBoard, Indicator, Selector } from "../../types/chart";
 import useClipBoard from "../../hooks/useClipBoard";
-import useFlipping from "../../hooks/useFlipping";
+import useSelectedFlipping from "../../hooks/useSelectedFlipping";
+import useSelectedDeleting from "../../hooks/useSelectedDeleting";
 
 function ChartIndicatorMenu({ handler }: ChartIndicatorMenuProps) {
   const clipBoard = useRecoilValue<ClipBoard>(clipBoardState);
@@ -29,7 +30,8 @@ function ChartIndicatorMenu({ handler }: ChartIndicatorMenuProps) {
   const selector = useRecoilValue<Selector>(selectorState);
 
   const { handleCut, handleCopy, handlePaste } = useClipBoard();
-  const { flip } = useFlipping();
+  const { handleFlip } = useSelectedFlipping();
+  const { handleDelete } = useSelectedDeleting();
 
   return (
     <Menu
@@ -91,19 +93,6 @@ function ChartIndicatorMenu({ handler }: ChartIndicatorMenuProps) {
             Ctrl+V
           </Typography>
         </MenuItem>
-        <MenuItem
-          disabled={
-            selector.completedCords === null ||
-            selector.completedCords.mouseUpColumn === null ||
-            selector.completedCords.mouseUpRowIdx === null
-          }
-          onClick={() => alert("TODO")}
-        >
-          <ListItemText>Delete</ListItemText>
-          <Typography variant="body2" color="text.secondary">
-            Delete
-          </Typography>
-        </MenuItem>
         <Divider />
         <MenuItem
           disabled={
@@ -112,7 +101,7 @@ function ChartIndicatorMenu({ handler }: ChartIndicatorMenuProps) {
             selector.completedCords.mouseUpRowIdx === null
           }
           onClick={() => {
-            flip(true, false);
+            handleFlip(true, false);
             setMenuPosition(undefined);
           }}
         >
@@ -128,7 +117,7 @@ function ChartIndicatorMenu({ handler }: ChartIndicatorMenuProps) {
             selector.completedCords.mouseUpRowIdx === null
           }
           onClick={() => {
-            flip(false, true);
+            handleFlip(false, true);
             setMenuPosition(undefined);
           }}
         >
@@ -144,13 +133,29 @@ function ChartIndicatorMenu({ handler }: ChartIndicatorMenuProps) {
             selector.completedCords.mouseUpRowIdx === null
           }
           onClick={() => {
-            flip(true, true);
+            handleFlip(true, true);
             setMenuPosition(undefined);
           }}
         >
           <ListItemText>Mirror</ListItemText>
           <Typography variant="body2" color="text.secondary">
             M
+          </Typography>
+        </MenuItem>
+        <MenuItem
+          disabled={
+            selector.completedCords === null ||
+            selector.completedCords.mouseUpColumn === null ||
+            selector.completedCords.mouseUpRowIdx === null
+          }
+          onClick={() => {
+            handleDelete();
+            setMenuPosition(undefined);
+          }}
+        >
+          <ListItemText>Delete</ListItemText>
+          <Typography variant="body2" color="text.secondary">
+            Delete
           </Typography>
         </MenuItem>
         <Divider />
