@@ -1,14 +1,16 @@
-import { memo, useMemo } from "react";
-import { ChartIndicatorProps } from "../../types/props";
+import { useMemo } from "react";
 import { Theme, useTheme } from "@mui/material";
 import { IMAGE_BINARIES } from "../../service/assets";
 import { useRecoilValue } from "recoil";
 import {
+  indicatorState,
   noteSizeState,
   rectangleIdentifierWidthState,
 } from "../../service/atoms";
+import { Indicator } from "../../types/chart";
 
-function ChartIndicator({ indicator }: ChartIndicatorProps) {
+function ChartIndicator() {
+  const indicator = useRecoilValue<Indicator>(indicatorState);
   const noteSize = useRecoilValue<number>(noteSizeState);
   const rectangleIdentifierWidth = useRecoilValue<number>(
     rectangleIdentifierWidthState
@@ -102,4 +104,4 @@ function ChartIndicator({ indicator }: ChartIndicatorProps) {
   );
 }
 
-export default memo(ChartIndicator);
+export default ChartIndicator;

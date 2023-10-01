@@ -1,5 +1,5 @@
 import { atom } from "recoil";
-import { Block, Note, Selector } from "../types/chart";
+import { Block, ClipBoard, Indicator, Note, Selector } from "../types/chart";
 import { Zoom } from "../types/chart";
 import { EditBlockDialogForm } from "../types/form";
 import { PopoverPosition } from "@mui/material";
@@ -20,6 +20,11 @@ export const chartIndicatorMenuPositionState = atom<
 >({
   key: "chartIndicatorMenuPosition",
   default: undefined,
+});
+
+export const clipBoardState = atom<ClipBoard>({
+  key: "clipBoard",
+  default: null,
 });
 
 /**
@@ -44,6 +49,15 @@ export const editBlockDialogFormState = atom<EditBlockDialogForm>({
     open: false,
     split: "",
   },
+});
+
+/**
+ * インディケーターの表示パラメーター
+ * インディケーター非表示の場合はnull
+ */
+export const indicatorState = atom<Indicator>({
+  key: "indicator",
+  default: null,
 });
 
 /**

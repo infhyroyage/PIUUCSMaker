@@ -110,17 +110,6 @@ type ChartIndicatorMenuHandler = {
 };
 
 /**
- * ChartIndicatorのprops
- */
-export type ChartIndicatorProps = {
-  /**
-   * インディケーターの表示パラメーター
-   * インディケーター非表示の場合はnull
-   */
-  indicator: Indicator;
-};
-
-/**
  * ChartIndicatorMenuのprops
  */
 export type ChartIndicatorMenuProps = {
@@ -128,12 +117,6 @@ export type ChartIndicatorMenuProps = {
    * メニュー選択時の動作
    */
   handler: ChartIndicatorMenuHandler;
-
-  /**
-   * 列インデックスcolumnにおける、インディケーターの表示パラメーター
-   * インディケーター非表示の場合はnull
-   */
-  indicator: Indicator;
 };
 
 /**

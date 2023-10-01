@@ -48,7 +48,7 @@ function WorkSpace() {
       window.removeEventListener("resize", handleWindowResize);
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [setNoteSize, setSelector]);
 
   return ucsName === null ? (
     <ReadyUCS />

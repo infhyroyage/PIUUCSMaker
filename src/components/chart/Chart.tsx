@@ -1,9 +1,10 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
   blocksState,
   chartIndicatorMenuPositionState,
   columnsState,
+  indicatorState,
   isPlayingState,
   noteSizeState,
   notesState,
@@ -20,8 +21,8 @@ import ChartIndicatorMenu from "./ChartIndicatorMenu";
 import ChartSelector from "./ChartSelector";
 
 function Chart() {
-  const [indicator, setIndicator] = useState<Indicator>(null);
   const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
+  const [indicator, setIndicator] = useRecoilState<Indicator>(indicatorState);
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
   const [position, setPosition] = useRecoilState<PopoverPosition | undefined>(
     chartIndicatorMenuPositionState
@@ -443,12 +444,11 @@ function Chart() {
           )}
         </React.Fragment>
       ))}
-      <ChartIndicator indicator={indicator} />
+      <ChartIndicator />
       <ChartIndicatorMenu
         handler={{
           split: handleSplit,
         }}
-        indicator={indicator}
       />
       {selector.changingCords !== null && (
         <ChartSelector cords={selector.changingCords} />
