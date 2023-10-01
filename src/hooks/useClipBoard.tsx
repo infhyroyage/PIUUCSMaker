@@ -5,49 +5,17 @@ import {
   Indicator,
   Note,
   SelectedCords,
-  Selector,
 } from "../types/chart";
 import { useRecoilState, useRecoilValue } from "recoil";
-import {
-  clipBoardState,
-  indicatorState,
-  notesState,
-  selectorState,
-} from "../service/atoms";
+import { clipBoardState, indicatorState, notesState } from "../service/atoms";
+import useSelectedCords from "./useSelectedCords";
 
 function useClipBoard() {
   const [clipBoard, setClipBoard] = useRecoilState<ClipBoard>(clipBoardState);
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
   const indicator = useRecoilValue<Indicator>(indicatorState);
-  const selector = useRecoilValue<Selector>(selectorState);
 
-  const getSelectedCords: () => null | SelectedCords = useCallback(() => {
-    if (
-      selector.completedCords === null ||
-      selector.completedCords.mouseUpColumn === null ||
-      selector.completedCords.mouseUpRowIdx === null
-    )
-      return null;
-
-    return {
-      startColumn: Math.min(
-        selector.completedCords.mouseDownColumn,
-        selector.completedCords.mouseUpColumn
-      ),
-      goalColumn: Math.max(
-        selector.completedCords.mouseDownColumn,
-        selector.completedCords.mouseUpColumn
-      ),
-      startRowIdx: Math.min(
-        selector.completedCords.mouseDownRowIdx,
-        selector.completedCords.mouseUpRowIdx
-      ),
-      goalRowIdx: Math.max(
-        selector.completedCords.mouseDownRowIdx,
-        selector.completedCords.mouseUpRowIdx
-      ),
-    };
-  }, [selector.completedCords]);
+  const { getSelectedCords } = useSelectedCords();
 
   const updateClipBoard = useCallback(
     (selectedCords: SelectedCords) => {
