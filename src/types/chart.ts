@@ -190,6 +190,31 @@ export type Selector = {
 };
 
 /**
+ * 選択領域入力済の座標を構成するパラメーター
+ */
+export type SelectedCords = {
+  /**
+   * 選択領域の終点の列インデックス
+   */
+  goalColumn: number;
+
+  /**
+   * 選択領域の終点の譜面全体での行インデックス
+   */
+  goalRowIdx: number;
+
+  /**
+   * 選択領域の始点の列インデックス
+   */
+  startColumn: number;
+
+  /**
+   * 選択領域の始点の譜面全体での行インデックス
+   */
+  startRowIdx: number;
+};
+
+/**
  * 拡大/縮小時のパラメーター
  */
 export type Zoom = {

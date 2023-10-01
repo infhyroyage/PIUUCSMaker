@@ -4,6 +4,7 @@ import {
   CopiedNote,
   Indicator,
   Note,
+  SelectedCords,
   Selector,
 } from "../types/chart";
 import { useRecoilState, useRecoilValue } from "recoil";
@@ -20,105 +21,93 @@ function useClipBoard() {
   const indicator = useRecoilValue<Indicator>(indicatorState);
   const selector = useRecoilValue<Selector>(selectorState);
 
-  const updateClipBoard = (
-    startColumn: number,
-    goalColumn: number,
-    startRowIdx: number,
-    goalRowIdx: number
-  ) => {
-    setClipBoard({
-      columnLength: goalColumn + 1 - startColumn,
-      copiedNotes: [...Array(goalColumn - startColumn + 1)]
-        .map((_, deltaColumn: number) =>
-          notes[startColumn + deltaColumn]
-            .filter(
-              (note: Note) => note.idx >= startRowIdx && note.idx <= goalRowIdx
-            )
-            .map((note: Note) => {
-              return {
-                deltaColumn,
-                deltaRowIdx: note.idx - startRowIdx,
-                type: note.type,
-              };
-            })
-        )
-        .flat(),
-      rowLength: goalRowIdx + 1 - startRowIdx,
-    });
-  };
-
-  const handleCut = useCallback(() => {
-    // 選択領域が非表示/入力中の場合はNOP
+  const getSelectedCords: () => null | SelectedCords = useCallback(() => {
     if (
       selector.completedCords === null ||
       selector.completedCords.mouseUpColumn === null ||
       selector.completedCords.mouseUpRowIdx === null
     )
-      return;
+      return null;
 
-    // 選択領域の始点/終点の列インデックス/譜面全体での行インデックスをそれぞれ取得
-    const startColumn: number = Math.min(
-      selector.completedCords.mouseDownColumn,
-      selector.completedCords.mouseUpColumn
-    );
-    const goalColumn: number = Math.max(
-      selector.completedCords.mouseDownColumn,
-      selector.completedCords.mouseUpColumn
-    );
-    const startRowIdx: number = Math.min(
-      selector.completedCords.mouseDownRowIdx,
-      selector.completedCords.mouseUpRowIdx
-    );
-    const goalRowIdx: number = Math.max(
-      selector.completedCords.mouseDownRowIdx,
-      selector.completedCords.mouseUpRowIdx
-    );
+    return {
+      startColumn: Math.min(
+        selector.completedCords.mouseDownColumn,
+        selector.completedCords.mouseUpColumn
+      ),
+      goalColumn: Math.max(
+        selector.completedCords.mouseDownColumn,
+        selector.completedCords.mouseUpColumn
+      ),
+      startRowIdx: Math.min(
+        selector.completedCords.mouseDownRowIdx,
+        selector.completedCords.mouseUpRowIdx
+      ),
+      goalRowIdx: Math.max(
+        selector.completedCords.mouseDownRowIdx,
+        selector.completedCords.mouseUpRowIdx
+      ),
+    };
+  }, [selector.completedCords]);
 
-    updateClipBoard(startColumn, goalColumn, startRowIdx, goalRowIdx);
+  const updateClipBoard = useCallback(
+    (selectedCords: SelectedCords) => {
+      setClipBoard({
+        columnLength: selectedCords.goalColumn + 1 - selectedCords.startColumn,
+        copiedNotes: [
+          ...Array(selectedCords.goalColumn - selectedCords.startColumn + 1),
+        ]
+          .map((_, deltaColumn: number) =>
+            notes[selectedCords.startColumn + deltaColumn]
+              .filter(
+                (note: Note) =>
+                  note.idx >= selectedCords.startRowIdx &&
+                  note.idx <= selectedCords.goalRowIdx
+              )
+              .map((note: Note) => {
+                return {
+                  deltaColumn,
+                  deltaRowIdx: note.idx - selectedCords.startRowIdx,
+                  type: note.type,
+                };
+              })
+          )
+          .flat(),
+        rowLength: selectedCords.goalRowIdx + 1 - selectedCords.startRowIdx,
+      });
+    },
+    [notes, setClipBoard]
+  );
+
+  const handleCut = useCallback(() => {
+    // 選択領域が非表示/入力中の場合はNOP
+    const selectedCords: null | SelectedCords = getSelectedCords();
+    if (selectedCords === null) return;
+
+    updateClipBoard(selectedCords);
 
     // 選択領域に含まれる領域のみ、単ノート/ホールドの始点/ホールドの中間/ホールドの終点のカット対象とする
     setNotes(
       notes.map((ns: Note[], column: number) =>
-        column < startColumn || column > goalColumn
+        column < selectedCords.startColumn || column > selectedCords.goalColumn
           ? ns
           : [
               ...ns.filter(
-                (note: Note) => note.idx < startRowIdx || note.idx > goalRowIdx
+                (note: Note) =>
+                  note.idx < selectedCords.startRowIdx ||
+                  note.idx > selectedCords.goalRowIdx
               ),
             ]
       )
     );
-  }, [notes, selector.completedCords, setClipBoard]);
+  }, [getSelectedCords, notes, setNotes, updateClipBoard]);
 
   const handleCopy = useCallback(() => {
     // 選択領域が非表示/入力中の場合はNOP
-    if (
-      selector.completedCords === null ||
-      selector.completedCords.mouseUpColumn === null ||
-      selector.completedCords.mouseUpRowIdx === null
-    )
-      return;
+    const selectedCords: null | SelectedCords = getSelectedCords();
+    if (selectedCords === null) return;
 
-    // 選択領域の始点/終点の列インデックス/譜面全体での行インデックスをそれぞれ取得
-    const startColumn: number = Math.min(
-      selector.completedCords.mouseDownColumn,
-      selector.completedCords.mouseUpColumn
-    );
-    const goalColumn: number = Math.max(
-      selector.completedCords.mouseDownColumn,
-      selector.completedCords.mouseUpColumn
-    );
-    const startRowIdx: number = Math.min(
-      selector.completedCords.mouseDownRowIdx,
-      selector.completedCords.mouseUpRowIdx
-    );
-    const goalRowIdx: number = Math.max(
-      selector.completedCords.mouseDownRowIdx,
-      selector.completedCords.mouseUpRowIdx
-    );
-
-    updateClipBoard(startColumn, goalColumn, startRowIdx, goalRowIdx);
-  }, [notes, selector.completedCords, setClipBoard]);
+    updateClipBoard(selectedCords);
+  }, [updateClipBoard, getSelectedCords]);
 
   const handlePaste = useCallback(() => {
     // インディケーターが非表示である/1度もコピーしていない場合はNOP
