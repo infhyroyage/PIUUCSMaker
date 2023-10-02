@@ -1,11 +1,13 @@
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { Block, Note } from "../../types/chart";
-import { Zoom } from "../../types/ui";
+import { ChartSnapshot, Zoom } from "../../types/ui";
 import {
   blocksState,
   editBlockDialogFormState,
   noteSizeState,
   notesState,
+  redoSnapshotsState,
+  undoSnapshotsState,
   zoomState,
 } from "../../service/atoms";
 import BlockControllerButton from "./BlockControllerButton";
@@ -17,14 +19,22 @@ import BlockControllerMenu from "./BlockControllerMenu";
 function BlockController() {
   const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
+  const [undoSnapshots, setUndoSnapshots] =
+    useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
   const noteSize = useRecoilValue<number>(noteSizeState);
   const zoom = useRecoilValue<Zoom>(zoomState);
   const setEditBlockDialogForm = useSetRecoilState<EditBlockDialogForm>(
     editBlockDialogFormState
   );
+  const setRedoShapshots =
+    useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
 
   const handleAdd = useCallback(
-    (blockIdx: number) =>
+    (blockIdx: number) => {
+      // 元に戻す/やり直すスナップショットの集合を更新
+      setUndoSnapshots([...undoSnapshots, { blocks, notes: null }]);
+      setRedoShapshots([]);
+
       // 押下した譜面のブロックのコピーを末尾に追加
       setBlocks([
         ...blocks,
@@ -34,12 +44,17 @@ function BlockController() {
             blocks[blocks.length - 1].accumulatedLength +
             blocks[blocks.length - 1].length,
         },
-      ]),
-    [blocks, setBlocks]
+      ]);
+    },
+    [blocks, setBlocks, setRedoShapshots, setUndoSnapshots, undoSnapshots]
   );
 
   const handleInsert = useCallback(
     (blockIdx: number) => {
+      // 元に戻す/やり直すスナップショットの集合を更新
+      setUndoSnapshots([...undoSnapshots, { blocks, notes }]);
+      setRedoShapshots([]);
+
       // 押下したblockIdx番目の譜面のブロックのコピーを(blockIdx + 1)番目に挿入
       setBlocks([
         ...blocks.slice(0, blockIdx + 1),
@@ -69,7 +84,15 @@ function BlockController() {
         )
       );
     },
-    [blocks, notes, setBlocks, setNotes]
+    [
+      blocks,
+      notes,
+      setBlocks,
+      setNotes,
+      setRedoShapshots,
+      setUndoSnapshots,
+      undoSnapshots,
+    ]
   );
 
   const handleEdit = useCallback(
@@ -87,6 +110,10 @@ function BlockController() {
 
   const handleDelete = useCallback(
     (blockIdx: number) => {
+      // 元に戻す/やり直すスナップショットの集合を更新
+      setUndoSnapshots([...undoSnapshots, { blocks, notes }]);
+      setRedoShapshots([]);
+
       // 削除する譜面のブロックに該当する単ノート/ホールドの始点/ホールドの中間/ホールドの終点を削除
       setNotes(
         notes.map((ns: Note[]) =>
@@ -102,11 +129,23 @@ function BlockController() {
       // 譜面のブロックの削除
       setBlocks(blocks.filter((_, idx: number) => idx !== blockIdx));
     },
-    [blocks, notes, setBlocks, setNotes]
+    [
+      blocks,
+      notes,
+      setBlocks,
+      setNotes,
+      setRedoShapshots,
+      setUndoSnapshots,
+      undoSnapshots,
+    ]
   );
 
   const handleMergeAbove = useCallback(
-    (blockIdx: number) =>
+    (blockIdx: number) => {
+      // 元に戻す/やり直すスナップショットの集合を更新
+      setUndoSnapshots([...undoSnapshots, { blocks, notes: null }]);
+      setRedoShapshots([]);
+
       // 1つ前の譜面のブロックの行数を吸収
       setBlocks([
         ...blocks.slice(0, blockIdx - 1),
@@ -116,12 +155,17 @@ function BlockController() {
           length: blocks[blockIdx - 1].length + blocks[blockIdx].length,
         },
         ...blocks.slice(blockIdx + 1),
-      ]),
-    [blocks, setBlocks]
+      ]);
+    },
+    [blocks, setBlocks, setRedoShapshots, setUndoSnapshots, undoSnapshots]
   );
 
   const handleMergeBelow = useCallback(
-    (blockIdx: number) =>
+    (blockIdx: number) => {
+      // 元に戻す/やり直すスナップショットの集合を更新
+      setUndoSnapshots([...undoSnapshots, { blocks, notes: null }]);
+      setRedoShapshots([]);
+
       // 1つ後の譜面のブロックの行数を吸収
       setBlocks([
         ...blocks.slice(0, blockIdx),
@@ -130,8 +174,9 @@ function BlockController() {
           length: blocks[blockIdx].length + blocks[blockIdx + 1].length,
         },
         ...blocks.slice(blockIdx + 2),
-      ]),
-    [blocks, setBlocks]
+      ]);
+    },
+    [blocks, setBlocks, setRedoShapshots, setUndoSnapshots, undoSnapshots]
   );
 
   return (

@@ -1,6 +1,11 @@
-import { useState } from "react";
-import { useRecoilState } from "recoil";
-import { blocksState, editBlockDialogFormState } from "../../service/atoms";
+import { useCallback, useState } from "react";
+import { useRecoilState, useSetRecoilState } from "recoil";
+import {
+  blocksState,
+  editBlockDialogFormState,
+  redoSnapshotsState,
+  undoSnapshotsState,
+} from "../../service/atoms";
 import {
   Button,
   Dialog,
@@ -12,6 +17,7 @@ import {
 } from "@mui/material";
 import { EditBlockDialogError, EditBlockDialogForm } from "../../types/form";
 import { Block } from "../../types/chart";
+import { ChartSnapshot } from "../../types/ui";
 
 const validate = (form: EditBlockDialogForm): EditBlockDialogError | null => {
   // BPMのチェック
@@ -57,10 +63,18 @@ function EditBlockDialog() {
   const [form, setForm] = useRecoilState<EditBlockDialogForm>(
     editBlockDialogFormState
   );
+  const [undoSnapshots, setUndoSnapshots] =
+    useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
+  const setRedoShapshots =
+    useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
 
-  const onEdit = () => {
+  const onEdit = useCallback(() => {
     const result: EditBlockDialogError | null = validate(form);
     if (result === null) {
+      // 元に戻す/やり直すスナップショットの集合を更新
+      setUndoSnapshots([...undoSnapshots, { blocks, notes: null }]);
+      setRedoShapshots([]);
+
       const updatedBlocks: Block[] = [...blocks];
       updatedBlocks[form.blockIdx] = {
         accumulatedLength: blocks[form.blockIdx].accumulatedLength,
@@ -83,17 +97,29 @@ function EditBlockDialog() {
       // バリデーションエラーのテキストフィールドを表示
       setResultError(result);
     }
-  };
+  }, [
+    blocks,
+    form,
+    setBlocks,
+    setForm,
+    setResultError,
+    setRedoShapshots,
+    setUndoSnapshots,
+    undoSnapshots,
+  ]);
 
-  const onClose = () =>
-    setForm({
-      beat: "",
-      blockIdx: -1,
-      bpm: "",
-      delay: "",
-      open: false,
-      split: "",
-    });
+  const onClose = useCallback(
+    () =>
+      setForm({
+        beat: "",
+        blockIdx: -1,
+        bpm: "",
+        delay: "",
+        open: false,
+        split: "",
+      }),
+    [setForm]
+  );
 
   return (
     <Dialog open={form.open} onClose={onClose}>

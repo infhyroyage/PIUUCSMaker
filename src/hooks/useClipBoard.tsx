@@ -1,17 +1,27 @@
 import { useCallback, useEffect } from "react";
 import { Note } from "../types/chart";
-import { SelectedCords } from "../types/ui";
+import { ChartSnapshot, SelectedCords } from "../types/ui";
 import { Indicator } from "../types/ui";
 import { ClipBoard } from "../types/ui";
 import { CopiedNote } from "../types/chart";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { clipBoardState, indicatorState, notesState } from "../service/atoms";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import {
+  clipBoardState,
+  indicatorState,
+  notesState,
+  redoSnapshotsState,
+  undoSnapshotsState,
+} from "../service/atoms";
 import useSelectedCords from "./useSelectedCords";
 
 function useClipBoard() {
   const [clipBoard, setClipBoard] = useRecoilState<ClipBoard>(clipBoardState);
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
+  const [undoSnapshots, setUndoSnapshots] =
+    useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
   const indicator = useRecoilValue<Indicator>(indicatorState);
+  const setRedoShapshots =
+    useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
 
   const { getSelectedCords } = useSelectedCords();
 
@@ -51,6 +61,10 @@ function useClipBoard() {
 
     updateClipBoard(selectedCords);
 
+    // 元に戻す/やり直すスナップショットの集合を更新
+    setUndoSnapshots([...undoSnapshots, { blocks: null, notes }]);
+    setRedoShapshots([]);
+
     // 選択領域に含まれる領域のみ、単ノート/ホールドの始点/ホールドの中間/ホールドの終点のカット対象とする
     setNotes(
       notes.map((ns: Note[], column: number) =>
@@ -65,7 +79,15 @@ function useClipBoard() {
             ]
       )
     );
-  }, [getSelectedCords, notes, setNotes, updateClipBoard]);
+  }, [
+    getSelectedCords,
+    notes,
+    setNotes,
+    setRedoShapshots,
+    setUndoSnapshots,
+    updateClipBoard,
+    undoSnapshots,
+  ]);
 
   const handleCopy = useCallback(() => {
     // 選択領域が非表示/入力中の場合はNOP
@@ -78,6 +100,10 @@ function useClipBoard() {
   const handlePaste = useCallback(() => {
     // インディケーターが非表示である/1度もコピーしていない場合はNOP
     if (indicator === null || clipBoard === null) return;
+
+    // 元に戻す/やり直すスナップショットの集合を更新
+    setUndoSnapshots([...undoSnapshots, { blocks: null, notes }]);
+    setRedoShapshots([]);
 
     // インディケーターの位置を左上としたコピー時の選択領域に含まれる領域のみ、
     // 単ノート/ホールドの始点/ホールドの中間/ホールドの終点のペースト対象とする
@@ -106,7 +132,15 @@ function useClipBoard() {
             ]
       )
     );
-  }, [clipBoard, indicator, notes, setNotes]);
+  }, [
+    clipBoard,
+    indicator,
+    notes,
+    setNotes,
+    setRedoShapshots,
+    setUndoSnapshots,
+    undoSnapshots,
+  ]);
 
   // キー入力のイベントリスナーを登録
   // アンマウント時に上記イベントリスナーを解除

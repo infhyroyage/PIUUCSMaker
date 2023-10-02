@@ -28,7 +28,7 @@ function useChartSnapshot() {
     if (snapshot.blocks !== null) setBlocks(snapshot.blocks);
     if (snapshot.notes !== null) setNotes(snapshot.notes);
 
-    // 元に戻すスナップショットの集合、やり直すスナップショットの集合を更新
+    // 元に戻す/やり直すスナップショットの集合を更新
     setUndoSnapshots([...undoSnapshots, snapshot]);
     setRedoSnapshots(redoSnapshots.slice(0, redoSnapshots.length - 1));
   }, [

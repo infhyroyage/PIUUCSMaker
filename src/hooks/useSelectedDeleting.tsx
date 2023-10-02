@@ -1,11 +1,20 @@
 import { useCallback, useEffect } from "react";
-import { useRecoilState } from "recoil";
-import { notesState } from "../service/atoms";
+import { useRecoilState, useSetRecoilState } from "recoil";
+import {
+  notesState,
+  redoSnapshotsState,
+  undoSnapshotsState,
+} from "../service/atoms";
 import { Note } from "../types/chart";
 import useSelectedCords from "./useSelectedCords";
+import { ChartSnapshot } from "../types/ui";
 
 function useSelectedDeleting() {
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
+  const [undoSnapshots, setUndoSnapshots] =
+    useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
+  const setRedoShapshots =
+    useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
 
   const { getSelectedCords } = useSelectedCords();
 
@@ -17,6 +26,10 @@ function useSelectedDeleting() {
     // 選択領域が非表示/入力中の場合はNOP
     const selectedCords = getSelectedCords();
     if (selectedCords === null) return;
+
+    // 元に戻す/やり直すスナップショットの集合を更新
+    setUndoSnapshots([...undoSnapshots, { blocks: null, notes }]);
+    setRedoShapshots([]);
 
     setNotes(
       notes.map((ns: Note[], column: number) =>
@@ -32,7 +45,14 @@ function useSelectedDeleting() {
             ]
       )
     );
-  }, [getSelectedCords, notes, setNotes]);
+  }, [
+    getSelectedCords,
+    notes,
+    setNotes,
+    setRedoShapshots,
+    setUndoSnapshots,
+    undoSnapshots,
+  ]);
 
   // キー入力のイベントリスナーを登録
   // アンマウント時に上記イベントリスナーを解除

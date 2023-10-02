@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
   blocksState,
   chartIndicatorMenuPositionState,
@@ -8,13 +8,15 @@ import {
   isPlayingState,
   noteSizeState,
   notesState,
+  redoSnapshotsState,
   selectorState,
+  undoSnapshotsState,
   zoomState,
 } from "../../service/atoms";
 import BorderLine from "../BorderLine";
 import ChartVertical from "./ChartVertical";
 import { Block, Note } from "../../types/chart";
-import { Zoom } from "../../types/ui";
+import { ChartSnapshot, Zoom } from "../../types/ui";
 import { Selector } from "../../types/ui";
 import { Indicator } from "../../types/ui";
 import { ZOOM_VALUES } from "../../service/zoom";
@@ -31,10 +33,14 @@ function Chart() {
     chartIndicatorMenuPositionState
   );
   const [selector, setSelector] = useRecoilState<Selector>(selectorState);
+  const [undoSnapshots, setUndoSnapshots] =
+    useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
   const columns = useRecoilValue<5 | 10>(columnsState);
   const isPlaying = useRecoilValue<boolean>(isPlayingState);
   const noteSize = useRecoilValue<number>(noteSizeState);
   const zoom = useRecoilValue<Zoom>(zoomState);
+  const setRedoShapshots =
+    useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
 
   // 各譜面のブロックを設置するトップバーからのy座標の距離(px単位)を計算
   const blockYDists: number[] = useMemo(
@@ -330,6 +336,10 @@ function Chart() {
         updatedNotes = [...beforeNotes, ...hold, ...afterNotes];
       }
 
+      // 元に戻す/やり直すスナップショットの集合を更新
+      setUndoSnapshots([...undoSnapshots, { blocks: null, notes }]);
+      setRedoShapshots([]);
+
       // 単ノート/ホールドの追加・削除を行った譜面に更新
       setNotes(
         notes.map((notes: Note[], column: number) =>
@@ -367,6 +377,10 @@ function Chart() {
       // インディケーターが非表示の場合はNOP
       if (indicator === null) return;
 
+      // 元に戻す/やり直すスナップショットの集合を更新
+      setUndoSnapshots([...undoSnapshots, { blocks, notes: null }]);
+      setRedoShapshots([]);
+
       // blockIdx番目の譜面のブロックを、(rowIdx- 1)番目以前とrowIdx番目とで分割
       setBlocks([
         ...blocks.slice(0, indicator.blockIdx),
@@ -390,7 +404,15 @@ function Chart() {
         blockAccumulatedLength: indicator.rowIdx,
       });
     },
-    [blocks, indicator, setBlocks, setIndicator]
+    [
+      blocks,
+      indicator,
+      setBlocks,
+      setIndicator,
+      setRedoShapshots,
+      setUndoSnapshots,
+      undoSnapshots,
+    ]
   );
 
   return (
