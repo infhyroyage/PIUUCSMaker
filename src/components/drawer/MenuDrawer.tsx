@@ -22,17 +22,20 @@ import {
   isOpenedNewUCSDialogState,
   isPlayingState,
   menuBarHeightState,
+  redoSnapshotsState,
   ucsNameState,
+  undoSnapshotsState,
   zoomState,
 } from "../../service/atoms";
 import MenuDrawerListItem from "./MenuDrawerListItem";
-import { Zoom } from "../../types/ui";
+import { ChartSnapshot, Zoom } from "../../types/ui";
 import { ZOOM_VALUES } from "../../service/zoom";
 import { MENU_DRAWER_OPENED_WIDTH } from "../../service/styles";
 import usePlayingMusic from "../../hooks/usePlayingMusic";
 import useUploadingUCS from "../../hooks/useUploadingUCS";
 import useDownloadingUCS from "../../hooks/useDownloadingUCS";
 import MenuDrawerUploadListItem from "./MenuDrawerUploadListItem";
+import useChartSnapshot from "../../hooks/useChartSnapshot";
 
 function MenuDrawer() {
   const [isDarkMode, setIsDarkMode] = useRecoilState<boolean>(isDarkModeState);
@@ -42,14 +45,17 @@ function MenuDrawer() {
   const isOpenedMenuDrawer = useRecoilValue<boolean>(isOpenedMenuDrawerState);
   const isPlaying = useRecoilValue<boolean>(isPlayingState);
   const menuBarHeight = useRecoilValue<number>(menuBarHeightState);
+  const redoSnapshots = useRecoilValue<ChartSnapshot[]>(redoSnapshotsState);
   const ucsName = useRecoilValue<string | null>(ucsNameState);
+  const undoSnapshots = useRecoilValue<ChartSnapshot[]>(undoSnapshotsState);
   const setIsOpenedNewUCSDialog = useSetRecoilState<boolean>(
     isOpenedNewUCSDialogState
   );
 
-  const { isUploadingUCS, uploadUCS } = useUploadingUCS();
   const { isDownloadingUCS, downloadUCS } = useDownloadingUCS();
+  const { handleRedo, handleUndo } = useChartSnapshot();
   const { isUploadingMP3, start, stop, uploadMP3 } = usePlayingMusic();
+  const { isUploadingUCS, uploadUCS } = useUploadingUCS();
 
   useEffect(() => {
     if (zoom.top !== null) scrollTo({ top: zoom.top });
@@ -110,16 +116,16 @@ function MenuDrawer() {
       <Divider />
       <List>
         <MenuDrawerListItem
-          disabled={isPlaying}
+          disabled={undoSnapshots.length === 0 || isPlaying}
           icon={<UndoIcon />}
           label="Undo (Ctrl+Z)"
-          onClick={() => alert("TODO")}
+          onClick={handleUndo}
         />
         <MenuDrawerListItem
-          disabled={isPlaying}
+          disabled={redoSnapshots.length === 0 || isPlaying}
           icon={<RedoIcon />}
           label="Redo (Ctrl+Y)"
-          onClick={() => alert("TODO")}
+          onClick={handleRedo}
         />
       </List>
       <Divider />

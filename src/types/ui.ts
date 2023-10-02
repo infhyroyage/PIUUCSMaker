@@ -1,5 +1,5 @@
 import { PopoverPosition } from "@mui/material";
-import { CopiedNote } from "./chart";
+import { Block, CopiedNote, Note } from "./chart";
 
 /**
  * BlockControllerMenuのメニューの座標を構成するパラメーター
@@ -14,6 +14,23 @@ export type BlockControllerMenuPosition = {
    * メニューを開くブラウザの画面の座標
    */
   position?: PopoverPosition;
+};
+
+/**
+ * 譜面のブロック/単ノート/ホールドの始点/ホールドの中間/ホールドの終点の編集直前のスナップショット
+ */
+export type ChartSnapshot = {
+  /**
+   * 編集直前のblocksStateで管理する値(Block[])
+   * 編集前後で変更しない場合はnull
+   */
+  blocks: Block[] | null;
+
+  /**
+   * 編集直前のnotesStateで管理する値(Note[][])
+   * 編集前後で変更しない場合はnull
+   */
+  notes: Note[][] | null;
 };
 
 /**

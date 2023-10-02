@@ -1,6 +1,6 @@
 import { atom } from "recoil";
 import { Block, Note } from "../types/chart";
-import { Selector } from "../types/ui";
+import { ChartSnapshot, Selector } from "../types/ui";
 import { Indicator } from "../types/ui";
 import { ClipBoard } from "../types/ui";
 import { Zoom } from "../types/ui";
@@ -150,6 +150,15 @@ export const rectangleIdentifierWidthState = atom<number>({
   default: 0,
 });
 
+/**
+ * やり直すChartSnapshotの集合
+ * インデックスが増えるに連れ、過去の編集操作となる
+ */
+export const redoSnapshotsState = atom<ChartSnapshot[]>({
+  key: "redoSnapshots",
+  default: [],
+});
+
 export const selectorState = atom<Selector>({
   key: "selector",
   default: { changingCords: null, completedCords: null },
@@ -167,6 +176,15 @@ export const successMessageState = atom<string>({
 export const ucsNameState = atom<string | null>({
   key: "ucsName",
   default: null,
+});
+
+/**
+ * 元に戻すChartSnapshotの集合
+ * インデックスが増えるに連れ、最新の編集操作となる
+ */
+export const undoSnapshotsState = atom<ChartSnapshot[]>({
+  key: "undoSnapshots",
+  default: [],
 });
 
 export const userErrorMessageState = atom<string>({
