@@ -47,15 +47,7 @@ function BlockControllerButton({
   return (
     <>
       <Card raised square>
-        <CardActionArea
-          onClick={onClickCardActionArea}
-          onMouseUp={(
-            event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>
-          ) => {
-            // 親コンポーネントであるAppでonMouseUpに設定した動作に伝搬しない
-            event.stopPropagation();
-          }}
-        >
+        <CardActionArea onClick={onClickCardActionArea}>
           <CardContent
             sx={{
               height: blockHeight - (isLastBlock ? 0 : horizontalBorderSize),
