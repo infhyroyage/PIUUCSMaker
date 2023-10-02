@@ -1,6 +1,7 @@
 import { MouseEvent, memo, useCallback, useMemo } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import {
+  blockControllerMenuIdxState,
   blockControllerMenuPositionState,
   noteSizeState,
 } from "../../service/atoms";
@@ -13,7 +14,10 @@ import {
 } from "@mui/material";
 import BorderLine from "../BorderLine";
 import { BlockControllerButtonProps } from "../../types/props";
-import { BlockControllerMenuPosition } from "../../types/ui";
+import {
+  BlockControllerMenuIdx,
+  BlockControllerMenuPosition,
+} from "../../types/ui";
 
 function BlockControllerButton({
   blockHeight,
@@ -23,6 +27,9 @@ function BlockControllerButton({
   textSecond,
 }: BlockControllerButtonProps) {
   const noteSize = useRecoilValue<number>(noteSizeState);
+  const setMenuIdx = useSetRecoilState<BlockControllerMenuIdx>(
+    blockControllerMenuIdxState
+  );
   const setMenuPosition = useSetRecoilState<BlockControllerMenuPosition>(
     blockControllerMenuPositionState
   );
@@ -36,11 +43,10 @@ function BlockControllerButton({
 
   // 押下したマウスの座標にBlockControllerMenuを表示
   const onClickCardActionArea = useCallback(
-    (event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) =>
-      setMenuPosition({
-        blockIdx,
-        position: { top: event.clientY, left: event.clientX },
-      }),
+    (event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => {
+      setMenuIdx(blockIdx);
+      setMenuPosition({ top: event.clientY, left: event.clientX });
+    },
     [setMenuPosition]
   );
 

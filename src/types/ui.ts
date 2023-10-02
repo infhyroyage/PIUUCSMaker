@@ -2,19 +2,14 @@ import { PopoverPosition } from "@mui/material";
 import { Block, CopiedNote, Note } from "./chart";
 
 /**
- * BlockControllerMenuのメニューの座標を構成するパラメーター
+ * BlockControllerMenuのメニューを開く対象の譜面のブロックのインデックス
  */
-export type BlockControllerMenuPosition = {
-  /**
-   * メニューを開く対象の譜面のブロックのインデックス
-   */
-  blockIdx: number;
+export type BlockControllerMenuIdx = number | undefined;
 
-  /**
-   * メニューを開くブラウザの画面の座標
-   */
-  position?: PopoverPosition;
-};
+/**
+ * BlockControllerMenuのメニューを開くブラウザの画面の座標
+ */
+export type BlockControllerMenuPosition = PopoverPosition | undefined;
 
 /**
  * 譜面のブロック/単ノート/ホールドの始点/ホールドの中間/ホールドの終点の編集直前のスナップショット
