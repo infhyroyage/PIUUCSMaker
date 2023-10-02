@@ -8,6 +8,7 @@ export type BlockControllerMenuIdx = number | undefined;
 
 /**
  * BlockControllerMenuのメニューを開くブラウザの画面の座標
+ * BlockControllerMenuのメニューが非表示の場合はundefined
  */
 export type BlockControllerMenuPosition = PopoverPosition | undefined;
 

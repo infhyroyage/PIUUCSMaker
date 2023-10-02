@@ -2,20 +2,39 @@ import { useCallback, useEffect } from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import { Block, Note } from "../types/chart";
 import {
+  blockControllerMenuPositionState,
   blocksState,
+  chartIndicatorMenuPositionState,
+  indicatorState,
   notesState,
   redoSnapshotsState,
+  selectorState,
   undoSnapshotsState,
 } from "../service/atoms";
-import { ChartSnapshot } from "../types/ui";
+import {
+  BlockControllerMenuPosition,
+  ChartSnapshot,
+  Indicator,
+  Selector,
+} from "../types/ui";
+import { PopoverPosition } from "@mui/material";
 
 function useChartSnapshot() {
-  const setBlocks = useSetRecoilState<Block[]>(blocksState);
-  const setNotes = useSetRecoilState<Note[][]>(notesState);
+  const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
+  const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
   const [redoSnapshots, setRedoSnapshots] =
     useRecoilState<ChartSnapshot[]>(redoSnapshotsState);
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
+  const setBlockControllerMenuPosition =
+    useSetRecoilState<BlockControllerMenuPosition>(
+      blockControllerMenuPositionState
+    );
+  const setChartIndicatorMenuPosition = useSetRecoilState<
+    PopoverPosition | undefined
+  >(chartIndicatorMenuPositionState);
+  const setIndicator = useSetRecoilState<Indicator>(indicatorState);
+  const setSelector = useSetRecoilState<Selector>(selectorState);
 
   const handleRedo = useCallback(() => {
     // やり直すスナップショットが存在しない場合はNOP
@@ -24,18 +43,31 @@ function useChartSnapshot() {
     // やり直すスナップショットを抽出
     const snapshot: ChartSnapshot = redoSnapshots[redoSnapshots.length - 1];
 
+    // 元に戻す/やり直すスナップショットの集合を更新
+    setUndoSnapshots([
+      ...undoSnapshots,
+      { blocks: snapshot.blocks && blocks, notes: snapshot.notes && notes },
+    ]);
+    setRedoSnapshots(redoSnapshots.slice(0, redoSnapshots.length - 1));
+
+    // インディケーター・選択領域・メニューをすべて非表示
+    setIndicator(null);
+    setSelector({ changingCords: null, completedCords: null });
+    setBlockControllerMenuPosition(undefined);
+    setChartIndicatorMenuPosition(undefined);
+
     // 譜面のブロック、および、単ノート/ホールドの始点/ホールドの中間/ホールドの終点をやり直す
     if (snapshot.blocks !== null) setBlocks(snapshot.blocks);
     if (snapshot.notes !== null) setNotes(snapshot.notes);
-
-    // 元に戻す/やり直すスナップショットの集合を更新
-    setUndoSnapshots([...undoSnapshots, snapshot]);
-    setRedoSnapshots(redoSnapshots.slice(0, redoSnapshots.length - 1));
   }, [
     redoSnapshots,
     undoSnapshots,
+    setBlockControllerMenuPosition,
     setBlocks,
+    setChartIndicatorMenuPosition,
+    setIndicator,
     setNotes,
+    setSelector,
     setRedoSnapshots,
     setUndoSnapshots,
   ]);
@@ -47,18 +79,31 @@ function useChartSnapshot() {
     // 元に戻すSnapshotを抽出
     const snapshot: ChartSnapshot = undoSnapshots[undoSnapshots.length - 1];
 
+    // やり直すスナップショットの集合、元に戻すスナップショットの集合を更新
+    setRedoSnapshots([
+      ...redoSnapshots,
+      { blocks: snapshot.blocks && blocks, notes: snapshot.notes && notes },
+    ]);
+    setUndoSnapshots(undoSnapshots.slice(0, undoSnapshots.length - 1));
+
+    // インディケーター・選択領域・メニューをすべて非表示
+    setIndicator(null);
+    setSelector({ changingCords: null, completedCords: null });
+    setBlockControllerMenuPosition(undefined);
+    setChartIndicatorMenuPosition(undefined);
+
     // 譜面のブロック、および、単ノート/ホールドの始点/ホールドの中間/ホールドの終点を元に戻す
     if (snapshot.blocks !== null) setBlocks(snapshot.blocks);
     if (snapshot.notes !== null) setNotes(snapshot.notes);
-
-    // やり直すスナップショットの集合、元に戻すスナップショットの集合を更新
-    setRedoSnapshots([...redoSnapshots, snapshot]);
-    setUndoSnapshots(undoSnapshots.slice(0, undoSnapshots.length - 1));
   }, [
     redoSnapshots,
     undoSnapshots,
+    setBlockControllerMenuPosition,
     setBlocks,
+    setChartIndicatorMenuPosition,
+    setIndicator,
     setNotes,
+    setSelector,
     setRedoSnapshots,
     setUndoSnapshots,
   ]);
