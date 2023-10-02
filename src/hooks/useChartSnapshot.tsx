@@ -1,11 +1,13 @@
 import { useCallback, useEffect } from "react";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { Block, Note } from "../types/chart";
 import {
   blockControllerMenuPositionState,
   blocksState,
   chartIndicatorMenuPositionState,
+  editBlockDialogFormState,
   indicatorState,
+  isOpenedNewUCSDialogState,
   notesState,
   redoSnapshotsState,
   selectorState,
@@ -18,6 +20,7 @@ import {
   Selector,
 } from "../types/ui";
 import { PopoverPosition } from "@mui/material";
+import { EditBlockDialogForm } from "../types/form";
 
 function useChartSnapshot() {
   const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
@@ -26,6 +29,12 @@ function useChartSnapshot() {
     useRecoilState<ChartSnapshot[]>(redoSnapshotsState);
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
+  const editBlockDialogForm = useRecoilValue<EditBlockDialogForm>(
+    editBlockDialogFormState
+  );
+  const isOpenedNewUCSDialog = useRecoilValue<boolean>(
+    isOpenedNewUCSDialogState
+  );
   const setBlockControllerMenuPosition =
     useSetRecoilState<BlockControllerMenuPosition>(
       blockControllerMenuPositionState
@@ -37,8 +46,13 @@ function useChartSnapshot() {
   const setSelector = useSetRecoilState<Selector>(selectorState);
 
   const handleRedo = useCallback(() => {
-    // やり直すスナップショットが存在しない場合はNOP
-    if (redoSnapshots.length === 0) return;
+    // やり直すスナップショットが存在しない/ダイアログが開いている場合はNOP
+    if (
+      redoSnapshots.length === 0 ||
+      isOpenedNewUCSDialog ||
+      editBlockDialogForm.open
+    )
+      return;
 
     // やり直すスナップショットを抽出
     const snapshot: ChartSnapshot = redoSnapshots[redoSnapshots.length - 1];
@@ -60,6 +74,8 @@ function useChartSnapshot() {
     if (snapshot.blocks !== null) setBlocks(snapshot.blocks);
     if (snapshot.notes !== null) setNotes(snapshot.notes);
   }, [
+    editBlockDialogForm.open,
+    isOpenedNewUCSDialog,
     redoSnapshots,
     undoSnapshots,
     setBlockControllerMenuPosition,
@@ -73,8 +89,13 @@ function useChartSnapshot() {
   ]);
 
   const handleUndo = useCallback(() => {
-    // 元に直すスナップショットが存在しない場合はNOP
-    if (undoSnapshots.length === 0) return;
+    // 元に直すスナップショットが存在しない/ダイアログが開いている場合はNOP
+    if (
+      undoSnapshots.length === 0 ||
+      isOpenedNewUCSDialog ||
+      editBlockDialogForm.open
+    )
+      return;
 
     // 元に戻すSnapshotを抽出
     const snapshot: ChartSnapshot = undoSnapshots[undoSnapshots.length - 1];
@@ -96,6 +117,8 @@ function useChartSnapshot() {
     if (snapshot.blocks !== null) setBlocks(snapshot.blocks);
     if (snapshot.notes !== null) setNotes(snapshot.notes);
   }, [
+    editBlockDialogForm.open,
+    isOpenedNewUCSDialog,
     redoSnapshots,
     undoSnapshots,
     setBlockControllerMenuPosition,
