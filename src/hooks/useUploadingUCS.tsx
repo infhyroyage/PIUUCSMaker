@@ -9,7 +9,7 @@ import {
   ucsNameState,
   userErrorMessageState,
 } from "../service/atoms";
-import { UploadingUCSValidation } from "../types/form";
+import { UploadingUCSValidation } from "../types/dialog";
 
 const validateAndLoadUCS = (
   content: string

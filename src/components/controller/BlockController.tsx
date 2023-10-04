@@ -12,7 +12,7 @@ import {
 } from "../../service/atoms";
 import BlockControllerButton from "./BlockControllerButton";
 import { ZOOM_VALUES } from "../../service/zoom";
-import { EditBlockDialogForm } from "../../types/form";
+import { EditBlockDialogForm } from "../../types/dialog";
 import { useCallback } from "react";
 import BlockControllerMenu from "./BlockControllerMenu";
 
@@ -103,6 +103,7 @@ function BlockController() {
         bpm: `${blocks[blockIdx].bpm}`,
         delay: `${blocks[blockIdx].delay}`,
         open: true,
+        rows: `${blocks[blockIdx].length}`,
         split: `${blocks[blockIdx].split}`,
       }),
     [blocks, setEditBlockDialogForm]

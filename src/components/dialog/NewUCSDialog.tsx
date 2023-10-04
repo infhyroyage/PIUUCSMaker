@@ -22,7 +22,7 @@ import {
   NewUCSDialogErrors,
   NewUCSDialogForm,
   NewUCSValidation,
-} from "../../types/form";
+} from "../../types/dialog";
 import { Block, Note } from "../../types/chart";
 
 const validateAndLoadUCS = (
@@ -79,26 +79,33 @@ const validateAndLoadUCS = (
     return "delay";
   }
 
-  // Beatのチェック
-  const beat = Number(form.beat);
-  if (!Number.isInteger(beat) || beat < 1 || beat > 64) {
-    return "beat";
-  }
-
   // Splitのチェック
   const split = Number(form.split);
   if (!Number.isInteger(split) || split < 1 || split > 128) {
     return "split";
   }
 
-  // 行数のチェック
-  const length = Number(form.rowLength);
-  if (!Number.isInteger(length) || length < 1) {
-    return "rowLength";
+  // Beatのチェック
+  const beat = Number(form.beat);
+  if (!Number.isInteger(beat) || beat < 1 || beat > 64) {
+    return "beat";
+  }
+
+  // Rowsのチェック
+  const rows = Number(form.rows);
+  if (!Number.isInteger(rows) || rows < 1) {
+    return "rows";
   }
 
   return {
-    block: { bpm, delay, beat, split, length, accumulatedLength: 0 },
+    block: {
+      accumulatedLength: 0,
+      beat,
+      bpm,
+      delay,
+      length: rows,
+      split,
+    },
     columns,
     isPerformance,
   };
@@ -111,7 +118,7 @@ function NewUCSDialog() {
     delay: "0",
     ucsName: "CS001",
     mode: "Single",
-    rowLength: "50",
+    rows: "50",
     split: "2",
   });
   const [isOpenedNewUCSDialog, setIsOpenedNewUCSDialog] =
@@ -188,7 +195,7 @@ function NewUCSDialog() {
             disabled={isPending}
             error={resultError === "bpm"}
             fullWidth
-            helperText="0.1 - 999"
+            helperText="Number of 4th Beats per Minute(0.1 - 999)"
             label="BPM"
             margin="dense"
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
@@ -202,7 +209,7 @@ function NewUCSDialog() {
             disabled={isPending}
             error={resultError === "delay"}
             fullWidth
-            helperText="-999999 - 999999"
+            helperText="Offset time of Scrolling(-999999 - 999999)"
             label="Delay(ms)"
             margin="dense"
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
@@ -214,23 +221,9 @@ function NewUCSDialog() {
           />
           <TextField
             disabled={isPending}
-            error={resultError === "beat"}
-            fullWidth
-            helperText="1 - 64"
-            label="Beat"
-            margin="dense"
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              setForm({ ...form, beat: event.target.value });
-            }}
-            size="small"
-            type="number"
-            value={form.beat}
-          />
-          <TextField
-            disabled={isPending}
             error={resultError === "split"}
             fullWidth
-            helperText="1 - 128"
+            helperText="Number of UCS File's Rows per 4th Beat(1 - 128)"
             label="Split"
             margin="dense"
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
@@ -242,17 +235,31 @@ function NewUCSDialog() {
           />
           <TextField
             disabled={isPending}
-            error={resultError === "rowLength"}
+            error={resultError === "beat"}
             fullWidth
-            helperText="Over 1"
-            label="Row Length"
+            helperText="Number of 4th Beats per Measure(1 - 64)"
+            label="Beat"
             margin="dense"
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              setForm({ ...form, rowLength: event.target.value });
+              setForm({ ...form, beat: event.target.value });
             }}
             size="small"
             type="number"
-            value={form.rowLength}
+            value={form.beat}
+          />
+          <TextField
+            disabled={isPending}
+            error={resultError === "rows"}
+            fullWidth
+            helperText="Number of UCS File's Rows(Over 1)"
+            label="Rows"
+            margin="dense"
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+              setForm({ ...form, rows: event.target.value });
+            }}
+            size="small"
+            type="number"
+            value={form.rows}
           />
         </Stack>
       </DialogContent>

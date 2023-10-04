@@ -15,7 +15,7 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import { EditBlockDialogError, EditBlockDialogForm } from "../../types/form";
+import { EditBlockDialogError, EditBlockDialogForm } from "../../types/dialog";
 import { Block } from "../../types/chart";
 import { ChartSnapshot } from "../../types/ui";
 
@@ -42,16 +42,22 @@ const validate = (form: EditBlockDialogForm): EditBlockDialogError | null => {
     return "delay";
   }
 
+  // Splitのチェック
+  const split = Number(form.split);
+  if (!Number.isInteger(split) || split < 1 || split > 128) {
+    return "split";
+  }
+
   // Beatのチェック
   const beat = Number(form.beat);
   if (!Number.isInteger(beat) || beat < 1 || beat > 64) {
     return "beat";
   }
 
-  // Splitのチェック
-  const split = Number(form.split);
-  if (!Number.isInteger(split) || split < 1 || split > 128) {
-    return "split";
+  // Rowsのチェック
+  const rows = Number(form.rows);
+  if (!Number.isInteger(rows) || rows < 1) {
+    return "rows";
   }
 
   return null;
@@ -68,28 +74,39 @@ function EditBlockDialog() {
   const setRedoShapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
 
-  const onEdit = useCallback(() => {
+  const onUpdate = useCallback(() => {
     const result: EditBlockDialogError | null = validate(form);
     if (result === null) {
       // 元に戻す/やり直すスナップショットの集合を更新
       setUndoSnapshots([...undoSnapshots, { blocks, notes: null }]);
       setRedoShapshots([]);
 
+      // form.blockIdx番目以降の譜面のブロックをすべて更新
       const updatedBlocks: Block[] = [...blocks];
       updatedBlocks[form.blockIdx] = {
         accumulatedLength: blocks[form.blockIdx].accumulatedLength,
         beat: Number(form.beat),
         bpm: Number(form.bpm),
         delay: Number(form.delay),
-        length: blocks[form.blockIdx].length,
+        length: Number(form.rows),
         split: Number(form.split),
       };
+      for (let idx = form.blockIdx + 1; idx < blocks.length; idx++) {
+        updatedBlocks[idx] = {
+          ...updatedBlocks[idx],
+          accumulatedLength:
+            updatedBlocks[idx - 1].accumulatedLength +
+            updatedBlocks[idx - 1].length,
+        };
+      }
+
       setBlocks(updatedBlocks);
       setForm({
         beat: "",
         blockIdx: -1,
         bpm: "",
         delay: "",
+        rows: "",
         open: false,
         split: "",
       });
@@ -115,6 +132,7 @@ function EditBlockDialog() {
         blockIdx: -1,
         bpm: "",
         delay: "",
+        rows: "",
         open: false,
         split: "",
       }),
@@ -129,7 +147,7 @@ function EditBlockDialog() {
           <TextField
             error={resultError === "bpm"}
             fullWidth
-            helperText="0.1 - 999"
+            helperText="Number of 4th Beats per Minute(0.1 - 999)"
             label="BPM"
             margin="dense"
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
@@ -145,7 +163,7 @@ function EditBlockDialog() {
           <TextField
             error={resultError === "delay"}
             fullWidth
-            helperText="-999999 - 999999"
+            helperText="Offset time of Scrolling(-999999 - 999999)"
             label="Delay(ms)"
             margin="dense"
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
@@ -159,9 +177,25 @@ function EditBlockDialog() {
             value={form.delay}
           />
           <TextField
+            error={resultError === "split"}
+            fullWidth
+            helperText="Number of UCS File's Rows per 4th Beat(1 - 128)"
+            label="Split"
+            margin="dense"
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+              setForm({
+                ...form,
+                split: event.target.value,
+              });
+            }}
+            size="small"
+            type="number"
+            value={form.split}
+          />
+          <TextField
             error={resultError === "beat"}
             fullWidth
-            helperText="1 - 64"
+            helperText="Number of 4th Beats per Measure(1 - 64)"
             label="Beat"
             margin="dense"
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
@@ -175,26 +209,26 @@ function EditBlockDialog() {
             value={form.beat}
           />
           <TextField
-            error={resultError === "split"}
+            error={resultError === "rows"}
             fullWidth
-            helperText="1 - 128"
-            label="Split"
+            helperText="Number of UCS File's Rows(Over 1)"
+            label="Rows"
             margin="dense"
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               setForm({
                 ...form,
-                split: event.target.value,
+                rows: event.target.value,
               });
             }}
             size="small"
             type="number"
-            value={form.split}
+            value={form.rows}
           />
         </Stack>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
-        <Button onClick={onEdit}>Edit</Button>
+        <Button onClick={onUpdate}>Update</Button>
       </DialogActions>
     </Dialog>
   );

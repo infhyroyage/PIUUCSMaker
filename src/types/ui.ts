@@ -2,11 +2,6 @@ import { PopoverPosition } from "@mui/material";
 import { Block, CopiedNote, Note } from "./chart";
 
 /**
- * BlockControllerMenuのメニューを開く対象の譜面のブロックのインデックス
- */
-export type BlockControllerMenuIdx = number | undefined;
-
-/**
  * BlockControllerMenuのメニューを開くブラウザの画面の座標
  * BlockControllerMenuのメニューが非表示の場合はundefined
  */

@@ -20,7 +20,7 @@ import {
   Selector,
 } from "../types/ui";
 import { PopoverPosition } from "@mui/material";
-import { EditBlockDialogForm } from "../types/form";
+import { EditBlockDialogForm } from "../types/dialog";
 
 function useChartSnapshot() {
   const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);

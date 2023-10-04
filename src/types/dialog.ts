@@ -1,6 +1,6 @@
 import { Block, Note } from "./chart";
 
-export type EditBlockDialogError = "bpm" | "delay" | "beat" | "split";
+export type EditBlockDialogError = "beat" | "bpm" | "delay" | "rows" | "split";
 
 export type EditBlockDialogForm = {
   beat: string;
@@ -8,26 +8,27 @@ export type EditBlockDialogForm = {
   bpm: string;
   delay: string;
   open: boolean;
+  rows: string;
   split: string;
 };
 
 export type NewUCSDialogErrors =
-  | "ucsName"
-  | "mode"
+  | "beat"
   | "bpm"
   | "delay"
-  | "beat"
+  | "mode"
+  | "rows"
   | "split"
-  | "rowLength";
+  | "ucsName";
 
 export type NewUCSDialogForm = {
   beat: string;
   bpm: string;
   delay: string;
-  ucsName: string;
   mode: string;
-  rowLength: string;
+  rows: string;
   split: string;
+  ucsName: string;
 };
 
 export type NewUCSValidation = {

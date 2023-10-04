@@ -1,16 +1,19 @@
 import { atom } from "recoil";
 import { Block, Note } from "../types/chart";
-import { BlockControllerMenuIdx, ChartSnapshot, Selector } from "../types/ui";
+import { ChartSnapshot, Selector } from "../types/ui";
 import { Indicator } from "../types/ui";
 import { ClipBoard } from "../types/ui";
 import { Zoom } from "../types/ui";
-import { EditBlockDialogForm } from "../types/form";
+import { EditBlockDialogForm } from "../types/dialog";
 import { PopoverPosition } from "@mui/material";
 import { BlockControllerMenuPosition } from "../types/ui";
 
-export const blockControllerMenuIdxState = atom<BlockControllerMenuIdx>({
+/**
+ * BlockControllerMenuのメニューを開く対象の譜面のブロックのインデックス
+ */
+export const blockControllerMenuIdxState = atom<number>({
   key: "blockControllerMenuIdx",
-  default: undefined,
+  default: 0,
 });
 
 export const blockControllerMenuPositionState =
@@ -56,6 +59,7 @@ export const editBlockDialogFormState = atom<EditBlockDialogForm>({
     bpm: "",
     delay: "",
     open: false,
+    rows: "",
     split: "",
   },
 });

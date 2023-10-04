@@ -16,7 +16,6 @@ import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
-  editBlockDialogFormState,
   isDarkModeState,
   isMuteBeatsState,
   isOpenedMenuDrawerState,
@@ -37,24 +36,21 @@ import useUploadingUCS from "../../hooks/useUploadingUCS";
 import useDownloadingUCS from "../../hooks/useDownloadingUCS";
 import MenuDrawerUploadListItem from "./MenuDrawerUploadListItem";
 import useChartSnapshot from "../../hooks/useChartSnapshot";
-import { EditBlockDialogForm } from "../../types/form";
 
 function MenuDrawer() {
   const [isDarkMode, setIsDarkMode] = useRecoilState<boolean>(isDarkModeState);
   const [isMuteBeats, setIsMuteBeats] =
     useRecoilState<boolean>(isMuteBeatsState);
-  const [isOpenedNewUCSDialog, setIsOpenedNewUCSDialog] =
-    useRecoilState<boolean>(isOpenedNewUCSDialogState);
   const [zoom, setZoom] = useRecoilState<Zoom>(zoomState);
-  const editBlockDialogForm = useRecoilValue<EditBlockDialogForm>(
-    editBlockDialogFormState
-  );
   const isOpenedMenuDrawer = useRecoilValue<boolean>(isOpenedMenuDrawerState);
   const isPlaying = useRecoilValue<boolean>(isPlayingState);
   const menuBarHeight = useRecoilValue<number>(menuBarHeightState);
   const redoSnapshots = useRecoilValue<ChartSnapshot[]>(redoSnapshotsState);
   const ucsName = useRecoilValue<string | null>(ucsNameState);
   const undoSnapshots = useRecoilValue<ChartSnapshot[]>(undoSnapshotsState);
+  const setIsOpenedNewUCSDialog = useSetRecoilState<boolean>(
+    isOpenedNewUCSDialogState
+  );
 
   const { isDownloadingUCS, downloadUCS } = useDownloadingUCS();
   const { handleRedo, handleUndo } = useChartSnapshot();
