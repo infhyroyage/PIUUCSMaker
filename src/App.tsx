@@ -10,6 +10,7 @@ import { useRecoilState } from "recoil";
 import { isDarkModeState } from "./service/atoms";
 import SuccessSnackbar from "./components/snackbar/SuccessSnackbar";
 import EditBlockDialog from "./components/dialog/EditBlockDialog";
+import AdjustBlockDialog from "./components/dialog/AdjustBlockDialog";
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useRecoilState<boolean>(isDarkModeState);
@@ -48,6 +49,7 @@ function App() {
       </div>
       <NewUCSDialog />
       <EditBlockDialog />
+      <AdjustBlockDialog />
       <SuccessSnackbar />
       <UserErrorSnackbar />
     </ThemeProvider>

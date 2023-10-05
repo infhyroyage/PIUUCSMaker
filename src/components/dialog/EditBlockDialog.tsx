@@ -3,6 +3,7 @@ import { useRecoilState, useSetRecoilState } from "recoil";
 import {
   blocksState,
   editBlockDialogFormState,
+  notesState,
   redoSnapshotsState,
   undoSnapshotsState,
 } from "../../service/atoms";
@@ -16,7 +17,7 @@ import {
   TextField,
 } from "@mui/material";
 import { EditBlockDialogError, EditBlockDialogForm } from "../../types/dialog";
-import { Block } from "../../types/chart";
+import { Block, Note } from "../../types/chart";
 import { ChartSnapshot } from "../../types/ui";
 
 const validate = (form: EditBlockDialogForm): EditBlockDialogError | null => {
@@ -66,6 +67,7 @@ const validate = (form: EditBlockDialogForm): EditBlockDialogError | null => {
 function EditBlockDialog() {
   const [resultError, setResultError] = useState<EditBlockDialogError | "">("");
   const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
+  const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
   const [form, setForm] = useRecoilState<EditBlockDialogForm>(
     editBlockDialogFormState
   );
@@ -78,10 +80,11 @@ function EditBlockDialog() {
     const result: EditBlockDialogError | null = validate(form);
     if (result === null) {
       // 元に戻す/やり直すスナップショットの集合を更新
-      setUndoSnapshots([...undoSnapshots, { blocks, notes: null }]);
+      setUndoSnapshots([...undoSnapshots, { blocks, notes }]);
       setRedoShapshots([]);
 
       // form.blockIdx番目以降の譜面のブロックをすべて更新
+      // TODO: blockIdx + 1番目以降のnote.idxも全更新する必要あり
       const updatedBlocks: Block[] = [...blocks];
       updatedBlocks[form.blockIdx] = {
         accumulatedLength: blocks[form.blockIdx].accumulatedLength,

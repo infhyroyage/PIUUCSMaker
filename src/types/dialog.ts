@@ -1,5 +1,14 @@
 import { Block, Note } from "./chart";
 
+export type AdjustBlockDialogFixed = "" | "bpm" | "rows";
+
+export type AdjustBlockDialogForm = {
+  bpm: number;
+  rows: number;
+  split: number;
+  title: string;
+};
+
 export type EditBlockDialogError = "beat" | "bpm" | "delay" | "rows" | "split";
 
 export type EditBlockDialogForm = {

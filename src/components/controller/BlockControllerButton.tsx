@@ -1,7 +1,7 @@
 import { MouseEvent, memo, useCallback, useMemo } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import {
-  blockControllerMenuIdxState,
+  blockControllerMenuBlockIdxState,
   blockControllerMenuPositionState,
   noteSizeState,
 } from "../../service/atoms";
@@ -24,7 +24,9 @@ function BlockControllerButton({
   textSecond,
 }: BlockControllerButtonProps) {
   const noteSize = useRecoilValue<number>(noteSizeState);
-  const setMenuIdx = useSetRecoilState<number>(blockControllerMenuIdxState);
+  const setMenuBlockIdx = useSetRecoilState<number | null>(
+    blockControllerMenuBlockIdxState
+  );
   const setMenuPosition = useSetRecoilState<BlockControllerMenuPosition>(
     blockControllerMenuPositionState
   );
@@ -39,10 +41,10 @@ function BlockControllerButton({
   // 押下したマウスの座標にBlockControllerMenuを表示
   const onClickCardActionArea = useCallback(
     (event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => {
-      setMenuIdx(blockIdx);
+      setMenuBlockIdx(blockIdx);
       setMenuPosition({ top: event.clientY, left: event.clientX });
     },
-    [setMenuPosition]
+    [blockIdx, setMenuBlockIdx, setMenuPosition]
   );
 
   return (

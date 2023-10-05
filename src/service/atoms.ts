@@ -4,16 +4,27 @@ import { ChartSnapshot, Selector } from "../types/ui";
 import { Indicator } from "../types/ui";
 import { ClipBoard } from "../types/ui";
 import { Zoom } from "../types/ui";
-import { EditBlockDialogForm } from "../types/dialog";
+import { AdjustBlockDialogFixed, EditBlockDialogForm } from "../types/dialog";
 import { PopoverPosition } from "@mui/material";
 import { BlockControllerMenuPosition } from "../types/ui";
 
 /**
- * BlockControllerMenuのメニューを開く対象の譜面のブロックのインデックス
+ * 「Adjust Split & Rows」を押下してAdjustBlockDialogを表示する場合はbpm、
+ * 「Adjust Split & BPM」を押下してAdjustBlockDialogを表示する場合はrows、
+ * AdjustBlockDialogを表示しない場合は空文字
  */
-export const blockControllerMenuIdxState = atom<number>({
-  key: "blockControllerMenuIdx",
-  default: 0,
+export const adjustBlockDialogFixedState = atom<AdjustBlockDialogFixed>({
+  key: "adjustBlockDialogFixed",
+  default: "",
+});
+
+/**
+ * BlockControllerMenuのメニュー対象の譜面のブロックのインデックス
+ * メニューを開いていない場合はnull
+ */
+export const blockControllerMenuBlockIdxState = atom<number | null>({
+  key: "blockControllerMenuBlockIdx",
+  default: null,
 });
 
 export const blockControllerMenuPositionState =

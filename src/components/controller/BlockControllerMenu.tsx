@@ -1,19 +1,26 @@
 import { memo } from "react";
 import { Divider, Menu, MenuItem, MenuList } from "@mui/material";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
-  blockControllerMenuIdxState,
+  adjustBlockDialogFixedState,
+  blockControllerMenuBlockIdxState,
   blockControllerMenuPositionState,
 } from "../../service/atoms";
 import { BlockControllerMenuProps } from "../../types/props";
 import { BlockControllerMenuPosition } from "../../types/ui";
+import { AdjustBlockDialogFixed } from "../../types/dialog";
 
 function BlockControllerMenu({ blockNum, handler }: BlockControllerMenuProps) {
   const [menuPosition, setMenuPosition] =
     useRecoilState<BlockControllerMenuPosition>(
       blockControllerMenuPositionState
     );
-  const blockIdx = useRecoilValue<number>(blockControllerMenuIdxState);
+  const menuBlockIdx = useRecoilValue<number | null>(
+    blockControllerMenuBlockIdxState
+  );
+  const setAdjustBlockDialogFixed = useSetRecoilState<AdjustBlockDialogFixed>(
+    adjustBlockDialogFixedState
+  );
 
   return (
     <Menu
@@ -26,49 +33,69 @@ function BlockControllerMenu({ blockNum, handler }: BlockControllerMenuProps) {
       <MenuList dense>
         <MenuItem
           onClick={() => {
-            handler.edit(blockIdx);
-            setMenuPosition(undefined);
+            if (menuBlockIdx !== null) {
+              handler.edit(menuBlockIdx);
+              setMenuPosition(undefined);
+            }
           }}
         >
           Edit
         </MenuItem>
-        <MenuItem onClick={() => alert("TODO")}>
-          Adjust Split&Rows fixed BPM
+        <MenuItem
+          onClick={() => {
+            setAdjustBlockDialogFixed("bpm");
+            setMenuPosition(undefined);
+          }}
+        >
+          Adjust Split & Rows
         </MenuItem>
-        <MenuItem onClick={() => alert("TODO")}>
-          Adjust Split&BPM fixed Rows
+        <MenuItem
+          onClick={() => {
+            setAdjustBlockDialogFixed("rows");
+            setMenuPosition(undefined);
+          }}
+        >
+          Adjust Split & BPM
         </MenuItem>
         <Divider />
         <MenuItem
           onClick={() => {
-            handler.add(blockIdx);
-            setMenuPosition(undefined);
+            if (menuBlockIdx !== null) {
+              handler.add(menuBlockIdx);
+              setMenuPosition(undefined);
+            }
           }}
         >
           Add at Bottom
         </MenuItem>
         <MenuItem
           onClick={() => {
-            handler.insert(blockIdx);
-            setMenuPosition(undefined);
+            if (menuBlockIdx !== null) {
+              handler.insert(menuBlockIdx);
+              setMenuPosition(undefined);
+            }
           }}
         >
           Insert into Next
         </MenuItem>
         <MenuItem
-          disabled={blockIdx === 0}
+          disabled={menuBlockIdx === 0}
           onClick={() => {
-            handler.mergeAbove(blockIdx);
-            setMenuPosition(undefined);
+            if (menuBlockIdx !== null) {
+              handler.mergeAbove(menuBlockIdx);
+              setMenuPosition(undefined);
+            }
           }}
         >
           Merge with Above
         </MenuItem>
         <MenuItem
-          disabled={blockIdx === blockNum - 1}
+          disabled={menuBlockIdx === blockNum - 1}
           onClick={() => {
-            handler.mergeBelow(blockIdx);
-            setMenuPosition(undefined);
+            if (menuBlockIdx !== null) {
+              handler.mergeBelow(menuBlockIdx);
+              setMenuPosition(undefined);
+            }
           }}
         >
           Merge with Below
@@ -76,8 +103,10 @@ function BlockControllerMenu({ blockNum, handler }: BlockControllerMenuProps) {
         <MenuItem
           disabled={blockNum < 2}
           onClick={() => {
-            handler.delete(blockIdx);
-            setMenuPosition(undefined);
+            if (menuBlockIdx !== null) {
+              handler.delete(menuBlockIdx);
+              setMenuPosition(undefined);
+            }
           }}
         >
           Delete
