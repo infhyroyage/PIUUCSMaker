@@ -84,7 +84,7 @@ function EditBlockDialog() {
       setRedoShapshots([]);
 
       // form.blockIdx番目以降の譜面のブロックをすべて更新
-      // TODO: blockIdx + 1番目以降のnote.idxも全更新する必要あり
+      // TODO: blockIdx番目以降のnote.idxも全更新する必要あり
       const updatedBlocks: Block[] = [...blocks];
       updatedBlocks[form.blockIdx] = {
         accumulatedLength: blocks[form.blockIdx].accumulatedLength,

@@ -14,6 +14,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
   Grid,
   Paper,
   Typography,
@@ -55,7 +56,7 @@ function AdjustBlockDialog() {
       setRedoShapshots([]);
 
       // menuBlock.blockIdx番目以降の譜面のブロックをすべて更新
-      // TODO: blockIdx + 1番目以降のnote.idxも全更新する必要あり
+      // TODO: blockIdx番目以降のnote.idxも全更新する必要あり
       const updatedBlocks: Block[] = [...blocks];
       updatedBlocks[menuBlockIdx] = {
         accumulatedLength: blocks[menuBlockIdx].accumulatedLength,
@@ -99,35 +100,86 @@ function AdjustBlockDialog() {
       <Dialog open={adjustBlockDialogFixed.length > 0} onClose={onClose}>
         <DialogTitle>{form.title}</DialogTitle>
         <DialogContent>
-          <Grid container mt={1} spacing={3} textAlign="center">
-            <Grid item xs={3} />
+          <Grid
+            columns={11}
+            container
+            mt={1}
+            spacing={2}
+            alignItems="center"
+            textAlign="center"
+          >
+            <Grid item xs={2} />
             <Grid item xs={4}>
-              <Typography variant="subtitle1">Before</Typography>
+              Before
             </Grid>
             <Grid item xs={1} />
             <Grid item xs={4}>
-              <Typography variant="subtitle1">After</Typography>
+              After
             </Grid>
-            <Grid item xs={3}>
-              <Typography variant="subtitle1">Split</Typography>
+            <Grid item xs={2}>
+              Split
             </Grid>
             <Grid item xs={4}>
-              <Paper elevation={3}>{blocks[menuBlockIdx].split}</Paper>
+              <Paper elevation={3} sx={{ padding: 1 }}>
+                <Typography variant="h6">
+                  {blocks[menuBlockIdx].split}
+                </Typography>
+              </Paper>
             </Grid>
             <Grid item xs={1}>
               <ArrowRightIcon />
             </Grid>
             <Grid item xs={4}>
-              <Paper elevation={3}>{form.split}</Paper>
+              <Paper elevation={3} sx={{ padding: 1 }}>
+                <Typography variant="h6">{form.split}</Typography>
+              </Paper>
             </Grid>
-            <Grid item xs={3}>
-              <Typography variant="subtitle1">BPM</Typography>
+            <Grid item xs={2} />
+            <Grid item xs={1.5}>
+              <Button fullWidth variant="contained">
+                MIN
+              </Button>
+            </Grid>
+            <Grid item xs={1.5}>
+              <Button fullWidth variant="contained">
+                /2
+              </Button>
+            </Grid>
+            <Grid item xs={1.5}>
+              <Button fullWidth variant="contained">
+                -1
+              </Button>
+            </Grid>
+            <Grid item xs={1.5}>
+              <Button fullWidth variant="contained">
+                +1
+              </Button>
+            </Grid>
+            <Grid item xs={1.5}>
+              <Button fullWidth variant="contained">
+                x2
+              </Button>
+            </Grid>
+            <Grid item xs={1.5}>
+              <Button fullWidth variant="contained">
+                MAX
+              </Button>
+            </Grid>
+            <Grid item xs={11}>
+              <Divider />
+            </Grid>
+            <Grid item xs={2}>
+              BPM
             </Grid>
             <Grid item xs={4}>
               {adjustBlockDialogFixed === "bpm" ? (
                 <Typography>{blocks[menuBlockIdx].bpm}</Typography>
               ) : (
-                <Paper elevation={3}>{blocks[menuBlockIdx].bpm}</Paper>
+                <Paper elevation={3} sx={{ padding: 1 }}>
+                  <Typography variant="h6">
+                    {blocks[menuBlockIdx].bpm}
+                  </Typography>
+                </Paper>
               )}
             </Grid>
             <Grid item xs={1}>
@@ -135,19 +187,51 @@ function AdjustBlockDialog() {
             </Grid>
             <Grid item xs={4}>
               {adjustBlockDialogFixed === "bpm" ? (
-                <Typography>{form.bpm}</Typography>
+                <Typography>{`${form.bpm}(fixed)`}</Typography>
               ) : (
-                <Paper elevation={3}>{form.bpm}</Paper>
+                <Paper elevation={3} sx={{ padding: 1 }}>
+                  <Typography variant="h6">{form.bpm}</Typography>
+                </Paper>
               )}
             </Grid>
-            <Grid item xs={3}>
-              <Typography variant="subtitle1">Rows</Typography>
+            <Grid item xs={2} />
+            <Grid item xs={1.5} />
+            <Grid item xs={1.5}>
+              <Button
+                disabled={adjustBlockDialogFixed === "bpm"}
+                fullWidth
+                variant="contained"
+              >
+                /2
+              </Button>
+            </Grid>
+            <Grid item xs={1.5} />
+            <Grid item xs={1.5} />
+            <Grid item xs={1.5}>
+              <Button
+                disabled={adjustBlockDialogFixed === "bpm"}
+                fullWidth
+                variant="contained"
+              >
+                x2
+              </Button>
+            </Grid>
+            <Grid item xs={1.5} />
+            <Grid item xs={11}>
+              <Divider />
+            </Grid>
+            <Grid item xs={2}>
+              Rows
             </Grid>
             <Grid item xs={4}>
               {adjustBlockDialogFixed === "rows" ? (
                 <Typography>{blocks[menuBlockIdx].length}</Typography>
               ) : (
-                <Paper elevation={3}>{blocks[menuBlockIdx].length}</Paper>
+                <Paper elevation={3} sx={{ padding: 1 }}>
+                  <Typography variant="h6">
+                    {blocks[menuBlockIdx].length}
+                  </Typography>
+                </Paper>
               )}
             </Grid>
             <Grid item xs={1}>
@@ -155,11 +239,36 @@ function AdjustBlockDialog() {
             </Grid>
             <Grid item xs={4}>
               {adjustBlockDialogFixed === "rows" ? (
-                <Typography>{form.rows}</Typography>
+                <Typography>{`${form.rows}(fixed)`}</Typography>
               ) : (
-                <Paper elevation={3}>{form.rows}</Paper>
+                <Paper elevation={3} sx={{ padding: 1 }}>
+                  <Typography variant="h6">{form.rows}</Typography>
+                </Paper>
               )}
             </Grid>
+            <Grid item xs={2} />
+            <Grid item xs={1.5} />
+            <Grid item xs={1.5}>
+              <Button
+                disabled={adjustBlockDialogFixed === "rows"}
+                fullWidth
+                variant="contained"
+              >
+                /2
+              </Button>
+            </Grid>
+            <Grid item xs={1.5} />
+            <Grid item xs={1.5} />
+            <Grid item xs={1.5}>
+              <Button
+                disabled={adjustBlockDialogFixed === "rows"}
+                fullWidth
+                variant="contained"
+              >
+                x2
+              </Button>
+            </Grid>
+            <Grid item xs={1.5} />
           </Grid>
         </DialogContent>
         <DialogActions>
