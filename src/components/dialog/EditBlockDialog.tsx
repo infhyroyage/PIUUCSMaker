@@ -79,31 +79,74 @@ function EditBlockDialog() {
   const onUpdate = useCallback(() => {
     const result: EditBlockDialogError | null = validate(form);
     if (result === null) {
+      // form.blockIdx番目の譜面のブロックの行数の差分
+      const deltaRows: number =
+        Number(form.rows) - blocks[form.blockIdx].length;
+
       // 元に戻す/やり直すスナップショットの集合を更新
-      setUndoSnapshots([...undoSnapshots, { blocks, notes }]);
+      setUndoSnapshots([
+        ...undoSnapshots,
+        { blocks, notes: deltaRows === 0 ? null : notes },
+      ]);
       setRedoShapshots([]);
 
       // form.blockIdx番目以降の譜面のブロックをすべて更新
-      // TODO: blockIdx番目以降のnote.idxも全更新する必要あり
-      const updatedBlocks: Block[] = [...blocks];
-      updatedBlocks[form.blockIdx] = {
-        accumulatedLength: blocks[form.blockIdx].accumulatedLength,
-        beat: Number(form.beat),
-        bpm: Number(form.bpm),
-        delay: Number(form.delay),
-        length: Number(form.rows),
-        split: Number(form.split),
-      };
-      for (let idx = form.blockIdx + 1; idx < blocks.length; idx++) {
-        updatedBlocks[idx] = {
-          ...updatedBlocks[idx],
-          accumulatedLength:
-            updatedBlocks[idx - 1].accumulatedLength +
-            updatedBlocks[idx - 1].length,
-        };
+      const updatedBlocks: Block[] = [...Array(blocks.length)].map(
+        (_, blockIdx: number) =>
+          blockIdx === form.blockIdx
+            ? {
+                accumulatedLength: blocks[form.blockIdx].accumulatedLength,
+                beat: Number(form.beat),
+                bpm: Number(form.bpm),
+                delay: Number(form.delay),
+                length: Number(form.rows),
+                split: Number(form.split),
+              }
+            : blockIdx > form.blockIdx
+            ? {
+                ...blocks[blockIdx],
+                accumulatedLength:
+                  blocks[blockIdx - 1].accumulatedLength +
+                  blocks[blockIdx - 1].length +
+                  deltaRows,
+              }
+            : blocks[blockIdx]
+      );
+
+      // 行数を変更した場合のみ、form.blockIdx番目以降の譜面のブロックに該当する
+      // 単ノート/ホールドの始点/ホールドの中間/ホールドの終点をすべて更新
+      let updatedNotes: Note[][] = [...notes];
+      if (deltaRows !== 0) {
+        updatedNotes = [...notes].map((ns: Note[]) => {
+          // form.blockIdx番目の譜面のブロックの行数が減った場合は、その減少分に該当する
+          // 単ノート/ホールドの始点/ホールドの中間/ホールドの終点をすべて削除
+          const filteredNs: Note[] =
+            deltaRows > 0
+              ? ns
+              : ns.filter(
+                  (note: Note) =>
+                    note.idx <
+                      blocks[form.blockIdx].accumulatedLength +
+                        blocks[form.blockIdx].length +
+                        deltaRows ||
+                    note.idx >=
+                      blocks[form.blockIdx].accumulatedLength +
+                        blocks[form.blockIdx].length
+                );
+          // (form.blockIdx +1)番目以降の譜面のブロックに該当する単ノート/ホールドの始点/
+          // ホールドの中間/ホールドの終点の譜面全体の行インデックスをすべてズラす
+          return filteredNs.map((note: Note) =>
+            note.idx >=
+            blocks[form.blockIdx].accumulatedLength +
+              blocks[form.blockIdx].length
+              ? { idx: note.idx + deltaRows, type: note.type }
+              : note
+          );
+        });
       }
 
       setBlocks(updatedBlocks);
+      if (deltaRows !== 0) setNotes(updatedNotes);
       setForm({
         beat: "",
         blockIdx: -1,
@@ -120,8 +163,10 @@ function EditBlockDialog() {
   }, [
     blocks,
     form,
+    notes,
     setBlocks,
     setForm,
+    setNotes,
     setResultError,
     setRedoShapshots,
     setUndoSnapshots,
