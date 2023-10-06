@@ -1,15 +1,22 @@
 import { Block, Note } from "./chart";
 
-export type AdjustBlockDialogFixed = "" | "bpm" | "rows";
+export type EditBlockDialogError = "beat" | "bpm" | "delay" | "rows" | "split";
 
 export type AdjustBlockDialogForm = {
   bpm: number;
   rows: number;
   split: number;
-  title: string;
 };
 
-export type EditBlockDialogError = "beat" | "bpm" | "delay" | "rows" | "split";
+export type AdjustBlockDialogOpen = {
+  /**
+   * 「Adjust Split & Rows」を押下してAdjustBlockDialogを表示する場合はbpm、
+   * 「Adjust Split & BPM」を押下してAdjustBlockDialogを表示する場合はrows
+   */
+  fixed: "bpm" | "rows";
+
+  open: boolean;
+};
 
 export type EditBlockDialogForm = {
   beat: string;

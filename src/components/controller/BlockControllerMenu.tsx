@@ -2,13 +2,13 @@ import { memo } from "react";
 import { Divider, Menu, MenuItem, MenuList } from "@mui/material";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
-  adjustBlockDialogFixedState,
+  adjustBlockDialogOpenState,
   blockControllerMenuBlockIdxState,
   blockControllerMenuPositionState,
 } from "../../service/atoms";
 import { BlockControllerMenuProps } from "../../types/props";
 import { BlockControllerMenuPosition } from "../../types/ui";
-import { AdjustBlockDialogFixed } from "../../types/dialog";
+import { AdjustBlockDialogOpen } from "../../types/dialog";
 
 function BlockControllerMenu({ blockNum, handler }: BlockControllerMenuProps) {
   const [menuPosition, setMenuPosition] =
@@ -18,8 +18,8 @@ function BlockControllerMenu({ blockNum, handler }: BlockControllerMenuProps) {
   const menuBlockIdx = useRecoilValue<number | null>(
     blockControllerMenuBlockIdxState
   );
-  const setAdjustBlockDialogFixed = useSetRecoilState<AdjustBlockDialogFixed>(
-    adjustBlockDialogFixedState
+  const setAdjustBlockDialogOpen = useSetRecoilState<AdjustBlockDialogOpen>(
+    adjustBlockDialogOpenState
   );
 
   return (
@@ -43,7 +43,7 @@ function BlockControllerMenu({ blockNum, handler }: BlockControllerMenuProps) {
         </MenuItem>
         <MenuItem
           onClick={() => {
-            setAdjustBlockDialogFixed("bpm");
+            setAdjustBlockDialogOpen({ fixed: "bpm", open: true });
             setMenuPosition(undefined);
           }}
         >
@@ -51,7 +51,7 @@ function BlockControllerMenu({ blockNum, handler }: BlockControllerMenuProps) {
         </MenuItem>
         <MenuItem
           onClick={() => {
-            setAdjustBlockDialogFixed("rows");
+            setAdjustBlockDialogOpen({ fixed: "rows", open: true });
             setMenuPosition(undefined);
           }}
         >

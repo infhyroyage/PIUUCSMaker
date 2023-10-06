@@ -1,10 +1,10 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
   blocksState,
   redoSnapshotsState,
   undoSnapshotsState,
-  adjustBlockDialogFixedState,
+  adjustBlockDialogOpenState,
   blockControllerMenuBlockIdxState,
   notesState,
 } from "../../service/atoms";
@@ -20,18 +20,19 @@ import {
   Typography,
 } from "@mui/material";
 import {
-  AdjustBlockDialogFixed,
   AdjustBlockDialogForm,
+  AdjustBlockDialogOpen,
 } from "../../types/dialog";
 import { Block, Note } from "../../types/chart";
 import { ChartSnapshot } from "../../types/ui";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 
 function AdjustBlockDialog() {
-  const [adjustBlockDialogFixed, setAdjustBlockDialogFixed] =
-    useRecoilState<AdjustBlockDialogFixed>(adjustBlockDialogFixedState);
   const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
+  const [open, setOpen] = useRecoilState<AdjustBlockDialogOpen>(
+    adjustBlockDialogOpenState
+  );
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
   const menuBlockIdx = useRecoilValue<number | null>(
@@ -40,14 +41,20 @@ function AdjustBlockDialog() {
   const setRedoShapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
   const [form, setForm] = useState<AdjustBlockDialogForm>({
-    bpm: menuBlockIdx === null ? -1 : blocks[menuBlockIdx].bpm,
-    rows: menuBlockIdx === null ? -1 : blocks[menuBlockIdx].length,
-    split: menuBlockIdx === null ? -1 : blocks[menuBlockIdx].split,
-    title:
-      adjustBlockDialogFixed === "bpm"
-        ? "Adjust Split & Rows (BPM Fixed)"
-        : "Adjust Split & BPM (Rows Fixed)",
+    bpm: -1,
+    rows: -1,
+    split: -1,
   });
+
+  useEffect(
+    () =>
+      setForm({
+        bpm: menuBlockIdx === null ? -1 : blocks[menuBlockIdx].bpm,
+        rows: menuBlockIdx === null ? -1 : blocks[menuBlockIdx].length,
+        split: menuBlockIdx === null ? -1 : blocks[menuBlockIdx].split,
+      }),
+    [blocks, menuBlockIdx]
+  );
 
   const onUpdate = useCallback(() => {
     if (menuBlockIdx !== null) {
@@ -61,10 +68,10 @@ function AdjustBlockDialog() {
       updatedBlocks[menuBlockIdx] = {
         accumulatedLength: blocks[menuBlockIdx].accumulatedLength,
         beat: blocks[menuBlockIdx].beat,
-        bpm: Number(form.bpm),
+        bpm: form.bpm,
         delay: blocks[menuBlockIdx].delay,
-        length: Number(form.rows),
-        split: Number(form.split),
+        length: form.rows,
+        split: form.split,
       };
       for (let idx = menuBlockIdx + 1; idx < blocks.length; idx++) {
         updatedBlocks[idx] = {
@@ -78,12 +85,12 @@ function AdjustBlockDialog() {
       setBlocks(updatedBlocks);
     }
 
-    setAdjustBlockDialogFixed("");
+    setOpen({ fixed: "bpm", open: false });
   }, [
     blocks,
     form,
     menuBlockIdx,
-    setAdjustBlockDialogFixed,
+    setOpen,
     setBlocks,
     setRedoShapshots,
     setUndoSnapshots,
@@ -91,17 +98,21 @@ function AdjustBlockDialog() {
   ]);
 
   const onClose = useCallback(
-    () => setAdjustBlockDialogFixed(""),
-    [setAdjustBlockDialogFixed]
+    () => setOpen({ fixed: "bpm", open: false }),
+    [setOpen]
   );
 
   return (
     menuBlockIdx !== null && (
-      <Dialog open={adjustBlockDialogFixed.length > 0} onClose={onClose}>
-        <DialogTitle>{form.title}</DialogTitle>
+      <Dialog open={open.open} onClose={onClose}>
+        <DialogTitle>
+          {open.fixed === "bpm"
+            ? "Adjust Split & Rows (BPM Fixed)"
+            : "Adjust Split & BPM (Rows Fixed)"}
+        </DialogTitle>
         <DialogContent>
           <Grid
-            columns={11}
+            columns={14}
             container
             mt={1}
             spacing={2}
@@ -109,17 +120,17 @@ function AdjustBlockDialog() {
             textAlign="center"
           >
             <Grid item xs={2} />
-            <Grid item xs={4}>
+            <Grid item xs={5.5}>
               Before
             </Grid>
             <Grid item xs={1} />
-            <Grid item xs={4}>
+            <Grid item xs={5.5}>
               After
             </Grid>
             <Grid item xs={2}>
               Split
             </Grid>
-            <Grid item xs={4}>
+            <Grid item xs={5.5}>
               <Paper elevation={3} sx={{ padding: 1 }}>
                 <Typography variant="h6">
                   {blocks[menuBlockIdx].split}
@@ -129,51 +140,51 @@ function AdjustBlockDialog() {
             <Grid item xs={1}>
               <ArrowRightIcon />
             </Grid>
-            <Grid item xs={4}>
+            <Grid item xs={5.5}>
               <Paper elevation={3} sx={{ padding: 1 }}>
                 <Typography variant="h6">{form.split}</Typography>
               </Paper>
             </Grid>
             <Grid item xs={2} />
-            <Grid item xs={1.5}>
+            <Grid item xs={2}>
               <Button fullWidth variant="contained">
                 MIN
               </Button>
             </Grid>
-            <Grid item xs={1.5}>
+            <Grid item xs={2}>
               <Button fullWidth variant="contained">
                 /2
               </Button>
             </Grid>
-            <Grid item xs={1.5}>
+            <Grid item xs={2}>
               <Button fullWidth variant="contained">
                 -1
               </Button>
             </Grid>
-            <Grid item xs={1.5}>
+            <Grid item xs={2}>
               <Button fullWidth variant="contained">
                 +1
               </Button>
             </Grid>
-            <Grid item xs={1.5}>
+            <Grid item xs={2}>
               <Button fullWidth variant="contained">
                 x2
               </Button>
             </Grid>
-            <Grid item xs={1.5}>
+            <Grid item xs={2}>
               <Button fullWidth variant="contained">
                 MAX
               </Button>
             </Grid>
-            <Grid item xs={11}>
+            <Grid item xs={14}>
               <Divider />
             </Grid>
             <Grid item xs={2}>
               BPM
             </Grid>
-            <Grid item xs={4}>
-              {adjustBlockDialogFixed === "bpm" ? (
-                <Typography>{blocks[menuBlockIdx].bpm}</Typography>
+            <Grid item xs={5.5}>
+              {open.fixed === "bpm" ? (
+                <Typography variant="h6">{blocks[menuBlockIdx].bpm}</Typography>
               ) : (
                 <Paper elevation={3} sx={{ padding: 1 }}>
                   <Typography variant="h6">
@@ -185,9 +196,9 @@ function AdjustBlockDialog() {
             <Grid item xs={1}>
               <ArrowRightIcon />
             </Grid>
-            <Grid item xs={4}>
-              {adjustBlockDialogFixed === "bpm" ? (
-                <Typography>{`${form.bpm}(fixed)`}</Typography>
+            <Grid item xs={5.5}>
+              {open.fixed === "bpm" ? (
+                <Typography variant="h6">{`${form.bpm} (fixed)`}</Typography>
               ) : (
                 <Paper elevation={3} sx={{ padding: 1 }}>
                   <Typography variant="h6">{form.bpm}</Typography>
@@ -195,37 +206,39 @@ function AdjustBlockDialog() {
               )}
             </Grid>
             <Grid item xs={2} />
-            <Grid item xs={1.5} />
-            <Grid item xs={1.5}>
+            <Grid item xs={2} />
+            <Grid item xs={2}>
               <Button
-                disabled={adjustBlockDialogFixed === "bpm"}
+                disabled={open.fixed === "bpm"}
                 fullWidth
                 variant="contained"
               >
                 /2
               </Button>
             </Grid>
-            <Grid item xs={1.5} />
-            <Grid item xs={1.5} />
-            <Grid item xs={1.5}>
+            <Grid item xs={2} />
+            <Grid item xs={2} />
+            <Grid item xs={2}>
               <Button
-                disabled={adjustBlockDialogFixed === "bpm"}
+                disabled={open.fixed === "bpm"}
                 fullWidth
                 variant="contained"
               >
                 x2
               </Button>
             </Grid>
-            <Grid item xs={1.5} />
-            <Grid item xs={11}>
+            <Grid item xs={2} />
+            <Grid item xs={14}>
               <Divider />
             </Grid>
             <Grid item xs={2}>
               Rows
             </Grid>
-            <Grid item xs={4}>
-              {adjustBlockDialogFixed === "rows" ? (
-                <Typography>{blocks[menuBlockIdx].length}</Typography>
+            <Grid item xs={5.5}>
+              {open.fixed === "rows" ? (
+                <Typography variant="h6">
+                  {blocks[menuBlockIdx].length}
+                </Typography>
               ) : (
                 <Paper elevation={3} sx={{ padding: 1 }}>
                   <Typography variant="h6">
@@ -237,9 +250,9 @@ function AdjustBlockDialog() {
             <Grid item xs={1}>
               <ArrowRightIcon />
             </Grid>
-            <Grid item xs={4}>
-              {adjustBlockDialogFixed === "rows" ? (
-                <Typography>{`${form.rows}(fixed)`}</Typography>
+            <Grid item xs={5.5}>
+              {open.fixed === "rows" ? (
+                <Typography variant="h6">{`${form.rows} (fixed)`}</Typography>
               ) : (
                 <Paper elevation={3} sx={{ padding: 1 }}>
                   <Typography variant="h6">{form.rows}</Typography>
@@ -247,28 +260,28 @@ function AdjustBlockDialog() {
               )}
             </Grid>
             <Grid item xs={2} />
-            <Grid item xs={1.5} />
-            <Grid item xs={1.5}>
+            <Grid item xs={2} />
+            <Grid item xs={2}>
               <Button
-                disabled={adjustBlockDialogFixed === "rows"}
+                disabled={open.fixed === "rows"}
                 fullWidth
                 variant="contained"
               >
                 /2
               </Button>
             </Grid>
-            <Grid item xs={1.5} />
-            <Grid item xs={1.5} />
-            <Grid item xs={1.5}>
+            <Grid item xs={2} />
+            <Grid item xs={2} />
+            <Grid item xs={2}>
               <Button
-                disabled={adjustBlockDialogFixed === "rows"}
+                disabled={open.fixed === "rows"}
                 fullWidth
                 variant="contained"
               >
                 x2
               </Button>
             </Grid>
-            <Grid item xs={1.5} />
+            <Grid item xs={2} />
           </Grid>
         </DialogContent>
         <DialogActions>

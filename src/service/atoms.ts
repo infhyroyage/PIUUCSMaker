@@ -4,18 +4,13 @@ import { ChartSnapshot, Selector } from "../types/ui";
 import { Indicator } from "../types/ui";
 import { ClipBoard } from "../types/ui";
 import { Zoom } from "../types/ui";
-import { AdjustBlockDialogFixed, EditBlockDialogForm } from "../types/dialog";
+import { AdjustBlockDialogOpen, EditBlockDialogForm } from "../types/dialog";
 import { PopoverPosition } from "@mui/material";
 import { BlockControllerMenuPosition } from "../types/ui";
 
-/**
- * 「Adjust Split & Rows」を押下してAdjustBlockDialogを表示する場合はbpm、
- * 「Adjust Split & BPM」を押下してAdjustBlockDialogを表示する場合はrows、
- * AdjustBlockDialogを表示しない場合は空文字
- */
-export const adjustBlockDialogFixedState = atom<AdjustBlockDialogFixed>({
-  key: "adjustBlockDialogFixed",
-  default: "",
+export const adjustBlockDialogOpenState = atom<AdjustBlockDialogOpen>({
+  key: "adjustBlockDialogOpen",
+  default: { fixed: "bpm", open: false },
 });
 
 /**
