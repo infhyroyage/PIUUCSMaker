@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { Block } from "../../types/chart";
 import {
   blocksState,
@@ -8,17 +8,19 @@ import {
 import RectangleBlockIdentifier from "./RectangleBlockIdentifier";
 
 function RectangleIdentifier() {
+  const [rectangleIdentifierWidth, setRectangleIdentifierWidth] =
+    useRecoilState<number>(rectangleIdentifierWidthState);
   const blocks = useRecoilValue<Block[]>(blocksState);
-  const setRectangleIdentifierWidth = useSetRecoilState<number>(
-    rectangleIdentifierWidthState
-  );
 
   const divRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     if (divRef.current) {
-      setRectangleIdentifierWidth(divRef.current.getBoundingClientRect().width);
+      const updatedRectangleIdentifierWidth: number =
+        divRef.current.getBoundingClientRect().width;
+      if (updatedRectangleIdentifierWidth !== rectangleIdentifierWidth)
+        setRectangleIdentifierWidth(updatedRectangleIdentifierWidth);
     }
-  }, [setRectangleIdentifierWidth]);
+  }, [blocks, rectangleIdentifierWidth, setRectangleIdentifierWidth]);
 
   return (
     <div ref={divRef}>
