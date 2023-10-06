@@ -27,6 +27,18 @@ import { Block, Note } from "../../types/chart";
 import { ChartSnapshot } from "../../types/ui";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 
+/**
+ * 入力したBPM値に対し、整数部と小数部の数値の合計個数が8個以上の場合のみ、最大7個になるように小数点以下を四捨五入する
+ * @param {number} bpm BPM値
+ * @returns {number} 四捨五入したBPM値
+ */
+const roundBpm = (bpm: number): number =>
+  bpm.toString().replace(".", "").length < 8
+    ? bpm
+    : parseFloat(
+        bpm.toFixed(Math.max(7 - Math.floor(bpm).toString().length, 0))
+      );
+
 function AdjustBlockDialog() {
   const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
@@ -68,7 +80,7 @@ function AdjustBlockDialog() {
       updatedBlocks[menuBlockIdx] = {
         accumulatedLength: blocks[menuBlockIdx].accumulatedLength,
         beat: blocks[menuBlockIdx].beat,
-        bpm: form.bpm,
+        bpm: roundBpm(form.bpm),
         delay: blocks[menuBlockIdx].delay,
         length: form.rows,
         split: form.split,
@@ -85,11 +97,12 @@ function AdjustBlockDialog() {
       setBlocks(updatedBlocks);
     }
 
-    setOpen({ fixed: "bpm", open: false });
+    setOpen({ fixed: open.fixed, open: false });
   }, [
     blocks,
     form,
     menuBlockIdx,
+    open.fixed,
     setOpen,
     setBlocks,
     setRedoShapshots,
@@ -98,8 +111,8 @@ function AdjustBlockDialog() {
   ]);
 
   const onClose = useCallback(
-    () => setOpen({ fixed: "bpm", open: false }),
-    [setOpen]
+    () => setOpen({ fixed: open.fixed, open: false }),
+    [open.fixed, setOpen]
   );
 
   return (
@@ -147,32 +160,148 @@ function AdjustBlockDialog() {
             </Grid>
             <Grid item xs={2} />
             <Grid item xs={2}>
-              <Button fullWidth variant="contained">
+              <Button
+                disabled={open.fixed === "rows" && form.bpm * form.split > 999}
+                fullWidth
+                onClick={() =>
+                  setForm({
+                    bpm:
+                      open.fixed === "bpm" ? form.bpm : form.bpm * form.split,
+                    rows:
+                      open.fixed === "rows"
+                        ? form.rows
+                        : form.rows * form.split,
+                    split: 1,
+                  })
+                }
+                variant="contained"
+              >
                 MIN
               </Button>
             </Grid>
             <Grid item xs={2}>
-              <Button fullWidth variant="contained">
+              <Button
+                disabled={
+                  form.split % 2 !== 0 ||
+                  form.split < 2 ||
+                  (open.fixed === "rows" && form.bpm > 499.5)
+                }
+                fullWidth
+                onClick={() =>
+                  setForm({
+                    bpm: open.fixed === "bpm" ? form.bpm : form.bpm * 2,
+                    rows: open.fixed === "rows" ? form.rows : form.rows * 2,
+                    split: form.split / 2,
+                  })
+                }
+                variant="contained"
+              >
                 /2
               </Button>
             </Grid>
             <Grid item xs={2}>
-              <Button fullWidth variant="contained">
+              <Button
+                disabled={
+                  form.split < 2 ||
+                  (open.fixed === "bpm" &&
+                    (form.rows * form.split) % (form.split - 1) !== 0) ||
+                  (open.fixed === "rows" &&
+                    form.bpm * form.split > 999 * (form.split - 1))
+                }
+                fullWidth
+                onClick={() =>
+                  setForm({
+                    bpm:
+                      open.fixed === "bpm"
+                        ? form.bpm
+                        : (form.bpm * form.split) / (form.split - 1),
+                    rows:
+                      open.fixed === "rows"
+                        ? form.rows
+                        : (form.rows * form.split) / (form.split - 1),
+                    split: form.split - 1,
+                  })
+                }
+                variant="contained"
+              >
                 -1
               </Button>
             </Grid>
             <Grid item xs={2}>
-              <Button fullWidth variant="contained">
+              <Button
+                disabled={
+                  form.split > 127 ||
+                  (open.fixed === "bpm" &&
+                    (form.rows * form.split) % (form.split + 1) !== 0) ||
+                  (open.fixed === "bpm" &&
+                    form.rows * form.split < form.split + 1) ||
+                  (open.fixed === "rows" &&
+                    form.bpm * form.split * 10 < form.split + 1)
+                }
+                fullWidth
+                onClick={() =>
+                  setForm({
+                    bpm:
+                      open.fixed === "bpm"
+                        ? form.bpm
+                        : (form.bpm * form.split) / (form.split + 1),
+                    rows:
+                      open.fixed === "rows"
+                        ? form.rows
+                        : (form.rows * form.split) / (form.split + 1),
+                    split: form.split + 1,
+                  })
+                }
+                variant="contained"
+              >
                 +1
               </Button>
             </Grid>
             <Grid item xs={2}>
-              <Button fullWidth variant="contained">
+              <Button
+                disabled={
+                  form.split > 64 ||
+                  (open.fixed === "bpm" && form.rows % 2 !== 0) ||
+                  (open.fixed === "bpm" && form.rows < 2) ||
+                  (open.fixed === "rows" && form.bpm < 0.2)
+                }
+                fullWidth
+                onClick={() =>
+                  setForm({
+                    bpm: open.fixed === "bpm" ? form.bpm : form.bpm / 2,
+                    rows: open.fixed === "rows" ? form.rows : form.rows / 2,
+                    split: form.split * 2,
+                  })
+                }
+                variant="contained"
+              >
                 x2
               </Button>
             </Grid>
             <Grid item xs={2}>
-              <Button fullWidth variant="contained">
+              <Button
+                disabled={
+                  (open.fixed === "bpm" &&
+                    (form.rows * form.split) % 128 !== 0) ||
+                  (open.fixed === "bpm" && form.rows * form.split < 128) ||
+                  (open.fixed === "rows" && form.bpm * form.split < 12.8)
+                }
+                fullWidth
+                onClick={() =>
+                  setForm({
+                    bpm:
+                      open.fixed === "bpm"
+                        ? form.bpm
+                        : (form.bpm * form.split) / 128,
+                    rows:
+                      open.fixed === "rows"
+                        ? form.rows
+                        : (form.rows * form.split) / 128,
+                    split: 128,
+                  })
+                }
+                variant="contained"
+              >
                 MAX
               </Button>
             </Grid>
@@ -201,7 +330,7 @@ function AdjustBlockDialog() {
                 <Typography variant="h6">{`${form.bpm} (fixed)`}</Typography>
               ) : (
                 <Paper elevation={3} sx={{ padding: 1 }}>
-                  <Typography variant="h6">{form.bpm}</Typography>
+                  <Typography variant="h6">{roundBpm(form.bpm)}</Typography>
                 </Paper>
               )}
             </Grid>
@@ -209,8 +338,17 @@ function AdjustBlockDialog() {
             <Grid item xs={2} />
             <Grid item xs={2}>
               <Button
-                disabled={open.fixed === "bpm"}
+                disabled={
+                  open.fixed === "bpm" || form.bpm < 0.2 || form.split > 64
+                }
                 fullWidth
+                onClick={() =>
+                  setForm({
+                    bpm: form.bpm / 2,
+                    rows: form.rows,
+                    split: form.split * 2,
+                  })
+                }
                 variant="contained"
               >
                 /2
@@ -220,8 +358,20 @@ function AdjustBlockDialog() {
             <Grid item xs={2} />
             <Grid item xs={2}>
               <Button
-                disabled={open.fixed === "bpm"}
+                disabled={
+                  open.fixed === "bpm" ||
+                  form.bpm > 499.5 ||
+                  form.split % 2 !== 0 ||
+                  form.split < 2
+                }
                 fullWidth
+                onClick={() =>
+                  setForm({
+                    bpm: form.bpm * 2,
+                    rows: form.rows,
+                    split: form.split / 2,
+                  })
+                }
                 variant="contained"
               >
                 x2
@@ -263,8 +413,20 @@ function AdjustBlockDialog() {
             <Grid item xs={2} />
             <Grid item xs={2}>
               <Button
-                disabled={open.fixed === "rows"}
+                disabled={
+                  open.fixed === "rows" ||
+                  form.rows % 2 !== 0 ||
+                  form.rows < 2 ||
+                  form.split > 64
+                }
                 fullWidth
+                onClick={() =>
+                  setForm({
+                    bpm: form.bpm,
+                    rows: form.rows / 2,
+                    split: form.split * 2,
+                  })
+                }
                 variant="contained"
               >
                 /2
@@ -274,8 +436,19 @@ function AdjustBlockDialog() {
             <Grid item xs={2} />
             <Grid item xs={2}>
               <Button
-                disabled={open.fixed === "rows"}
+                disabled={
+                  open.fixed === "rows" ||
+                  form.split % 2 !== 0 ||
+                  form.split < 2
+                }
                 fullWidth
+                onClick={() =>
+                  setForm({
+                    bpm: form.bpm,
+                    rows: form.rows * 2,
+                    split: form.split / 2,
+                  })
+                }
                 variant="contained"
               >
                 x2
