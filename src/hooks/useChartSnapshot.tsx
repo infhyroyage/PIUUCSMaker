@@ -45,6 +45,22 @@ function useChartSnapshot() {
   const setIndicator = useSetRecoilState<Indicator>(indicatorState);
   const setSelector = useSetRecoilState<Selector>(selectorState);
 
+  const handleBeforeunload = (event: BeforeUnloadEvent) => {
+    event.preventDefault();
+    event.returnValue = "";
+  };
+
+  useEffect(() => {
+    if (redoSnapshots.length === 0 && undoSnapshots.length === 0) {
+      window.removeEventListener("beforeunload", handleBeforeunload);
+    } else {
+      window.addEventListener("beforeunload", handleBeforeunload);
+      return () => {
+        window.removeEventListener("beforeunload", handleBeforeunload);
+      };
+    }
+  }, [redoSnapshots, undoSnapshots]);
+
   const handleRedo = useCallback(() => {
     // やり直すスナップショットが存在しない/ダイアログが開いている場合はNOP
     if (

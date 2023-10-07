@@ -1,13 +1,16 @@
-import { useTransition } from "react";
-import { useRecoilValue } from "recoil";
+import { useCallback, useTransition } from "react";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import {
   blocksState,
   columnsState,
   isPerformanceState,
   notesState,
+  redoSnapshotsState,
   ucsNameState,
+  undoSnapshotsState,
 } from "../service/atoms";
 import { Block, Note } from "../types/chart";
+import { ChartSnapshot } from "../types/ui";
 
 function useDownloadingUCS() {
   const blocks = useRecoilValue<Block[]>(blocksState);
@@ -15,10 +18,14 @@ function useDownloadingUCS() {
   const isPerformance = useRecoilValue<boolean>(isPerformanceState);
   const notes = useRecoilValue<Note[][]>(notesState);
   const ucsName = useRecoilValue<string | null>(ucsNameState);
+  const setRedoSnapshots =
+    useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
+  const setUndoSnapshots =
+    useSetRecoilState<ChartSnapshot[]>(undoSnapshotsState);
 
   const [isPending, startTransition] = useTransition();
 
-  const downloadUCS = () => {
+  const downloadUCS = useCallback(() => {
     // ucsファイル名未設定の場合はNOP(通常は発生し得ない)
     if (ucsName === null) return;
 
@@ -86,8 +93,20 @@ function useDownloadingUCS() {
       element.download = ucsName;
       document.body.appendChild(element);
       element.click();
+
+      setRedoSnapshots([]);
+      setUndoSnapshots([]);
     });
-  };
+  }, [
+    blocks,
+    columns,
+    isPerformance,
+    notes,
+    setRedoSnapshots,
+    setUndoSnapshots,
+    startTransition,
+    ucsName,
+  ]);
 
   return { isDownloadingUCS: isPending, downloadUCS };
 }
