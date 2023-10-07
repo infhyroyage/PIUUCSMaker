@@ -107,31 +107,64 @@ function AdjustBlockDialog() {
       // 単ノート/ホールドの始点/ホールドの中間/ホールドの終点をすべて更新
       let updatedNotes: Note[][] = [...notes];
       if (deltaRows !== 0) {
-        updatedNotes = [...notes].map((ns: Note[]) => {
-          // menuBlockIdx番目の譜面のブロックの行数が減った場合は、その減少分に該当する
-          // 単ノート/ホールドの始点/ホールドの中間/ホールドの終点をすべて削除
-          const filteredNs: Note[] =
-            deltaRows > 0
-              ? ns
-              : ns.filter(
-                  (note: Note) =>
-                    note.idx <
-                      blocks[menuBlockIdx].accumulatedLength +
-                        blocks[menuBlockIdx].length +
-                        deltaRows ||
-                    note.idx >=
-                      blocks[menuBlockIdx].accumulatedLength +
-                        blocks[menuBlockIdx].length
+        // 以下の譜面のブロックに該当する単ノート/ホールドの始点/ホールドの中間/ホールドの終点をすべて更新
+        // * (menuBlockIdx - 1)番目以前: 更新しない
+        // * menuBlockIdx番目          : 譜面全体の行インデックスをスケーリング(空白 < X < H < M < W)
+        // * (menuBlockIdx + 1)番目以降: 譜面全体の行インデックスを譜面のブロックの行数の差分ズラす
+        updatedNotes = [...notes].map((ns: Note[]) => [
+          // (menuBlockIdx - 1)番目以前の譜面のブロック
+          ...ns.filter(
+            (note: Note) => note.idx < blocks[menuBlockIdx].accumulatedLength
+          ),
+          // menuBlockIdx番目の譜面のブロック
+          ...ns
+            .filter(
+              (note: Note) =>
+                note.idx >= blocks[menuBlockIdx].accumulatedLength &&
+                note.idx <
+                  blocks[menuBlockIdx].accumulatedLength +
+                    blocks[menuBlockIdx].length
+            )
+            .reduce((prev: Note[], note: Note) => {
+              const scaledIdx: number =
+                blocks[menuBlockIdx].accumulatedLength +
+                Math.floor(
+                  ((note.idx - blocks[menuBlockIdx].accumulatedLength) *
+                    Number(form.rows)) /
+                    blocks[menuBlockIdx].length
                 );
-          // (menuBlockIdx +1)番目以降の譜面のブロックに該当する単ノート/ホールドの始点/
-          // ホールドの中間/ホールドの終点の譜面全体の行インデックスをすべてズラす
-          return filteredNs.map((note: Note) =>
-            note.idx >=
-            blocks[menuBlockIdx].accumulatedLength + blocks[menuBlockIdx].length
-              ? { idx: note.idx + deltaRows, type: note.type }
-              : note
-          );
-        });
+              const prevScaledNote: Note | undefined = prev.find(
+                (note: Note) => note.idx === scaledIdx
+              );
+
+              return prevScaledNote
+                ? [
+                    ...prev.slice(0, prev.length - 1),
+                    {
+                      idx: scaledIdx,
+                      type:
+                        prevScaledNote.type === "X" ||
+                        (prevScaledNote.type === "H" &&
+                          ["M", "W"].includes(note.type)) ||
+                        (prevScaledNote.type === "M" && note.type === "W")
+                          ? note.type
+                          : prevScaledNote.type,
+                    },
+                  ]
+                : [...prev, { idx: scaledIdx, type: note.type }];
+            }, []),
+          // (menuBlockIdx + 1)番目以降の譜面のブロック
+          ...ns
+            .filter(
+              (note: Note) =>
+                note.idx >=
+                blocks[menuBlockIdx].accumulatedLength +
+                  blocks[menuBlockIdx].length
+            )
+            .map((note: Note) => {
+              return { idx: note.idx + deltaRows, type: note.type };
+            }),
+        ]);
       }
 
       setBlocks(updatedBlocks);
