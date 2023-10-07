@@ -67,7 +67,9 @@ function MenuDrawer() {
       open={isOpenedMenuDrawer}
       PaperProps={{ elevation: 3, sx: { marginTop: `${menuBarHeight}px` } }}
       sx={(theme: Theme) => ({
-        width: isOpenedMenuDrawer ? MENU_DRAWER_OPENED_WIDTH : menuBarHeight,
+        width: `${
+          isOpenedMenuDrawer ? MENU_DRAWER_OPENED_WIDTH : menuBarHeight
+        }px`,
         transition: theme.transitions.create("width", {
           easing: theme.transitions.easing.sharp,
           duration: isOpenedMenuDrawer
@@ -79,7 +81,9 @@ function MenuDrawer() {
         boxSizing: "border-box",
         overflowX: "hidden",
         "& .MuiDrawer-paper": {
-          width: isOpenedMenuDrawer ? MENU_DRAWER_OPENED_WIDTH : menuBarHeight,
+          width: `${
+            isOpenedMenuDrawer ? MENU_DRAWER_OPENED_WIDTH : menuBarHeight
+          }px`,
           transition: theme.transitions.create("width", {
             easing: theme.transitions.easing.sharp,
             duration: isOpenedMenuDrawer

@@ -53,7 +53,9 @@ function BlockControllerButton({
         <CardActionArea onClick={onClickCardActionArea}>
           <CardContent
             sx={{
-              height: blockHeight - (isLastBlock ? 0 : horizontalBorderSize),
+              height: `${
+                isLastBlock ? blockHeight : blockHeight - horizontalBorderSize
+              }px`,
               padding: 0,
             }}
           >
@@ -66,7 +68,9 @@ function BlockControllerButton({
       </Card>
       {/* 譜面のブロックごとに分割する枠線 */}
       {!isLastBlock && (
-        <BorderLine style={{ height: horizontalBorderSize, width: "100%" }} />
+        <BorderLine
+          style={{ height: `${horizontalBorderSize}px`, width: "100%" }}
+        />
       )}
     </>
   );

@@ -32,7 +32,7 @@ function ChartVerticalRectangles({
     [length, noteSize, unitRowHeight]
   );
 
-  // 譜面のブロック内の1拍単位に分割する各枠線のtop値を計算
+  // 譜面のブロック内の1拍単位に分割する各枠線のtop値を(px単位)計算
   const beatBorderLineTops = useMemo(
     () =>
       [...Array(Math.floor(length / split))].map(
@@ -46,7 +46,7 @@ function ChartVerticalRectangles({
   return (
     <div
       style={{
-        height: unitRowHeight * length,
+        height: `${unitRowHeight * length}px`,
         backgroundColor: isEven ? "rgb(255, 255, 170)" : "rgb(170, 255, 255)",
       }}
     >
@@ -55,9 +55,9 @@ function ChartVerticalRectangles({
         <BorderLine
           key={idx}
           style={{
-            height: horizontalBorderSize,
+            height: `${horizontalBorderSize}px`,
             position: "relative",
-            top,
+            top: `${top}px`,
             width: "100%",
           }}
         />
@@ -66,11 +66,12 @@ function ChartVerticalRectangles({
       {!isLastBlock && (
         <BorderLine
           style={{
-            height: horizontalBorderSize,
+            height: `${horizontalBorderSize}px`,
             position: "relative",
-            top:
+            top: `${
               unitRowHeight * length -
-              horizontalBorderSize * (beatBorderLineTops.length + 1),
+              horizontalBorderSize * (beatBorderLineTops.length + 1)
+            }px`,
             width: "100%",
           }}
         />

@@ -65,7 +65,7 @@ function RectangleBlockIdentifier({
     <>
       {rectangleHeights.map((rectangleHeight: number, rectangleIdx: number) => (
         <React.Fragment key={rectangleIdx}>
-          <Paper square sx={{ height: rectangleHeight }}>
+          <Paper square sx={{ height: `${rectangleHeight}px` }}>
             <Typography p={1} variant="caption">
               {`${blockIdx + 1}:${rectangleIdx + 1}`}
             </Typography>
@@ -73,14 +73,16 @@ function RectangleBlockIdentifier({
           {/* 譜面のブロック内の節ごとに分割する枠線 */}
           {rectangleIdx < rectangleHeights.length - 1 && (
             <BorderLine
-              style={{ height: horizontalBorderSize, width: "100%" }}
+              style={{ height: `${horizontalBorderSize}px`, width: "100%" }}
             />
           )}
         </React.Fragment>
       ))}
       {/* 譜面のブロックごとに分割する枠線 */}
       {!isLastBlock && (
-        <BorderLine style={{ height: horizontalBorderSize, width: "100%" }} />
+        <BorderLine
+          style={{ height: `${horizontalBorderSize}px`, width: "100%" }}
+        />
       )}
     </>
   );

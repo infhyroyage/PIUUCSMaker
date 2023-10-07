@@ -28,7 +28,7 @@ function ChartSelector({ cords }: ChartSelectorProps) {
     [noteSize]
   );
 
-  // 選択領域の入力開始時のマウスの座標でのtop値を計算
+  // 選択領域の入力開始時のマウスの座標でのtop値(px単位)を計算
   const mouseDownTop = useMemo(() => {
     let top: number = 0;
     for (const block of blocks) {
@@ -46,7 +46,7 @@ function ChartSelector({ cords }: ChartSelectorProps) {
     return top;
   }, [blocks, cords.mouseDownRowIdx, noteSize, zoom.idx]);
 
-  // 選択領域の入力時/入力終了時のマウスの座標でのtop値を計算
+  // 選択領域の入力時/入力終了時のマウスの座標でのtop値(px単位)を計算
   // 選択領域の入力時にマウスの座標が譜面から外れた場合はnullとして計算する
   const mouseUpTop = useMemo(() => {
     if (cords.mouseUpRowIdx === null) return null;
@@ -72,20 +72,23 @@ function ChartSelector({ cords }: ChartSelectorProps) {
       <span
         style={{
           position: "absolute",
-          top: Math.min(mouseDownTop, mouseUpTop),
-          left:
+          top: `${Math.min(mouseDownTop, mouseUpTop)}px`,
+          left: `${
             rectangleIdentifierWidth +
             verticalBorderSize * 0.5 +
-            noteSize * Math.min(cords.mouseDownColumn, cords.mouseUpColumn),
-          width:
+            noteSize * Math.min(cords.mouseDownColumn, cords.mouseUpColumn)
+          }px`,
+          width: `${
             noteSize *
             (Math.max(cords.mouseDownColumn, cords.mouseUpColumn) +
               1 -
-              Math.min(cords.mouseDownColumn, cords.mouseUpColumn)),
-          height:
+              Math.min(cords.mouseDownColumn, cords.mouseUpColumn))
+          }px`,
+          height: `${
             Math.max(mouseDownTop, mouseUpTop) +
             noteSize -
-            Math.min(mouseDownTop, mouseUpTop),
+            Math.min(mouseDownTop, mouseUpTop)
+          }px`,
           backgroundColor: "rgba(170, 170, 170, 0.5)",
           pointerEvents: "none",
           zIndex: theme.zIndex.drawer - 5,

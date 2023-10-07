@@ -161,7 +161,7 @@ function MenuBar() {
                 setVolumeValue(value as number);
               }}
               step={0.01}
-              sx={{ width: 100, color: "white" }}
+              sx={{ width: "100px", color: "white" }}
               value={muteVolBuf || volumeValue}
             />
           </Stack>

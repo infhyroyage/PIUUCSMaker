@@ -421,7 +421,7 @@ function Chart() {
         <React.Fragment key={column}>
           {column === 0 && (
             <BorderLine
-              style={{ height: "100%", width: verticalBorderSize * 0.5 }}
+              style={{ height: "100%", width: `${verticalBorderSize * 0.5}px` }}
             />
           )}
           <div
@@ -443,13 +443,13 @@ function Chart() {
             onMouseUp={onMouseUp}
           >
             <BorderLine
-              style={{ height: "100%", width: verticalBorderSize * 0.5 }}
+              style={{ height: "100%", width: `${verticalBorderSize * 0.5}px` }}
             />
             <div
               style={{
                 display: "flex",
                 flexDirection: "column",
-                width: noteSize - verticalBorderSize,
+                width: `${noteSize - verticalBorderSize}px`,
               }}
             >
               <ChartVertical
@@ -459,12 +459,12 @@ function Chart() {
               />
             </div>
             <BorderLine
-              style={{ height: "100%", width: verticalBorderSize * 0.5 }}
+              style={{ height: "100%", width: `${verticalBorderSize * 0.5}px` }}
             />
           </div>
           {column === columns - 1 && (
             <BorderLine
-              style={{ height: "100%", width: verticalBorderSize * 0.5 }}
+              style={{ height: "100%", width: `${verticalBorderSize * 0.5}px` }}
             />
           )}
         </React.Fragment>

@@ -35,15 +35,16 @@ function ChartIndicator() {
               <img
                 src={IMAGE_BINARIES[indicator.column % 5].note}
                 alt={`note${indicator.column % 5}`}
-                width={noteSize}
-                height={noteSize}
+                width={`${noteSize}px`}
+                height={`${noteSize}px`}
                 style={{
                   position: "absolute",
-                  top: Math.min(indicator.top, indicator.mouseDownTop),
-                  left:
+                  top: `${Math.min(indicator.top, indicator.mouseDownTop)}px`,
+                  left: `${
                     rectangleIdentifierWidth +
                     verticalBorderSize * 0.5 +
-                    noteSize * indicator.column,
+                    noteSize * indicator.column
+                  }px`,
                   pointerEvents: "none",
                   zIndex: theme.zIndex.drawer - 4,
                 }}
@@ -51,17 +52,19 @@ function ChartIndicator() {
               <img
                 src={IMAGE_BINARIES[indicator.column % 5].hold}
                 alt={`hold${indicator.column % 5}`}
-                width={noteSize}
-                height={Math.abs(indicator.top - indicator.mouseDownTop)}
+                width={`${noteSize}px`}
+                height={`${Math.abs(indicator.top - indicator.mouseDownTop)}px`}
                 style={{
                   position: "absolute",
-                  top:
+                  top: `${
                     Math.min(indicator.top, indicator.mouseDownTop) +
-                    noteSize * 0.5,
-                  left:
+                    noteSize * 0.5
+                  }px`,
+                  left: `${
                     rectangleIdentifierWidth +
                     verticalBorderSize * 0.5 +
-                    noteSize * indicator.column,
+                    noteSize * indicator.column
+                  }px`,
                   pointerEvents: "none",
                   zIndex: theme.zIndex.drawer - 3,
                 }}
@@ -69,15 +72,16 @@ function ChartIndicator() {
               <img
                 src={IMAGE_BINARIES[indicator.column % 5].note}
                 alt={`note${indicator.column % 5}`}
-                width={noteSize}
-                height={noteSize}
+                width={`${noteSize}px`}
+                height={`${noteSize}px`}
                 style={{
                   position: "absolute",
-                  top: Math.max(indicator.top, indicator.mouseDownTop),
-                  left:
+                  top: `${Math.max(indicator.top, indicator.mouseDownTop)}px`,
+                  left: `${
                     rectangleIdentifierWidth +
                     verticalBorderSize * 0.5 +
-                    noteSize * indicator.column,
+                    noteSize * indicator.column
+                  }px`,
                   pointerEvents: "none",
                   zIndex: theme.zIndex.drawer - 2,
                 }}
@@ -87,13 +91,14 @@ function ChartIndicator() {
         <span
           style={{
             position: "absolute",
-            top: indicator.top,
-            left:
+            top: `${indicator.top}px`,
+            left: `${
               rectangleIdentifierWidth +
               verticalBorderSize * 0.5 +
-              noteSize * indicator.column,
-            width: noteSize,
-            height: noteSize,
+              noteSize * indicator.column
+            }px`,
+            width: `${noteSize}px`,
+            height: `${noteSize}px`,
             backgroundColor: "rgba(170, 170, 170, 0.5)",
             pointerEvents: "none",
             zIndex: theme.zIndex.drawer - 1,

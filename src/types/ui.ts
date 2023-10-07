@@ -78,7 +78,7 @@ export type Indicator = null | {
   mouseDownRowIdx: number | null;
 
   /**
-   * マウス押下時の行のtop値
+   * マウス押下時の行のtop値(px単位)
    * 譜面にマウスを押下していない場合はnull
    */
   mouseDownTop: number | null;
@@ -89,7 +89,7 @@ export type Indicator = null | {
   rowIdx: number;
 
   /**
-   * インディケーターのtop値
+   * インディケーターのtop値(px単位)
    */
   top: number;
 };

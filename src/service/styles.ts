@@ -6,7 +6,7 @@
 export const generateListItemButtonStyle = (isOpenedMenuDrawer: boolean) => {
   return {
     justifyContent: isOpenedMenuDrawer ? "initial" : "center",
-    minHeight: 48,
+    minHeight: "48px",
     px: 2.5,
   };
 };
