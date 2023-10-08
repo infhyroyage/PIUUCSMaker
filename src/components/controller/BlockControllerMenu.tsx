@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { Divider, Menu, MenuItem, MenuList } from "@mui/material";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import {
   adjustBlockDialogOpenState,
   blockControllerMenuBlockIdxState,
@@ -11,13 +11,13 @@ import { BlockControllerMenuPosition } from "../../types/ui";
 import { AdjustBlockDialogOpen } from "../../types/dialog";
 
 function BlockControllerMenu({ blockNum, handler }: BlockControllerMenuProps) {
+  const [menuBlockIdx, setMenuBlockIdx] = useRecoilState<number | null>(
+    blockControllerMenuBlockIdxState
+  );
   const [menuPosition, setMenuPosition] =
     useRecoilState<BlockControllerMenuPosition>(
       blockControllerMenuPositionState
     );
-  const menuBlockIdx = useRecoilValue<number | null>(
-    blockControllerMenuBlockIdxState
-  );
   const setAdjustBlockDialogOpen = useSetRecoilState<AdjustBlockDialogOpen>(
     adjustBlockDialogOpenState
   );
@@ -62,6 +62,7 @@ function BlockControllerMenu({ blockNum, handler }: BlockControllerMenuProps) {
           onClick={() => {
             if (menuBlockIdx !== null) {
               handler.add(menuBlockIdx);
+              setMenuBlockIdx(null);
               setMenuPosition(undefined);
             }
           }}
@@ -72,6 +73,7 @@ function BlockControllerMenu({ blockNum, handler }: BlockControllerMenuProps) {
           onClick={() => {
             if (menuBlockIdx !== null) {
               handler.insert(menuBlockIdx);
+              setMenuBlockIdx(null);
               setMenuPosition(undefined);
             }
           }}
@@ -83,6 +85,7 @@ function BlockControllerMenu({ blockNum, handler }: BlockControllerMenuProps) {
           onClick={() => {
             if (menuBlockIdx !== null) {
               handler.mergeAbove(menuBlockIdx);
+              setMenuBlockIdx(null);
               setMenuPosition(undefined);
             }
           }}
@@ -94,6 +97,7 @@ function BlockControllerMenu({ blockNum, handler }: BlockControllerMenuProps) {
           onClick={() => {
             if (menuBlockIdx !== null) {
               handler.mergeBelow(menuBlockIdx);
+              setMenuBlockIdx(null);
               setMenuPosition(undefined);
             }
           }}
@@ -105,6 +109,7 @@ function BlockControllerMenu({ blockNum, handler }: BlockControllerMenuProps) {
           onClick={() => {
             if (menuBlockIdx !== null) {
               handler.delete(menuBlockIdx);
+              setMenuBlockIdx(null);
               setMenuPosition(undefined);
             }
           }}

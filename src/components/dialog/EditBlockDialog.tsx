@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import {
+  blockControllerMenuBlockIdxState,
   blocksState,
   editBlockDialogFormState,
   notesState,
@@ -73,6 +74,9 @@ function EditBlockDialog() {
   );
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
+  const setMenuBlockIdx = useSetRecoilState<number | null>(
+    blockControllerMenuBlockIdxState
+  );
   const setRedoShapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
 
@@ -179,6 +183,7 @@ function EditBlockDialog() {
 
       setBlocks(updatedBlocks);
       if (deltaRows !== 0) setNotes(updatedNotes);
+      setMenuBlockIdx(null);
       setForm({
         beat: "",
         blockIdx: -1,
@@ -198,6 +203,7 @@ function EditBlockDialog() {
     notes,
     setBlocks,
     setForm,
+    setMenuBlockIdx,
     setNotes,
     setResultError,
     setRedoShapshots,
@@ -205,19 +211,18 @@ function EditBlockDialog() {
     undoSnapshots,
   ]);
 
-  const onClose = useCallback(
-    () =>
-      setForm({
-        beat: "",
-        blockIdx: -1,
-        bpm: "",
-        delay: "",
-        rows: "",
-        open: false,
-        split: "",
-      }),
-    [setForm]
-  );
+  const onClose = useCallback(() => {
+    setMenuBlockIdx(null);
+    setForm({
+      beat: "",
+      blockIdx: -1,
+      bpm: "",
+      delay: "",
+      rows: "",
+      open: false,
+      split: "",
+    });
+  }, [setForm, setMenuBlockIdx]);
 
   return (
     <Dialog open={form.open} onClose={onClose}>

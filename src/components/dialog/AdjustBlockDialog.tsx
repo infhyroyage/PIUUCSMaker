@@ -47,7 +47,7 @@ function AdjustBlockDialog() {
   );
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
-  const menuBlockIdx = useRecoilValue<number | null>(
+  const [menuBlockIdx, setMenuBlockIdx] = useRecoilState<number | null>(
     blockControllerMenuBlockIdxState
   );
   const setRedoShapshots =
@@ -171,6 +171,7 @@ function AdjustBlockDialog() {
       if (deltaRows !== 0) setNotes(updatedNotes);
     }
 
+    setMenuBlockIdx(null);
     setOpen({ fixed: open.fixed, open: false });
   }, [
     blocks,
@@ -179,6 +180,7 @@ function AdjustBlockDialog() {
     notes,
     open.fixed,
     setBlocks,
+    setMenuBlockIdx,
     setNotes,
     setOpen,
     setRedoShapshots,
@@ -186,10 +188,10 @@ function AdjustBlockDialog() {
     undoSnapshots,
   ]);
 
-  const onClose = useCallback(
-    () => setOpen({ fixed: open.fixed, open: false }),
-    [open.fixed, setOpen]
-  );
+  const onClose = useCallback(() => {
+    setMenuBlockIdx(null);
+    setOpen({ fixed: open.fixed, open: false });
+  }, [open.fixed, setMenuBlockIdx, setOpen]);
 
   return (
     menuBlockIdx !== null && (
