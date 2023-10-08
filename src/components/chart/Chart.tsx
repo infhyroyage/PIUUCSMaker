@@ -94,9 +94,12 @@ function Chart() {
       const blockHeight: number = unitRowHeight * blocks[blockIdx].length;
       if (y < blockYDists[blockIdx] + blockHeight) {
         top = y - ((y - blockYDists[blockIdx]) % unitRowHeight);
+        // (top - blockYDists[blockIdx])は必ずunitRowHeightの倍数であるため、
+        // ((top - blockYDists[blockIdx]) / unitRowHeight)は理論上整数値となるが、
+        // 除算時の丸め誤差を取り除くべくMath.floor関数を実行し、必ず整数値が得られるようにする
         rowIdx =
           blocks[blockIdx].accumulatedLength +
-          (top - blockYDists[blockIdx]) / unitRowHeight;
+          Math.floor((top - blockYDists[blockIdx]) / unitRowHeight);
         break;
       }
     }
