@@ -1,15 +1,18 @@
-import { useCallback, useEffect } from "react";
-import { Note } from "../types/chart";
-import { ChartSnapshot, SelectedCords } from "../types/ui";
+import { useCallback, useEffect, useMemo } from "react";
+import { Block, Note } from "../types/chart";
+import { ChartSnapshot, SelectedCords, Selector } from "../types/ui";
 import { Indicator } from "../types/ui";
 import { ClipBoard } from "../types/ui";
 import { CopiedNote } from "../types/chart";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
+  blocksState,
   clipBoardState,
+  columnsState,
   indicatorState,
   notesState,
   redoSnapshotsState,
+  selectorState,
   undoSnapshotsState,
 } from "../service/atoms";
 import useSelectedCords from "./useSelectedCords";
@@ -19,11 +22,22 @@ function useClipBoard() {
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
+  const blocks = useRecoilValue<Block[]>(blocksState);
+  const columns = useRecoilValue<5 | 10>(columnsState);
   const indicator = useRecoilValue<Indicator>(indicatorState);
   const setRedoShapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
+  const setSelector = useSetRecoilState<Selector>(selectorState);
 
   const { getSelectedCords } = useSelectedCords();
+
+  // 全譜面のブロックの行数の総和を計算
+  const totalRows = useMemo(
+    () =>
+      blocks[blocks.length - 1].accumulatedLength +
+      blocks[blocks.length - 1].length,
+    [blocks]
+  );
 
   const updateClipBoard = useCallback(
     (selectedCords: SelectedCords) => {
@@ -105,7 +119,8 @@ function useClipBoard() {
     setUndoSnapshots([...undoSnapshots, { blocks: null, notes }]);
     setRedoShapshots([]);
 
-    // インディケーターの位置を左上としたコピー時の選択領域に含まれる領域のみ、
+    // インディケーターの位置を左上としたコピー時の選択領域に含まれる領域と、
+    // 各譜面のブロックで構成した譜面の領域との共通領域のみ、
     // 単ノート/ホールドの始点/ホールドの中間/ホールドの終点のペースト対象とする
     setNotes(
       notes.map((ns: Note[], column: number) =>
@@ -117,7 +132,8 @@ function useClipBoard() {
               ...clipBoard.copiedNotes
                 .filter(
                   (copiedNote: CopiedNote) =>
-                    copiedNote.deltaColumn === column - indicator.column
+                    copiedNote.deltaColumn === column - indicator.column &&
+                    indicator.rowIdx + copiedNote.deltaRowIdx < totalRows
                 )
                 .map((copiedNote: CopiedNote) => {
                   return {
@@ -132,13 +148,29 @@ function useClipBoard() {
             ]
       )
     );
+
+    // ペースト対象の領域を選択領域として設定
+    setSelector({
+      changingCords: null,
+      completedCords: {
+        mouseDownColumn: indicator.column,
+        mouseDownRowIdx: indicator.rowIdx,
+        mouseUpColumn:
+          Math.min(indicator.column + clipBoard.columnLength, columns) - 1,
+        mouseUpRowIdx:
+          Math.min(indicator.rowIdx + clipBoard.rowLength, totalRows) - 1,
+      },
+    });
   }, [
     clipBoard,
+    columns,
     indicator,
     notes,
     setNotes,
     setRedoShapshots,
+    setSelector,
     setUndoSnapshots,
+    totalRows,
     undoSnapshots,
   ]);
 
