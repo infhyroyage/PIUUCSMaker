@@ -48,6 +48,7 @@ function ChartIndicator() {
                     noteSize * indicator.column
                   }px`,
                   pointerEvents: "none",
+                  userSelect: "none",
                   zIndex: theme.zIndex.drawer - 4,
                 }}
               />
@@ -67,6 +68,7 @@ function ChartIndicator() {
                     noteSize * indicator.column
                   }px`,
                   pointerEvents: "none",
+                  userSelect: "none",
                   zIndex: theme.zIndex.drawer - 3,
                 }}
               />
@@ -84,6 +86,7 @@ function ChartIndicator() {
                     noteSize * indicator.column
                   }px`,
                   pointerEvents: "none",
+                  userSelect: "none",
                   zIndex: theme.zIndex.drawer - 2,
                 }}
               />

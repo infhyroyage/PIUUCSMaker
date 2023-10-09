@@ -62,6 +62,7 @@ function ChartVerticalNoteImages({
               noteSize * column
             }px`,
             pointerEvents: "none",
+            userSelect: "none",
             zIndex: (idx + 1) * 10,
           }}
         />
@@ -84,6 +85,7 @@ function ChartVerticalNoteImages({
                 noteSize * column
               }px`,
               pointerEvents: "none",
+              userSelect: "none",
               zIndex: (idx + 1) * 10,
             }}
           />
@@ -101,6 +103,7 @@ function ChartVerticalNoteImages({
                 noteSize * column
               }px`,
               pointerEvents: "none",
+              userSelect: "none",
               zIndex: (idx + 1) * 10 + 1,
             }}
           />
@@ -123,6 +126,7 @@ function ChartVerticalNoteImages({
               noteSize * column
             }px`,
             pointerEvents: "none",
+            userSelect: "none",
             zIndex: (idx + 1) * 10,
           }}
         />
@@ -143,6 +147,8 @@ function ChartVerticalNoteImages({
               verticalBorderSize * 0.5 +
               noteSize * column
             }px`,
+            pointerEvents: "none",
+            userSelect: "none",
             zIndex: (idx + 1) * 10,
           }}
         />
