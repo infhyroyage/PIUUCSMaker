@@ -1,6 +1,6 @@
 import { atom } from "recoil";
 import { Block, Note } from "../types/chart";
-import { ChartSnapshot, Selector } from "../types/ui";
+import { ChartSnapshot, MouseDown, Selector } from "../types/ui";
 import { Indicator } from "../types/ui";
 import { ClipBoard } from "../types/ui";
 import { Zoom } from "../types/ui";
@@ -133,6 +133,15 @@ export const isPlayingState = atom<boolean>({
 export const menuBarHeightState = atom<number>({
   key: "menuBarHeight",
   default: 0,
+});
+
+/**
+ * 譜面にマウス押下した場合の表示パラメーター
+ * 譜面にマウスを押下していない場合はnull
+ */
+export const mouseDownState = atom<MouseDown>({
+  key: "mouseDown",
+  default: null,
 });
 
 /**

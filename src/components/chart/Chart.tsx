@@ -6,6 +6,7 @@ import {
   columnsState,
   indicatorState,
   isPlayingState,
+  mouseDownState,
   noteSizeState,
   notesState,
   redoSnapshotsState,
@@ -16,7 +17,7 @@ import {
 import BorderLine from "../BorderLine";
 import ChartVertical from "./ChartVertical";
 import { Block, Note } from "../../types/chart";
-import { ChartSnapshot, Zoom } from "../../types/ui";
+import { ChartSnapshot, MouseDown, Zoom } from "../../types/ui";
 import { Selector } from "../../types/ui";
 import { Indicator } from "../../types/ui";
 import { ZOOM_VALUES } from "../../service/zoom";
@@ -28,6 +29,7 @@ import ChartSelector from "./ChartSelector";
 function Chart() {
   const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
   const [indicator, setIndicator] = useRecoilState<Indicator>(indicatorState);
+  const [mouseDown, setMouseDown] = useRecoilState<MouseDown>(mouseDownState);
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
   const [position, setPosition] = useRecoilState<PopoverPosition | undefined>(
     chartIndicatorMenuPositionState
@@ -120,11 +122,6 @@ function Chart() {
               blockAccumulatedLength: blocks[blockIdx].accumulatedLength,
               blockIdx,
               column,
-              mouseDownColumn:
-                indicator === null ? null : indicator.mouseDownColumn,
-              mouseDownRowIdx:
-                indicator === null ? null : indicator.mouseDownRowIdx,
-              mouseDownTop: indicator === null ? null : indicator.mouseDownTop,
               rowIdx,
               top,
             }
@@ -185,13 +182,12 @@ function Chart() {
     if (event.button !== 0 || !!position || isPlaying || indicator === null)
       return;
 
-    // Shift未入力の場合のみ、マウス押下時のパラメーターを保持
+    // Shift未入力の場合のみ、譜面にマウス押下した場合の表示パラメーターを保持
     if (!event.shiftKey) {
-      setIndicator({
-        ...indicator,
-        mouseDownColumn: indicator.column,
-        mouseDownRowIdx: indicator.rowIdx,
-        mouseDownTop: indicator.top,
+      setMouseDown({
+        column: indicator.column,
+        rowIdx: indicator.rowIdx,
+        top: indicator.top,
       });
     }
 
@@ -225,21 +221,14 @@ function Chart() {
     // 同一列内でのクリック操作時は譜面の更新を行う
     if (
       indicator !== null &&
-      indicator.mouseDownColumn !== null &&
-      indicator.mouseDownRowIdx !== null &&
-      indicator.column === indicator.mouseDownColumn
+      mouseDown !== null &&
+      indicator.column === mouseDown.column
     ) {
       // 単ノート/ホールドの始点start、終点goalの譜面全体での行インデックスを取得
-      const start: number = Math.min(
-        indicator.rowIdx,
-        indicator.mouseDownRowIdx
-      );
-      const goal: number = Math.max(
-        indicator.rowIdx,
-        indicator.mouseDownRowIdx
-      );
+      const start: number = Math.min(indicator.rowIdx, mouseDown.rowIdx);
+      const goal: number = Math.max(indicator.rowIdx, mouseDown.rowIdx);
 
-      // 譜面全体での行インデックスindicator.mouseDownRowIdxで押下した後に
+      // 譜面全体での行インデックスmouseDown.rowIdxで押下した後に
       // 譜面全体での行インデックスindicator.rowIdxで押下を離した際の
       // 列インデックスindicator.columnにて、単ノート/ホールドの追加・削除を行う
       let updatedNotes: Note[];
@@ -352,18 +341,8 @@ function Chart() {
     }
 
     // マウス押下時のパラメーターを初期化
-    if (
-      indicator !== null &&
-      (indicator.mouseDownColumn !== null ||
-        indicator.mouseDownRowIdx !== null ||
-        indicator.mouseDownTop !== null)
-    ) {
-      setIndicator({
-        ...indicator,
-        mouseDownColumn: null,
-        mouseDownRowIdx: null,
-        mouseDownTop: null,
-      });
+    if (mouseDown !== null) {
+      setMouseDown(null);
     }
 
     if (selector.changingCords !== null) {
