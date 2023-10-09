@@ -1,4 +1,4 @@
-import { useEffect, useRef, useTransition } from "react";
+import { useEffect, useRef, useState } from "react";
 import beatWav from "../sounds/beat.wav";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
@@ -18,6 +18,7 @@ import { Block, Note } from "../types/chart";
 import { ZOOM_VALUES } from "../service/zoom";
 
 function usePlayingMusic() {
+  const [isUploadingMP3, setIsUploadingMP3] = useState<boolean>(false);
   const [isPlaying, setIsPlaying] = useRecoilState<boolean>(isPlayingState);
   const blocks = useRecoilValue<Block[]>(blocksState);
   const isMuteBeats = useRecoilValue<boolean>(isMuteBeatsState);
@@ -38,8 +39,6 @@ function usePlayingMusic() {
   const musicSourceNode = useRef<AudioBufferSourceNode | null>(null);
   const previousScrollTime = useRef<number>(0);
   const currentScrollTime = useRef<number>(0);
-
-  const [isPending, startTransition] = useTransition();
 
   const start = () => {
     // beat.wavをデコードして読み込んでいない場合は読み込んでおく
@@ -78,7 +77,7 @@ function usePlayingMusic() {
     }
   }, [isMuteBeats, volumeValue]);
 
-  const uploadMP3 = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const onUploadMP3 = (event: React.ChangeEvent<HTMLInputElement>) => {
     // MP3ファイルを何もアップロードしなかった場合はNOP
     const fileList: FileList | null = event.target.files;
     if (!fileList || fileList.length === 0) return;
@@ -89,30 +88,33 @@ function usePlayingMusic() {
       return;
     }
 
-    startTransition(() => {
-      // アップロードしたMP3ファイルをデコードして読み込み
-      fileList[0]
-        .arrayBuffer()
-        .then((arrayBuffer: ArrayBuffer) => {
-          // AudioContextを初期化していない場合は初期化しておく
-          if (audioContext.current === null) {
-            audioContext.current = new AudioContext();
-          }
+    // アップロードしたMP3ファイルをデコードして読み込み
+    setIsUploadingMP3(true);
+    fileList[0]
+      .arrayBuffer()
+      .then((arrayBuffer: ArrayBuffer) => {
+        // AudioContextを初期化していない場合は初期化しておく
+        if (audioContext.current === null) {
+          audioContext.current = new AudioContext();
+        }
 
-          // MP3ファイルの音楽用のGainNodeを初期化していない場合は初期化しておく
-          if (musicGainNode.current === null) {
-            musicGainNode.current = audioContext.current.createGain();
-            musicGainNode.current.gain.value = volumeValue;
-          }
+        // MP3ファイルの音楽用のGainNodeを初期化していない場合は初期化しておく
+        if (musicGainNode.current === null) {
+          musicGainNode.current = audioContext.current.createGain();
+          musicGainNode.current.gain.value = volumeValue;
+        }
 
-          return audioContext.current.decodeAudioData(arrayBuffer);
-        })
-        .then((decodedAudio: AudioBuffer) => {
-          musicAudioBuffer.current = decodedAudio;
-          setMp3Name(fileList[0].name);
-          setSuccessMessage(`${fileList[0].name}のアップロードに成功しました`);
-        });
-    });
+        return audioContext.current.decodeAudioData(arrayBuffer);
+      })
+      .then((decodedAudio: AudioBuffer) => {
+        musicAudioBuffer.current = decodedAudio;
+        setMp3Name(fileList[0].name);
+        setSuccessMessage(`${fileList[0].name}のアップロードに成功しました`);
+
+        // 同じMP3ファイルを再アップロードできるように初期化
+        event.target.value = "";
+      })
+      .finally(() => setIsUploadingMP3(false));
   };
 
   // MP3ファイルの音楽用の音量を0(ミュート)から1(MAX)まで動的に設定
@@ -336,7 +338,7 @@ function usePlayingMusic() {
     };
   }, [isPlaying]);
 
-  return { isUploadingMP3: isPending, start, stop, uploadMP3 };
+  return { isUploadingMP3, onUploadMP3, start, stop };
 }
 
 export default usePlayingMusic;

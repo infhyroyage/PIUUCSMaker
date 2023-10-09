@@ -54,8 +54,8 @@ function MenuDrawer() {
 
   const { isDownloadingUCS, downloadUCS } = useDownloadingUCS();
   const { handleRedo, handleUndo } = useChartSnapshot();
-  const { isUploadingMP3, start, stop, uploadMP3 } = usePlayingMusic();
-  const { isUploadingUCS, uploadUCS } = useUploadingUCS();
+  const { isUploadingMP3, onUploadMP3, start, stop } = usePlayingMusic();
+  const { isUploadingUCS, onUploadUCS } = useUploadingUCS();
 
   useEffect(() => {
     if (zoom.top !== null) scrollTo({ top: zoom.top });
@@ -106,7 +106,7 @@ function MenuDrawer() {
           icon={<UploadIcon />}
           id="upload-ucs"
           label={isUploadingUCS ? "Ready..." : "Upload UCS"}
-          onChange={uploadUCS}
+          onChange={onUploadUCS}
         />
         <MenuDrawerListItem
           disabled={
@@ -171,7 +171,7 @@ function MenuDrawer() {
           icon={<AudioFileIcon />}
           id="upload-mp3"
           label={isUploadingUCS ? "Ready..." : "Upload MP3"}
-          onChange={uploadMP3}
+          onChange={onUploadMP3}
         />
         <MenuDrawerListItem
           icon={isMuteBeats ? <MusicOffIcon /> : <MusicNoteIcon />}

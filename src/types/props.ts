@@ -269,7 +269,7 @@ export type MenuDrawerUploadListItemProps = {
   /**
    * 押下時の動作
    */
-  onChange?: React.ChangeEventHandler<HTMLInputElement>;
+  onChange: React.ChangeEventHandler<HTMLInputElement>;
 };
 
 export type RectangleBlockIdentifierProps = {

@@ -12,7 +12,7 @@ function ReadyUCS() {
     isOpenedNewUCSDialogState
   );
 
-  const { isUploadingUCS, uploadUCS } = useUploadingUCS();
+  const { isUploadingUCS, onUploadUCS } = useUploadingUCS();
 
   return (
     <Stack
@@ -35,7 +35,7 @@ function ReadyUCS() {
         {isUploadingUCS ? "Ready..." : "Upload UCS"}
         <input
           accept=".ucs"
-          onChange={uploadUCS}
+          onChange={onUploadUCS}
           style={{ display: "none" }}
           type="file"
         />

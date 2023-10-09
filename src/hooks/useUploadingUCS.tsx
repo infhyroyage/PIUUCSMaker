@@ -1,4 +1,4 @@
-import { useTransition } from "react";
+import { useState } from "react";
 import { useSetRecoilState } from "recoil";
 import { Block, Note } from "../types/chart";
 import {
@@ -216,6 +216,7 @@ const validateAndLoadUCS = (
 };
 
 function useUploadingUCS() {
+  const [isUploadingUCS, setIsUploadingUCS] = useState<boolean>(false);
   const setBlocks = useSetRecoilState<Block[]>(blocksState);
   const setColumns = useSetRecoilState<5 | 10>(columnsState);
   const setIsPerformance = useSetRecoilState<boolean>(isPerformanceState);
@@ -223,9 +224,7 @@ function useUploadingUCS() {
   const setUcsName = useSetRecoilState<string | null>(ucsNameState);
   const setUserErrorMessage = useSetRecoilState<string>(userErrorMessageState);
 
-  const [isPending, startTransition] = useTransition();
-
-  const uploadUCS = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const onUploadUCS = (event: React.ChangeEvent<HTMLInputElement>) => {
     // UCSファイルを何もアップロードしなかった場合はNOP
     const fileList: FileList | null = event.target.files;
     if (!fileList || fileList.length === 0) return;
@@ -236,8 +235,10 @@ function useUploadingUCS() {
       return;
     }
 
-    startTransition(() => {
-      fileList[0].text().then((content: string) => {
+    setIsUploadingUCS(true);
+    fileList[0]
+      .text()
+      .then((content: string) => {
         const result: UploadingUCSValidation | string =
           validateAndLoadUCS(content);
         if (typeof result === "string") {
@@ -249,11 +250,14 @@ function useUploadingUCS() {
           setNotes(result.notes);
           setUcsName(fileList[0].name);
         }
-      });
-    });
+
+        // 同じUCSファイルを再アップロードできるように初期化
+        event.target.value = "";
+      })
+      .finally(() => setIsUploadingUCS(false));
   };
 
-  return { isUploadingUCS: isPending, uploadUCS };
+  return { isUploadingUCS, onUploadUCS };
 }
 
 export default useUploadingUCS;
