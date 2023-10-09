@@ -67,7 +67,6 @@ function WorkSpace() {
         flexGrow: 1,
         justifyContent: "center",
         lineHeight: 0,
-        userSelect: "none",
       }}
     >
       <div style={{ display: "flex", position: "relative" }}>

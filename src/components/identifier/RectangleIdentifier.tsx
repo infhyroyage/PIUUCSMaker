@@ -23,7 +23,7 @@ function RectangleIdentifier() {
   }, [blocks, rectangleIdentifierWidth, setRectangleIdentifierWidth]);
 
   return (
-    <div ref={divRef}>
+    <div ref={divRef} style={{ userSelect: "none" }}>
       {blocks.map((block: Block, blockIdx: number) => (
         <RectangleBlockIdentifier
           key={blockIdx}
