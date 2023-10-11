@@ -31,18 +31,20 @@ function ChartSelector({ cords }: ChartSelectorProps) {
   // 選択領域の入力開始時のマウスの座標でのtop値(px単位)を計算
   const mouseDownTop = useMemo(() => {
     let top: number = 0;
-    for (const block of blocks) {
+    blocks.some((block: Block) => {
       // 譜面のブロックの1行あたりの高さ(px単位)
       const unitRowHeight: number =
         (2.0 * noteSize * ZOOM_VALUES[zoom.idx]) / block.split;
+
       if (cords.mouseDownRowIdx < block.accumulatedLength + block.length) {
         top +=
           unitRowHeight * (cords.mouseDownRowIdx - block.accumulatedLength);
-        break;
+        return true;
       } else {
         top += unitRowHeight * block.length;
+        return false;
       }
-    }
+    });
     return top;
   }, [blocks, cords.mouseDownRowIdx, noteSize, zoom.idx]);
 
@@ -52,17 +54,21 @@ function ChartSelector({ cords }: ChartSelectorProps) {
     if (cords.mouseUpRowIdx === null) return null;
 
     let top: number = 0;
-    for (const block of blocks) {
+    blocks.some((block: Block) => {
+      if (cords.mouseUpRowIdx === null) return true;
+
       // 譜面のブロックの1行あたりの高さ(px単位)
       const unitRowHeight: number =
         (2.0 * noteSize * ZOOM_VALUES[zoom.idx]) / block.split;
+
       if (cords.mouseUpRowIdx < block.accumulatedLength + block.length) {
         top += unitRowHeight * (cords.mouseUpRowIdx - block.accumulatedLength);
-        break;
+        return true;
       } else {
         top += unitRowHeight * block.length;
+        return false;
       }
-    }
+    });
     return top;
   }, [blocks, cords.mouseUpRowIdx, noteSize, zoom.idx]);
 
