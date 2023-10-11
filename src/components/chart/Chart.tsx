@@ -243,22 +243,35 @@ function Chart() {
           );
         } else if (foundNote) {
           // startの場所に属するホールド(M/H/W)を削除(単ノートは新規追加しない)
-          const previousNote: Note | undefined = [...notes[indicator.column]]
-            .reverse()
-            .find(
-              (note: Note) => note.idx < start && ["X", "W"].includes(note.type)
-            );
-          const nextNote: Note | undefined = notes[indicator.column].find(
-            (note: Note) => note.idx > start && ["X", "M"].includes(note.type)
+          let beforeNotes: Note[] = notes[indicator.column].filter(
+            (note: Note) => note.idx < start
           );
-          updatedNotes = [
-            ...notes[indicator.column].filter((note: Note) =>
-              previousNote ? note.idx <= previousNote.idx : false
-            ),
-            ...notes[indicator.column].filter((note: Note) =>
-              nextNote ? note.idx >= nextNote.idx : false
-            ),
-          ];
+          const foundBeforeNote: Note | undefined = beforeNotes
+            .reverse()
+            .find((note: Note) => ["X", "M", "W"].includes(note.type));
+          if (foundBeforeNote) {
+            beforeNotes = beforeNotes.filter((note: Note) =>
+              foundBeforeNote.type === "M"
+                ? note.idx < foundBeforeNote.idx
+                : note.idx <= foundBeforeNote.idx
+            );
+          }
+
+          let afterNotes: Note[] = notes[indicator.column].filter(
+            (note: Note) => note.idx > start
+          );
+          const foundAfterNote: Note | undefined = afterNotes.find(
+            (note: Note) => ["X", "M", "W"].includes(note.type)
+          );
+          if (foundAfterNote) {
+            afterNotes = afterNotes.filter((note: Note) =>
+              foundAfterNote.type === "W"
+                ? note.idx > foundAfterNote.idx
+                : note.idx >= foundAfterNote.idx
+            );
+          }
+
+          updatedNotes = [...beforeNotes, ...afterNotes];
         } else {
           // startの場所に単ノートを新規追加
           updatedNotes = [
@@ -268,22 +281,6 @@ function Chart() {
           ];
         }
       } else {
-        // startとgoalとの間にホールドを新規追加
-        // ただし、新規追加するホールドの間に単ノート/ホールド(M/H/W)が含む場合は、事前にすべて削除しておく
-        let beforeNotes: Note[] = notes[indicator.column].filter(
-          (note: Note) => note.idx < start
-        );
-        for (const beforeNote of beforeNotes.reverse()) {
-          if (["X", "W"].includes(beforeNote.type)) {
-            break;
-          } else if (beforeNote.type === "M") {
-            beforeNotes = beforeNotes.filter(
-              (note: Note) => note.idx < beforeNote.idx
-            );
-            break;
-          }
-        }
-
         const hold: Note[] = Array.from<any, Note>(
           { length: goal - start + 1 },
           (_, idx: number) => {
@@ -294,21 +291,50 @@ function Chart() {
           }
         );
 
-        let afterNotes: Note[] = notes[indicator.column].filter(
-          (note: Note) => note.idx > goal
-        );
-        for (const afterNote of afterNotes) {
-          if (["X", "M"].includes(afterNote.type)) {
-            break;
-          } else if (afterNote.type === "W") {
-            afterNotes = afterNotes.filter(
-              (note: Note) => note.idx > afterNote.idx
+        if (
+          notes[indicator.column].filter(
+            (note: Note) => note.idx >= start && note.idx <= goal
+          ).length > 0
+        ) {
+          // startとgoalとの間に属するホールド(M/H/W)を削除してから
+          // startとgoalとの間にホールドを新規追加
+          let beforeNotes: Note[] = notes[indicator.column].filter(
+            (note: Note) => note.idx < start
+          );
+          const foundBeforeNote: Note | undefined = beforeNotes
+            .reverse()
+            .find((note: Note) => ["X", "M", "W"].includes(note.type));
+          if (foundBeforeNote) {
+            beforeNotes = beforeNotes.filter((note: Note) =>
+              foundBeforeNote.type === "M"
+                ? note.idx < foundBeforeNote.idx
+                : note.idx <= foundBeforeNote.idx
             );
-            break;
           }
-        }
 
-        updatedNotes = [...beforeNotes, ...hold, ...afterNotes];
+          let afterNotes: Note[] = notes[indicator.column].filter(
+            (note: Note) => note.idx > goal
+          );
+          const foundAfterNote: Note | undefined = afterNotes.find(
+            (note: Note) => ["X", "M", "W"].includes(note.type)
+          );
+          if (foundAfterNote) {
+            afterNotes = afterNotes.filter((note: Note) =>
+              foundAfterNote.type === "W"
+                ? note.idx > foundAfterNote.idx
+                : note.idx >= foundAfterNote.idx
+            );
+          }
+
+          updatedNotes = [...beforeNotes, ...hold, ...afterNotes];
+        } else {
+          // startとgoalとの間にホールドを新規追加
+          updatedNotes = [
+            ...notes[indicator.column].filter((note: Note) => note.idx < start),
+            ...hold,
+            ...notes[indicator.column].filter((note: Note) => note.idx > goal),
+          ];
+        }
       }
 
       // 元に戻す/やり直すスナップショットの集合を更新
