@@ -83,28 +83,29 @@ function Chart() {
       event.clientY - event.currentTarget.getBoundingClientRect().top
     );
 
-    // 譜面のブロックのマウスホバーした行インデックスの場所での、マウスのブラウザの画面のy座標、行インデックスを取得
-    // 譜面のブロックのマウスホバーが外れた場合、ともにnullとする
+    // マウスホバーした譜面全体の行インデックスの場所から、マウスのブラウザの画面のy座標、
+    // 行インデックス、譜面のブロックのインデックスをすべて取得
+    // 譜面のブロックのマウスホバーが外れた場合、前者2つはともにnullとする
     let top: number | null = null;
     let rowIdx: number | null = null;
-    let blockIdx = 0;
-    for (; blockIdx < blocks.length; blockIdx++) {
+    const blockIdx: number = blocks.findIndex((block: Block, idx: number) => {
       // 譜面のブロックの1行あたりの高さ(px単位)
       const unitRowHeight: number =
-        (2.0 * noteSize * ZOOM_VALUES[zoom.idx]) / blocks[blockIdx].split;
+        (2.0 * noteSize * ZOOM_VALUES[zoom.idx]) / block.split;
       // 譜面のブロックの高さ(px単位)
-      const blockHeight: number = unitRowHeight * blocks[blockIdx].length;
-      if (y < blockYDists[blockIdx] + blockHeight) {
-        top = y - ((y - blockYDists[blockIdx]) % unitRowHeight);
+      const blockHeight: number = unitRowHeight * block.length;
+      if (y < blockYDists[idx] + blockHeight) {
+        top = y - ((y - blockYDists[idx]) % unitRowHeight);
         // (top - blockYDists[blockIdx])は必ずunitRowHeightの倍数であるため、
         // ((top - blockYDists[blockIdx]) / unitRowHeight)は理論上整数値となるが、
-        // 除算時の丸め誤差を取り除くべくMath.floor関数を実行し、必ず整数値が得られるようにする
+        // 除算時の丸め誤差を取り除くべくMath.floor関数を実行し、rowIdxに必ず整数値を設定する
         rowIdx =
-          blocks[blockIdx].accumulatedLength +
-          Math.floor((top - blockYDists[blockIdx]) / unitRowHeight);
-        break;
+          block.accumulatedLength +
+          Math.floor((top - blockYDists[idx]) / unitRowHeight);
+        return true;
       }
-    }
+      return false;
+    });
 
     // 無駄な再レンダリングを避けるため、マウスホバーした場所の列インデックス・譜面全体での行のインデックスが
     // 現在のインディケーターの列インデックス・譜面全体での行のインデックスとすべて同じである場合、indicatorの状態を更新しない
