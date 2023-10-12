@@ -4,6 +4,7 @@ import { ChartSnapshot, Zoom } from "../../types/ui";
 import {
   blocksState,
   editBlockDialogFormState,
+  isProtectedState,
   noteSizeState,
   notesState,
   redoSnapshotsState,
@@ -26,6 +27,7 @@ function BlockController() {
   const setEditBlockDialogForm = useSetRecoilState<EditBlockDialogForm>(
     editBlockDialogFormState
   );
+  const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
   const setRedoShapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
 
@@ -34,6 +36,8 @@ function BlockController() {
       // 元に戻す/やり直すスナップショットの集合を更新
       setUndoSnapshots([...undoSnapshots, { blocks, notes: null }]);
       setRedoShapshots([]);
+
+      setIsProtected(true);
 
       // 押下した譜面のブロックのコピーを末尾に追加
       setBlocks([
@@ -46,7 +50,14 @@ function BlockController() {
         },
       ]);
     },
-    [blocks, setBlocks, setRedoShapshots, setUndoSnapshots, undoSnapshots]
+    [
+      blocks,
+      setBlocks,
+      setIsProtected,
+      setRedoShapshots,
+      setUndoSnapshots,
+      undoSnapshots,
+    ]
   );
 
   const handleInsert = useCallback(
@@ -54,6 +65,8 @@ function BlockController() {
       // 元に戻す/やり直すスナップショットの集合を更新
       setUndoSnapshots([...undoSnapshots, { blocks, notes }]);
       setRedoShapshots([]);
+
+      setIsProtected(true);
 
       // 押下したblockIdx番目の譜面のブロックのコピーを(blockIdx + 1)番目に挿入
       setBlocks([
@@ -88,6 +101,7 @@ function BlockController() {
       blocks,
       notes,
       setBlocks,
+      setIsProtected,
       setNotes,
       setRedoShapshots,
       setUndoSnapshots,
@@ -115,6 +129,8 @@ function BlockController() {
       setUndoSnapshots([...undoSnapshots, { blocks, notes }]);
       setRedoShapshots([]);
 
+      setIsProtected(true);
+
       // 削除する譜面のブロックに該当する単ノート/ホールドの始点/ホールドの中間/ホールドの終点を削除
       setNotes(
         notes.map((ns: Note[]) =>
@@ -134,6 +150,7 @@ function BlockController() {
       blocks,
       notes,
       setBlocks,
+      setIsProtected,
       setNotes,
       setRedoShapshots,
       setUndoSnapshots,
@@ -147,6 +164,8 @@ function BlockController() {
       setUndoSnapshots([...undoSnapshots, { blocks, notes: null }]);
       setRedoShapshots([]);
 
+      setIsProtected(true);
+
       // 1つ前の譜面のブロックの行数を吸収
       setBlocks([
         ...blocks.slice(0, blockIdx - 1),
@@ -158,7 +177,14 @@ function BlockController() {
         ...blocks.slice(blockIdx + 1),
       ]);
     },
-    [blocks, setBlocks, setRedoShapshots, setUndoSnapshots, undoSnapshots]
+    [
+      blocks,
+      setBlocks,
+      setIsProtected,
+      setRedoShapshots,
+      setUndoSnapshots,
+      undoSnapshots,
+    ]
   );
 
   const handleMergeBelow = useCallback(
@@ -166,6 +192,8 @@ function BlockController() {
       // 元に戻す/やり直すスナップショットの集合を更新
       setUndoSnapshots([...undoSnapshots, { blocks, notes: null }]);
       setRedoShapshots([]);
+
+      setIsProtected(true);
 
       // 1つ後の譜面のブロックの行数を吸収
       setBlocks([
@@ -177,7 +205,14 @@ function BlockController() {
         ...blocks.slice(blockIdx + 2),
       ]);
     },
-    [blocks, setBlocks, setRedoShapshots, setUndoSnapshots, undoSnapshots]
+    [
+      blocks,
+      setBlocks,
+      setIsProtected,
+      setRedoShapshots,
+      setUndoSnapshots,
+      undoSnapshots,
+    ]
   );
 
   return (

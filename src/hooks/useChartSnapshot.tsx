@@ -8,6 +8,7 @@ import {
   editBlockDialogFormState,
   indicatorState,
   isOpenedNewUCSDialogState,
+  isProtectedState,
   notesState,
   redoSnapshotsState,
   selectorState,
@@ -43,23 +44,8 @@ function useChartSnapshot() {
     PopoverPosition | undefined
   >(chartIndicatorMenuPositionState);
   const setIndicator = useSetRecoilState<Indicator>(indicatorState);
+  const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
   const setSelector = useSetRecoilState<Selector>(selectorState);
-
-  const handleBeforeunload = (event: BeforeUnloadEvent) => {
-    event.preventDefault();
-    event.returnValue = "";
-  };
-
-  useEffect(() => {
-    if (redoSnapshots.length === 0 && undoSnapshots.length === 0) {
-      window.removeEventListener("beforeunload", handleBeforeunload);
-    } else {
-      window.addEventListener("beforeunload", handleBeforeunload);
-      return () => {
-        window.removeEventListener("beforeunload", handleBeforeunload);
-      };
-    }
-  }, [redoSnapshots, undoSnapshots]);
 
   const handleRedo = useCallback(() => {
     // やり直すスナップショットが存在しない/ダイアログが開いている場合はNOP
@@ -72,6 +58,8 @@ function useChartSnapshot() {
 
     // やり直すスナップショットを抽出
     const snapshot: ChartSnapshot = redoSnapshots[redoSnapshots.length - 1];
+
+    setIsProtected(true);
 
     // 元に戻す/やり直すスナップショットの集合を更新
     setUndoSnapshots([
@@ -98,6 +86,7 @@ function useChartSnapshot() {
     setBlocks,
     setChartIndicatorMenuPosition,
     setIndicator,
+    setIsProtected,
     setNotes,
     setSelector,
     setRedoSnapshots,
@@ -115,6 +104,9 @@ function useChartSnapshot() {
 
     // 元に戻すSnapshotを抽出
     const snapshot: ChartSnapshot = undoSnapshots[undoSnapshots.length - 1];
+
+    // これ以上元に戻せられなくなる場合のみ編集中の離脱を抑止しない
+    setIsProtected(undoSnapshots.length !== 1);
 
     // やり直すスナップショットの集合、元に戻すスナップショットの集合を更新
     setRedoSnapshots([
@@ -141,6 +133,7 @@ function useChartSnapshot() {
     setBlocks,
     setChartIndicatorMenuPosition,
     setIndicator,
+    setIsProtected,
     setNotes,
     setSelector,
     setRedoSnapshots,

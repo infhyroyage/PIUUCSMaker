@@ -16,6 +16,9 @@ import {
   columnsState,
   isPerformanceState,
   ucsNameState,
+  isProtectedState,
+  redoSnapshotsState,
+  undoSnapshotsState,
 } from "../../service/atoms";
 import { ChangeEvent, useState, useTransition } from "react";
 import {
@@ -24,6 +27,7 @@ import {
   NewUCSValidation,
 } from "../../types/dialog";
 import { Block, Note } from "../../types/chart";
+import { ChartSnapshot } from "../../types/ui";
 
 const validateAndLoadUCS = (
   form: NewUCSDialogForm
@@ -127,8 +131,13 @@ function NewUCSDialog() {
   const setBlocks = useSetRecoilState<Block[]>(blocksState);
   const setColumns = useSetRecoilState<5 | 10>(columnsState);
   const setIsPerformance = useSetRecoilState<boolean>(isPerformanceState);
+  const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
   const setNotes = useSetRecoilState<Note[][]>(notesState);
+  const setRedoSnapshots =
+    useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
   const setUcsName = useSetRecoilState<string | null>(ucsNameState);
+  const setUndoSnapshots =
+    useSetRecoilState<ChartSnapshot[]>(undoSnapshotsState);
 
   const [isPending, startTransition] = useTransition();
 
@@ -143,12 +152,15 @@ function NewUCSDialog() {
         setBlocks([result.block]);
         setColumns(result.columns);
         setIsPerformance(result.isPerformance);
+        setIsProtected(false);
         setNotes(
           Array(result.columns)
             .fill(null)
             .map<Note[]>(() => [])
         );
+        setRedoSnapshots([]);
         setUcsName(`${form.ucsName}.ucs`);
+        setUndoSnapshots([]);
         setIsOpenedNewUCSDialog(false);
       }
     });

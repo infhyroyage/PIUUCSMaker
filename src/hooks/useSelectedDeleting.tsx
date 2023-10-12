@@ -1,6 +1,7 @@
 import { useCallback, useEffect } from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import {
+  isProtectedState,
   notesState,
   redoSnapshotsState,
   undoSnapshotsState,
@@ -13,6 +14,7 @@ function useSelectedDeleting() {
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
+  const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
   const setRedoShapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
 
@@ -31,6 +33,8 @@ function useSelectedDeleting() {
     setUndoSnapshots([...undoSnapshots, { blocks: null, notes }]);
     setRedoShapshots([]);
 
+    setIsProtected(true);
+
     setNotes(
       notes.map((ns: Note[], column: number) =>
         column < selectedCords.startColumn || column > selectedCords.goalColumn
@@ -48,6 +52,7 @@ function useSelectedDeleting() {
   }, [
     getSelectedCords,
     notes,
+    setIsProtected,
     setNotes,
     setRedoShapshots,
     setUndoSnapshots,

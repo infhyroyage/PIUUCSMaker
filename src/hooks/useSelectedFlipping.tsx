@@ -1,6 +1,7 @@
 import { useCallback, useEffect } from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import {
+  isProtectedState,
   notesState,
   redoSnapshotsState,
   undoSnapshotsState,
@@ -13,6 +14,7 @@ function useSelectedFlipping() {
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
+  const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
   const setRedoShapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
 
@@ -33,6 +35,8 @@ function useSelectedFlipping() {
       // 元に戻す/やり直すスナップショットの集合を更新
       setUndoSnapshots([...undoSnapshots, { blocks: null, notes }]);
       setRedoShapshots([]);
+
+      setIsProtected(true);
 
       setNotes(
         notes.map((ns: Note[], column: number) =>
@@ -89,6 +93,7 @@ function useSelectedFlipping() {
     [
       getSelectedCords,
       notes,
+      setIsProtected,
       setNotes,
       setRedoShapshots,
       setUndoSnapshots,

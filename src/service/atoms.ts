@@ -128,6 +128,14 @@ export const isPlayingState = atom<boolean>({
 });
 
 /**
+ * 編集中の離脱を抑止する場合はtrue、そうでない場合はfalse
+ */
+export const isProtectedState = atom<boolean>({
+  key: "isProtected",
+  default: false,
+});
+
+/**
  * MenuBarの高さ(px単位)
  */
 export const menuBarHeightState = atom<number>({

@@ -1,15 +1,19 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useSetRecoilState } from "recoil";
 import { Block, Note } from "../types/chart";
 import {
   blocksState,
   columnsState,
   isPerformanceState,
+  isProtectedState,
   notesState,
+  redoSnapshotsState,
   ucsNameState,
+  undoSnapshotsState,
   userErrorMessageState,
 } from "../service/atoms";
 import { UploadingUCSValidation } from "../types/dialog";
+import { ChartSnapshot } from "../types/ui";
 
 const validateAndLoadUCS = (
   content: string
@@ -220,42 +224,64 @@ function useUploadingUCS() {
   const setBlocks = useSetRecoilState<Block[]>(blocksState);
   const setColumns = useSetRecoilState<5 | 10>(columnsState);
   const setIsPerformance = useSetRecoilState<boolean>(isPerformanceState);
+  const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
   const setNotes = useSetRecoilState<Note[][]>(notesState);
+  const setRedoSnapshots =
+    useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
   const setUcsName = useSetRecoilState<string | null>(ucsNameState);
+  const setUndoSnapshots =
+    useSetRecoilState<ChartSnapshot[]>(undoSnapshotsState);
   const setUserErrorMessage = useSetRecoilState<string>(userErrorMessageState);
 
-  const onUploadUCS = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // UCSファイルを何もアップロードしなかった場合はNOP
-    const fileList: FileList | null = event.target.files;
-    if (!fileList || fileList.length === 0) return;
+  const onUploadUCS = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      // UCSファイルを何もアップロードしなかった場合はNOP
+      const fileList: FileList | null = event.target.files;
+      if (!fileList || fileList.length === 0) return;
 
-    // 拡張子チェック
-    if (fileList[0].name.split(".").pop() !== "ucs") {
-      setUserErrorMessage("拡張子がucsではありません");
-      return;
-    }
+      // 拡張子チェック
+      if (fileList[0].name.split(".").pop() !== "ucs") {
+        setUserErrorMessage("拡張子がucsではありません");
+        return;
+      }
 
-    setIsUploadingUCS(true);
-    fileList[0]
-      .text()
-      .then((content: string) => {
-        const result: UploadingUCSValidation | string =
-          validateAndLoadUCS(content);
-        if (typeof result === "string") {
-          setUserErrorMessage(result);
-        } else {
-          setBlocks(result.blocks);
-          setColumns(result.columns);
-          setIsPerformance(result.isPerformance);
-          setNotes(result.notes);
-          setUcsName(fileList[0].name);
-        }
+      setIsUploadingUCS(true);
+      fileList[0]
+        .text()
+        .then((content: string) => {
+          const result: UploadingUCSValidation | string =
+            validateAndLoadUCS(content);
+          if (typeof result === "string") {
+            setUserErrorMessage(result);
+          } else {
+            setBlocks(result.blocks);
+            setColumns(result.columns);
+            setIsPerformance(result.isPerformance);
+            setIsProtected(false);
+            setNotes(result.notes);
+            setRedoSnapshots([]);
+            setUcsName(fileList[0].name);
+            setUndoSnapshots([]);
+          }
 
-        // 同じUCSファイルを再アップロードできるように初期化
-        event.target.value = "";
-      })
-      .finally(() => setIsUploadingUCS(false));
-  };
+          // 同じUCSファイルを再アップロードできるように初期化
+          event.target.value = "";
+        })
+        .finally(() => setIsUploadingUCS(false));
+    },
+    [
+      setBlocks,
+      setColumns,
+      setIsUploadingUCS,
+      setUserErrorMessage,
+      setIsPerformance,
+      setIsProtected,
+      setNotes,
+      setRedoSnapshots,
+      setUcsName,
+      setUndoSnapshots,
+    ]
+  );
 
   return { isUploadingUCS, onUploadUCS };
 }

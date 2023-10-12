@@ -6,6 +6,7 @@ import {
   columnsState,
   indicatorState,
   isPlayingState,
+  isProtectedState,
   mouseDownState,
   noteSizeState,
   notesState,
@@ -41,6 +42,7 @@ function Chart() {
   const isPlaying = useRecoilValue<boolean>(isPlayingState);
   const noteSize = useRecoilValue<number>(noteSizeState);
   const zoom = useRecoilValue<Zoom>(zoomState);
+  const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
   const setRedoShapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
 
@@ -342,6 +344,8 @@ function Chart() {
       setUndoSnapshots([...undoSnapshots, { blocks: null, notes }]);
       setRedoShapshots([]);
 
+      setIsProtected(true);
+
       // 単ノート/ホールドの追加・削除を行った譜面に更新
       setNotes(
         notes.map((notes: Note[], column: number) =>
@@ -373,6 +377,8 @@ function Chart() {
       setUndoSnapshots([...undoSnapshots, { blocks, notes: null }]);
       setRedoShapshots([]);
 
+      setIsProtected(true);
+
       // blockIdx番目の譜面のブロックを、(rowIdx- 1)番目以前とrowIdx番目とで分割
       setBlocks([
         ...blocks.slice(0, indicator.blockIdx),
@@ -401,6 +407,7 @@ function Chart() {
       indicator,
       setBlocks,
       setIndicator,
+      setIsProtected,
       setRedoShapshots,
       setUndoSnapshots,
       undoSnapshots,

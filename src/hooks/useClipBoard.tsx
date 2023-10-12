@@ -10,6 +10,7 @@ import {
   clipBoardState,
   columnsState,
   indicatorState,
+  isProtectedState,
   notesState,
   redoSnapshotsState,
   selectorState,
@@ -25,6 +26,7 @@ function useClipBoard() {
   const blocks = useRecoilValue<Block[]>(blocksState);
   const columns = useRecoilValue<5 | 10>(columnsState);
   const indicator = useRecoilValue<Indicator>(indicatorState);
+  const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
   const setRedoShapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
   const setSelector = useSetRecoilState<Selector>(selectorState);
@@ -79,6 +81,8 @@ function useClipBoard() {
     setUndoSnapshots([...undoSnapshots, { blocks: null, notes }]);
     setRedoShapshots([]);
 
+    setIsProtected(true);
+
     // 選択領域に含まれる領域のみ、単ノート/ホールドの始点/ホールドの中間/ホールドの終点のカット対象とする
     setNotes(
       notes.map((ns: Note[], column: number) =>
@@ -96,6 +100,7 @@ function useClipBoard() {
   }, [
     getSelectedCords,
     notes,
+    setIsProtected,
     setNotes,
     setRedoShapshots,
     setUndoSnapshots,
@@ -118,6 +123,8 @@ function useClipBoard() {
     // 元に戻す/やり直すスナップショットの集合を更新
     setUndoSnapshots([...undoSnapshots, { blocks: null, notes }]);
     setRedoShapshots([]);
+
+    setIsProtected(true);
 
     // インディケーターの位置を左上としたコピー時の選択領域に含まれる領域と、
     // 各譜面のブロックで構成した譜面の領域との共通領域のみ、
@@ -166,6 +173,7 @@ function useClipBoard() {
     columns,
     indicator,
     notes,
+    setIsProtected,
     setNotes,
     setRedoShapshots,
     setSelector,

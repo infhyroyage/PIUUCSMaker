@@ -7,6 +7,7 @@ import {
   adjustBlockDialogOpenState,
   blockControllerMenuBlockIdxState,
   notesState,
+  isProtectedState,
 } from "../../service/atoms";
 import {
   Button,
@@ -50,6 +51,7 @@ function AdjustBlockDialog() {
   const [menuBlockIdx, setMenuBlockIdx] = useRecoilState<number | null>(
     blockControllerMenuBlockIdxState
   );
+  const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
   const setRedoShapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
   const [form, setForm] = useState<AdjustBlockDialogForm>({
@@ -167,6 +169,8 @@ function AdjustBlockDialog() {
         ]);
       }
 
+      setIsProtected(true);
+
       setBlocks(updatedBlocks);
       if (deltaRows !== 0) setNotes(updatedNotes);
     }
@@ -180,6 +184,7 @@ function AdjustBlockDialog() {
     notes,
     open.fixed,
     setBlocks,
+    setIsProtected,
     setMenuBlockIdx,
     setNotes,
     setOpen,

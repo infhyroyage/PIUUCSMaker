@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import beatWav from "../sounds/beat.wav";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
@@ -77,45 +77,54 @@ function usePlayingMusic() {
     }
   }, [isMuteBeats, volumeValue]);
 
-  const onUploadMP3 = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // MP3ファイルを何もアップロードしなかった場合はNOP
-    const fileList: FileList | null = event.target.files;
-    if (!fileList || fileList.length === 0) return;
+  const onUploadMP3 = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      // MP3ファイルを何もアップロードしなかった場合はNOP
+      const fileList: FileList | null = event.target.files;
+      if (!fileList || fileList.length === 0) return;
 
-    // 拡張子チェック
-    if (fileList[0].name.split(".").pop() !== "mp3") {
-      setUserErrorMessage("拡張子がmp3ではありません");
-      return;
-    }
+      // 拡張子チェック
+      if (fileList[0].name.split(".").pop() !== "mp3") {
+        setUserErrorMessage("拡張子がmp3ではありません");
+        return;
+      }
 
-    // アップロードしたMP3ファイルをデコードして読み込み
-    setIsUploadingMP3(true);
-    fileList[0]
-      .arrayBuffer()
-      .then((arrayBuffer: ArrayBuffer) => {
-        // AudioContextを初期化していない場合は初期化しておく
-        if (audioContext.current === null) {
-          audioContext.current = new AudioContext();
-        }
+      // アップロードしたMP3ファイルをデコードして読み込み
+      setIsUploadingMP3(true);
+      fileList[0]
+        .arrayBuffer()
+        .then((arrayBuffer: ArrayBuffer) => {
+          // AudioContextを初期化していない場合は初期化しておく
+          if (audioContext.current === null) {
+            audioContext.current = new AudioContext();
+          }
 
-        // MP3ファイルの音楽用のGainNodeを初期化していない場合は初期化しておく
-        if (musicGainNode.current === null) {
-          musicGainNode.current = audioContext.current.createGain();
-          musicGainNode.current.gain.value = volumeValue;
-        }
+          // MP3ファイルの音楽用のGainNodeを初期化していない場合は初期化しておく
+          if (musicGainNode.current === null) {
+            musicGainNode.current = audioContext.current.createGain();
+            musicGainNode.current.gain.value = volumeValue;
+          }
 
-        return audioContext.current.decodeAudioData(arrayBuffer);
-      })
-      .then((decodedAudio: AudioBuffer) => {
-        musicAudioBuffer.current = decodedAudio;
-        setMp3Name(fileList[0].name);
-        setSuccessMessage(`${fileList[0].name}のアップロードに成功しました`);
+          return audioContext.current.decodeAudioData(arrayBuffer);
+        })
+        .then((decodedAudio: AudioBuffer) => {
+          musicAudioBuffer.current = decodedAudio;
+          setMp3Name(fileList[0].name);
+          setSuccessMessage(`${fileList[0].name}のアップロードに成功しました`);
 
-        // 同じMP3ファイルを再アップロードできるように初期化
-        event.target.value = "";
-      })
-      .finally(() => setIsUploadingMP3(false));
-  };
+          // 同じMP3ファイルを再アップロードできるように初期化
+          event.target.value = "";
+        })
+        .finally(() => setIsUploadingMP3(false));
+    },
+    [
+      setIsUploadingMP3,
+      setMp3Name,
+      setSuccessMessage,
+      setUserErrorMessage,
+      volumeValue,
+    ]
+  );
 
   // MP3ファイルの音楽用の音量を0(ミュート)から1(MAX)まで動的に設定
   useEffect(() => {

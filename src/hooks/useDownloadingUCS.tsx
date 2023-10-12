@@ -4,6 +4,7 @@ import {
   blocksState,
   columnsState,
   isPerformanceState,
+  isProtectedState,
   notesState,
   redoSnapshotsState,
   ucsNameState,
@@ -18,6 +19,7 @@ function useDownloadingUCS() {
   const isPerformance = useRecoilValue<boolean>(isPerformanceState);
   const notes = useRecoilValue<Note[][]>(notesState);
   const ucsName = useRecoilValue<string | null>(ucsNameState);
+  const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
   const setRedoSnapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
   const setUndoSnapshots =
@@ -94,14 +96,15 @@ function useDownloadingUCS() {
       document.body.appendChild(element);
       element.click();
 
-      setRedoSnapshots([]);
-      setUndoSnapshots([]);
+      // 編集中の離脱の抑止を解除
+      setIsProtected(false);
     });
   }, [
     blocks,
     columns,
     isPerformance,
     notes,
+    setIsProtected,
     setRedoSnapshots,
     setUndoSnapshots,
     startTransition,

@@ -4,6 +4,7 @@ import {
   blockControllerMenuBlockIdxState,
   blocksState,
   editBlockDialogFormState,
+  isProtectedState,
   notesState,
   redoSnapshotsState,
   undoSnapshotsState,
@@ -74,6 +75,7 @@ function EditBlockDialog() {
   );
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
+  const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
   const setMenuBlockIdx = useSetRecoilState<number | null>(
     blockControllerMenuBlockIdxState
   );
@@ -181,6 +183,8 @@ function EditBlockDialog() {
         ]);
       }
 
+      setIsProtected(true);
+
       setBlocks(updatedBlocks);
       if (deltaRows !== 0) setNotes(updatedNotes);
       setMenuBlockIdx(null);
@@ -203,6 +207,7 @@ function EditBlockDialog() {
     notes,
     setBlocks,
     setForm,
+    setIsProtected,
     setMenuBlockIdx,
     setNotes,
     setResultError,

@@ -10,6 +10,7 @@ import {
   ucsNameState,
   columnsState,
   isPerformanceState,
+  isProtectedState,
 } from "../service/atoms";
 import {
   AppBar,
@@ -42,6 +43,7 @@ function MenuBar() {
   const [isOpenedMenuDrawer, setIsOpenedMenuDrawer] = useRecoilState<boolean>(
     isOpenedMenuDrawerState
   );
+  const isProtected = useRecoilValue<boolean>(isProtectedState);
   const [volumeValue, setVolumeValue] =
     useRecoilState<number>(volumeValueState);
   const [zoom, setZoom] = useRecoilState<Zoom>(zoomState);
@@ -62,21 +64,36 @@ function MenuBar() {
     }
   };
 
-  const updateSize = () => {
-    setWindowInnerWidth(window.innerWidth);
-  };
-
+  // MenuBarの高さを監視してRecoilで状態を管理
+  const toolBarRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
+    const updateSize = () => {
+      setWindowInnerWidth(window.innerWidth);
+    };
     window.addEventListener("resize", updateSize);
     return () => window.removeEventListener("resize", updateSize);
   }, []);
-
-  const toolBarRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     if (toolBarRef.current) {
       setMenuBarHeight(toolBarRef.current.getBoundingClientRect().height);
     }
   }, [setMenuBarHeight, windowInnerWidth]);
+
+  // 編集中に離脱した場合、その離脱を抑止する組込みダイアログを表示
+  useEffect(() => {
+    const handleBeforeunload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = "";
+    };
+    if (isProtected) {
+      window.addEventListener("beforeunload", handleBeforeunload);
+      return () => {
+        window.removeEventListener("beforeunload", handleBeforeunload);
+      };
+    } else {
+      window.removeEventListener("beforeunload", handleBeforeunload);
+    }
+  }, [isProtected]);
 
   return (
     <AppBar
@@ -93,7 +110,7 @@ function MenuBar() {
         </IconButton>
         <Box flexGrow={1} ml={4}>
           <Typography variant="h6" noWrap component="div">
-            {ucsName || "PIU UCS Maker"}
+            {`${isProtected ? "*" : ""}${ucsName || "PIU UCS Maker"}`}
           </Typography>
           {ucsName !== null && (
             <Typography variant="caption" noWrap component="div">
