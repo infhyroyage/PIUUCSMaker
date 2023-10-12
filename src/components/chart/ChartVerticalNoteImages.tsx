@@ -61,10 +61,12 @@ function ChartVerticalNoteImages({
               verticalBorderSize * 0.5 +
               noteSize * column
             }px`,
-            pointerEvents: "none",
             userSelect: "none",
             zIndex: (idx + 1) * 10,
           }}
+          onDragStart={(event: React.DragEvent<HTMLImageElement>) =>
+            event.preventDefault()
+          }
         />
       );
     case "M":
@@ -84,10 +86,12 @@ function ChartVerticalNoteImages({
                 verticalBorderSize * 0.5 +
                 noteSize * column
               }px`,
-              pointerEvents: "none",
               userSelect: "none",
               zIndex: (idx + 1) * 10,
             }}
+            onDragStart={(event: React.DragEvent<HTMLImageElement>) =>
+              event.preventDefault()
+            }
           />
           <img
             src={IMAGE_BINARIES[column % 5].hold}
@@ -102,10 +106,12 @@ function ChartVerticalNoteImages({
                 verticalBorderSize * 0.5 +
                 noteSize * column
               }px`,
-              pointerEvents: "none",
               userSelect: "none",
               zIndex: (idx + 1) * 10 + 1,
             }}
+            onDragStart={(event: React.DragEvent<HTMLImageElement>) =>
+              event.preventDefault()
+            }
           />
         </>
       );
@@ -125,10 +131,12 @@ function ChartVerticalNoteImages({
               verticalBorderSize * 0.5 +
               noteSize * column
             }px`,
-            pointerEvents: "none",
             userSelect: "none",
             zIndex: (idx + 1) * 10,
           }}
+          onDragStart={(event: React.DragEvent<HTMLImageElement>) =>
+            event.preventDefault()
+          }
         />
       );
     case "W":
@@ -147,10 +155,12 @@ function ChartVerticalNoteImages({
               verticalBorderSize * 0.5 +
               noteSize * column
             }px`,
-            pointerEvents: "none",
             userSelect: "none",
             zIndex: (idx + 1) * 10,
           }}
+          onDragStart={(event: React.DragEvent<HTMLImageElement>) =>
+            event.preventDefault()
+          }
         />
       );
   }
