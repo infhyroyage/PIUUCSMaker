@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { Divider, Menu, MenuItem, MenuList } from "@mui/material";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilState } from "recoil";
 import {
   adjustBlockDialogOpenState,
   blockControllerMenuBlockIdxState,
@@ -11,6 +11,8 @@ import { BlockControllerMenuPosition } from "../../types/ui";
 import { AdjustBlockDialogOpen } from "../../types/dialog";
 
 function BlockControllerMenu({ blockNum, handler }: BlockControllerMenuProps) {
+  const [adjustBlockDialogOpen, setAdjustBlockDialogOpen] =
+    useRecoilState<AdjustBlockDialogOpen>(adjustBlockDialogOpenState);
   const [menuBlockIdx, setMenuBlockIdx] = useRecoilState<number | null>(
     blockControllerMenuBlockIdxState
   );
@@ -18,9 +20,6 @@ function BlockControllerMenu({ blockNum, handler }: BlockControllerMenuProps) {
     useRecoilState<BlockControllerMenuPosition>(
       blockControllerMenuPositionState
     );
-  const setAdjustBlockDialogOpen = useSetRecoilState<AdjustBlockDialogOpen>(
-    adjustBlockDialogOpenState
-  );
 
   return (
     <Menu
@@ -43,19 +42,14 @@ function BlockControllerMenu({ blockNum, handler }: BlockControllerMenuProps) {
         </MenuItem>
         <MenuItem
           onClick={() => {
-            setAdjustBlockDialogOpen({ fixed: "bpm", open: true });
+            setAdjustBlockDialogOpen({
+              fixed: adjustBlockDialogOpen.fixed,
+              open: true,
+            });
             setMenuPosition(undefined);
           }}
         >
-          Adjust Split & Rows
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            setAdjustBlockDialogOpen({ fixed: "rows", open: true });
-            setMenuPosition(undefined);
-          }}
-        >
-          Adjust Split & BPM
+          Adjust Split/Rows/BPM
         </MenuItem>
         <Divider />
         <MenuItem

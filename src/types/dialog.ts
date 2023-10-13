@@ -9,12 +9,7 @@ export type AdjustBlockDialogForm = {
 };
 
 export type AdjustBlockDialogOpen = {
-  /**
-   * 「Adjust Split & Rows」を押下してAdjustBlockDialogを表示する場合はbpm、
-   * 「Adjust Split & BPM」を押下してAdjustBlockDialogを表示する場合はrows
-   */
-  fixed: "bpm" | "rows";
-
+  fixed: "bpm" | "rows" | "split";
   open: boolean;
 };
 
