@@ -3,6 +3,7 @@ import ReadyUCS from "./ReadyUCS";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import {
   menuBarHeightState,
+  mouseDownState,
   noteSizeState,
   selectorState,
   ucsNameState,
@@ -10,11 +11,12 @@ import {
 import Chart from "./chart/Chart";
 import RectangleIdentifier from "./identifier/RectangleIdentifier";
 import BlockController from "./controller/BlockController";
-import { Selector } from "../types/ui";
+import { MouseDown, Selector } from "../types/ui";
 
 function WorkSpace() {
   const menuBarHeight = useRecoilValue<number>(menuBarHeightState);
   const ucsName = useRecoilValue<string | null>(ucsNameState);
+  const setMouseDown = useSetRecoilState<MouseDown>(mouseDownState);
   const setNoteSize = useSetRecoilState<number>(noteSizeState);
   const setSelector = useSetRecoilState<Selector>(selectorState);
 
@@ -30,8 +32,9 @@ function WorkSpace() {
         )
       );
     const handleKeyDown = (event: KeyboardEvent) => {
-      // ESCキー押下時に、選択領域を非表示
+      // ESCキー押下時に、選択領域・マウス押下した場合の表示パラメーターをすべて初期化
       if (event.key === "Escape") {
+        setMouseDown(null);
         setSelector({ changingCords: null, completedCords: null });
       }
     };
@@ -55,8 +58,9 @@ function WorkSpace() {
   ) : (
     <div
       onMouseUp={(event: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
-        // 左クリック時のみ、選択領域を非表示
+        // 左クリック時のみ、選択領域・マウス押下した場合の表示パラメーターをすべて初期化
         if (event.button === 0) {
+          setMouseDown(null);
           setSelector({ changingCords: null, completedCords: null });
         }
       }}
