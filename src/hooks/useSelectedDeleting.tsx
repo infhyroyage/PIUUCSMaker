@@ -43,9 +43,11 @@ function useSelectedDeleting() {
           : [
               // 選択領域外の譜面全体での行インデックスのみ抽出
               ...ns.filter(
-                (note: Note) => note.idx < selectedCords.startRowIdx
+                (note: Note) => note.rowIdx < selectedCords.startRowIdx
               ),
-              ...ns.filter((note: Note) => note.idx > selectedCords.goalRowIdx),
+              ...ns.filter(
+                (note: Note) => note.rowIdx > selectedCords.goalRowIdx
+              ),
             ]
       )
     );

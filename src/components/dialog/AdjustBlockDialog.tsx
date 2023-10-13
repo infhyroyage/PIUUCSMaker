@@ -64,7 +64,7 @@ function AdjustBlockDialog() {
     () =>
       setForm({
         bpm: menuBlockIdx === null ? -1 : blocks[menuBlockIdx].bpm,
-        rows: menuBlockIdx === null ? -1 : blocks[menuBlockIdx].length,
+        rows: menuBlockIdx === null ? -1 : blocks[menuBlockIdx].rows,
         split: menuBlockIdx === null ? -1 : blocks[menuBlockIdx].split,
       }),
     [blocks, menuBlockIdx]
@@ -73,7 +73,7 @@ function AdjustBlockDialog() {
   const onUpdate = useCallback(() => {
     if (menuBlockIdx !== null) {
       // menuBlockIdx番目の譜面のブロックの行数の差分
-      const deltaRows: number = Number(form.rows) - blocks[menuBlockIdx].length;
+      const deltaRows: number = Number(form.rows) - blocks[menuBlockIdx].rows;
 
       // 元に戻す/やり直すスナップショットの集合を更新
       setUndoSnapshots([
@@ -87,19 +87,19 @@ function AdjustBlockDialog() {
         (_, blockIdx: number) =>
           blockIdx === menuBlockIdx
             ? {
-                accumulatedLength: blocks[menuBlockIdx].accumulatedLength,
+                accumulatedRows: blocks[menuBlockIdx].accumulatedRows,
                 beat: blocks[menuBlockIdx].beat,
                 bpm: roundBpm(form.bpm),
                 delay: blocks[menuBlockIdx].delay,
-                length: form.rows,
+                rows: form.rows,
                 split: form.split,
               }
             : blockIdx > menuBlockIdx
             ? {
                 ...blocks[blockIdx],
-                accumulatedLength:
-                  blocks[blockIdx - 1].accumulatedLength +
-                  blocks[blockIdx - 1].length +
+                accumulatedRows:
+                  blocks[blockIdx - 1].accumulatedRows +
+                  blocks[blockIdx - 1].rows +
                   deltaRows,
               }
             : blocks[blockIdx]
@@ -116,34 +116,34 @@ function AdjustBlockDialog() {
         updatedNotes = [...notes].map((ns: Note[]) => [
           // (menuBlockIdx - 1)番目以前の譜面のブロック
           ...ns.filter(
-            (note: Note) => note.idx < blocks[menuBlockIdx].accumulatedLength
+            (note: Note) => note.rowIdx < blocks[menuBlockIdx].accumulatedRows
           ),
           // menuBlockIdx番目の譜面のブロック
           ...ns
             .filter(
               (note: Note) =>
-                note.idx >= blocks[menuBlockIdx].accumulatedLength &&
-                note.idx <
-                  blocks[menuBlockIdx].accumulatedLength +
-                    blocks[menuBlockIdx].length
+                note.rowIdx >= blocks[menuBlockIdx].accumulatedRows &&
+                note.rowIdx <
+                  blocks[menuBlockIdx].accumulatedRows +
+                    blocks[menuBlockIdx].rows
             )
             .reduce((prev: Note[], note: Note) => {
-              const scaledIdx: number =
-                blocks[menuBlockIdx].accumulatedLength +
+              const scaledRowIdx: number =
+                blocks[menuBlockIdx].accumulatedRows +
                 Math.floor(
-                  ((note.idx - blocks[menuBlockIdx].accumulatedLength) *
+                  ((note.rowIdx - blocks[menuBlockIdx].accumulatedRows) *
                     Number(form.rows)) /
-                    blocks[menuBlockIdx].length
+                    blocks[menuBlockIdx].rows
                 );
               const prevScaledNote: Note | undefined = prev.find(
-                (note: Note) => note.idx === scaledIdx
+                (note: Note) => note.rowIdx === scaledRowIdx
               );
 
               return prevScaledNote
                 ? [
                     ...prev.slice(0, prev.length - 1),
                     {
-                      idx: scaledIdx,
+                      rowIdx: scaledRowIdx,
                       type:
                         prevScaledNote.type === "X" ||
                         (prevScaledNote.type === "H" &&
@@ -153,18 +153,17 @@ function AdjustBlockDialog() {
                           : prevScaledNote.type,
                     },
                   ]
-                : [...prev, { idx: scaledIdx, type: note.type }];
+                : [...prev, { rowIdx: scaledRowIdx, type: note.type }];
             }, []),
           // (menuBlockIdx + 1)番目以降の譜面のブロック
           ...ns
             .filter(
               (note: Note) =>
-                note.idx >=
-                blocks[menuBlockIdx].accumulatedLength +
-                  blocks[menuBlockIdx].length
+                note.rowIdx >=
+                blocks[menuBlockIdx].accumulatedRows + blocks[menuBlockIdx].rows
             )
             .map((note: Note) => {
-              return { idx: note.idx + deltaRows, type: note.type };
+              return { rowIdx: note.rowIdx + deltaRows, type: note.type };
             }),
         ]);
       }
@@ -474,12 +473,12 @@ function AdjustBlockDialog() {
             <Grid item xs={5.5}>
               {open.fixed === "rows" ? (
                 <Typography variant="h6">
-                  {blocks[menuBlockIdx].length}
+                  {blocks[menuBlockIdx].rows}
                 </Typography>
               ) : (
                 <Paper elevation={3} sx={{ padding: 1 }}>
                   <Typography variant="h6">
-                    {blocks[menuBlockIdx].length}
+                    {blocks[menuBlockIdx].rows}
                   </Typography>
                 </Paper>
               )}

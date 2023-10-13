@@ -11,7 +11,7 @@ function RectangleBlockIdentifier({
   beat,
   blockIdx,
   isLastBlock,
-  length,
+  rows,
   split,
 }: RectangleBlockIdentifierProps) {
   const noteSize = useRecoilValue<number>(noteSizeState);
@@ -29,20 +29,20 @@ function RectangleBlockIdentifier({
     () =>
       Math.min(
         Math.max(Math.floor(noteSize * 0.025) * 2, 2),
-        unitRowHeight * length
+        unitRowHeight * rows
       ),
-    [length, noteSize, unitRowHeight]
+    [rows, noteSize, unitRowHeight]
   );
 
   // 譜面のブロック内の各節のブロックの高さ(px単位)を枠線の配置を考慮して計算
   const rectangleHeights = useMemo(() => {
     // 譜面のブロック内の節のブロックの個数
-    const rectangleLength: number = Math.ceil(length / (beat * split));
+    const rectangleLength: number = Math.ceil(rows / (beat * split));
 
     // 譜面のブロックの高さ(px単位)
     // 譜面のブロックごとに分割する枠線を最下部に配置するため、その枠線の高さ分をあらかじめ減算しておく
     let blockHeight: number =
-      unitRowHeight * length - (isLastBlock ? 0 : horizontalBorderSize);
+      unitRowHeight * rows - (isLastBlock ? 0 : horizontalBorderSize);
 
     return [...Array(rectangleLength)].reduce(
       (prev: number[], _, rectangleIdx: number) => {
@@ -59,7 +59,7 @@ function RectangleBlockIdentifier({
       },
       []
     );
-  }, [beat, horizontalBorderSize, isLastBlock, length, split, unitRowHeight]);
+  }, [beat, horizontalBorderSize, isLastBlock, rows, split, unitRowHeight]);
 
   return (
     <>

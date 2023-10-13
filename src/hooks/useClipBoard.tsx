@@ -36,8 +36,8 @@ function useClipBoard() {
   // 全譜面のブロックの行数の総和を計算
   const totalRows = useMemo(
     () =>
-      blocks[blocks.length - 1].accumulatedLength +
-      blocks[blocks.length - 1].length,
+      blocks[blocks.length - 1].accumulatedRows +
+      blocks[blocks.length - 1].rows,
     [blocks]
   );
 
@@ -52,13 +52,13 @@ function useClipBoard() {
             notes[selectedCords.startColumn + deltaColumn]
               .filter(
                 (note: Note) =>
-                  note.idx >= selectedCords.startRowIdx &&
-                  note.idx <= selectedCords.goalRowIdx
+                  note.rowIdx >= selectedCords.startRowIdx &&
+                  note.rowIdx <= selectedCords.goalRowIdx
               )
               .map((note: Note) => {
                 return {
                   deltaColumn,
-                  deltaRowIdx: note.idx - selectedCords.startRowIdx,
+                  deltaRowIdx: note.rowIdx - selectedCords.startRowIdx,
                   type: note.type,
                 };
               })
@@ -91,8 +91,8 @@ function useClipBoard() {
           : [
               ...ns.filter(
                 (note: Note) =>
-                  note.idx < selectedCords.startRowIdx ||
-                  note.idx > selectedCords.goalRowIdx
+                  note.rowIdx < selectedCords.startRowIdx ||
+                  note.rowIdx > selectedCords.goalRowIdx
               ),
             ]
       )
@@ -135,7 +135,7 @@ function useClipBoard() {
         column > indicator.column + clipBoard.columnLength - 1
           ? ns
           : [
-              ...ns.filter((note: Note) => note.idx < indicator.rowIdx),
+              ...ns.filter((note: Note) => note.rowIdx < indicator.rowIdx),
               ...clipBoard.copiedNotes
                 .filter(
                   (copiedNote: CopiedNote) =>
@@ -144,13 +144,13 @@ function useClipBoard() {
                 )
                 .map((copiedNote: CopiedNote) => {
                   return {
-                    idx: indicator.rowIdx + copiedNote.deltaRowIdx,
+                    rowIdx: indicator.rowIdx + copiedNote.deltaRowIdx,
                     type: copiedNote.type,
                   };
                 }),
               ...ns.filter(
                 (note: Note) =>
-                  note.idx > indicator.rowIdx + clipBoard.rowLength - 1
+                  note.rowIdx > indicator.rowIdx + clipBoard.rowLength - 1
               ),
             ]
       )

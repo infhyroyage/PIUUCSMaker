@@ -9,7 +9,7 @@ import { ZOOM_VALUES } from "../../service/zoom";
 function ChartVerticalRectangles({
   isEven,
   isLastBlock,
-  length,
+  rows,
   split,
 }: ChartVerticalRectanglesProps) {
   const noteSize = useRecoilValue<number>(noteSizeState);
@@ -27,26 +27,26 @@ function ChartVerticalRectangles({
     () =>
       Math.min(
         Math.max(Math.floor(noteSize * 0.025) * 2, 2),
-        unitRowHeight * length
+        unitRowHeight * rows
       ),
-    [length, noteSize, unitRowHeight]
+    [rows, noteSize, unitRowHeight]
   );
 
   // 譜面のブロック内の1拍単位に分割する各枠線のtop値を(px単位)計算
   const beatBorderLineTops = useMemo(
     () =>
-      [...Array(Math.floor(length / split))].map(
+      [...Array(Math.floor(rows / split))].map(
         (_, beatIdx: number) =>
           (2.0 * noteSize * ZOOM_VALUES[zoom.idx] - horizontalBorderSize) *
           (beatIdx + 1)
       ),
-    [horizontalBorderSize, length, noteSize, split, zoom.idx]
+    [horizontalBorderSize, rows, noteSize, split, zoom.idx]
   );
 
   return (
     <div
       style={{
-        height: `${unitRowHeight * length}px`,
+        height: `${unitRowHeight * rows}px`,
         backgroundColor: isEven ? "rgb(255, 255, 170)" : "rgb(170, 255, 255)",
       }}
     >
@@ -69,7 +69,7 @@ function ChartVerticalRectangles({
             height: `${horizontalBorderSize}px`,
             position: "relative",
             top: `${
-              unitRowHeight * length -
+              unitRowHeight * rows -
               horizontalBorderSize * (beatBorderLineTops.length + 1)
             }px`,
             width: "100%",

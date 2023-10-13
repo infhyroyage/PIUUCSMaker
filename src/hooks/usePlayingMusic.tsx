@@ -175,10 +175,10 @@ function usePlayingMusic() {
             .filter(
               (note: Note) =>
                 ["X", "M"].includes(note.type) &&
-                note.idx >= block.accumulatedLength &&
-                note.idx < block.accumulatedLength + block.length
+                note.rowIdx >= block.accumulatedRows &&
+                note.rowIdx < block.accumulatedRows + block.rows
             )
-            .map((note: Note) => note.idx)
+            .map((note: Note) => note.rowIdx)
         );
         // ビート音を再生するタイミングでのブラウザの画面のy座標をまとめて追加
         const tops: number[] = [
@@ -187,7 +187,7 @@ function usePlayingMusic() {
           .sort((a: number, b: number) => a - b) // 譜面全体での行のインデックスを昇順にソート
           .map(
             (rowIdx: number) =>
-              border + unitRowHeight * (rowIdx - block.accumulatedLength)
+              border + unitRowHeight * (rowIdx - block.accumulatedRows)
           );
         prev.beatTops = prev.beatTops.concat(tops);
 
@@ -204,11 +204,11 @@ function usePlayingMusic() {
 
         //自動スクロール経過時間(秒)を現在のブラウザの画面のy座標に応じて追加
         if (
-          border + unitRowHeight * block.length <
+          border + unitRowHeight * block.rows <
           document.documentElement.scrollTop
         ) {
           prev.elapsedMusicTime +=
-            (unitRowHeight * block.length) / (blockVerocity * 1000);
+            (unitRowHeight * block.rows) / (blockVerocity * 1000);
         } else if (border < document.documentElement.scrollTop) {
           prev.elapsedMusicTime +=
             (document.documentElement.scrollTop - border) /
@@ -216,7 +216,7 @@ function usePlayingMusic() {
         }
 
         // 譜面のブロックの1行あたりの高さ(px単位)をインクリメント
-        border += unitRowHeight * block.length;
+        border += unitRowHeight * block.rows;
 
         // 最後の譜面のブロックの下へスクロールする速度(px/ms)が変化するブラウザの画面のy座標を追加
         if (blockIdx === blocks.length - 1) {

@@ -6,7 +6,7 @@ export type Block = {
    * 以前までの譜面のブロックの行数の総和
    * 0番目の譜面のブロックの場合は0
    */
-  accumulatedLength: number;
+  accumulatedRows: number;
 
   /**
    * Beat値
@@ -30,7 +30,7 @@ export type Block = {
   /**
    * 行数
    */
-  length: number;
+  rows: number;
 
   /**
    * Split値
@@ -66,7 +66,7 @@ export type Note = {
   /**
    * 譜面全体での行インデックス
    */
-  idx: number;
+  rowIdx: number;
 
   /**
    * 単ノートの場合はX、ホールドの始点の場合はM、ホールドの中間の場合はH、ホールドの終点の場合はW

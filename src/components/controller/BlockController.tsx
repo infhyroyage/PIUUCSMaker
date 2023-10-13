@@ -44,9 +44,9 @@ function BlockController() {
         ...blocks,
         {
           ...blocks[blockIdx],
-          accumulatedLength:
-            blocks[blocks.length - 1].accumulatedLength +
-            blocks[blocks.length - 1].length,
+          accumulatedRows:
+            blocks[blocks.length - 1].accumulatedRows +
+            blocks[blocks.length - 1].rows,
         },
       ]);
     },
@@ -73,14 +73,13 @@ function BlockController() {
         ...blocks.slice(0, blockIdx + 1),
         {
           ...blocks[blockIdx],
-          accumulatedLength:
-            blocks[blockIdx].accumulatedLength + blocks[blockIdx].length,
+          accumulatedRows:
+            blocks[blockIdx].accumulatedRows + blocks[blockIdx].rows,
         },
         ...blocks.slice(blockIdx + 1).map((block: Block) => {
           return {
             ...block,
-            accumulatedLength:
-              block.accumulatedLength + blocks[blockIdx].length,
+            accumulatedLength: block.accumulatedRows + blocks[blockIdx].rows,
           };
         }),
       ]);
@@ -89,9 +88,9 @@ function BlockController() {
       setNotes(
         notes.map((ns: Note[]) =>
           ns.map((note: Note) =>
-            note.idx >=
-            blocks[blockIdx].accumulatedLength + blocks[blockIdx].length
-              ? { idx: note.idx + blocks[blockIdx].length, type: note.type }
+            note.rowIdx >=
+            blocks[blockIdx].accumulatedRows + blocks[blockIdx].rows
+              ? { rowIdx: note.rowIdx + blocks[blockIdx].rows, type: note.type }
               : note
           )
         )
@@ -117,7 +116,7 @@ function BlockController() {
         bpm: `${blocks[blockIdx].bpm}`,
         delay: `${blocks[blockIdx].delay}`,
         open: true,
-        rows: `${blocks[blockIdx].length}`,
+        rows: `${blocks[blockIdx].rows}`,
         split: `${blocks[blockIdx].split}`,
       }),
     [blocks, setEditBlockDialogForm]
@@ -136,9 +135,9 @@ function BlockController() {
         notes.map((ns: Note[]) =>
           ns.filter(
             (note: Note) =>
-              note.idx < blocks[blockIdx].accumulatedLength ||
-              note.idx >=
-                blocks[blockIdx].accumulatedLength + blocks[blockIdx].length
+              note.rowIdx < blocks[blockIdx].accumulatedRows ||
+              note.rowIdx >=
+                blocks[blockIdx].accumulatedRows + blocks[blockIdx].rows
           )
         )
       );
@@ -171,8 +170,8 @@ function BlockController() {
         ...blocks.slice(0, blockIdx - 1),
         {
           ...blocks[blockIdx],
-          accumulatedLength: blocks[blockIdx - 1].accumulatedLength,
-          length: blocks[blockIdx - 1].length + blocks[blockIdx].length,
+          accumulatedRows: blocks[blockIdx - 1].accumulatedRows,
+          rows: blocks[blockIdx - 1].rows + blocks[blockIdx].rows,
         },
         ...blocks.slice(blockIdx + 1),
       ]);
@@ -200,7 +199,7 @@ function BlockController() {
         ...blocks.slice(0, blockIdx),
         {
           ...blocks[blockIdx],
-          length: blocks[blockIdx].length + blocks[blockIdx + 1].length,
+          rows: blocks[blockIdx].rows + blocks[blockIdx + 1].rows,
         },
         ...blocks.slice(blockIdx + 2),
       ]);
@@ -221,8 +220,7 @@ function BlockController() {
         <BlockControllerButton
           key={blockIdx}
           blockHeight={
-            (2.0 * noteSize * ZOOM_VALUES[zoom.idx] * block.length) /
-            block.split
+            (2.0 * noteSize * ZOOM_VALUES[zoom.idx] * block.rows) / block.split
           }
           blockIdx={blockIdx}
           isLastBlock={blockIdx === blocks.length - 1}

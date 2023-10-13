@@ -1,6 +1,5 @@
 import { Note } from "./chart";
-import { SelectorCords } from "./ui";
-import { Indicator } from "./ui";
+import { Indicator, SelectorCords } from "./ui";
 
 /**
  * BlockControllerButtonのprops
@@ -168,7 +167,7 @@ export type ChartVerticalRectanglesProps = {
   /**
    * 譜面のブロックの行数
    */
-  length: number;
+  rows: number;
 
   /**
    * 譜面のブロックのSplit値
@@ -183,7 +182,7 @@ export type ChartVerticalNoteImagesProps = {
   /**
    * 単ノート/ホールドの始点/ホールドの中間/ホールドの終点が属する譜面のブロック以前までの譜面のブロックの行数の総和
    */
-  accumulatedLength: number;
+  accumulatedRows: number;
 
   /**
    * 単ノート/ホールドの始点/ホールドの中間/ホールドの終点が属する譜面のブロックを設置するトップバーからのy座標の距離(px単位)
@@ -199,7 +198,7 @@ export type ChartVerticalNoteImagesProps = {
   /**
    * 単ノート/ホールドの始点/ホールドの中間/ホールドの終点の譜面全体での行インデックス
    */
-  idx: number;
+  rowIdx: number;
 
   /**
    * 単ノート/ホールドの始点/ホールドの中間/ホールドの終点が属する譜面のブロックのSplit値
@@ -291,7 +290,7 @@ export type RectangleBlockIdentifierProps = {
   /**
    * 譜面のブロックの行数
    */
-  length: number;
+  rows: number;
 
   /**
    * 譜面のブロックのSplit値

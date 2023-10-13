@@ -30,7 +30,7 @@ function RectangleIdentifier() {
           beat={block.beat}
           blockIdx={blockIdx}
           isLastBlock={blockIdx === blocks.length - 1}
-          length={block.length}
+          rows={block.rows}
           split={block.split}
         />
       ))}

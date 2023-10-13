@@ -53,7 +53,7 @@ export type Indicator = null | {
   /**
    * インディケーターの示す譜面のブロックから以前までの譜面のブロックの行数の総和
    */
-  blockAccumulatedLength: number;
+  blockAccumulatedRows: number;
 
   /**
    * インディケーターの示す譜面のブロックのインデックス

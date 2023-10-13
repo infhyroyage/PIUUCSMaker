@@ -86,8 +86,7 @@ function EditBlockDialog() {
     const result: EditBlockDialogError | null = validate(form);
     if (result === null) {
       // form.blockIdx番目の譜面のブロックの行数の差分
-      const deltaRows: number =
-        Number(form.rows) - blocks[form.blockIdx].length;
+      const deltaRows: number = Number(form.rows) - blocks[form.blockIdx].rows;
 
       // 元に戻す/やり直すスナップショットの集合を更新
       setUndoSnapshots([
@@ -101,19 +100,19 @@ function EditBlockDialog() {
         (_, blockIdx: number) =>
           blockIdx === form.blockIdx
             ? {
-                accumulatedLength: blocks[form.blockIdx].accumulatedLength,
+                accumulatedRows: blocks[form.blockIdx].accumulatedRows,
                 beat: Number(form.beat),
                 bpm: Number(form.bpm),
                 delay: Number(form.delay),
-                length: Number(form.rows),
+                rows: Number(form.rows),
                 split: Number(form.split),
               }
             : blockIdx > form.blockIdx
             ? {
                 ...blocks[blockIdx],
-                accumulatedLength:
-                  blocks[blockIdx - 1].accumulatedLength +
-                  blocks[blockIdx - 1].length +
+                accumulatedRows:
+                  blocks[blockIdx - 1].accumulatedRows +
+                  blocks[blockIdx - 1].rows +
                   deltaRows,
               }
             : blocks[blockIdx]
@@ -130,34 +129,34 @@ function EditBlockDialog() {
         updatedNotes = [...notes].map((ns: Note[]) => [
           // (form.blockIdx - 1)番目以前の譜面のブロック
           ...ns.filter(
-            (note: Note) => note.idx < blocks[form.blockIdx].accumulatedLength
+            (note: Note) => note.rowIdx < blocks[form.blockIdx].accumulatedRows
           ),
           // form.blockIdx番目の譜面のブロック
           ...ns
             .filter(
               (note: Note) =>
-                note.idx >= blocks[form.blockIdx].accumulatedLength &&
-                note.idx <
-                  blocks[form.blockIdx].accumulatedLength +
-                    blocks[form.blockIdx].length
+                note.rowIdx >= blocks[form.blockIdx].accumulatedRows &&
+                note.rowIdx <
+                  blocks[form.blockIdx].accumulatedRows +
+                    blocks[form.blockIdx].rows
             )
             .reduce((prev: Note[], note: Note) => {
-              const scaledIdx: number =
-                blocks[form.blockIdx].accumulatedLength +
+              const scaledRowIdx: number =
+                blocks[form.blockIdx].accumulatedRows +
                 Math.floor(
-                  ((note.idx - blocks[form.blockIdx].accumulatedLength) *
+                  ((note.rowIdx - blocks[form.blockIdx].accumulatedRows) *
                     Number(form.rows)) /
-                    blocks[form.blockIdx].length
+                    blocks[form.blockIdx].rows
                 );
               const prevScaledNote: Note | undefined = prev.find(
-                (note: Note) => note.idx === scaledIdx
+                (note: Note) => note.rowIdx === scaledRowIdx
               );
 
               return prevScaledNote
                 ? [
                     ...prev.slice(0, prev.length - 1),
                     {
-                      idx: scaledIdx,
+                      rowIdx: scaledRowIdx,
                       type:
                         prevScaledNote.type === "X" ||
                         (prevScaledNote.type === "H" &&
@@ -167,18 +166,18 @@ function EditBlockDialog() {
                           : prevScaledNote.type,
                     },
                   ]
-                : [...prev, { idx: scaledIdx, type: note.type }];
+                : [...prev, { rowIdx: scaledRowIdx, type: note.type }];
             }, []),
           // (form.blockIdx + 1)番目以降の譜面のブロック
           ...ns
             .filter(
               (note: Note) =>
-                note.idx >=
-                blocks[form.blockIdx].accumulatedLength +
-                  blocks[form.blockIdx].length
+                note.rowIdx >=
+                blocks[form.blockIdx].accumulatedRows +
+                  blocks[form.blockIdx].rows
             )
             .map((note: Note) => {
-              return { idx: note.idx + deltaRows, type: note.type };
+              return { rowIdx: note.rowIdx + deltaRows, type: note.type };
             }),
         ]);
       }

@@ -16,7 +16,7 @@ function ChartVertical({ blockYDists, column, notes }: ChartVerticalProps) {
           key={blockIdx}
           isEven={blockIdx % 2 === 0}
           isLastBlock={blockIdx === blocks.length - 1}
-          length={block.length}
+          rows={block.rows}
           split={block.split}
         />
       ))}
@@ -24,17 +24,17 @@ function ChartVertical({ blockYDists, column, notes }: ChartVerticalProps) {
         // noteが属する譜面のブロックのインデックスを取得
         // どの譜面のブロックにも属さない場合はChartVerticalNoteImagesのレンダリング対象外とする
         const blockIdx: number = blocks.findIndex(
-          (block: Block) => note.idx < block.accumulatedLength + block.length
+          (block: Block) => note.rowIdx < block.accumulatedRows + block.rows
         );
         if (blockIdx === -1) return;
 
         return (
           <ChartVerticalNoteImages
             key={i}
-            accumulatedLength={blocks[blockIdx].accumulatedLength}
+            accumulatedRows={blocks[blockIdx].accumulatedRows}
             blockYDist={blockYDists[blockIdx]}
             column={column}
-            idx={note.idx}
+            rowIdx={note.rowIdx}
             split={blocks[blockIdx].split}
             type={note.type}
           />

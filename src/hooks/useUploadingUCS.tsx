@@ -72,8 +72,8 @@ const validateAndLoadUCS = (
    * * 譜面全体での行インデックス
    */
   let block: Block | null = null;
-  let blockLength: number = 0;
-  let accumulatedBlockLength: number = 0;
+  let rows: number = 0;
+  let accumulatedRows: number = 0;
   let rowIdx: number = 0;
 
   // 2行しか記載していないかのチェック
@@ -93,15 +93,15 @@ const validateAndLoadUCS = (
     if (line[0] === ":") {
       if (block !== null) {
         // 直前の譜面のブロックの行数が0になっていないかどうかチェック
-        if (blockLength === 0) {
+        if (rows === 0) {
           return `ucsファイルの${fileLinesNum}行目が不正です`;
         }
 
         // 譜面のブロックの行数を更新して格納
-        block.length = blockLength;
+        block.rows = rows;
         blocks.push(block);
-        accumulatedBlockLength += blockLength;
-        blockLength = 0;
+        accumulatedRows += rows;
+        rows = 0;
       }
 
       // 譜面のブロックのBPM値のチェック・取得
@@ -158,8 +158,8 @@ const validateAndLoadUCS = (
         delay,
         beat,
         split,
-        length: 0,
-        accumulatedLength: accumulatedBlockLength,
+        rows: 0,
+        accumulatedRows,
       };
 
       fileLinesNum++;
@@ -182,19 +182,19 @@ const validateAndLoadUCS = (
       switch (line[column]) {
         case "X":
           // 単ノート追加
-          notes[column].push({ idx: rowIdx, type: "X" });
+          notes[column].push({ rowIdx, type: "X" });
           break;
         case "M":
           // ホールドの始点追加
-          notes[column].push({ idx: rowIdx, type: "M" });
+          notes[column].push({ rowIdx, type: "M" });
           break;
         case "H":
           // ホールドの中間追加
-          notes[column].push({ idx: rowIdx, type: "H" });
+          notes[column].push({ rowIdx, type: "H" });
           break;
         case "W":
           // ホールドの終点追加
-          notes[column].push({ idx: rowIdx, type: "W" });
+          notes[column].push({ rowIdx, type: "W" });
           break;
         case ".":
           break;
@@ -204,7 +204,7 @@ const validateAndLoadUCS = (
     }
 
     fileLinesNum++;
-    blockLength++;
+    rows++;
     rowIdx++;
     line = lines.shift();
   }
@@ -213,7 +213,7 @@ const validateAndLoadUCS = (
   if (block === null) {
     return `ucsファイルの${fileLinesNum}行目が不正です`;
   }
-  block.length = blockLength;
+  block.rows = rows;
   blocks.push(block);
 
   return { blocks, columns, isPerformance, notes };

@@ -103,11 +103,11 @@ const validateAndLoadUCS = (
 
   return {
     block: {
-      accumulatedLength: 0,
+      accumulatedRows: 0,
       beat,
       bpm,
       delay,
-      length: rows,
+      rows,
       split,
     },
     columns,

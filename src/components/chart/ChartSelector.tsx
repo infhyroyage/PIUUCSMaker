@@ -36,12 +36,11 @@ function ChartSelector({ cords }: ChartSelectorProps) {
       const unitRowHeight: number =
         (2.0 * noteSize * ZOOM_VALUES[zoom.idx]) / block.split;
 
-      if (cords.mouseDownRowIdx < block.accumulatedLength + block.length) {
-        top +=
-          unitRowHeight * (cords.mouseDownRowIdx - block.accumulatedLength);
+      if (cords.mouseDownRowIdx < block.accumulatedRows + block.rows) {
+        top += unitRowHeight * (cords.mouseDownRowIdx - block.accumulatedRows);
         return true;
       } else {
-        top += unitRowHeight * block.length;
+        top += unitRowHeight * block.rows;
         return false;
       }
     });
@@ -61,11 +60,11 @@ function ChartSelector({ cords }: ChartSelectorProps) {
       const unitRowHeight: number =
         (2.0 * noteSize * ZOOM_VALUES[zoom.idx]) / block.split;
 
-      if (cords.mouseUpRowIdx < block.accumulatedLength + block.length) {
-        top += unitRowHeight * (cords.mouseUpRowIdx - block.accumulatedLength);
+      if (cords.mouseUpRowIdx < block.accumulatedRows + block.rows) {
+        top += unitRowHeight * (cords.mouseUpRowIdx - block.accumulatedRows);
         return true;
       } else {
-        top += unitRowHeight * block.length;
+        top += unitRowHeight * block.rows;
         return false;
       }
     });

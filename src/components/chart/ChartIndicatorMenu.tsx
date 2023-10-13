@@ -164,7 +164,7 @@ function ChartIndicatorMenu({ handler }: ChartIndicatorMenuProps) {
         <MenuItem
           disabled={
             indicator !== null &&
-            indicator.rowIdx === indicator.blockAccumulatedLength
+            indicator.rowIdx === indicator.blockAccumulatedRows
           }
           onClick={() => {
             handler.split(indicator);

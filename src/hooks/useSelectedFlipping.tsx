@@ -47,7 +47,7 @@ function useSelectedFlipping() {
             : [
                 // 選択領域外の譜面全体での行インデックスの場合はそのまま
                 ...ns.filter(
-                  (note: Note) => note.idx < selectedCords.startRowIdx
+                  (note: Note) => note.rowIdx < selectedCords.startRowIdx
                 ),
                 ...(isHorizontal
                   ? // 左右反転
@@ -61,17 +61,17 @@ function useSelectedFlipping() {
                   // 選択領域内の譜面全体での行インデックスのみ抽出
                   .filter(
                     (note: Note) =>
-                      note.idx >= selectedCords.startRowIdx &&
-                      note.idx <= selectedCords.goalRowIdx
+                      note.rowIdx >= selectedCords.startRowIdx &&
+                      note.rowIdx <= selectedCords.goalRowIdx
                   )
                   .map<Note>((note: Note) =>
                     isVertical
                       ? // 上下反転
                         {
-                          idx:
+                          rowIdx:
                             selectedCords.startRowIdx +
                             selectedCords.goalRowIdx -
-                            note.idx,
+                            note.rowIdx,
                           type:
                             note.type === "M"
                               ? "W"
@@ -84,7 +84,7 @@ function useSelectedFlipping() {
                   .reverse(),
                 // 選択領域外の譜面全体での行インデックスの場合はそのまま
                 ...ns.filter(
-                  (note: Note) => note.idx > selectedCords.goalRowIdx
+                  (note: Note) => note.rowIdx > selectedCords.goalRowIdx
                 ),
               ]
         )

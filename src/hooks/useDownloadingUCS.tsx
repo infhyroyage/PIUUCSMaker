@@ -52,7 +52,7 @@ function useDownloadingUCS() {
       // 譜面全体の行のインデックスを取得(重複なし)
       const existedRowIdxes: number[] = [
         ...new Set<number>(
-          notes.map((ns: Note[]) => ns.map((note: Note) => note.idx)).flat()
+          notes.map((ns: Note[]) => ns.map((note: Note) => note.rowIdx)).flat()
         ),
       ];
 
@@ -64,15 +64,15 @@ function useDownloadingUCS() {
         content += `:Split=${block.split}\r\n`;
 
         // 単ノート/ホールドの始点/ホールドの中間/ホールドの終点の情報を列数分追記
-        [...Array(block.length)].forEach((_, i: number) => {
-          const rowIdx: number = block.accumulatedLength + i;
+        [...Array(block.rows)].forEach((_, i: number) => {
+          const rowIdx: number = block.accumulatedRows + i;
           if (existedRowIdxes.includes(rowIdx)) {
             // ダウンロード処理時間の短縮のため、譜面全体の行のインデックスrowIdxに
             // 単ノート/ホールドの始点/ホールドの中間/ホールドの終点の情報が存在する場合のみ
             // find関数を実行して、「X」/「M」/「H」/「W」/「.」を追記
             [...Array(columns)].forEach((_, column: number) => {
               const foundNote: Note | undefined = notes[column].find(
-                (note: Note) => note.idx === rowIdx
+                (note: Note) => note.rowIdx === rowIdx
               );
               content += foundNote ? foundNote.type : ".";
             });

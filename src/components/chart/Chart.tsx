@@ -59,7 +59,7 @@ function Chart() {
                   (2.0 *
                     noteSize *
                     ZOOM_VALUES[zoom.idx] *
-                    blocks[blockIdx - 1].length) /
+                    blocks[blockIdx - 1].rows) /
                     blocks[blockIdx - 1].split,
               ],
         []
@@ -95,14 +95,14 @@ function Chart() {
       const unitRowHeight: number =
         (2.0 * noteSize * ZOOM_VALUES[zoom.idx]) / block.split;
       // 譜面のブロックの高さ(px単位)
-      const blockHeight: number = unitRowHeight * block.length;
+      const blockHeight: number = unitRowHeight * block.rows;
       if (y < blockYDists[idx] + blockHeight) {
         top = y - ((y - blockYDists[idx]) % unitRowHeight);
         // (top - blockYDists[blockIdx])は必ずunitRowHeightの倍数であるため、
         // ((top - blockYDists[blockIdx]) / unitRowHeight)は理論上整数値となるが、
         // 除算時の丸め誤差を取り除くべくMath.floor関数を実行し、rowIdxに必ず整数値を設定する
         rowIdx =
-          block.accumulatedLength +
+          block.accumulatedRows +
           Math.floor((top - blockYDists[idx]) / unitRowHeight);
         return true;
       }
@@ -122,7 +122,7 @@ function Chart() {
       setIndicator(
         top !== null && rowIdx !== null
           ? {
-              blockAccumulatedLength: blocks[blockIdx].accumulatedLength,
+              blockAccumulatedRows: blocks[blockIdx].accumulatedRows,
               blockIdx,
               column,
               rowIdx,
@@ -237,17 +237,17 @@ function Chart() {
       let updatedNotes: Note[];
       if (start === goal) {
         const foundNote: Note | undefined = notes[indicator.column].find(
-          (note: Note) => note.idx === start
+          (note: Note) => note.rowIdx === start
         );
         if (foundNote && foundNote.type === "X") {
           // startの場所に存在する単ノートを削除(単ノートは新規追加しない)
           updatedNotes = notes[indicator.column].filter(
-            (note: Note) => note.idx !== start
+            (note: Note) => note.rowIdx !== start
           );
         } else if (foundNote) {
           // startの場所に属するホールド(M/H/W)を削除(単ノートは新規追加しない)
           let beforeNotes: Note[] = notes[indicator.column].filter(
-            (note: Note) => note.idx < start
+            (note: Note) => note.rowIdx < start
           );
           const foundBeforeNote: Note | undefined = beforeNotes
             .reverse()
@@ -255,13 +255,13 @@ function Chart() {
           if (foundBeforeNote) {
             beforeNotes = beforeNotes.filter((note: Note) =>
               foundBeforeNote.type === "M"
-                ? note.idx < foundBeforeNote.idx
-                : note.idx <= foundBeforeNote.idx
+                ? note.rowIdx < foundBeforeNote.rowIdx
+                : note.rowIdx <= foundBeforeNote.rowIdx
             );
           }
 
           let afterNotes: Note[] = notes[indicator.column].filter(
-            (note: Note) => note.idx > start
+            (note: Note) => note.rowIdx > start
           );
           const foundAfterNote: Note | undefined = afterNotes.find(
             (note: Note) => ["X", "M", "W"].includes(note.type)
@@ -269,8 +269,8 @@ function Chart() {
           if (foundAfterNote) {
             afterNotes = afterNotes.filter((note: Note) =>
               foundAfterNote.type === "W"
-                ? note.idx > foundAfterNote.idx
-                : note.idx >= foundAfterNote.idx
+                ? note.rowIdx > foundAfterNote.rowIdx
+                : note.rowIdx >= foundAfterNote.rowIdx
             );
           }
 
@@ -278,9 +278,13 @@ function Chart() {
         } else {
           // startの場所に単ノートを新規追加
           updatedNotes = [
-            ...notes[indicator.column].filter((note: Note) => note.idx < start),
-            { idx: start, type: "X" },
-            ...notes[indicator.column].filter((note: Note) => note.idx > start),
+            ...notes[indicator.column].filter(
+              (note: Note) => note.rowIdx < start
+            ),
+            { rowIdx: start, type: "X" },
+            ...notes[indicator.column].filter(
+              (note: Note) => note.rowIdx > start
+            ),
           ];
         }
       } else {
@@ -288,7 +292,7 @@ function Chart() {
           { length: goal - start + 1 },
           (_, idx: number) => {
             return {
-              idx: start + idx,
+              rowIdx: start + idx,
               type: idx === 0 ? "M" : idx === goal - start ? "W" : "H",
             };
           }
@@ -296,13 +300,13 @@ function Chart() {
 
         if (
           notes[indicator.column].filter(
-            (note: Note) => note.idx >= start && note.idx <= goal
+            (note: Note) => note.rowIdx >= start && note.rowIdx <= goal
           ).length > 0
         ) {
           // startとgoalとの間に属するホールド(M/H/W)を削除してから
           // startとgoalとの間にホールドを新規追加
           let beforeNotes: Note[] = notes[indicator.column].filter(
-            (note: Note) => note.idx < start
+            (note: Note) => note.rowIdx < start
           );
           const foundBeforeNote: Note | undefined = beforeNotes
             .reverse()
@@ -310,13 +314,13 @@ function Chart() {
           if (foundBeforeNote) {
             beforeNotes = beforeNotes.filter((note: Note) =>
               foundBeforeNote.type === "M"
-                ? note.idx < foundBeforeNote.idx
-                : note.idx <= foundBeforeNote.idx
+                ? note.rowIdx < foundBeforeNote.rowIdx
+                : note.rowIdx <= foundBeforeNote.rowIdx
             );
           }
 
           let afterNotes: Note[] = notes[indicator.column].filter(
-            (note: Note) => note.idx > goal
+            (note: Note) => note.rowIdx > goal
           );
           const foundAfterNote: Note | undefined = afterNotes.find(
             (note: Note) => ["X", "M", "W"].includes(note.type)
@@ -324,8 +328,8 @@ function Chart() {
           if (foundAfterNote) {
             afterNotes = afterNotes.filter((note: Note) =>
               foundAfterNote.type === "W"
-                ? note.idx > foundAfterNote.idx
-                : note.idx >= foundAfterNote.idx
+                ? note.rowIdx > foundAfterNote.rowIdx
+                : note.rowIdx >= foundAfterNote.rowIdx
             );
           }
 
@@ -333,9 +337,13 @@ function Chart() {
         } else {
           // startとgoalとの間にホールドを新規追加
           updatedNotes = [
-            ...notes[indicator.column].filter((note: Note) => note.idx < start),
+            ...notes[indicator.column].filter(
+              (note: Note) => note.rowIdx < start
+            ),
             ...hold,
-            ...notes[indicator.column].filter((note: Note) => note.idx > goal),
+            ...notes[indicator.column].filter(
+              (note: Note) => note.rowIdx > goal
+            ),
           ];
         }
       }
@@ -384,14 +392,14 @@ function Chart() {
         ...blocks.slice(0, indicator.blockIdx),
         {
           ...blocks[indicator.blockIdx],
-          length: indicator.rowIdx - indicator.blockAccumulatedLength,
+          rows: indicator.rowIdx - indicator.blockAccumulatedRows,
         },
         {
           ...blocks[indicator.blockIdx],
-          accumulatedLength: indicator.rowIdx,
-          length:
-            blocks[indicator.blockIdx].length +
-            indicator.blockAccumulatedLength -
+          accumulatedRows: indicator.rowIdx,
+          rows:
+            blocks[indicator.blockIdx].rows +
+            indicator.blockAccumulatedRows -
             indicator.rowIdx,
         },
         ...blocks.slice(indicator.blockIdx + 1),
@@ -399,7 +407,7 @@ function Chart() {
       setIndicator({
         ...indicator,
         blockIdx: indicator.blockIdx + 1,
-        blockAccumulatedLength: indicator.rowIdx,
+        blockAccumulatedRows: indicator.rowIdx,
       });
     },
     [

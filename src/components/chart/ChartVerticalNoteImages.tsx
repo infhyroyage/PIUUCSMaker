@@ -11,10 +11,10 @@ import { ZOOM_VALUES } from "../../service/zoom";
 import { Zoom } from "../../types/ui";
 
 function ChartVerticalNoteImages({
-  accumulatedLength,
+  accumulatedRows,
   blockYDist,
   column,
-  idx,
+  rowIdx,
   split,
   type,
 }: ChartVerticalNoteImagesProps) {
@@ -40,8 +40,8 @@ function ChartVerticalNoteImages({
   // 単ノート/ホールドの始点/ホールドの中間/ホールドの終点の譜面全体での行インデックスでの
   // ブラウザの画面のy座標(px単位)を計算
   const top = useMemo(
-    () => blockYDist + unitRowHeight * (idx - accumulatedLength),
-    [accumulatedLength, blockYDist, idx, unitRowHeight]
+    () => blockYDist + unitRowHeight * (rowIdx - accumulatedRows),
+    [accumulatedRows, blockYDist, rowIdx, unitRowHeight]
   );
 
   switch (type) {
@@ -62,7 +62,7 @@ function ChartVerticalNoteImages({
               noteSize * column
             }px`,
             userSelect: "none",
-            zIndex: (idx + 1) * 10,
+            zIndex: (rowIdx + 1) * 10,
           }}
           onDragStart={(event: React.DragEvent<HTMLImageElement>) =>
             event.preventDefault()
@@ -87,7 +87,7 @@ function ChartVerticalNoteImages({
                 noteSize * column
               }px`,
               userSelect: "none",
-              zIndex: (idx + 1) * 10,
+              zIndex: (rowIdx + 1) * 10,
             }}
             onDragStart={(event: React.DragEvent<HTMLImageElement>) =>
               event.preventDefault()
@@ -107,7 +107,7 @@ function ChartVerticalNoteImages({
                 noteSize * column
               }px`,
               userSelect: "none",
-              zIndex: (idx + 1) * 10 + 1,
+              zIndex: (rowIdx + 1) * 10 + 1,
             }}
             onDragStart={(event: React.DragEvent<HTMLImageElement>) =>
               event.preventDefault()
@@ -132,7 +132,7 @@ function ChartVerticalNoteImages({
               noteSize * column
             }px`,
             userSelect: "none",
-            zIndex: (idx + 1) * 10,
+            zIndex: (rowIdx + 1) * 10,
           }}
           onDragStart={(event: React.DragEvent<HTMLImageElement>) =>
             event.preventDefault()
@@ -156,7 +156,7 @@ function ChartVerticalNoteImages({
               noteSize * column
             }px`,
             userSelect: "none",
-            zIndex: (idx + 1) * 10,
+            zIndex: (rowIdx + 1) * 10,
           }}
           onDragStart={(event: React.DragEvent<HTMLImageElement>) =>
             event.preventDefault()
