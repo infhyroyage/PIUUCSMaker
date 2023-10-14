@@ -121,7 +121,7 @@ function MenuBar() {
             </Typography>
           )}
         </Box>
-        <Stack alignItems="center" direction="row" spacing={4}>
+        <Stack alignItems="center" direction="row" spacing={{ xs: 1, md: 1.5 }}>
           <FormControl size="small">
             <Select
               disabled={isPlaying}
@@ -159,7 +159,11 @@ function MenuBar() {
               ))}
             </Select>
           </FormControl>
-          <Stack alignItems="center" direction="row" spacing={2}>
+          <Stack
+            alignItems="center"
+            direction="row"
+            spacing={{ xs: 0.5, md: 0.75 }}
+          >
             <IconButton color="inherit" onClick={onClickVolumeButton}>
               {muteVolBuf !== null ? (
                 <VolumeOffIcon />
@@ -178,8 +182,9 @@ function MenuBar() {
               onChange={(_, value: number | number[]) => {
                 setVolumeValue(value as number);
               }}
+              size="small"
               step={0.01}
-              sx={{ width: "100px", color: "white" }}
+              sx={{ width: `${menuBarHeight}px`, color: "white" }}
               value={muteVolBuf || volumeValue}
             />
           </Stack>
