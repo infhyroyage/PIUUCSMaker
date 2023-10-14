@@ -81,7 +81,12 @@ function useSelectedFlipping() {
                         }
                       : note
                   )
-                  .reverse(),
+                  .reduce(
+                    // 上下反転
+                    (prev: Note[], note: Note) =>
+                      isVertical ? [note].concat(prev) : prev.concat(note),
+                    []
+                  ),
                 // 選択領域外の譜面全体での行インデックスの場合はそのまま
                 ...ns.filter(
                   (note: Note) => note.rowIdx > selectedCords.goalRowIdx
