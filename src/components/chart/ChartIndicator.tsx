@@ -49,7 +49,7 @@ function ChartIndicator() {
                   }px`,
                   pointerEvents: "none",
                   userSelect: "none",
-                  zIndex: theme.zIndex.drawer - 4,
+                  zIndex: theme.zIndex.appBar - 4,
                 }}
               />
               <img
@@ -69,7 +69,7 @@ function ChartIndicator() {
                   }px`,
                   pointerEvents: "none",
                   userSelect: "none",
-                  zIndex: theme.zIndex.drawer - 3,
+                  zIndex: theme.zIndex.appBar - 3,
                 }}
               />
               <img
@@ -87,7 +87,7 @@ function ChartIndicator() {
                   }px`,
                   pointerEvents: "none",
                   userSelect: "none",
-                  zIndex: theme.zIndex.drawer - 2,
+                  zIndex: theme.zIndex.appBar - 2,
                 }}
               />
             </>
@@ -105,7 +105,7 @@ function ChartIndicator() {
             height: `${noteSize}px`,
             backgroundColor: "rgba(170, 170, 170, 0.5)",
             pointerEvents: "none",
-            zIndex: theme.zIndex.drawer - 1,
+            zIndex: theme.zIndex.appBar - 1,
           }}
         />
       </>

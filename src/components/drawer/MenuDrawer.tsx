@@ -14,6 +14,8 @@ import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import StopIcon from "@mui/icons-material/Stop";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
   isDarkModeState,
@@ -41,8 +43,10 @@ function MenuDrawer() {
   const [isDarkMode, setIsDarkMode] = useRecoilState<boolean>(isDarkModeState);
   const [isMuteBeats, setIsMuteBeats] =
     useRecoilState<boolean>(isMuteBeatsState);
+  const [isOpenedMenuDrawer, setIsOpenedMenuDrawer] = useRecoilState<boolean>(
+    isOpenedMenuDrawerState
+  );
   const [zoom, setZoom] = useRecoilState<Zoom>(zoomState);
-  const isOpenedMenuDrawer = useRecoilValue<boolean>(isOpenedMenuDrawerState);
   const isPlaying = useRecoilValue<boolean>(isPlayingState);
   const menuBarHeight = useRecoilValue<number>(menuBarHeightState);
   const redoSnapshots = useRecoilValue<ChartSnapshot[]>(redoSnapshotsState);
@@ -65,7 +69,12 @@ function MenuDrawer() {
     <Drawer
       variant="permanent"
       open={isOpenedMenuDrawer}
-      PaperProps={{ elevation: 3, sx: { marginTop: `${menuBarHeight}px` } }}
+      PaperProps={{
+        display: "flex",
+        elevation: 3,
+        flexDirection: "column",
+        height: "100%",
+      }}
       sx={(theme: Theme) => ({
         width: `${
           isOpenedMenuDrawer ? MENU_DRAWER_OPENED_WIDTH : menuBarHeight
@@ -93,7 +102,7 @@ function MenuDrawer() {
         },
       })}
     >
-      <List>
+      <List sx={{ flexGrow: 1, overflow: "auto" }}>
         <MenuDrawerListItem
           disabled={isPlaying || isUploadingUCS || isDownloadingUCS}
           icon={<AddIcon />}
@@ -116,9 +125,7 @@ function MenuDrawer() {
           label={isDownloadingUCS ? "Ready..." : "Download UCS"}
           onClick={downloadUCS}
         />
-      </List>
-      <Divider />
-      <List>
+        <Divider />
         <MenuDrawerListItem
           disabled={undoSnapshots.length === 0 || isPlaying}
           icon={<UndoIcon />}
@@ -131,9 +138,7 @@ function MenuDrawer() {
           label="Redo (Ctrl+Y)"
           onClick={handleRedo}
         />
-      </List>
-      <Divider />
-      <List>
+        <Divider />
         <MenuDrawerListItem
           disabled={zoom.idx === ZOOM_VALUES.length - 1 || isPlaying}
           icon={<ZoomInIcon />}
@@ -162,9 +167,7 @@ function MenuDrawer() {
             })
           }
         />
-      </List>
-      <Divider />
-      <List>
+        <Divider />
         <MenuDrawerUploadListItem
           disabled={isPlaying || isUploadingMP3}
           extension=".mp3"
@@ -184,13 +187,19 @@ function MenuDrawer() {
           label={isPlaying ? "Stop" : "Play"}
           onClick={() => (isPlaying ? stop() : start())}
         />
-      </List>
-      <Divider />
-      <List>
+        <Divider />
         <MenuDrawerListItem
           icon={isDarkMode ? <DarkModeIcon /> : <LightModeIcon />}
           label={isDarkMode ? "Dark" : "Light"}
           onClick={() => setIsDarkMode(!isDarkMode)}
+        />
+      </List>
+      <List sx={{ marginTop: "auto" }}>
+        <Divider />
+        <MenuDrawerListItem
+          icon={isOpenedMenuDrawer ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+          label={isOpenedMenuDrawer ? "Fold" : "Expand"}
+          onClick={() => setIsOpenedMenuDrawer(!isOpenedMenuDrawer)}
         />
       </List>
     </Drawer>

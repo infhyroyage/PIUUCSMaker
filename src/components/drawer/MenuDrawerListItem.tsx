@@ -22,20 +22,28 @@ function MenuDrawerListItem({
 }: MenuDrawerListItemProps) {
   const isOpenedMenuDrawer = useRecoilValue<boolean>(isOpenedMenuDrawerState);
 
-  return (
+  return isOpenedMenuDrawer ? (
+    <ListItem disablePadding sx={{ display: "block" }}>
+      <ListItemButton
+        disabled={disabled}
+        onClick={onClick}
+        sx={generateListItemButtonStyle(true)}
+      >
+        <ListItemIcon sx={generateListItemIconStyle(true)}>{icon}</ListItemIcon>
+        <ListItemText primary={label} sx={{ opacity: 1 }} />
+      </ListItemButton>
+    </ListItem>
+  ) : (
     <Tooltip placement="right" title={label}>
       <ListItem disablePadding sx={{ display: "block" }}>
         <ListItemButton
           disabled={disabled}
           onClick={onClick}
-          sx={generateListItemButtonStyle(isOpenedMenuDrawer)}
+          sx={generateListItemButtonStyle(false)}
         >
-          <ListItemIcon sx={generateListItemIconStyle(isOpenedMenuDrawer)}>
+          <ListItemIcon sx={generateListItemIconStyle(false)}>
             {icon}
           </ListItemIcon>
-          {isOpenedMenuDrawer && (
-            <ListItemText primary={label} sx={{ opacity: 1 }} />
-          )}
         </ListItemButton>
       </ListItem>
     </Tooltip>

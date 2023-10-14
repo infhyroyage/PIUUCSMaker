@@ -96,7 +96,7 @@ function ChartSelector({ cords }: ChartSelectorProps) {
           }px`,
           backgroundColor: "rgba(170, 170, 170, 0.5)",
           pointerEvents: "none",
-          zIndex: theme.zIndex.drawer - 5,
+          zIndex: theme.zIndex.appBar - 5,
         }}
       />
     )

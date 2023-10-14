@@ -1,7 +1,6 @@
 import { ZOOM_VALUES } from "../service/zoom";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
-  isOpenedMenuDrawerState,
   menuBarHeightState,
   volumeValueState,
   zoomState,
@@ -11,6 +10,7 @@ import {
   columnsState,
   isPerformanceState,
   isProtectedState,
+  isOpenedMenuDrawerState,
 } from "../service/atoms";
 import {
   AppBar,
@@ -31,28 +31,26 @@ import VolumeOffIcon from "@mui/icons-material/VolumeOff";
 import VolumeDownIcon from "@mui/icons-material/VolumeDown";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import VolumeMuteIcon from "@mui/icons-material/VolumeMute";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { Zoom } from "../types/ui";
+import { MENU_DRAWER_OPENED_WIDTH } from "../service/styles";
 
 function MenuBar() {
+  const [menuBarHeight, setMenuBarHeight] =
+    useRecoilState<number>(menuBarHeightState);
   const [muteVolBuf, setMuteVolBuf] = useState<number | null>(null);
   const [windowInnerWidth, setWindowInnerWidth] = useState<number>(
     window.innerWidth
   );
-  const [isOpenedMenuDrawer, setIsOpenedMenuDrawer] = useRecoilState<boolean>(
-    isOpenedMenuDrawerState
-  );
-  const isProtected = useRecoilValue<boolean>(isProtectedState);
   const [volumeValue, setVolumeValue] =
     useRecoilState<number>(volumeValueState);
   const [zoom, setZoom] = useRecoilState<Zoom>(zoomState);
   const columns = useRecoilValue<5 | 10>(columnsState);
+  const isOpenedMenuDrawer = useRecoilValue<boolean>(isOpenedMenuDrawerState);
   const isPerformance = useRecoilValue<boolean>(isPerformanceState);
-  const mp3Name = useRecoilValue<string | null>(mp3NameState);
   const isPlaying = useRecoilValue<boolean>(isPlayingState);
+  const isProtected = useRecoilValue<boolean>(isProtectedState);
+  const mp3Name = useRecoilValue<string | null>(mp3NameState);
   const ucsName = useRecoilValue<string | null>(ucsNameState);
-  const setMenuBarHeight = useSetRecoilState<number>(menuBarHeightState);
 
   const onClickVolumeButton = () => {
     if (muteVolBuf === null) {
@@ -96,19 +94,22 @@ function MenuBar() {
   }, [isProtected]);
 
   return (
-    <AppBar
-      position="sticky"
-      sx={{ zIndex: (theme: Theme) => theme.zIndex.drawer + 1 }}
-    >
+    <AppBar position="sticky">
       <Toolbar ref={toolBarRef}>
-        <IconButton
-          color="inherit"
-          onClick={() => setIsOpenedMenuDrawer(!isOpenedMenuDrawer)}
-          edge="start"
-        >
-          {isOpenedMenuDrawer ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-        </IconButton>
-        <Box flexGrow={1} ml={4}>
+        <Box
+          sx={(theme: Theme) => ({
+            width: `${
+              isOpenedMenuDrawer ? MENU_DRAWER_OPENED_WIDTH : menuBarHeight
+            }px`,
+            transition: theme.transitions.create("width", {
+              easing: theme.transitions.easing.sharp,
+              duration: isOpenedMenuDrawer
+                ? theme.transitions.duration.enteringScreen
+                : theme.transitions.duration.leavingScreen,
+            }),
+          })}
+        />
+        <Box flexGrow={1}>
           <Typography variant="h6" noWrap component="div">
             {`${isProtected ? "*" : ""}${ucsName || "PIU UCS Maker"}`}
           </Typography>
