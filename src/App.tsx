@@ -6,14 +6,16 @@ import MenuDrawer from "./components/drawer/MenuDrawer";
 import NewUCSDialog from "./components/dialog/NewUCSDialog";
 import { MUI_DEFAULT_Z_INDEX } from "./service/styles";
 import MenuBar from "./components/MenuBar";
-import { useRecoilState } from "recoil";
-import { isDarkModeState } from "./service/atoms";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { isDarkModeState, ucsNameState } from "./service/atoms";
 import SuccessSnackbar from "./components/snackbar/SuccessSnackbar";
 import EditBlockDialog from "./components/dialog/EditBlockDialog";
 import AdjustBlockDialog from "./components/dialog/AdjustBlockDialog";
+import ReadyUCS from "./components/ReadyUCS";
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useRecoilState<boolean>(isDarkModeState);
+  const ucsName = useRecoilValue<string | null>(ucsNameState);
 
   const theme = useMemo(
     () =>
@@ -43,10 +45,8 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <MenuBar />
-      <div style={{ display: "flex" }}>
-        <MenuDrawer />
-        <WorkSpace />
-      </div>
+      <MenuDrawer />
+      {ucsName === null ? <ReadyUCS /> : <WorkSpace />}
       <NewUCSDialog />
       <EditBlockDialog />
       <AdjustBlockDialog />

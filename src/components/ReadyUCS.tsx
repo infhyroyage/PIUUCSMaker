@@ -20,6 +20,7 @@ function ReadyUCS() {
       display="flex"
       height={`calc(100vh - ${menuBarHeight}px)`}
       justifyContent="center"
+      ml={`${menuBarHeight}px`}
       spacing={3}
       sx={{ flexGrow: 1 }}
     >

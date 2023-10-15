@@ -1,12 +1,10 @@
 import { useEffect } from "react";
-import ReadyUCS from "./ReadyUCS";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import {
   menuBarHeightState,
   mouseDownState,
   noteSizeState,
   selectorState,
-  ucsNameState,
 } from "../service/atoms";
 import Chart from "./chart/Chart";
 import RectangleIdentifier from "./identifier/RectangleIdentifier";
@@ -15,7 +13,6 @@ import { MouseDown, Selector } from "../types/ui";
 
 function WorkSpace() {
   const menuBarHeight = useRecoilValue<number>(menuBarHeightState);
-  const ucsName = useRecoilValue<string | null>(ucsNameState);
   const setMouseDown = useSetRecoilState<MouseDown>(mouseDownState);
   const setNoteSize = useSetRecoilState<number>(noteSizeState);
   const setSelector = useSetRecoilState<Selector>(selectorState);
@@ -53,9 +50,7 @@ function WorkSpace() {
     };
   }, [setNoteSize, setSelector]);
 
-  return ucsName === null ? (
-    <ReadyUCS />
-  ) : (
+  return (
     <div
       onMouseUp={(event: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
         // 左クリック時のみ、選択領域・マウス押下した場合の表示パラメーターをすべて初期化
@@ -71,6 +66,7 @@ function WorkSpace() {
         flexGrow: 1,
         justifyContent: "center",
         lineHeight: 0,
+        marginLeft: `${menuBarHeight}px`,
       }}
     >
       <div style={{ display: "flex", position: "relative" }}>
