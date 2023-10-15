@@ -69,12 +69,7 @@ function MenuDrawer() {
     <Drawer
       variant="permanent"
       open={isOpenedMenuDrawer}
-      PaperProps={{
-        display: "flex",
-        elevation: 3,
-        flexDirection: "column",
-        height: "100%",
-      }}
+      PaperProps={{ elevation: 3, height: "100%" }}
       sx={(theme: Theme) => ({
         width: `${
           isOpenedMenuDrawer ? MENU_DRAWER_OPENED_WIDTH : menuBarHeight
