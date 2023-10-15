@@ -2,7 +2,7 @@ import { memo, useMemo } from "react";
 import { useRecoilValue } from "recoil";
 import { noteSizeState, zoomState } from "../../service/atoms";
 import { ChartVerticalRectanglesProps } from "../../types/props";
-import BorderLine from "../BorderLine";
+import BorderLine from "./BorderLine";
 import { Zoom } from "../../types/ui";
 import { ZOOM_VALUES } from "../../service/zoom";
 

@@ -2,7 +2,7 @@ import React from "react";
 import { useRecoilValue } from "recoil";
 import { Block } from "../../types/chart";
 import { blocksState, noteSizeState, zoomState } from "../../service/atoms";
-import BorderLine from "../BorderLine";
+import BorderLine from "./BorderLine";
 import { Zoom } from "../../types/ui";
 import { ZOOM_VALUES } from "../../service/zoom";
 import { Paper, Typography } from "@mui/material";

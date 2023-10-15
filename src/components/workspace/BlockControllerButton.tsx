@@ -12,7 +12,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import BorderLine from "../BorderLine";
+import BorderLine from "./BorderLine";
 import { BlockControllerButtonProps } from "../../types/props";
 import { BlockControllerMenuPosition } from "../../types/ui";
 

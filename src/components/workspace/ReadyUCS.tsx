@@ -1,10 +1,10 @@
 import { Button, Stack, Typography } from "@mui/material";
-import useUploadingUCS from "../hooks/useUploadingUCS";
+import useUploadingUCS from "../../hooks/useUploadingUCS";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import {
   isOpenedNewUCSDialogState,
   menuBarHeightState,
-} from "../service/atoms";
+} from "../../service/atoms";
 
 function ReadyUCS() {
   const menuBarHeight = useRecoilValue<number>(menuBarHeightState);

@@ -15,7 +15,7 @@ import {
   undoSnapshotsState,
   zoomState,
 } from "../../service/atoms";
-import BorderLine from "../BorderLine";
+import BorderLine from "./BorderLine";
 import ChartVertical from "./ChartVertical";
 import { Block, Note } from "../../types/chart";
 import { ChartSnapshot, MouseDown, Zoom } from "../../types/ui";

@@ -1,4 +1,4 @@
-import { ZOOM_VALUES } from "../service/zoom";
+import { ZOOM_VALUES } from "../../service/zoom";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
   menuBarHeightState,
@@ -11,7 +11,7 @@ import {
   isPerformanceState,
   isProtectedState,
   isOpenedMenuDrawerState,
-} from "../service/atoms";
+} from "../../service/atoms";
 import {
   AppBar,
   Box,
@@ -31,8 +31,8 @@ import VolumeOffIcon from "@mui/icons-material/VolumeOff";
 import VolumeDownIcon from "@mui/icons-material/VolumeDown";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import VolumeMuteIcon from "@mui/icons-material/VolumeMute";
-import { Zoom } from "../types/ui";
-import { MENU_DRAWER_OPENED_WIDTH } from "../service/styles";
+import { Zoom } from "../../types/ui";
+import { MENU_DRAWER_OPENED_WIDTH } from "../../service/styles";
 
 function MenuBar() {
   const [menuBarHeight, setMenuBarHeight] =

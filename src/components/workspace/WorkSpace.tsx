@@ -5,11 +5,11 @@ import {
   mouseDownState,
   noteSizeState,
   selectorState,
-} from "../service/atoms";
-import Chart from "./chart/Chart";
-import Identifier from "./identifier/Identifier";
-import BlockController from "./controller/BlockController";
-import { MouseDown, Selector } from "../types/ui";
+} from "../../service/atoms";
+import Chart from "./Chart";
+import Identifier from "./Identifier";
+import BlockController from "./BlockController";
+import { MouseDown, Selector } from "../../types/ui";
 
 function WorkSpace() {
   const menuBarHeight = useRecoilValue<number>(menuBarHeightState);

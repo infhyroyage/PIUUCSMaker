@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { BorderLineProps } from "../types/props";
+import { BorderLineProps } from "../../types/props";
 
 function BorderLine({ style }: BorderLineProps) {
   return (
