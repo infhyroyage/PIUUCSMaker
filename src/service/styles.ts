@@ -25,6 +25,11 @@ export const generateListItemIconStyle = (isOpenedMenuDrawer: boolean) => {
 };
 
 /**
+ * Identifierの幅(px単位)
+ */
+export const IDENTIFIER_WIDTH: number = 40;
+
+/**
  * MUIコンポーネントのz-indexのデフォルト値
  * @link https://mui.com/material-ui/customization/z-index
  */

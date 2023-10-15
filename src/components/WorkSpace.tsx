@@ -7,7 +7,7 @@ import {
   selectorState,
 } from "../service/atoms";
 import Chart from "./chart/Chart";
-import RectangleIdentifier from "./identifier/RectangleIdentifier";
+import Identifier from "./identifier/Identifier";
 import BlockController from "./controller/BlockController";
 import { MouseDown, Selector } from "../types/ui";
 
@@ -70,7 +70,7 @@ function WorkSpace() {
       }}
     >
       <div style={{ display: "flex", position: "relative" }}>
-        <RectangleIdentifier />
+        <Identifier />
         <Chart />
         <BlockController />
       </div>

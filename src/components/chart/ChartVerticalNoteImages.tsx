@@ -2,13 +2,10 @@ import { memo, useMemo } from "react";
 import { IMAGE_BINARIES } from "../../service/assets";
 import { ChartVerticalNoteImagesProps } from "../../types/props";
 import { useRecoilValue } from "recoil";
-import {
-  noteSizeState,
-  rectangleIdentifierWidthState,
-  zoomState,
-} from "../../service/atoms";
+import { noteSizeState, zoomState } from "../../service/atoms";
 import { ZOOM_VALUES } from "../../service/zoom";
 import { Zoom } from "../../types/ui";
+import { IDENTIFIER_WIDTH } from "../../service/styles";
 
 function ChartVerticalNoteImages({
   accumulatedRows,
@@ -19,9 +16,6 @@ function ChartVerticalNoteImages({
   type,
 }: ChartVerticalNoteImagesProps) {
   const noteSize = useRecoilValue<number>(noteSizeState);
-  const rectangleIdentifierWidth = useRecoilValue<number>(
-    rectangleIdentifierWidthState
-  );
   const zoom = useRecoilValue<Zoom>(zoomState);
 
   // 単ノート/ホールドの始点/ホールドの中間/ホールドの終点が属する
@@ -57,9 +51,7 @@ function ChartVerticalNoteImages({
             position: "absolute",
             top: `${top}px`,
             left: `${
-              rectangleIdentifierWidth +
-              verticalBorderSize * 0.5 +
-              noteSize * column
+              IDENTIFIER_WIDTH + verticalBorderSize * 0.5 + noteSize * column
             }px`,
             userSelect: "none",
             zIndex: (rowIdx + 1) * 10,
@@ -82,9 +74,7 @@ function ChartVerticalNoteImages({
               position: "absolute",
               top: `${top}px`,
               left: `${
-                rectangleIdentifierWidth +
-                verticalBorderSize * 0.5 +
-                noteSize * column
+                IDENTIFIER_WIDTH + verticalBorderSize * 0.5 + noteSize * column
               }px`,
               userSelect: "none",
               zIndex: (rowIdx + 1) * 10,
@@ -102,9 +92,7 @@ function ChartVerticalNoteImages({
               position: "absolute",
               top: `${top + noteSize * 0.5}px`,
               left: `${
-                rectangleIdentifierWidth +
-                verticalBorderSize * 0.5 +
-                noteSize * column
+                IDENTIFIER_WIDTH + verticalBorderSize * 0.5 + noteSize * column
               }px`,
               userSelect: "none",
               zIndex: (rowIdx + 1) * 10 + 1,
@@ -127,9 +115,7 @@ function ChartVerticalNoteImages({
             position: "absolute",
             top: `${top + noteSize * 0.5}px`,
             left: `${
-              rectangleIdentifierWidth +
-              verticalBorderSize * 0.5 +
-              noteSize * column
+              IDENTIFIER_WIDTH + verticalBorderSize * 0.5 + noteSize * column
             }px`,
             userSelect: "none",
             zIndex: (rowIdx + 1) * 10,
@@ -151,9 +137,7 @@ function ChartVerticalNoteImages({
             position: "absolute",
             top: `${top}px`,
             left: `${
-              rectangleIdentifierWidth +
-              verticalBorderSize * 0.5 +
-              noteSize * column
+              IDENTIFIER_WIDTH + verticalBorderSize * 0.5 + noteSize * column
             }px`,
             userSelect: "none",
             zIndex: (rowIdx + 1) * 10,

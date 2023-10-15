@@ -175,14 +175,6 @@ export const noteSizeState = atom<number>({
 });
 
 /**
- * RectangleIdentifierの横の長さ(px単位)
- */
-export const rectangleIdentifierWidthState = atom<number>({
-  key: "rectangleIdentifierWidth",
-  default: 0,
-});
-
-/**
  * やり直すChartSnapshotの集合
  * インデックスが増えるに連れ、過去の編集操作となる
  */

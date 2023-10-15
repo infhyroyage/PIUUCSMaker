@@ -6,17 +6,14 @@ import {
   indicatorState,
   mouseDownState,
   noteSizeState,
-  rectangleIdentifierWidthState,
 } from "../../service/atoms";
 import { Indicator, MouseDown } from "../../types/ui";
+import { IDENTIFIER_WIDTH } from "../../service/styles";
 
 function ChartIndicator() {
   const indicator = useRecoilValue<Indicator>(indicatorState);
   const mouseDown = useRecoilValue<MouseDown>(mouseDownState);
   const noteSize = useRecoilValue<number>(noteSizeState);
-  const rectangleIdentifierWidth = useRecoilValue<number>(
-    rectangleIdentifierWidthState
-  );
 
   // 縦の枠線のサイズ(px単位)をnoteSizeの0.05倍(偶数に丸めるように切り捨て、最小値は2)として計算
   const verticalBorderSize = useMemo(
@@ -43,7 +40,7 @@ function ChartIndicator() {
                   position: "absolute",
                   top: `${Math.min(indicator.top, mouseDown.top)}px`,
                   left: `${
-                    rectangleIdentifierWidth +
+                    IDENTIFIER_WIDTH +
                     verticalBorderSize * 0.5 +
                     noteSize * indicator.column
                   }px`,
@@ -63,7 +60,7 @@ function ChartIndicator() {
                     Math.min(indicator.top, mouseDown.top) + noteSize * 0.5
                   }px`,
                   left: `${
-                    rectangleIdentifierWidth +
+                    IDENTIFIER_WIDTH +
                     verticalBorderSize * 0.5 +
                     noteSize * indicator.column
                   }px`,
@@ -81,7 +78,7 @@ function ChartIndicator() {
                   position: "absolute",
                   top: `${Math.max(indicator.top, mouseDown.top)}px`,
                   left: `${
-                    rectangleIdentifierWidth +
+                    IDENTIFIER_WIDTH +
                     verticalBorderSize * 0.5 +
                     noteSize * indicator.column
                   }px`,
@@ -97,7 +94,7 @@ function ChartIndicator() {
             position: "absolute",
             top: `${indicator.top}px`,
             left: `${
-              rectangleIdentifierWidth +
+              IDENTIFIER_WIDTH +
               verticalBorderSize * 0.5 +
               noteSize * indicator.column
             }px`,

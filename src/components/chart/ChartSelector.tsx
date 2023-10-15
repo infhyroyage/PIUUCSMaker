@@ -1,23 +1,16 @@
 import { memo, useMemo } from "react";
 import { Theme, useTheme } from "@mui/material";
 import { useRecoilValue } from "recoil";
-import {
-  blocksState,
-  noteSizeState,
-  rectangleIdentifierWidthState,
-  zoomState,
-} from "../../service/atoms";
+import { blocksState, noteSizeState, zoomState } from "../../service/atoms";
 import { ChartSelectorProps } from "../../types/props";
 import { Block } from "../../types/chart";
 import { Zoom } from "../../types/ui";
 import { ZOOM_VALUES } from "../../service/zoom";
+import { IDENTIFIER_WIDTH } from "../../service/styles";
 
 function ChartSelector({ cords }: ChartSelectorProps) {
   const blocks = useRecoilValue<Block[]>(blocksState);
   const noteSize = useRecoilValue<number>(noteSizeState);
-  const rectangleIdentifierWidth = useRecoilValue<number>(
-    rectangleIdentifierWidthState
-  );
   const zoom = useRecoilValue<Zoom>(zoomState);
 
   const theme: Theme = useTheme();
@@ -79,7 +72,7 @@ function ChartSelector({ cords }: ChartSelectorProps) {
           position: "absolute",
           top: `${Math.min(mouseDownTop, mouseUpTop)}px`,
           left: `${
-            rectangleIdentifierWidth +
+            IDENTIFIER_WIDTH +
             verticalBorderSize * 0.5 +
             noteSize * Math.min(cords.mouseDownColumn, cords.mouseUpColumn)
           }px`,
