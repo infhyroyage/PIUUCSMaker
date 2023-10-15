@@ -121,7 +121,7 @@ function MenuBar() {
             </Typography>
           )}
         </Box>
-        <Stack alignItems="center" direction="row" spacing={{ xs: 1, md: 1.5 }}>
+        <Stack alignItems="center" direction="row" spacing={{ xs: 1, sm: 1.5 }}>
           <FormControl size="small">
             <Select
               disabled={isPlaying}
@@ -162,7 +162,7 @@ function MenuBar() {
           <Stack
             alignItems="center"
             direction="row"
-            spacing={{ xs: 0.5, md: 0.75 }}
+            spacing={{ xs: 0.5, sm: 0.75 }}
           >
             <IconButton color="inherit" onClick={onClickVolumeButton}>
               {muteVolBuf !== null ? (

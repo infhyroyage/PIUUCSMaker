@@ -66,7 +66,7 @@ function RectangleBlockIdentifier({
       {rectangleHeights.map((rectangleHeight: number, rectangleIdx: number) => (
         <React.Fragment key={rectangleIdx}>
           <Paper square sx={{ height: `${rectangleHeight}px` }}>
-            <Typography p={1} variant="caption">
+            <Typography p={{ xs: 0, sm: 1 }} variant="caption">
               {`${blockIdx + 1}:${rectangleIdx + 1}`}
             </Typography>
           </Paper>
