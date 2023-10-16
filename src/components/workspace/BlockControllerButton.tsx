@@ -59,7 +59,13 @@ function BlockControllerButton({
               padding: 0,
             }}
           >
-            <Stack spacing={{ xs: 0, sm: 1 }} p={{ xs: 0, sm: 1 }}>
+            <Stack
+              spacing={0}
+              pt={0}
+              pb={0}
+              pl={{ xs: 0, sm: 1 }}
+              pr={{ xs: 0, sm: 1 }}
+            >
               <Typography variant="caption">{textFirst}</Typography>
               <Typography variant="caption">{textSecond}</Typography>
             </Stack>
