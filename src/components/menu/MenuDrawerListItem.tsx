@@ -9,10 +9,7 @@ import {
 } from "@mui/material";
 import { useRecoilValue } from "recoil";
 import { isOpenedMenuDrawerState } from "../../service/atoms";
-import {
-  generateListItemButtonStyle,
-  generateListItemIconStyle,
-} from "../../service/styles";
+import { MENU_BAR_HEIGHT } from "../../service/styles";
 
 function MenuDrawerListItem({
   disabled,
@@ -27,9 +24,15 @@ function MenuDrawerListItem({
       <ListItemButton
         disabled={disabled}
         onClick={onClick}
-        sx={generateListItemButtonStyle(true)}
+        sx={{
+          justifyContent: "initial",
+          minHeight: `${MENU_BAR_HEIGHT}px`,
+          px: "11.6px",
+        }}
       >
-        <ListItemIcon sx={generateListItemIconStyle(true)}>{icon}</ListItemIcon>
+        <ListItemIcon sx={{ justifyContent: "center", minWidth: 0, mr: 3 }}>
+          {icon}
+        </ListItemIcon>
         <ListItemText primary={label} sx={{ opacity: 1 }} />
       </ListItemButton>
     </ListItem>
@@ -39,9 +42,15 @@ function MenuDrawerListItem({
         <ListItemButton
           disabled={disabled}
           onClick={onClick}
-          sx={generateListItemButtonStyle(false)}
+          sx={{
+            justifyContent: "center",
+            minHeight: `${MENU_BAR_HEIGHT}px`,
+            px: "11.6px",
+          }}
         >
-          <ListItemIcon sx={generateListItemIconStyle(false)}>
+          <ListItemIcon
+            sx={{ justifyContent: "center", minWidth: 0, mr: "auto" }}
+          >
             {icon}
           </ListItemIcon>
         </ListItemButton>

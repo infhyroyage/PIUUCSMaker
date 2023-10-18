@@ -23,7 +23,6 @@ import {
   isOpenedMenuDrawerState,
   isOpenedNewUCSDialogState,
   isPlayingState,
-  menuBarHeightState,
   redoSnapshotsState,
   ucsNameState,
   undoSnapshotsState,
@@ -32,7 +31,10 @@ import {
 import MenuDrawerListItem from "./MenuDrawerListItem";
 import { ChartSnapshot, Zoom } from "../../types/ui";
 import { ZOOM_VALUES } from "../../service/zoom";
-import { MENU_DRAWER_OPENED_WIDTH } from "../../service/styles";
+import {
+  MENU_BAR_HEIGHT,
+  MENU_DRAWER_OPENED_WIDTH,
+} from "../../service/styles";
 import usePlayingMusic from "../../hooks/usePlayingMusic";
 import useUploadingUCS from "../../hooks/useUploadingUCS";
 import useDownloadingUCS from "../../hooks/useDownloadingUCS";
@@ -48,7 +50,6 @@ function MenuDrawer() {
   );
   const [zoom, setZoom] = useRecoilState<Zoom>(zoomState);
   const isPlaying = useRecoilValue<boolean>(isPlayingState);
-  const menuBarHeight = useRecoilValue<number>(menuBarHeightState);
   const redoSnapshots = useRecoilValue<ChartSnapshot[]>(redoSnapshotsState);
   const ucsName = useRecoilValue<string | null>(ucsNameState);
   const undoSnapshots = useRecoilValue<ChartSnapshot[]>(undoSnapshotsState);
@@ -72,7 +73,7 @@ function MenuDrawer() {
       PaperProps={{ elevation: 3, height: "100%" }}
       sx={(theme: Theme) => ({
         width: `${
-          isOpenedMenuDrawer ? MENU_DRAWER_OPENED_WIDTH : menuBarHeight
+          isOpenedMenuDrawer ? MENU_DRAWER_OPENED_WIDTH : MENU_BAR_HEIGHT
         }px`,
         transition: theme.transitions.create("width", {
           easing: theme.transitions.easing.sharp,
@@ -86,7 +87,7 @@ function MenuDrawer() {
         overflowX: "hidden",
         "& .MuiDrawer-paper": {
           width: `${
-            isOpenedMenuDrawer ? MENU_DRAWER_OPENED_WIDTH : menuBarHeight
+            isOpenedMenuDrawer ? MENU_DRAWER_OPENED_WIDTH : MENU_BAR_HEIGHT
           }px`,
           transition: theme.transitions.create("width", {
             easing: theme.transitions.easing.sharp,

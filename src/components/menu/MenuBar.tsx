@@ -1,7 +1,6 @@
 import { ZOOM_VALUES } from "../../service/zoom";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import {
-  menuBarHeightState,
   volumeValueState,
   zoomState,
   isPlayingState,
@@ -26,21 +25,19 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import VolumeOffIcon from "@mui/icons-material/VolumeOff";
 import VolumeDownIcon from "@mui/icons-material/VolumeDown";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import VolumeMuteIcon from "@mui/icons-material/VolumeMute";
 import { Zoom } from "../../types/ui";
-import { MENU_DRAWER_OPENED_WIDTH } from "../../service/styles";
+import {
+  MENU_BAR_HEIGHT,
+  MENU_DRAWER_OPENED_WIDTH,
+} from "../../service/styles";
 
 function MenuBar() {
-  const [menuBarHeight, setMenuBarHeight] =
-    useRecoilState<number>(menuBarHeightState);
   const [muteVolBuf, setMuteVolBuf] = useState<number | null>(null);
-  const [windowInnerWidth, setWindowInnerWidth] = useState<number>(
-    window.innerWidth
-  );
   const [volumeValue, setVolumeValue] =
     useRecoilState<number>(volumeValueState);
   const [zoom, setZoom] = useRecoilState<Zoom>(zoomState);
@@ -62,21 +59,6 @@ function MenuBar() {
     }
   };
 
-  // MenuBarの高さを監視してRecoilで状態を管理
-  const toolBarRef = useRef<HTMLDivElement | null>(null);
-  useEffect(() => {
-    const updateSize = () => {
-      setWindowInnerWidth(window.innerWidth);
-    };
-    window.addEventListener("resize", updateSize);
-    return () => window.removeEventListener("resize", updateSize);
-  }, []);
-  useEffect(() => {
-    if (toolBarRef.current) {
-      setMenuBarHeight(toolBarRef.current.getBoundingClientRect().height);
-    }
-  }, [setMenuBarHeight, windowInnerWidth]);
-
   // 編集中に離脱した場合、その離脱を抑止する組込みダイアログを表示
   useEffect(() => {
     const handleBeforeunload = (event: BeforeUnloadEvent) => {
@@ -95,11 +77,11 @@ function MenuBar() {
 
   return (
     <AppBar position="sticky">
-      <Toolbar ref={toolBarRef}>
+      <Toolbar sx={{ height: `${MENU_BAR_HEIGHT}px` }} variant="dense">
         <Box
           sx={(theme: Theme) => ({
             width: `${
-              isOpenedMenuDrawer ? MENU_DRAWER_OPENED_WIDTH : menuBarHeight
+              isOpenedMenuDrawer ? MENU_DRAWER_OPENED_WIDTH : MENU_BAR_HEIGHT
             }px`,
             transition: theme.transitions.create("width", {
               easing: theme.transitions.easing.sharp,
@@ -110,7 +92,7 @@ function MenuBar() {
           })}
         />
         <Box flexGrow={1}>
-          <Typography variant="h6" noWrap component="div">
+          <Typography variant="subtitle1" noWrap component="div">
             {`${isProtected ? "*" : ""}${ucsName || "PIU UCS Maker"}`}
           </Typography>
           {ucsName !== null && (
@@ -184,7 +166,7 @@ function MenuBar() {
               }}
               size="small"
               step={0.01}
-              sx={{ width: `${menuBarHeight}px`, color: "white" }}
+              sx={{ width: `${MENU_BAR_HEIGHT}px`, color: "white" }}
               value={muteVolBuf || volumeValue}
             />
           </Stack>

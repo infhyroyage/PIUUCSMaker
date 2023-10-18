@@ -1,13 +1,10 @@
 import { Button, Stack, Typography } from "@mui/material";
 import useUploadingUCS from "../../hooks/useUploadingUCS";
-import { useRecoilValue, useSetRecoilState } from "recoil";
-import {
-  isOpenedNewUCSDialogState,
-  menuBarHeightState,
-} from "../../service/atoms";
+import { useSetRecoilState } from "recoil";
+import { isOpenedNewUCSDialogState } from "../../service/atoms";
+import { MENU_BAR_HEIGHT } from "../../service/styles";
 
 function ReadyUCS() {
-  const menuBarHeight = useRecoilValue<number>(menuBarHeightState);
   const setIsOpenedNewUCSDialog = useSetRecoilState<boolean>(
     isOpenedNewUCSDialogState
   );
@@ -18,9 +15,9 @@ function ReadyUCS() {
     <Stack
       alignItems="center"
       display="flex"
-      height={`calc(100vh - ${menuBarHeight}px)`}
+      height={`calc(100vh - ${MENU_BAR_HEIGHT}px)`}
       justifyContent="center"
-      ml={`${menuBarHeight}px`}
+      ml={`${MENU_BAR_HEIGHT}px`}
       spacing={3}
       sx={{ flexGrow: 1 }}
     >

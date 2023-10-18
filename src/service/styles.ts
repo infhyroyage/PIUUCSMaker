@@ -1,33 +1,17 @@
 /**
- * ドロワーの展開状態に応じてドロワー内のListItemButtonのスタイルを生成する
- * @param {boolean} isOpenedMenuDrawer ドロワーを展開している場合はtrue、展開していない場合はfalse
- * @returns ドロワー内のListItemButtonのスタイル
- */
-export const generateListItemButtonStyle = (isOpenedMenuDrawer: boolean) => {
-  return {
-    justifyContent: isOpenedMenuDrawer ? "initial" : "center",
-    minHeight: "48px",
-    px: 2.5,
-  };
-};
-
-/**
- * ドロワーの展開状態に応じてドロワー内のListItemIconのスタイルを生成する
- * @param {boolean} isOpenedMenuDrawer ドロワーを展開している場合はtrue、展開していない場合はfalse
- * @returns ドロワー内のListItemIconのスタイル
- */
-export const generateListItemIconStyle = (isOpenedMenuDrawer: boolean) => {
-  return {
-    justifyContent: "center",
-    minWidth: 0,
-    mr: isOpenedMenuDrawer ? 3 : "auto",
-  };
-};
-
-/**
  * Identifierの幅(px単位)
  */
 export const IDENTIFIER_WIDTH: number = 40;
+
+/**
+ * MenuBarの高さ、および、展開していないMenuDrawerの横幅(px単位)
+ */
+export const MENU_BAR_HEIGHT: number = 48;
+
+/**
+ * 展開したMenuDrawerの横幅(px単位)
+ */
+export const MENU_DRAWER_OPENED_WIDTH = 200;
 
 /**
  * MUIコンポーネントのz-indexのデフォルト値
@@ -43,8 +27,3 @@ export const MUI_DEFAULT_Z_INDEX: Record<string, number> = {
   snackbar: 1400,
   tooltip: 1500,
 };
-
-/**
- * 展開したMenuDrawerの横幅(px単位)
- */
-export const MENU_DRAWER_OPENED_WIDTH = 200;

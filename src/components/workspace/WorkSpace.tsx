@@ -1,7 +1,6 @@
 import { useEffect } from "react";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useSetRecoilState } from "recoil";
 import {
-  menuBarHeightState,
   mouseDownState,
   noteSizeState,
   selectorState,
@@ -10,9 +9,9 @@ import Chart from "./Chart";
 import Identifier from "./Identifier";
 import BlockController from "./BlockController";
 import { MouseDown, Selector } from "../../types/ui";
+import { MENU_BAR_HEIGHT } from "../../service/styles";
 
 function WorkSpace() {
-  const menuBarHeight = useRecoilValue<number>(menuBarHeightState);
   const setMouseDown = useSetRecoilState<MouseDown>(mouseDownState);
   const setNoteSize = useSetRecoilState<number>(noteSizeState);
   const setSelector = useSetRecoilState<Selector>(selectorState);
@@ -66,7 +65,7 @@ function WorkSpace() {
         flexGrow: 1,
         justifyContent: "center",
         lineHeight: 0,
-        marginLeft: `${menuBarHeight}px`,
+        marginLeft: `${MENU_BAR_HEIGHT}px`,
       }}
     >
       <div style={{ display: "flex", position: "relative" }}>
@@ -78,7 +77,7 @@ function WorkSpace() {
         style={{
           display: "block",
           width: 0,
-          height: `calc(100vh - ${menuBarHeight}px)`,
+          height: `calc(100vh - ${MENU_BAR_HEIGHT}px)`,
         }}
       />
     </div>

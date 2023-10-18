@@ -136,14 +136,6 @@ export const isProtectedState = atom<boolean>({
 });
 
 /**
- * MenuBarの高さ(px単位)
- */
-export const menuBarHeightState = atom<number>({
-  key: "menuBarHeight",
-  default: 0,
-});
-
-/**
  * 譜面にマウス押下した場合の表示パラメーター
  * 譜面にマウスを押下していない場合はnull
  */

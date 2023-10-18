@@ -8,11 +8,8 @@ import {
 } from "@mui/material";
 import { useRecoilValue } from "recoil";
 import { isOpenedMenuDrawerState } from "../../service/atoms";
-import {
-  generateListItemButtonStyle,
-  generateListItemIconStyle,
-} from "../../service/styles";
 import { MenuDrawerUploadListItemProps } from "../../types/props";
+import { MENU_BAR_HEIGHT } from "../../service/styles";
 
 function MenuDrawerUploadListItem({
   disabled,
@@ -31,7 +28,11 @@ function MenuDrawerUploadListItem({
           component="label"
           disabled={disabled}
           htmlFor={id}
-          sx={generateListItemButtonStyle(isOpenedMenuDrawer)}
+          sx={{
+            justifyContent: isOpenedMenuDrawer ? "initial" : "center",
+            minHeight: `${MENU_BAR_HEIGHT}px`,
+            px: "11.6px",
+          }}
         >
           <input
             id={id}
@@ -40,7 +41,13 @@ function MenuDrawerUploadListItem({
             style={{ display: "none" }}
             onChange={onChange}
           />
-          <ListItemIcon sx={generateListItemIconStyle(isOpenedMenuDrawer)}>
+          <ListItemIcon
+            sx={{
+              justifyContent: "center",
+              minWidth: 0,
+              mr: isOpenedMenuDrawer ? 3 : "auto",
+            }}
+          >
             {icon}
           </ListItemIcon>
           {isOpenedMenuDrawer && (
