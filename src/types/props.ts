@@ -102,11 +102,22 @@ export type BorderLineProps = {
 
 type ChartIndicatorMenuHandler = {
   /**
-   * Split Block」選択時の動作
-   * @param {Indicator} indicator インディケーターの表示パラメーター(インディケーター非表示の場合はnull)
+   * 「Start Setting Hold」選択時の動作
    * @returns
    */
-  split: (indicator: Indicator) => void;
+  setHold: () => void;
+
+  /**
+   * 「Start Selecting」選択時の動作
+   * @returns
+   */
+  setSelector: () => void;
+
+  /**
+   * 「Split Block」選択時の動作
+   * @returns
+   */
+  split: () => void;
 };
 
 /**

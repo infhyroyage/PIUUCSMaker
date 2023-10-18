@@ -13,10 +13,11 @@ import {
   chartIndicatorMenuPositionState,
   clipBoardState,
   indicatorState,
+  mouseDownState,
   selectorState,
 } from "../../service/atoms";
 import { ChartIndicatorMenuProps } from "../../types/props";
-import { Selector } from "../../types/ui";
+import { MouseDown, Selector } from "../../types/ui";
 import { Indicator } from "../../types/ui";
 import { ClipBoard } from "../../types/ui";
 import useClipBoard from "../../hooks/useClipBoard";
@@ -24,11 +25,12 @@ import useSelectedFlipping from "../../hooks/useSelectedFlipping";
 import useSelectedDeleting from "../../hooks/useSelectedDeleting";
 
 function ChartIndicatorMenu({ handler }: ChartIndicatorMenuProps) {
-  const clipBoard = useRecoilValue<ClipBoard>(clipBoardState);
   const [menuPosition, setMenuPosition] = useRecoilState<
     PopoverPosition | undefined
   >(chartIndicatorMenuPositionState);
+  const clipBoard = useRecoilValue<ClipBoard>(clipBoardState);
   const indicator = useRecoilValue<Indicator>(indicatorState);
+  const mouseDown = useRecoilValue<MouseDown>(mouseDownState);
   const selector = useRecoilValue<Selector>(selectorState);
 
   const { handleCut, handleCopy, handlePaste } = useClipBoard();
@@ -51,6 +53,39 @@ function ChartIndicatorMenu({ handler }: ChartIndicatorMenuProps) {
       }}
     >
       <MenuList dense>
+        <MenuItem
+          disabled={indicator === null}
+          onClick={() => {
+            handler.setHold();
+            setMenuPosition(undefined);
+          }}
+        >
+          Start Setting Hold
+        </MenuItem>
+        <MenuItem
+          disabled={indicator === null}
+          onClick={() => {
+            handler.setSelector();
+            setMenuPosition(undefined);
+          }}
+        >
+          Start Selecting
+        </MenuItem>
+        <Divider />
+        <MenuItem
+          disabled={
+            indicator === null ||
+            (indicator !== null &&
+              indicator.rowIdx === indicator.blockAccumulatedRows)
+          }
+          onClick={() => {
+            handler.split();
+            setMenuPosition(undefined);
+          }}
+        >
+          Split Block
+        </MenuItem>
+        <Divider />
         <MenuItem
           disabled={
             selector.completedCords === null ||
@@ -159,19 +194,6 @@ function ChartIndicatorMenu({ handler }: ChartIndicatorMenuProps) {
           <Typography variant="body2" color="text.secondary">
             Delete
           </Typography>
-        </MenuItem>
-        <Divider />
-        <MenuItem
-          disabled={
-            indicator !== null &&
-            indicator.rowIdx === indicator.blockAccumulatedRows
-          }
-          onClick={() => {
-            handler.split(indicator);
-            setMenuPosition(undefined);
-          }}
-        >
-          Split Block
         </MenuItem>
       </MenuList>
     </Menu>

@@ -26,11 +26,10 @@ function ChartIndicator() {
   return (
     indicator !== null && (
       <>
-        {/* 押下中でのホールドのみ画像を表示する(単ノートは表示しない) */}
-        {mouseDown !== null &&
-          indicator.column === mouseDown.column &&
-          indicator.rowIdx !== mouseDown.rowIdx && (
-            <>
+        {mouseDown !== null && indicator.column === mouseDown.column && (
+          <>
+            {(mouseDown.isSettingByMenu ||
+              indicator.rowIdx !== mouseDown.rowIdx) && (
               <img
                 src={IMAGE_BINARIES[indicator.column % 5].note}
                 alt={`note${indicator.column % 5}`}
@@ -44,51 +43,59 @@ function ChartIndicator() {
                     verticalBorderSize * 0.5 +
                     noteSize * indicator.column
                   }px`,
+                  opacity: mouseDown.isSettingByMenu ? 0.5 : 1,
                   pointerEvents: "none",
                   userSelect: "none",
                   zIndex: theme.zIndex.appBar - 4,
                 }}
               />
-              <img
-                src={IMAGE_BINARIES[indicator.column % 5].hold}
-                alt={`hold${indicator.column % 5}`}
-                width={`${noteSize}px`}
-                height={`${Math.abs(indicator.top - mouseDown.top)}px`}
-                style={{
-                  position: "absolute",
-                  top: `${
-                    Math.min(indicator.top, mouseDown.top) + noteSize * 0.5
-                  }px`,
-                  left: `${
-                    IDENTIFIER_WIDTH +
-                    verticalBorderSize * 0.5 +
-                    noteSize * indicator.column
-                  }px`,
-                  pointerEvents: "none",
-                  userSelect: "none",
-                  zIndex: theme.zIndex.appBar - 3,
-                }}
-              />
-              <img
-                src={IMAGE_BINARIES[indicator.column % 5].note}
-                alt={`note${indicator.column % 5}`}
-                width={`${noteSize}px`}
-                height={`${noteSize}px`}
-                style={{
-                  position: "absolute",
-                  top: `${Math.max(indicator.top, mouseDown.top)}px`,
-                  left: `${
-                    IDENTIFIER_WIDTH +
-                    verticalBorderSize * 0.5 +
-                    noteSize * indicator.column
-                  }px`,
-                  pointerEvents: "none",
-                  userSelect: "none",
-                  zIndex: theme.zIndex.appBar - 2,
-                }}
-              />
-            </>
-          )}
+            )}
+            {indicator.rowIdx !== mouseDown.rowIdx && (
+              <>
+                <img
+                  src={IMAGE_BINARIES[indicator.column % 5].hold}
+                  alt={`hold${indicator.column % 5}`}
+                  width={`${noteSize}px`}
+                  height={`${Math.abs(indicator.top - mouseDown.top)}px`}
+                  style={{
+                    position: "absolute",
+                    top: `${
+                      Math.min(indicator.top, mouseDown.top) + noteSize * 0.5
+                    }px`,
+                    left: `${
+                      IDENTIFIER_WIDTH +
+                      verticalBorderSize * 0.5 +
+                      noteSize * indicator.column
+                    }px`,
+                    opacity: mouseDown.isSettingByMenu ? 0.5 : 1,
+                    pointerEvents: "none",
+                    userSelect: "none",
+                    zIndex: theme.zIndex.appBar - 3,
+                  }}
+                />
+                <img
+                  src={IMAGE_BINARIES[indicator.column % 5].note}
+                  alt={`note${indicator.column % 5}`}
+                  width={`${noteSize}px`}
+                  height={`${noteSize}px`}
+                  style={{
+                    position: "absolute",
+                    top: `${Math.max(indicator.top, mouseDown.top)}px`,
+                    left: `${
+                      IDENTIFIER_WIDTH +
+                      verticalBorderSize * 0.5 +
+                      noteSize * indicator.column
+                    }px`,
+                    opacity: mouseDown.isSettingByMenu ? 0.5 : 1,
+                    pointerEvents: "none",
+                    userSelect: "none",
+                    zIndex: theme.zIndex.appBar - 2,
+                  }}
+                />
+              </>
+            )}
+          </>
+        )}
         <span
           style={{
             position: "absolute",
@@ -100,7 +107,10 @@ function ChartIndicator() {
             }px`,
             width: `${noteSize}px`,
             height: `${noteSize}px`,
-            backgroundColor: "rgba(170, 170, 170, 0.5)",
+            backgroundColor:
+              mouseDown && mouseDown.isSettingByMenu
+                ? "rgba(255, 170, 170, 0.5)"
+                : "rgba(170, 170, 255, 0.5)",
             pointerEvents: "none",
             zIndex: theme.zIndex.appBar - 1,
           }}

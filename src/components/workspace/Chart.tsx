@@ -185,10 +185,11 @@ function Chart() {
     if (event.button !== 0 || !!position || isPlaying || indicator === null)
       return;
 
-    // Shift未入力の場合のみ、譜面にマウス押下した場合の表示パラメーターを保持
-    if (!event.shiftKey) {
+    // Shift未入力の場合のみ、譜面にマウス押下した場合の表示パラメーターを更新
+    if (!event.shiftKey && mouseDown === null) {
       setMouseDown({
         column: indicator.column,
+        isSettingByMenu: false,
         rowIdx: indicator.rowIdx,
         top: indicator.top,
       });
@@ -198,6 +199,7 @@ function Chart() {
       // Shift入力時の場合は、選択領域入力時のみパラメーターを設定
       setSelector({
         changingCords: {
+          isSettingByMenu: false,
           mouseDownColumn: indicator.column,
           mouseDownRowIdx: indicator.rowIdx,
           mouseUpColumn: indicator.column,
@@ -376,51 +378,74 @@ function Chart() {
     }
   };
 
-  const handleSplit = useCallback(
-    (indicator: Indicator) => {
-      // インディケーターが非表示の場合はNOP
-      if (indicator === null) return;
+  const handleSetHold = useCallback(() => {
+    // インディケーターが非表示の場合はNOP
+    if (indicator === null) return;
 
-      // 元に戻す/やり直すスナップショットの集合を更新
-      setUndoSnapshots([...undoSnapshots, { blocks, notes: null }]);
-      setRedoShapshots([]);
+    // 「Start Setting Hold」を選択したインディケーターの表示パラメーターを用いて、
+    // マウス押下中の表示パラメーターを保持
+    setMouseDown({
+      column: indicator.column,
+      isSettingByMenu: true,
+      rowIdx: indicator.rowIdx,
+      top: indicator.top,
+    });
+  }, [indicator, setMouseDown]);
 
-      setIsProtected(true);
+  const handleSetSelector = useCallback(() => {
+    // インディケーターが非表示の場合はNOP
+    if (indicator === null) return;
 
-      // blockIdx番目の譜面のブロックを、(rowIdx- 1)番目以前とrowIdx番目とで分割
-      setBlocks([
-        ...blocks.slice(0, indicator.blockIdx),
-        {
-          ...blocks[indicator.blockIdx],
-          rows: indicator.rowIdx - indicator.blockAccumulatedRows,
-        },
-        {
-          ...blocks[indicator.blockIdx],
-          accumulatedRows: indicator.rowIdx,
-          rows:
-            blocks[indicator.blockIdx].rows +
-            indicator.blockAccumulatedRows -
-            indicator.rowIdx,
-        },
-        ...blocks.slice(indicator.blockIdx + 1),
-      ]);
-      setIndicator({
-        ...indicator,
-        blockIdx: indicator.blockIdx + 1,
-        blockAccumulatedRows: indicator.rowIdx,
-      });
-    },
-    [
-      blocks,
-      indicator,
-      setBlocks,
-      setIndicator,
-      setIsProtected,
-      setRedoShapshots,
-      setUndoSnapshots,
-      undoSnapshots,
-    ]
-  );
+    alert("TODO");
+  }, [indicator]);
+
+  const handleSplit = useCallback(() => {
+    // インディケーターが非表示/譜面のブロックの先頭の行にインディケーターが存在する場合はNOP
+    if (
+      indicator === null ||
+      (indicator !== null &&
+        indicator.rowIdx === indicator.blockAccumulatedRows)
+    )
+      return;
+
+    // 元に戻す/やり直すスナップショットの集合を更新
+    setUndoSnapshots([...undoSnapshots, { blocks, notes: null }]);
+    setRedoShapshots([]);
+
+    setIsProtected(true);
+
+    // blockIdx番目の譜面のブロックを、(rowIdx- 1)番目以前とrowIdx番目とで分割
+    setBlocks([
+      ...blocks.slice(0, indicator.blockIdx),
+      {
+        ...blocks[indicator.blockIdx],
+        rows: indicator.rowIdx - indicator.blockAccumulatedRows,
+      },
+      {
+        ...blocks[indicator.blockIdx],
+        accumulatedRows: indicator.rowIdx,
+        rows:
+          blocks[indicator.blockIdx].rows +
+          indicator.blockAccumulatedRows -
+          indicator.rowIdx,
+      },
+      ...blocks.slice(indicator.blockIdx + 1),
+    ]);
+    setIndicator({
+      ...indicator,
+      blockIdx: indicator.blockIdx + 1,
+      blockAccumulatedRows: indicator.rowIdx,
+    });
+  }, [
+    blocks,
+    indicator,
+    setBlocks,
+    setIndicator,
+    setIsProtected,
+    setRedoShapshots,
+    setUndoSnapshots,
+    undoSnapshots,
+  ]);
 
   return (
     <>
@@ -479,6 +504,8 @@ function Chart() {
       <ChartIndicator />
       <ChartIndicatorMenu
         handler={{
+          setHold: handleSetHold,
+          setSelector: handleSetSelector,
           split: handleSplit,
         }}
       />

@@ -87,6 +87,12 @@ export type MouseDown = null | {
   column: number;
 
   /**
+   * ChartIndicatorMenuの「Starting Setting Hold」からホールドを設置する場合はtrue、
+   * ドラッグアンドドロップ操作からホールドを設置する場合はfalse
+   */
+  isSettingByMenu: boolean;
+
+  /**
    * マウス押下した瞬間での譜面全体での行のインデックス
    */
   rowIdx: number;
@@ -159,7 +165,15 @@ export type Selector = {
    * 選択領域の入力時の各座標
    * 選択領域未入力/入力済の場合はnull
    */
-  changingCords: null | SelectorCords;
+  changingCords:
+    | null
+    | (SelectorCords & {
+        /**
+         * ChartIndicatorMenuの「Starting Selecting」から選択領域を入力する場合はtrue、
+         * Shiftキー入力したままドラッグアンドドロップ操作から選択領域を入力する場合はfalse
+         */
+        isSettingByMenu: boolean;
+      });
 
   /**
    * 選択領域入力後の各座標
