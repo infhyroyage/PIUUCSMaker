@@ -15,17 +15,17 @@ function ChartSelector({ cords }: ChartSelectorProps) {
 
   const theme: Theme = useTheme();
 
-  // 縦の枠線のサイズ(px単位)をnoteSizeの0.05倍(偶数に丸めるように切り捨て、最小値は2)として計算
+  // 縦の枠線のサイズ(px)をnoteSizeの0.05倍(偶数に丸めるように切り捨て、最小値は2)として計算
   const verticalBorderSize = useMemo(
     () => Math.max(Math.floor(noteSize * 0.025) * 2, 2),
     [noteSize]
   );
 
-  // 選択領域の入力開始時のマウスの座標でのtop値(px単位)を計算
+  // 選択領域の入力開始時のマウスの座標でのtop値(px)を計算
   const mouseDownTop = useMemo(() => {
     let top: number = 0;
     blocks.some((block: Block) => {
-      // 譜面のブロックの1行あたりの高さ(px単位)
+      // 譜面のブロックの1行あたりの高さ(px)
       const unitRowHeight: number =
         (2.0 * noteSize * ZOOM_VALUES[zoom.idx]) / block.split;
 
@@ -40,7 +40,7 @@ function ChartSelector({ cords }: ChartSelectorProps) {
     return top;
   }, [blocks, cords.mouseDownRowIdx, noteSize, zoom.idx]);
 
-  // 選択領域の入力時/入力終了時のマウスの座標でのtop値(px単位)を計算
+  // 選択領域の入力時/入力終了時のマウスの座標でのtop値(px)を計算
   // 選択領域の入力時にマウスの座標が譜面から外れた場合はnullとして計算する
   const mouseUpTop = useMemo(() => {
     if (cords.mouseUpRowIdx === null) return null;
@@ -49,7 +49,7 @@ function ChartSelector({ cords }: ChartSelectorProps) {
     blocks.some((block: Block) => {
       if (cords.mouseUpRowIdx === null) return true;
 
-      // 譜面のブロックの1行あたりの高さ(px単位)
+      // 譜面のブロックの1行あたりの高さ(px)
       const unitRowHeight: number =
         (2.0 * noteSize * ZOOM_VALUES[zoom.idx]) / block.split;
 

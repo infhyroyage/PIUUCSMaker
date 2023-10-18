@@ -15,13 +15,13 @@ function ChartVerticalRectangles({
   const noteSize = useRecoilValue<number>(noteSizeState);
   const zoom = useRecoilValue<Zoom>(zoomState);
 
-  // 譜面のブロックの1行あたりの高さ(px単位)を計算
+  // 譜面のブロックの1行あたりの高さ(px)を計算
   const unitRowHeight = useMemo(
     () => (2.0 * noteSize * ZOOM_VALUES[zoom.idx]) / split,
     [noteSize, split, zoom.idx]
   );
 
-  // 横の枠線のサイズ(px単位)をnoteSizeの0.05倍(偶数に丸めるように切り捨て、最小値は2)として計算
+  // 横の枠線のサイズ(px)をnoteSizeの0.05倍(偶数に丸めるように切り捨て、最小値は2)として計算
   // ただし、譜面のブロックの高さが横の枠線のサイズより小さい場合、例外的に譜面のブロックの高さと同一とする
   const horizontalBorderSize = useMemo(
     () =>
@@ -32,7 +32,7 @@ function ChartVerticalRectangles({
     [rows, noteSize, unitRowHeight]
   );
 
-  // 譜面のブロック内の1拍単位に分割する各枠線のtop値を(px単位)計算
+  // 譜面のブロック内の1拍単位に分割する各枠線のtop値を(px)計算
   const beatBorderLineTops = useMemo(
     () =>
       [...Array(Math.floor(rows / split))].map(

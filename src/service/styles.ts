@@ -1,15 +1,15 @@
 /**
- * Identifierの幅(px単位)
+ * Identifierの幅(px)
  */
 export const IDENTIFIER_WIDTH: number = 40;
 
 /**
- * MenuBarの高さ、および、展開していないMenuDrawerの横幅(px単位)
+ * MenuBarの高さ、および、展開していないMenuDrawerの横幅(px)
  */
 export const MENU_BAR_HEIGHT: number = 48;
 
 /**
- * 展開したMenuDrawerの横幅(px単位)
+ * 展開したMenuDrawerの横幅(px)
  */
 export const MENU_DRAWER_OPENED_WIDTH = 200;
 

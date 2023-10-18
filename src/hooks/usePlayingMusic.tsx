@@ -165,7 +165,7 @@ function usePlayingMusic() {
     };
     const scrollParam: ScrollParam = blocks.reduce(
       (prev: ScrollParam, block: Block, blockIdx: number) => {
-        // 各譜面のブロックの1行あたりの高さ(px単位)を計算
+        // 各譜面のブロックの1行あたりの高さ(px)を計算
         const unitRowHeight: number =
           (2.0 * noteSize * ZOOM_VALUES[zoom.idx]) / block.split;
 
@@ -215,7 +215,7 @@ function usePlayingMusic() {
             (blockVerocity * 1000);
         }
 
-        // 譜面のブロックの1行あたりの高さ(px単位)をインクリメント
+        // 譜面のブロックの1行あたりの高さ(px)をインクリメント
         border += unitRowHeight * block.rows;
 
         // 最後の譜面のブロックの下へスクロールする速度(px/ms)が変化するブラウザの画面のy座標を追加

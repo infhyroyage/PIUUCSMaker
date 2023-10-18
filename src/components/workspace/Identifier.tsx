@@ -16,11 +16,11 @@ function Identifier() {
   return (
     <div style={{ userSelect: "none", width: `${IDENTIFIER_WIDTH}px` }}>
       {blocks.map((block: Block, blockIdx: number) => {
-        // 譜面のブロックの1行あたりの高さ(px単位)
+        // 譜面のブロックの1行あたりの高さ(px)
         const unitRowHeight: number =
           (2.0 * noteSize * ZOOM_VALUES[zoom.idx]) / block.split;
 
-        // 横の枠線のサイズ(px単位)
+        // 横の枠線のサイズ(px)
         // noteSizeの0.05倍(偶数に丸めるように切り捨て、最小値は2)とする
         // ただし、譜面のブロックの高さが横の枠線のサイズより小さい場合、例外的に譜面のブロックの高さと同一とする
         const horizontalBorderSize: number = Math.min(
@@ -33,7 +33,7 @@ function Identifier() {
           block.rows / (block.beat * block.split)
         );
 
-        // 譜面のブロック内の各節のブロックの高さ(px単位)
+        // 譜面のブロック内の各節のブロックの高さ(px)
         let blockHeight: number =
           unitRowHeight * block.rows -
           (blockIdx === blocks.length - 1 ? 0 : horizontalBorderSize);

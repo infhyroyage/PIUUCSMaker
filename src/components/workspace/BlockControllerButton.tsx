@@ -31,7 +31,7 @@ function BlockControllerButton({
     blockControllerMenuPositionState
   );
 
-  // 横の枠線のサイズ(px単位)をnoteSizeの0.05倍(偶数に丸めるように切り捨て、最小値は2)として計算
+  // 横の枠線のサイズ(px)をnoteSizeの0.05倍(偶数に丸めるように切り捨て、最小値は2)として計算
   // ただし、譜面のブロックの高さが横の枠線のサイズより小さい場合、例外的に譜面のブロックの高さと同一とする
   const horizontalBorderSize = useMemo(
     () => Math.min(Math.max(Math.floor(noteSize * 0.025) * 2, 2), blockHeight),

@@ -71,7 +71,7 @@ export type Indicator = null | {
   rowIdx: number;
 
   /**
-   * インディケーターのtop値(px単位)
+   * インディケーターのtop値(px)
    */
   top: number;
 };
@@ -98,7 +98,7 @@ export type MouseDown = null | {
   rowIdx: number;
 
   /**
-   * マウス押下した瞬間での行のtop値(px単位)
+   * マウス押下した瞬間での行のtop値(px)
    */
   top: number;
 };

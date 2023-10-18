@@ -159,7 +159,7 @@ export const notesState = atom<Note[][]>({
 });
 
 /**
- * 正方形である単ノートの1辺のサイズ(px単位)
+ * 正方形である単ノートの1辺のサイズ(px)
  */
 export const noteSizeState = atom<number>({
   key: "noteSize",

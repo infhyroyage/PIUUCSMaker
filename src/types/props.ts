@@ -6,7 +6,7 @@ import { Indicator, SelectorCords } from "./ui";
  */
 export type BlockControllerButtonProps = {
   /**
-   * 譜面のブロックの高さ(px単位)
+   * 譜面のブロックの高さ(px)
    */
   blockHeight: number;
 
@@ -145,7 +145,7 @@ export type ChartSelectorProps = {
  */
 export type ChartVerticalProps = {
   /**
-   * 各譜面のブロックを設置するトップバーからのy座標の距離(px単位)
+   * 各譜面のブロックを設置するトップバーからのy座標の距離(px)
    */
   blockYDists: number[];
 
@@ -196,7 +196,7 @@ export type ChartVerticalNoteImagesProps = {
   accumulatedRows: number;
 
   /**
-   * 単ノート/ホールドの始点/ホールドの中間/ホールドの終点が属する譜面のブロックを設置するトップバーからのy座標の距離(px単位)
+   * 単ノート/ホールドの始点/ホールドの中間/ホールドの終点が属する譜面のブロックを設置するトップバーからのy座標の距離(px)
    */
   blockYDist: number;
 

@@ -46,7 +46,7 @@ function Chart() {
   const setRedoShapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
 
-  // 各譜面のブロックを設置するトップバーからのy座標の距離(px単位)を計算
+  // 各譜面のブロックを設置するトップバーからのy座標の距離(px)を計算
   const blockYDists: number[] = useMemo(
     () =>
       [...Array(blocks.length)].reduce(
@@ -67,7 +67,7 @@ function Chart() {
     [blocks, noteSize, zoom.idx]
   );
 
-  // 縦の枠線のサイズ(px単位)をnoteSizeの0.05倍(偶数に丸めるように切り捨て、最小値は2)として計算
+  // 縦の枠線のサイズ(px)をnoteSizeの0.05倍(偶数に丸めるように切り捨て、最小値は2)として計算
   const verticalBorderSize = useMemo(
     () => Math.max(Math.floor(noteSize * 0.025) * 2, 2),
     [noteSize]
@@ -91,10 +91,10 @@ function Chart() {
     let top: number | null = null;
     let rowIdx: number | null = null;
     const blockIdx: number = blocks.findIndex((block: Block, idx: number) => {
-      // 譜面のブロックの1行あたりの高さ(px単位)
+      // 譜面のブロックの1行あたりの高さ(px)
       const unitRowHeight: number =
         (2.0 * noteSize * ZOOM_VALUES[zoom.idx]) / block.split;
-      // 譜面のブロックの高さ(px単位)
+      // 譜面のブロックの高さ(px)
       const blockHeight: number = unitRowHeight * block.rows;
       if (y < blockYDists[idx] + blockHeight) {
         top = y - ((y - blockYDists[idx]) % unitRowHeight);
