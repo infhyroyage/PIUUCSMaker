@@ -133,12 +133,11 @@ function Chart() {
     }
 
     if (
-      event.shiftKey &&
       selector.changingCords !== null &&
       (column !== selector.changingCords.mouseUpColumn ||
         rowIdx !== selector.changingCords.mouseUpRowIdx)
     ) {
-      // 選択領域入力時の場合は選択領域を更新
+      // 選択領域入力時の場合は、入力時の選択領域のみパラメーターを更新
       setSelector({
         changingCords: {
           ...selector.changingCords,
@@ -147,8 +146,12 @@ function Chart() {
         },
         completedCords: null,
       });
-    } else if (!event.shiftKey && selector.changingCords !== null) {
-      // Shift未入力、かつ、選択領域入力時は選択領域のパラメーターを非表示
+    } else if (
+      !event.shiftKey &&
+      selector.changingCords !== null &&
+      !selector.changingCords.isSettingByMenu
+    ) {
+      // Shift未入力、かつ、「Start Selecting」を選択せずに入力時の選択領域を表示している場合は、選択領域を非表示
       setSelector({ changingCords: null, completedCords: null });
     }
   };
@@ -162,19 +165,20 @@ function Chart() {
     // インディケーターを非表示
     setIndicator(null);
 
-    if (event.shiftKey && selector.changingCords !== null) {
-      // 選択領域入力時の場合は選択領域を非表示
+    // 選択領域入力時の場合は、入力時の選択領域のみパラメーターを更新
+    // ただし、Shift未入力、かつ、「Start Selecting」を選択せずに入力時の選択領域を表示している場合は、選択領域を非表示
+    if (selector.changingCords !== null) {
       setSelector({
-        changingCords: {
-          ...selector.changingCords,
-          mouseUpColumn: null,
-          mouseUpRowIdx: null,
-        },
+        changingCords:
+          !event.shiftKey && !selector.changingCords.isSettingByMenu
+            ? null
+            : {
+                ...selector.changingCords,
+                mouseUpColumn: null,
+                mouseUpRowIdx: null,
+              },
         completedCords: null,
       });
-    } else if (!event.shiftKey && selector.changingCords !== null) {
-      // Shift未入力、かつ、選択領域入力時は選択領域のパラメーターを非表示
-      setSelector({ changingCords: null, completedCords: null });
     }
   };
 
@@ -195,8 +199,8 @@ function Chart() {
       });
     }
 
-    if (event.shiftKey) {
-      // Shift入力時の場合は、選択領域入力時のみパラメーターを設定
+    if (event.shiftKey && selector.changingCords === null) {
+      // Shift入力時、かつ、選択領域入力時ではない場合は、入力時の選択領域のみパラメーターを設定
       setSelector({
         changingCords: {
           isSettingByMenu: false,
@@ -208,10 +212,12 @@ function Chart() {
         completedCords: null,
       });
     } else if (
-      selector.changingCords !== null ||
-      selector.completedCords !== null
+      !event.shiftKey &&
+      ((selector.changingCords !== null &&
+        !selector.changingCords.isSettingByMenu) ||
+        selector.completedCords !== null)
     ) {
-      // Shift未入力、かつ、選択領域表示時は選択領域を非表示
+      // Shift未入力、かつ、「Start Selecting」を選択せずに選択領域を表示している場合は、選択領域を非表示
       setSelector({ changingCords: null, completedCords: null });
     }
   };
@@ -223,11 +229,12 @@ function Chart() {
     // 親コンポーネントのWorkspaceに設定したonMouseUpへ伝搬しない
     event.stopPropagation();
 
-    // 同一列内でのクリック操作時は譜面の更新を行う
+    // 同一列内でのクリック操作時、かつ、選択領域入力時でない場合のみ、単ノート/ホールドの設置・削除を行う
     if (
       indicator !== null &&
       mouseDown !== null &&
-      indicator.column === mouseDown.column
+      indicator.column === mouseDown.column &&
+      selector.changingCords === null
     ) {
       // 単ノート/ホールドの始点start、終点goalの譜面全体での行インデックスを取得
       const start: number = Math.min(indicator.rowIdx, mouseDown.rowIdx);
@@ -379,8 +386,13 @@ function Chart() {
   };
 
   const handleSetHold = useCallback(() => {
-    // インディケーターが非表示の場合はNOP
-    if (indicator === null) return;
+    // インディケーターが非表示/選択領域が表示中の場合はNOP
+    if (
+      indicator === null ||
+      selector.changingCords !== null ||
+      selector.completedCords !== null
+    )
+      return;
 
     // 「Start Setting Hold」を選択したインディケーターの表示パラメーターを用いて、
     // マウス押下中の表示パラメーターを保持
@@ -392,12 +404,22 @@ function Chart() {
     });
   }, [indicator, setMouseDown]);
 
-  const handleSetSelector = useCallback(() => {
-    // インディケーターが非表示の場合はNOP
-    if (indicator === null) return;
+  const handleSelect = useCallback(() => {
+    // インディケーターが非表示/マウス押下中の場合はNOP
+    if (indicator === null || mouseDown !== null) return;
 
-    alert("TODO");
-  }, [indicator]);
+    // 「Start Selecting」を選択したインディケーターの表示パラメーターを用いて、選択領域を表示
+    setSelector({
+      changingCords: {
+        isSettingByMenu: true,
+        mouseDownColumn: indicator.column,
+        mouseDownRowIdx: indicator.rowIdx,
+        mouseUpColumn: indicator.column,
+        mouseUpRowIdx: indicator.rowIdx,
+      },
+      completedCords: null,
+    });
+  }, [indicator, mouseDown]);
 
   const handleSplit = useCallback(() => {
     // インディケーターが非表示/譜面のブロックの先頭の行にインディケーターが存在する場合はNOP
@@ -505,7 +527,7 @@ function Chart() {
       <ChartIndicatorMenu
         handler={{
           setHold: handleSetHold,
-          setSelector: handleSetSelector,
+          select: handleSelect,
           split: handleSplit,
         }}
       />

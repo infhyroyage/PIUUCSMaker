@@ -1,5 +1,5 @@
 import { Note } from "./chart";
-import { Indicator, SelectorCords } from "./ui";
+import { SelectorCords } from "./ui";
 
 /**
  * BlockControllerButtonのprops
@@ -102,16 +102,16 @@ export type BorderLineProps = {
 
 type ChartIndicatorMenuHandler = {
   /**
+   * 「Start Selecting」選択時の動作
+   * @returns
+   */
+  select: () => void;
+
+  /**
    * 「Start Setting Hold」選択時の動作
    * @returns
    */
   setHold: () => void;
-
-  /**
-   * 「Start Selecting」選択時の動作
-   * @returns
-   */
-  setSelector: () => void;
 
   /**
    * 「Split Block」選択時の動作

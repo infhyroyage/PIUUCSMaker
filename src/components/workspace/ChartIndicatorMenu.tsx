@@ -54,7 +54,11 @@ function ChartIndicatorMenu({ handler }: ChartIndicatorMenuProps) {
     >
       <MenuList dense>
         <MenuItem
-          disabled={indicator === null}
+          disabled={
+            indicator === null ||
+            selector.changingCords !== null ||
+            selector.completedCords !== null
+          }
           onClick={() => {
             handler.setHold();
             setMenuPosition(undefined);
@@ -63,9 +67,9 @@ function ChartIndicatorMenu({ handler }: ChartIndicatorMenuProps) {
           Start Setting Hold
         </MenuItem>
         <MenuItem
-          disabled={indicator === null}
+          disabled={indicator === null || mouseDown !== null}
           onClick={() => {
-            handler.setSelector();
+            handler.select();
             setMenuPosition(undefined);
           }}
         >

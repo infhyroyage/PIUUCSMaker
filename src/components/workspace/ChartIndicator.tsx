@@ -6,14 +6,16 @@ import {
   indicatorState,
   mouseDownState,
   noteSizeState,
+  selectorState,
 } from "../../service/atoms";
-import { Indicator, MouseDown } from "../../types/ui";
+import { Indicator, MouseDown, Selector } from "../../types/ui";
 import { IDENTIFIER_WIDTH } from "../../service/styles";
 
 function ChartIndicator() {
   const indicator = useRecoilValue<Indicator>(indicatorState);
   const mouseDown = useRecoilValue<MouseDown>(mouseDownState);
   const noteSize = useRecoilValue<number>(noteSizeState);
+  const selector = useRecoilValue<Selector>(selectorState);
 
   // 縦の枠線のサイズ(px)をnoteSizeの0.05倍(偶数に丸めるように切り捨て、最小値は2)として計算
   const verticalBorderSize = useMemo(
@@ -110,6 +112,9 @@ function ChartIndicator() {
             backgroundColor:
               mouseDown && mouseDown.isSettingByMenu
                 ? "rgba(255, 170, 170, 0.5)"
+                : selector.changingCords &&
+                  selector.changingCords.isSettingByMenu
+                ? "rgba(255, 170, 255, 0.5)"
                 : "rgba(170, 170, 255, 0.5)",
             pointerEvents: "none",
             zIndex: theme.zIndex.appBar - 1,
