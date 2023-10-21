@@ -13,7 +13,7 @@ import {
   volumeValueState,
   zoomState,
 } from "../service/atoms";
-import { Zoom } from "../types/ui";
+import { Zoom } from "../types/menu";
 import { Block, Note } from "../types/ucs";
 import { ZOOM_VALUES } from "../service/zoom";
 

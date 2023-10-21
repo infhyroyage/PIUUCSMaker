@@ -1,6 +1,6 @@
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { Block, Note } from "../../types/ucs";
-import { Zoom } from "../../types/ui";
+import { Zoom } from "../../types/menu";
 import { ChartSnapshot } from "../../types/ucs";
 import {
   blocksState,
@@ -17,7 +17,7 @@ import BlockControllerButton from "./BlockControllerButton";
 import { ZOOM_VALUES } from "../../service/zoom";
 import { EditBlockDialogForm } from "../../types/dialog";
 import { useCallback, useMemo } from "react";
-import BlockControllerMenu from "./BlockControllerMenu";
+import BlockControllerMenu from "../menu/BlockControllerMenu";
 import { IDENTIFIER_WIDTH, MENU_BAR_HEIGHT } from "../../service/styles";
 
 function BlockController() {

@@ -4,7 +4,7 @@ import { ChartVerticalNoteImagesProps } from "../../types/props";
 import { useRecoilValue } from "recoil";
 import { noteSizeState, zoomState } from "../../service/atoms";
 import { ZOOM_VALUES } from "../../service/zoom";
-import { Zoom } from "../../types/ui";
+import { Zoom } from "../../types/menu";
 import { IDENTIFIER_WIDTH } from "../../service/styles";
 
 function ChartVerticalNoteImages({

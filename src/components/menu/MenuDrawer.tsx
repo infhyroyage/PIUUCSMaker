@@ -29,7 +29,7 @@ import {
   zoomState,
 } from "../../service/atoms";
 import MenuDrawerListItem from "./MenuDrawerListItem";
-import { Zoom } from "../../types/ui";
+import { Zoom } from "../../types/menu";
 import { ChartSnapshot } from "../../types/ucs";
 import { ZOOM_VALUES } from "../../service/zoom";
 import {

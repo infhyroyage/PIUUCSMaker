@@ -14,9 +14,12 @@ import {
   selectorState,
   undoSnapshotsState,
 } from "../service/atoms";
-import { BlockControllerMenuPosition, Indicator, Selector } from "../types/ui";
+import { Indicator, Selector } from "../types/chart";
+import {
+  BlockControllerMenuPosition,
+  ChartIndicatorMenuPosition,
+} from "../types/menu";
 import { ChartSnapshot } from "../types/ucs";
-import { PopoverPosition } from "@mui/material";
 import { EditBlockDialogForm } from "../types/dialog";
 
 function useChartSnapshot() {
@@ -36,9 +39,10 @@ function useChartSnapshot() {
     useSetRecoilState<BlockControllerMenuPosition>(
       blockControllerMenuPositionState
     );
-  const setChartIndicatorMenuPosition = useSetRecoilState<
-    PopoverPosition | undefined
-  >(chartIndicatorMenuPositionState);
+  const setChartIndicatorMenuPosition =
+    useSetRecoilState<ChartIndicatorMenuPosition>(
+      chartIndicatorMenuPositionState
+    );
   const setIndicator = useSetRecoilState<Indicator>(indicatorState);
   const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
   const setSelector = useSetRecoilState<Selector>(selectorState);

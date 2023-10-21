@@ -8,7 +8,7 @@ import {
 import Chart from "./Chart";
 import Identifier from "./Identifier";
 import BlockController from "./BlockController";
-import { HoldSetter, Selector } from "../../types/ui";
+import { HoldSetter, Selector } from "../../types/chart";
 import { MENU_BAR_HEIGHT } from "../../service/styles";
 
 function WorkSpace() {

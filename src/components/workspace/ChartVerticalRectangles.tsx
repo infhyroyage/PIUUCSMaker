@@ -3,7 +3,7 @@ import { useRecoilValue } from "recoil";
 import { noteSizeState, zoomState } from "../../service/atoms";
 import { ChartVerticalRectanglesProps } from "../../types/props";
 import BorderLine from "./BorderLine";
-import { Zoom } from "../../types/ui";
+import { Zoom } from "../../types/menu";
 import { ZOOM_VALUES } from "../../service/zoom";
 
 function ChartVerticalRectangles({

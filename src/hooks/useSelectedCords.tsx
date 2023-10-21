@@ -1,8 +1,8 @@
 import { useCallback } from "react";
 import { selectorState } from "../service/atoms";
 import { useRecoilValue } from "recoil";
-import { SelectedCords } from "../types/ui";
-import { Selector } from "../types/ui";
+import { SelectedCords } from "../types/chart";
+import { Selector } from "../types/chart";
 
 function useSelectedCords() {
   const selector = useRecoilValue<Selector>(selectorState);

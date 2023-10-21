@@ -7,7 +7,7 @@ import {
   blockControllerMenuPositionState,
 } from "../../service/atoms";
 import { BlockControllerMenuProps } from "../../types/props";
-import { BlockControllerMenuPosition } from "../../types/ui";
+import { BlockControllerMenuPosition } from "../../types/menu";
 import { AdjustBlockDialogOpen } from "../../types/dialog";
 
 function BlockControllerMenu({ blockNum, handler }: BlockControllerMenuProps) {

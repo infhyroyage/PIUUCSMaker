@@ -4,7 +4,7 @@ import { useRecoilValue } from "recoil";
 import { blocksState, noteSizeState, zoomState } from "../../service/atoms";
 import { ChartSelectorProps } from "../../types/props";
 import { Block } from "../../types/ucs";
-import { Zoom } from "../../types/ui";
+import { Zoom } from "../../types/menu";
 import { ZOOM_VALUES } from "../../service/zoom";
 import { IDENTIFIER_WIDTH } from "../../service/styles";
 

@@ -18,14 +18,14 @@ import {
 import BorderLine from "./BorderLine";
 import ChartVertical from "./ChartVertical";
 import { Block, Note } from "../../types/ucs";
-import { HoldSetter, Zoom } from "../../types/ui";
+import { HoldSetter } from "../../types/chart";
+import { ChartIndicatorMenuPosition, Zoom } from "../../types/menu";
 import { ChartSnapshot } from "../../types/ucs";
-import { Selector } from "../../types/ui";
-import { Indicator } from "../../types/ui";
+import { Selector } from "../../types/chart";
+import { Indicator } from "../../types/chart";
 import { ZOOM_VALUES } from "../../service/zoom";
-import { PopoverPosition } from "@mui/material";
 import ChartIndicator from "./ChartIndicator";
-import ChartIndicatorMenu from "./ChartIndicatorMenu";
+import ChartIndicatorMenu from "../menu/ChartIndicatorMenu";
 import ChartSelector from "./ChartSelector";
 
 function Chart() {
@@ -34,7 +34,7 @@ function Chart() {
   const [holdSetter, setHoldSetter] =
     useRecoilState<HoldSetter>(holdSetterState);
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
-  const [position, setPosition] = useRecoilState<PopoverPosition | undefined>(
+  const [position, setPosition] = useRecoilState<ChartIndicatorMenuPosition>(
     chartIndicatorMenuPositionState
   );
   const [selector, setSelector] = useRecoilState<Selector>(selectorState);

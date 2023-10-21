@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import BorderLine from "./BorderLine";
 import { BlockControllerButtonProps } from "../../types/props";
-import { BlockControllerMenuPosition } from "../../types/ui";
+import { BlockControllerMenuPosition } from "../../types/menu";
 
 function BlockControllerButton({
   blockHeight,

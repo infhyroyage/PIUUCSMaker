@@ -30,7 +30,7 @@ import VolumeOffIcon from "@mui/icons-material/VolumeOff";
 import VolumeDownIcon from "@mui/icons-material/VolumeDown";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import VolumeMuteIcon from "@mui/icons-material/VolumeMute";
-import { Zoom } from "../../types/ui";
+import { Zoom } from "../../types/menu";
 import {
   MENU_BAR_HEIGHT,
   MENU_DRAWER_OPENED_WIDTH,

@@ -1,13 +1,12 @@
 import { atom } from "recoil";
 import { Block, Note } from "../types/ucs";
-import { HoldSetter, Selector } from "../types/ui";
+import { HoldSetter, Selector } from "../types/chart";
 import { ChartSnapshot } from "../types/ucs";
-import { Indicator } from "../types/ui";
+import { Indicator } from "../types/chart";
 import { ClipBoard } from "../types/ucs";
-import { Zoom } from "../types/ui";
+import { ChartIndicatorMenuPosition, Zoom } from "../types/menu";
 import { AdjustBlockDialogOpen, EditBlockDialogForm } from "../types/dialog";
-import { PopoverPosition } from "@mui/material";
-import { BlockControllerMenuPosition } from "../types/ui";
+import { BlockControllerMenuPosition } from "../types/menu";
 
 export const adjustBlockDialogOpenState = atom<AdjustBlockDialogOpen>({
   key: "adjustBlockDialogOpen",
@@ -23,6 +22,10 @@ export const blockControllerMenuBlockIdxState = atom<number | null>({
   default: null,
 });
 
+/**
+ * BlockControllerMenuのメニューを開くブラウザの画面の座標
+ * BlockControllerMenuのメニューが非表示の場合はundefined
+ */
 export const blockControllerMenuPositionState =
   atom<BlockControllerMenuPosition>({
     key: "blockControllerMenuPosition",
@@ -34,12 +37,16 @@ export const blocksState = atom<Block[]>({
   default: [],
 });
 
-export const chartIndicatorMenuPositionState = atom<
-  PopoverPosition | undefined
->({
-  key: "chartIndicatorMenuPosition",
-  default: undefined,
-});
+/**
+ * ChartIndicatorMenuのメニューを開くブラウザの画面の座標
+ * ChartIndicatorMenuのメニューが非表示の場合はundefined
+ */
+export const chartIndicatorMenuPositionState = atom<ChartIndicatorMenuPosition>(
+  {
+    key: "chartIndicatorMenuPosition",
+    default: undefined,
+  }
+);
 
 export const clipBoardState = atom<ClipBoard>({
   key: "clipBoard",

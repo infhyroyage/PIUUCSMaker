@@ -8,7 +8,7 @@ import {
   noteSizeState,
   selectorState,
 } from "../../service/atoms";
-import { Indicator, HoldSetter, Selector } from "../../types/ui";
+import { Indicator, HoldSetter, Selector } from "../../types/chart";
 import { IDENTIFIER_WIDTH } from "../../service/styles";
 
 function ChartIndicator() {

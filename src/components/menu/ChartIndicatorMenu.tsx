@@ -5,7 +5,6 @@ import {
   Menu,
   MenuItem,
   MenuList,
-  PopoverPosition,
   Typography,
 } from "@mui/material";
 import { useRecoilState, useRecoilValue } from "recoil";
@@ -17,17 +16,17 @@ import {
   selectorState,
 } from "../../service/atoms";
 import { ChartIndicatorMenuProps } from "../../types/props";
-import { HoldSetter, Selector } from "../../types/ui";
-import { Indicator } from "../../types/ui";
+import { HoldSetter, Selector } from "../../types/chart";
+import { Indicator } from "../../types/chart";
 import { ClipBoard } from "../../types/ucs";
 import useClipBoard from "../../hooks/useClipBoard";
 import useSelectedFlipping from "../../hooks/useSelectedFlipping";
 import useSelectedDeleting from "../../hooks/useSelectedDeleting";
+import { ChartIndicatorMenuPosition } from "../../types/menu";
 
 function ChartIndicatorMenu({ handler }: ChartIndicatorMenuProps) {
-  const [menuPosition, setMenuPosition] = useRecoilState<
-    PopoverPosition | undefined
-  >(chartIndicatorMenuPositionState);
+  const [menuPosition, setMenuPosition] =
+    useRecoilState<ChartIndicatorMenuPosition>(chartIndicatorMenuPositionState);
   const clipBoard = useRecoilValue<ClipBoard>(clipBoardState);
   const holdSetter = useRecoilValue<HoldSetter>(holdSetterState);
   const indicator = useRecoilValue<Indicator>(indicatorState);

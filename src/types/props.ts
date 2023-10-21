@@ -1,5 +1,5 @@
 import { Note } from "./ucs";
-import { SelectorMouseCords } from "./ui";
+import { SelectorMouseCords } from "./chart";
 
 /**
  * BlockControllerButtonのprops

@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo } from "react";
 import { Block, Note } from "../types/ucs";
-import { SelectedCords, Selector } from "../types/ui";
+import { SelectedCords, Selector } from "../types/chart";
 import { ChartSnapshot } from "../types/ucs";
-import { Indicator } from "../types/ui";
+import { Indicator } from "../types/chart";
 import { ClipBoard } from "../types/ucs";
 import { CopiedNote } from "../types/ucs";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
