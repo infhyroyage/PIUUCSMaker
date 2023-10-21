@@ -29,7 +29,8 @@ import {
   zoomState,
 } from "../../service/atoms";
 import MenuDrawerListItem from "./MenuDrawerListItem";
-import { ChartSnapshot, Zoom } from "../../types/ui";
+import { Zoom } from "../../types/ui";
+import { ChartSnapshot } from "../../types/ucs";
 import { ZOOM_VALUES } from "../../service/zoom";
 import {
   MENU_BAR_HEIGHT,

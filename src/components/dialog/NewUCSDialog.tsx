@@ -26,8 +26,8 @@ import {
   NewUCSDialogForm,
   NewUCSValidation,
 } from "../../types/dialog";
-import { Block, Note } from "../../types/chart";
-import { ChartSnapshot } from "../../types/ui";
+import { Block, Note } from "../../types/ucs";
+import { ChartSnapshot } from "../../types/ucs";
 
 const validateAndLoadUCS = (
   form: NewUCSDialogForm

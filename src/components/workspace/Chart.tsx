@@ -7,7 +7,7 @@ import {
   indicatorState,
   isPlayingState,
   isProtectedState,
-  mouseDownState,
+  holdSetterState,
   noteSizeState,
   notesState,
   redoSnapshotsState,
@@ -17,8 +17,9 @@ import {
 } from "../../service/atoms";
 import BorderLine from "./BorderLine";
 import ChartVertical from "./ChartVertical";
-import { Block, Note } from "../../types/chart";
-import { ChartSnapshot, MouseDown, Zoom } from "../../types/ui";
+import { Block, Note } from "../../types/ucs";
+import { HoldSetter, Zoom } from "../../types/ui";
+import { ChartSnapshot } from "../../types/ucs";
 import { Selector } from "../../types/ui";
 import { Indicator } from "../../types/ui";
 import { ZOOM_VALUES } from "../../service/zoom";
@@ -30,7 +31,8 @@ import ChartSelector from "./ChartSelector";
 function Chart() {
   const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
   const [indicator, setIndicator] = useRecoilState<Indicator>(indicatorState);
-  const [mouseDown, setMouseDown] = useRecoilState<MouseDown>(mouseDownState);
+  const [holdSetter, setHoldSetter] =
+    useRecoilState<HoldSetter>(holdSetterState);
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
   const [position, setPosition] = useRecoilState<PopoverPosition | undefined>(
     chartIndicatorMenuPositionState
@@ -133,26 +135,26 @@ function Chart() {
     }
 
     if (
-      selector.changingCords !== null &&
-      (column !== selector.changingCords.mouseUpColumn ||
-        rowIdx !== selector.changingCords.mouseUpRowIdx)
+      selector.setting !== null &&
+      (column !== selector.setting.mouseUpColumn ||
+        rowIdx !== selector.setting.mouseUpRowIdx)
     ) {
       // 選択領域入力時の場合は、入力時の選択領域のみパラメーターを更新
       setSelector({
-        changingCords: {
-          ...selector.changingCords,
+        setting: {
+          ...selector.setting,
           mouseUpColumn: column,
           mouseUpRowIdx: rowIdx,
         },
-        completedCords: null,
+        completed: null,
       });
     } else if (
       !event.shiftKey &&
-      selector.changingCords !== null &&
-      !selector.changingCords.isSettingByMenu
+      selector.setting !== null &&
+      !selector.setting.isSettingByMenu
     ) {
       // Shift未入力、かつ、「Start Selecting」を選択せずに入力時の選択領域を表示している場合は、選択領域を非表示
-      setSelector({ changingCords: null, completedCords: null });
+      setSelector({ setting: null, completed: null });
     }
   };
 
@@ -167,17 +169,17 @@ function Chart() {
 
     // 選択領域入力時の場合は、入力時の選択領域のみパラメーターを更新
     // ただし、Shift未入力、かつ、「Start Selecting」を選択せずに入力時の選択領域を表示している場合は、選択領域を非表示
-    if (selector.changingCords !== null) {
+    if (selector.setting !== null) {
       setSelector({
-        changingCords:
-          !event.shiftKey && !selector.changingCords.isSettingByMenu
+        setting:
+          !event.shiftKey && !selector.setting.isSettingByMenu
             ? null
             : {
-                ...selector.changingCords,
+                ...selector.setting,
                 mouseUpColumn: null,
                 mouseUpRowIdx: null,
               },
-        completedCords: null,
+        completed: null,
       });
     }
   };
@@ -189,9 +191,9 @@ function Chart() {
     if (event.button !== 0 || !!position || isPlaying || indicator === null)
       return;
 
-    // Shift未入力の場合のみ、譜面にマウス押下した場合の表示パラメーターを更新
-    if (!event.shiftKey && mouseDown === null) {
-      setMouseDown({
+    // Shift未入力の場合のみ、ホールド設置中の表示パラメーターを更新
+    if (!event.shiftKey && holdSetter === null) {
+      setHoldSetter({
         column: indicator.column,
         isSettingByMenu: false,
         rowIdx: indicator.rowIdx,
@@ -199,26 +201,25 @@ function Chart() {
       });
     }
 
-    if (event.shiftKey && selector.changingCords === null) {
+    if (event.shiftKey && selector.setting === null) {
       // Shift入力時、かつ、選択領域入力時ではない場合は、入力時の選択領域のみパラメーターを設定
       setSelector({
-        changingCords: {
+        setting: {
           isSettingByMenu: false,
           mouseDownColumn: indicator.column,
           mouseDownRowIdx: indicator.rowIdx,
           mouseUpColumn: indicator.column,
           mouseUpRowIdx: indicator.rowIdx,
         },
-        completedCords: null,
+        completed: null,
       });
     } else if (
       !event.shiftKey &&
-      ((selector.changingCords !== null &&
-        !selector.changingCords.isSettingByMenu) ||
-        selector.completedCords !== null)
+      ((selector.setting !== null && !selector.setting.isSettingByMenu) ||
+        selector.completed !== null)
     ) {
       // Shift未入力、かつ、「Start Selecting」を選択せずに選択領域を表示している場合は、選択領域を非表示
-      setSelector({ changingCords: null, completedCords: null });
+      setSelector({ setting: null, completed: null });
     }
   };
 
@@ -232,13 +233,13 @@ function Chart() {
     // 同一列内でのクリック操作時、かつ、選択領域入力時でない場合のみ、単ノート/ホールドの設置・削除を行う
     if (
       indicator !== null &&
-      mouseDown !== null &&
-      indicator.column === mouseDown.column &&
-      selector.changingCords === null
+      holdSetter !== null &&
+      indicator.column === holdSetter.column &&
+      selector.setting === null
     ) {
       // 単ノート/ホールドの始点start、終点goalの譜面全体での行インデックスを取得
-      const start: number = Math.min(indicator.rowIdx, mouseDown.rowIdx);
-      const goal: number = Math.max(indicator.rowIdx, mouseDown.rowIdx);
+      const start: number = Math.min(indicator.rowIdx, holdSetter.rowIdx);
+      const goal: number = Math.max(indicator.rowIdx, holdSetter.rowIdx);
 
       // 譜面全体での行インデックスmouseDown.rowIdxで押下した後に
       // 譜面全体での行インデックスindicator.rowIdxで押下を離した際の
@@ -371,16 +372,16 @@ function Chart() {
       );
     }
 
-    // マウス押下時のパラメーターを初期化
-    if (mouseDown !== null) {
-      setMouseDown(null);
+    // ホールド設置中の表示パラメーターを初期化
+    if (holdSetter !== null) {
+      setHoldSetter(null);
     }
 
-    if (selector.changingCords !== null) {
+    if (selector.setting !== null) {
       // 選択領域入力時の場合は選択領域を入力時→入力後に更新
       setSelector({
-        changingCords: null,
-        completedCords: { ...selector.changingCords },
+        setting: null,
+        completed: { ...selector.setting },
       });
     }
   };
@@ -389,37 +390,37 @@ function Chart() {
     // インディケーターが非表示/選択領域が表示中の場合はNOP
     if (
       indicator === null ||
-      selector.changingCords !== null ||
-      selector.completedCords !== null
+      selector.setting !== null ||
+      selector.completed !== null
     )
       return;
 
     // 「Start Setting Hold」を選択したインディケーターの表示パラメーターを用いて、
-    // マウス押下中の表示パラメーターを保持
-    setMouseDown({
+    // ホールド設置中の表示パラメーターを保持
+    setHoldSetter({
       column: indicator.column,
       isSettingByMenu: true,
       rowIdx: indicator.rowIdx,
       top: indicator.top,
     });
-  }, [indicator, setMouseDown]);
+  }, [indicator, setHoldSetter]);
 
   const handleSelect = useCallback(() => {
-    // インディケーターが非表示/マウス押下中の場合はNOP
-    if (indicator === null || mouseDown !== null) return;
+    // インディケーターが非表示/ホールド設置中の場合はNOP
+    if (indicator === null || holdSetter !== null) return;
 
     // 「Start Selecting」を選択したインディケーターの表示パラメーターを用いて、選択領域を表示
     setSelector({
-      changingCords: {
+      setting: {
         isSettingByMenu: true,
         mouseDownColumn: indicator.column,
         mouseDownRowIdx: indicator.rowIdx,
         mouseUpColumn: indicator.column,
         mouseUpRowIdx: indicator.rowIdx,
       },
-      completedCords: null,
+      completed: null,
     });
-  }, [indicator, mouseDown]);
+  }, [indicator, holdSetter]);
 
   const handleSplit = useCallback(() => {
     // インディケーターが非表示/譜面のブロックの先頭の行にインディケーターが存在する場合はNOP
@@ -531,11 +532,11 @@ function Chart() {
           split: handleSplit,
         }}
       />
-      {selector.changingCords !== null && (
-        <ChartSelector cords={selector.changingCords} />
+      {selector.setting !== null && (
+        <ChartSelector mouseCords={selector.setting} />
       )}
-      {selector.completedCords !== null && (
-        <ChartSelector cords={selector.completedCords} />
+      {selector.completed !== null && (
+        <ChartSelector mouseCords={selector.completed} />
       )}
     </>
   );

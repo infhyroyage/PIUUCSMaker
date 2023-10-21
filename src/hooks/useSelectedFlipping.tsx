@@ -6,9 +6,9 @@ import {
   redoSnapshotsState,
   undoSnapshotsState,
 } from "../service/atoms";
-import { Note } from "../types/chart";
+import { Note } from "../types/ucs";
 import useSelectedCords from "./useSelectedCords";
-import { ChartSnapshot } from "../types/ui";
+import { ChartSnapshot } from "../types/ucs";
 
 function useSelectedFlipping() {
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);

@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { useSetRecoilState } from "recoil";
-import { Block, Note } from "../types/chart";
+import { Block, Note } from "../types/ucs";
 import {
   blocksState,
   columnsState,
@@ -13,7 +13,7 @@ import {
   userErrorMessageState,
 } from "../service/atoms";
 import { UploadingUCSValidation } from "../types/dialog";
-import { ChartSnapshot } from "../types/ui";
+import { ChartSnapshot } from "../types/ucs";
 
 const validateAndLoadUCS = (
   content: string

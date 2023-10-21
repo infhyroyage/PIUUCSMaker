@@ -24,8 +24,8 @@ import {
   AdjustBlockDialogForm,
   AdjustBlockDialogOpen,
 } from "../../types/dialog";
-import { Block, Note } from "../../types/chart";
-import { ChartSnapshot } from "../../types/ui";
+import { Block, Note } from "../../types/ucs";
+import { ChartSnapshot } from "../../types/ucs";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 
 /**

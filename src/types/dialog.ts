@@ -1,4 +1,4 @@
-import { Block, Note } from "./chart";
+import { Block, Note } from "./ucs";
 
 export type EditBlockDialogError = "beat" | "bpm" | "delay" | "rows" | "split";
 

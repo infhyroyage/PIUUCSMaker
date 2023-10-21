@@ -1,5 +1,4 @@
 import { PopoverPosition } from "@mui/material";
-import { Block, CopiedNote, Note } from "./chart";
 
 /**
  * BlockControllerMenuのメニューを開くブラウザの画面の座標
@@ -8,41 +7,30 @@ import { Block, CopiedNote, Note } from "./chart";
 export type BlockControllerMenuPosition = PopoverPosition | undefined;
 
 /**
- * 譜面のブロック/単ノート/ホールドの始点/ホールドの中間/ホールドの終点の編集直前のスナップショット
+ * ホールド設置中の表示パラメーター
+ * ホールド設置中ではない場合はnull
  */
-export type ChartSnapshot = {
+export type HoldSetter = null | {
   /**
-   * 編集直前のblocksStateで管理する値(Block[])
-   * 編集前後で変更しない場合はnull
+   * ホールド設置開始地点での列インデックス
    */
-  blocks: Block[] | null;
+  column: number;
 
   /**
-   * 編集直前のnotesStateで管理する値(Note[][])
-   * 編集前後で変更しない場合はnull
+   * ChartIndicatorMenuの「Starting Setting Hold」からホールド設置を開始する場合はtrue、
+   * ドラッグアンドドロップ操作からホールド設置を開始する場合はfalse
    */
-  notes: Note[][] | null;
-};
-
-/**
- * 選択領域に含まれるCopiedNoteの集合をコピーできるクリップボード
- * 1度もコピーしていない場合はnull
- */
-export type ClipBoard = null | {
-  /**
-   * コピー時の選択領域の列の長さ
-   */
-  columnLength: number;
+  isSettingByMenu: boolean;
 
   /**
-   * CopiedNoteの集合
+   * ホールド設置開始地点での譜面全体での行のインデックス
    */
-  copiedNotes: CopiedNote[];
+  rowIdx: number;
 
   /**
-   * コピー時の選択領域の行の長さ
+   * ホールド設置開始地点での行のtop値(px)
    */
-  rowLength: number;
+  top: number;
 };
 
 /**
@@ -77,36 +65,59 @@ export type Indicator = null | {
 };
 
 /**
- * 譜面にマウス押下した場合の表示パラメーター
- * 譜面にマウスを押下していない場合はnull
+ * 選択領域入力済の座標を構成するパラメーター
  */
-export type MouseDown = null | {
+export type SelectedCords = {
   /**
-   * マウス押下した瞬間での列インデックス
+   * 選択領域の終点の列インデックス
    */
-  column: number;
+  goalColumn: number;
 
   /**
-   * ChartIndicatorMenuの「Starting Setting Hold」からホールドを設置する場合はtrue、
-   * ドラッグアンドドロップ操作からホールドを設置する場合はfalse
+   * 選択領域の終点の譜面全体での行インデックス
    */
-  isSettingByMenu: boolean;
+  goalRowIdx: number;
 
   /**
-   * マウス押下した瞬間での譜面全体での行のインデックス
+   * 選択領域の始点の列インデックス
    */
-  rowIdx: number;
+  startColumn: number;
 
   /**
-   * マウス押下した瞬間での行のtop値(px)
+   * 選択領域の始点の譜面全体での行インデックス
    */
-  top: number;
+  startRowIdx: number;
+};
+
+/**
+ * 選択領域の表示パラメーター
+ */
+export type Selector = {
+  /**
+   * 選択領域入力後のマウスの各座標
+   * 選択領域未入力/入力時の場合はnull
+   */
+  completed: null | SelectorMouseCords;
+
+  /**
+   * 選択領域の入力時のマウスの各座標
+   * 選択領域未入力/入力済の場合はnull
+   */
+  setting:
+    | null
+    | (SelectorMouseCords & {
+        /**
+         * ChartIndicatorMenuの「Starting Selecting」から選択領域を入力する場合はtrue、
+         * Shiftキー入力したままドラッグアンドドロップ操作から選択領域を入力する場合はfalse
+         */
+        isSettingByMenu: boolean;
+      });
 };
 
 /**
  * 選択領域の入力開始時、および、入力時/入力終了時のマウスの各座標を構成するパラメーター
  */
-export type SelectorCords = {
+export type SelectorMouseCords = {
   /**
    * 選択領域の入力開始時のマウスの座標での列インデックス
    * Single/SinglePerformance譜面の場合は0〜4、Double/DoublePerformance譜面の場合は0〜9
@@ -133,57 +144,7 @@ export type SelectorCords = {
 };
 
 /**
- * 選択領域入力済の座標を構成するパラメーター
- */
-export type SelectedCords = {
-  /**
-   * 選択領域の終点の列インデックス
-   */
-  goalColumn: number;
-
-  /**
-   * 選択領域の終点の譜面全体での行インデックス
-   */
-  goalRowIdx: number;
-
-  /**
-   * 選択領域の始点の列インデックス
-   */
-  startColumn: number;
-
-  /**
-   * 選択領域の始点の譜面全体での行インデックス
-   */
-  startRowIdx: number;
-};
-
-/**
- * 選択領域のパラメーター
- */
-export type Selector = {
-  /**
-   * 選択領域の入力時の各座標
-   * 選択領域未入力/入力済の場合はnull
-   */
-  changingCords:
-    | null
-    | (SelectorCords & {
-        /**
-         * ChartIndicatorMenuの「Starting Selecting」から選択領域を入力する場合はtrue、
-         * Shiftキー入力したままドラッグアンドドロップ操作から選択領域を入力する場合はfalse
-         */
-        isSettingByMenu: boolean;
-      });
-
-  /**
-   * 選択領域入力後の各座標
-   * 選択領域未入力/入力時の場合はnull
-   */
-  completedCords: null | SelectorCords;
-};
-
-/**
- * 拡大/縮小時のパラメーター
+ * 拡大/縮小時の表示パラメーター
  */
 export type Zoom = {
   /**

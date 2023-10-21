@@ -14,7 +14,7 @@ import {
   zoomState,
 } from "../service/atoms";
 import { Zoom } from "../types/ui";
-import { Block, Note } from "../types/chart";
+import { Block, Note } from "../types/ucs";
 import { ZOOM_VALUES } from "../service/zoom";
 
 function usePlayingMusic() {

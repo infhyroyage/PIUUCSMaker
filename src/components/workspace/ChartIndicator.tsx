@@ -4,16 +4,16 @@ import { IMAGE_BINARIES } from "../../service/assets";
 import { useRecoilValue } from "recoil";
 import {
   indicatorState,
-  mouseDownState,
+  holdSetterState,
   noteSizeState,
   selectorState,
 } from "../../service/atoms";
-import { Indicator, MouseDown, Selector } from "../../types/ui";
+import { Indicator, HoldSetter, Selector } from "../../types/ui";
 import { IDENTIFIER_WIDTH } from "../../service/styles";
 
 function ChartIndicator() {
+  const holdSetter = useRecoilValue<HoldSetter>(holdSetterState);
   const indicator = useRecoilValue<Indicator>(indicatorState);
-  const mouseDown = useRecoilValue<MouseDown>(mouseDownState);
   const noteSize = useRecoilValue<number>(noteSizeState);
   const selector = useRecoilValue<Selector>(selectorState);
 
@@ -28,10 +28,10 @@ function ChartIndicator() {
   return (
     indicator !== null && (
       <>
-        {mouseDown !== null && indicator.column === mouseDown.column && (
+        {holdSetter !== null && indicator.column === holdSetter.column && (
           <>
-            {(mouseDown.isSettingByMenu ||
-              indicator.rowIdx !== mouseDown.rowIdx) && (
+            {(holdSetter.isSettingByMenu ||
+              indicator.rowIdx !== holdSetter.rowIdx) && (
               <img
                 src={IMAGE_BINARIES[indicator.column % 5].note}
                 alt={`note${indicator.column % 5}`}
@@ -39,37 +39,37 @@ function ChartIndicator() {
                 height={`${noteSize}px`}
                 style={{
                   position: "absolute",
-                  top: `${Math.min(indicator.top, mouseDown.top)}px`,
+                  top: `${Math.min(indicator.top, holdSetter.top)}px`,
                   left: `${
                     IDENTIFIER_WIDTH +
                     verticalBorderSize * 0.5 +
                     noteSize * indicator.column
                   }px`,
-                  opacity: mouseDown.isSettingByMenu ? 0.5 : 1,
+                  opacity: holdSetter.isSettingByMenu ? 0.5 : 1,
                   pointerEvents: "none",
                   userSelect: "none",
                   zIndex: theme.zIndex.appBar - 4,
                 }}
               />
             )}
-            {indicator.rowIdx !== mouseDown.rowIdx && (
+            {indicator.rowIdx !== holdSetter.rowIdx && (
               <>
                 <img
                   src={IMAGE_BINARIES[indicator.column % 5].hold}
                   alt={`hold${indicator.column % 5}`}
                   width={`${noteSize}px`}
-                  height={`${Math.abs(indicator.top - mouseDown.top)}px`}
+                  height={`${Math.abs(indicator.top - holdSetter.top)}px`}
                   style={{
                     position: "absolute",
                     top: `${
-                      Math.min(indicator.top, mouseDown.top) + noteSize * 0.5
+                      Math.min(indicator.top, holdSetter.top) + noteSize * 0.5
                     }px`,
                     left: `${
                       IDENTIFIER_WIDTH +
                       verticalBorderSize * 0.5 +
                       noteSize * indicator.column
                     }px`,
-                    opacity: mouseDown.isSettingByMenu ? 0.5 : 1,
+                    opacity: holdSetter.isSettingByMenu ? 0.5 : 1,
                     pointerEvents: "none",
                     userSelect: "none",
                     zIndex: theme.zIndex.appBar - 3,
@@ -82,13 +82,13 @@ function ChartIndicator() {
                   height={`${noteSize}px`}
                   style={{
                     position: "absolute",
-                    top: `${Math.max(indicator.top, mouseDown.top)}px`,
+                    top: `${Math.max(indicator.top, holdSetter.top)}px`,
                     left: `${
                       IDENTIFIER_WIDTH +
                       verticalBorderSize * 0.5 +
                       noteSize * indicator.column
                     }px`,
-                    opacity: mouseDown.isSettingByMenu ? 0.5 : 1,
+                    opacity: holdSetter.isSettingByMenu ? 0.5 : 1,
                     pointerEvents: "none",
                     userSelect: "none",
                     zIndex: theme.zIndex.appBar - 2,
@@ -110,10 +110,9 @@ function ChartIndicator() {
             width: `${noteSize}px`,
             height: `${noteSize}px`,
             backgroundColor:
-              mouseDown && mouseDown.isSettingByMenu
+              holdSetter && holdSetter.isSettingByMenu
                 ? "rgba(255, 170, 170, 0.5)"
-                : selector.changingCords &&
-                  selector.changingCords.isSettingByMenu
+                : selector.setting && selector.setting.isSettingByMenu
                 ? "rgba(255, 170, 255, 0.5)"
                 : "rgba(170, 170, 255, 0.5)",
             pointerEvents: "none",

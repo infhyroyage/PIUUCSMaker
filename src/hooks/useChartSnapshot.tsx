@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from "react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import { Block, Note } from "../types/chart";
+import { Block, Note } from "../types/ucs";
 import {
   blockControllerMenuPositionState,
   blocksState,
@@ -14,12 +14,8 @@ import {
   selectorState,
   undoSnapshotsState,
 } from "../service/atoms";
-import {
-  BlockControllerMenuPosition,
-  ChartSnapshot,
-  Indicator,
-  Selector,
-} from "../types/ui";
+import { BlockControllerMenuPosition, Indicator, Selector } from "../types/ui";
+import { ChartSnapshot } from "../types/ucs";
 import { PopoverPosition } from "@mui/material";
 import { EditBlockDialogForm } from "../types/dialog";
 
@@ -70,7 +66,7 @@ function useChartSnapshot() {
 
     // インディケーター・選択領域・メニューをすべて非表示
     setIndicator(null);
-    setSelector({ changingCords: null, completedCords: null });
+    setSelector({ setting: null, completed: null });
     setBlockControllerMenuPosition(undefined);
     setChartIndicatorMenuPosition(undefined);
 
@@ -117,7 +113,7 @@ function useChartSnapshot() {
 
     // インディケーター・選択領域・メニューをすべて非表示
     setIndicator(null);
-    setSelector({ changingCords: null, completedCords: null });
+    setSelector({ setting: null, completed: null });
     setBlockControllerMenuPosition(undefined);
     setChartIndicatorMenuPosition(undefined);
 

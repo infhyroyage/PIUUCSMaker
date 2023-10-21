@@ -9,31 +9,31 @@ function useSelectedCords() {
 
   const getSelectedCords: () => null | SelectedCords = useCallback(() => {
     if (
-      selector.completedCords === null ||
-      selector.completedCords.mouseUpColumn === null ||
-      selector.completedCords.mouseUpRowIdx === null
+      selector.completed === null ||
+      selector.completed.mouseUpColumn === null ||
+      selector.completed.mouseUpRowIdx === null
     )
       return null;
 
     return {
       startColumn: Math.min(
-        selector.completedCords.mouseDownColumn,
-        selector.completedCords.mouseUpColumn
+        selector.completed.mouseDownColumn,
+        selector.completed.mouseUpColumn
       ),
       goalColumn: Math.max(
-        selector.completedCords.mouseDownColumn,
-        selector.completedCords.mouseUpColumn
+        selector.completed.mouseDownColumn,
+        selector.completed.mouseUpColumn
       ),
       startRowIdx: Math.min(
-        selector.completedCords.mouseDownRowIdx,
-        selector.completedCords.mouseUpRowIdx
+        selector.completed.mouseDownRowIdx,
+        selector.completed.mouseUpRowIdx
       ),
       goalRowIdx: Math.max(
-        selector.completedCords.mouseDownRowIdx,
-        selector.completedCords.mouseUpRowIdx
+        selector.completed.mouseDownRowIdx,
+        selector.completed.mouseUpRowIdx
       ),
     };
-  }, [selector.completedCords]);
+  }, [selector.completed]);
 
   return { getSelectedCords };
 }

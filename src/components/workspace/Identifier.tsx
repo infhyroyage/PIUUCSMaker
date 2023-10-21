@@ -1,6 +1,6 @@
 import React from "react";
 import { useRecoilValue } from "recoil";
-import { Block } from "../../types/chart";
+import { Block } from "../../types/ucs";
 import { blocksState, noteSizeState, zoomState } from "../../service/atoms";
 import BorderLine from "./BorderLine";
 import { Zoom } from "../../types/ui";

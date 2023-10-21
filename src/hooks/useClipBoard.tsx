@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo } from "react";
-import { Block, Note } from "../types/chart";
-import { ChartSnapshot, SelectedCords, Selector } from "../types/ui";
+import { Block, Note } from "../types/ucs";
+import { SelectedCords, Selector } from "../types/ui";
+import { ChartSnapshot } from "../types/ucs";
 import { Indicator } from "../types/ui";
-import { ClipBoard } from "../types/ui";
-import { CopiedNote } from "../types/chart";
+import { ClipBoard } from "../types/ucs";
+import { CopiedNote } from "../types/ucs";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
   blocksState,
@@ -158,8 +159,8 @@ function useClipBoard() {
 
     // ペースト対象の領域を選択領域として設定
     setSelector({
-      changingCords: null,
-      completedCords: {
+      setting: null,
+      completed: {
         mouseDownColumn: indicator.column,
         mouseDownRowIdx: indicator.rowIdx,
         mouseUpColumn:

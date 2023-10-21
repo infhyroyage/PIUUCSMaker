@@ -1,8 +1,9 @@
 import { atom } from "recoil";
-import { Block, Note } from "../types/chart";
-import { ChartSnapshot, MouseDown, Selector } from "../types/ui";
+import { Block, Note } from "../types/ucs";
+import { HoldSetter, Selector } from "../types/ui";
+import { ChartSnapshot } from "../types/ucs";
 import { Indicator } from "../types/ui";
-import { ClipBoard } from "../types/ui";
+import { ClipBoard } from "../types/ucs";
 import { Zoom } from "../types/ui";
 import { AdjustBlockDialogOpen, EditBlockDialogForm } from "../types/dialog";
 import { PopoverPosition } from "@mui/material";
@@ -71,6 +72,15 @@ export const editBlockDialogFormState = atom<EditBlockDialogForm>({
 });
 
 /**
+ * ホールド設置中の表示パラメーター
+ * ホールド設置中ではない場合はnull
+ */
+export const holdSetterState = atom<HoldSetter>({
+  key: "holdSetter",
+  default: null,
+});
+
+/**
  * インディケーターの表示パラメーター
  * インディケーター非表示の場合はnull
  */
@@ -136,15 +146,6 @@ export const isProtectedState = atom<boolean>({
 });
 
 /**
- * 譜面にマウス押下した場合の表示パラメーター
- * 譜面にマウスを押下していない場合はnull
- */
-export const mouseDownState = atom<MouseDown>({
-  key: "mouseDown",
-  default: null,
-});
-
-/**
  * mp3ファイル名(拡張子込)
  * 未アップロード時はnull
  */
@@ -175,9 +176,12 @@ export const redoSnapshotsState = atom<ChartSnapshot[]>({
   default: [],
 });
 
+/**
+ * 選択領域の表示パラメーター
+ */
 export const selectorState = atom<Selector>({
   key: "selector",
-  default: { changingCords: null, completedCords: null },
+  default: { setting: null, completed: null },
 });
 
 export const successMessageState = atom<string>({
@@ -213,6 +217,9 @@ export const volumeValueState = atom<number>({
   default: 0.5,
 });
 
+/**
+ * 拡大/縮小時の表示パラメーター
+ */
 export const zoomState = atom<Zoom>({
   key: "zoom",
   default: { idx: 0, top: null },

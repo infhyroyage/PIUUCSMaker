@@ -40,6 +40,44 @@ export type Block = {
 };
 
 /**
+ * 譜面のブロック/単ノート/ホールドの始点/ホールドの中間/ホールドの終点の編集直前のスナップショット
+ */
+export type ChartSnapshot = {
+  /**
+   * 編集直前のblocksStateで管理する値(Block[])
+   * 編集前後で変更しない場合はnull
+   */
+  blocks: Block[] | null;
+
+  /**
+   * 編集直前のnotesStateで管理する値(Note[][])
+   * 編集前後で変更しない場合はnull
+   */
+  notes: Note[][] | null;
+};
+
+/**
+ * 選択領域に含まれるCopiedNoteの集合をコピーできるクリップボード
+ * 1度もコピーしていない場合はnull
+ */
+export type ClipBoard = null | {
+  /**
+   * コピー時の選択領域の列の長さ
+   */
+  columnLength: number;
+
+  /**
+   * CopiedNoteの集合
+   */
+  copiedNotes: CopiedNote[];
+
+  /**
+   * コピー時の選択領域の行の長さ
+   */
+  rowLength: number;
+};
+
+/**
  * コピー時の単ノート/ホールドの始点/ホールドの中間/ホールドの終点
  */
 export type CopiedNote = {

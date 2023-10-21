@@ -1,6 +1,7 @@
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import { Block, Note } from "../../types/chart";
-import { ChartSnapshot, Zoom } from "../../types/ui";
+import { Block, Note } from "../../types/ucs";
+import { Zoom } from "../../types/ui";
+import { ChartSnapshot } from "../../types/ucs";
 import {
   blocksState,
   columnsState,

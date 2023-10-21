@@ -1,18 +1,18 @@
 import { useEffect } from "react";
 import { useSetRecoilState } from "recoil";
 import {
-  mouseDownState,
+  holdSetterState,
   noteSizeState,
   selectorState,
 } from "../../service/atoms";
 import Chart from "./Chart";
 import Identifier from "./Identifier";
 import BlockController from "./BlockController";
-import { MouseDown, Selector } from "../../types/ui";
+import { HoldSetter, Selector } from "../../types/ui";
 import { MENU_BAR_HEIGHT } from "../../service/styles";
 
 function WorkSpace() {
-  const setMouseDown = useSetRecoilState<MouseDown>(mouseDownState);
+  const setHoldSetter = useSetRecoilState<HoldSetter>(holdSetterState);
   const setNoteSize = useSetRecoilState<number>(noteSizeState);
   const setSelector = useSetRecoilState<Selector>(selectorState);
 
@@ -28,10 +28,10 @@ function WorkSpace() {
         )
       );
     const handleKeyDown = (event: KeyboardEvent) => {
-      // ESCキー押下時に、選択領域・マウス押下した場合の表示パラメーターをすべて初期化
+      // ESCキー押下時に、ホールド設置中・選択領域の表示パラメーターをすべて初期化
       if (event.key === "Escape") {
-        setMouseDown(null);
-        setSelector({ changingCords: null, completedCords: null });
+        setHoldSetter(null);
+        setSelector({ setting: null, completed: null });
       }
     };
 
@@ -52,8 +52,8 @@ function WorkSpace() {
       onMouseUp={(event: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
         // 左クリック時のみ、選択領域・マウス押下した場合の表示パラメーターをすべて初期化
         if (event.button === 0) {
-          setMouseDown(null);
-          setSelector({ changingCords: null, completedCords: null });
+          setHoldSetter(null);
+          setSelector({ setting: null, completed: null });
         }
       }}
       style={{

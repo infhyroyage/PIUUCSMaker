@@ -10,8 +10,8 @@ import {
   ucsNameState,
   undoSnapshotsState,
 } from "../service/atoms";
-import { Block, Note } from "../types/chart";
-import { ChartSnapshot } from "../types/ui";
+import { Block, Note } from "../types/ucs";
+import { ChartSnapshot } from "../types/ucs";
 
 function useDownloadingUCS() {
   const blocks = useRecoilValue<Block[]>(blocksState);

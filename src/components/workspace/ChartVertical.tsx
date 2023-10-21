@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { ChartVerticalProps } from "../../types/props";
-import { Block, Note } from "../../types/chart";
+import { Block, Note } from "../../types/ucs";
 import { useRecoilValue } from "recoil";
 import { blocksState } from "../../service/atoms";
 import ChartVerticalNoteImages from "./ChartVerticalNoteImages";

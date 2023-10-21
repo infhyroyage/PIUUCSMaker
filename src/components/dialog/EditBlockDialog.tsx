@@ -19,8 +19,8 @@ import {
   TextField,
 } from "@mui/material";
 import { EditBlockDialogError, EditBlockDialogForm } from "../../types/dialog";
-import { Block, Note } from "../../types/chart";
-import { ChartSnapshot } from "../../types/ui";
+import { Block, Note } from "../../types/ucs";
+import { ChartSnapshot } from "../../types/ucs";
 
 const validate = (form: EditBlockDialogForm): EditBlockDialogError | null => {
   // BPMのチェック

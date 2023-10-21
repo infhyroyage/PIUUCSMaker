@@ -1,5 +1,5 @@
-import { Note } from "./chart";
-import { SelectorCords } from "./ui";
+import { Note } from "./ucs";
+import { SelectorMouseCords } from "./ui";
 
 /**
  * BlockControllerButtonのprops
@@ -137,7 +137,7 @@ export type ChartSelectorProps = {
   /**
    * 選択領域の入力開始時、および、入力時/入力終了時のマウスの各座標を構成するパラメーター
    */
-  cords: SelectorCords;
+  mouseCords: SelectorMouseCords;
 };
 
 /**

@@ -13,13 +13,13 @@ import {
   chartIndicatorMenuPositionState,
   clipBoardState,
   indicatorState,
-  mouseDownState,
+  holdSetterState,
   selectorState,
 } from "../../service/atoms";
 import { ChartIndicatorMenuProps } from "../../types/props";
-import { MouseDown, Selector } from "../../types/ui";
+import { HoldSetter, Selector } from "../../types/ui";
 import { Indicator } from "../../types/ui";
-import { ClipBoard } from "../../types/ui";
+import { ClipBoard } from "../../types/ucs";
 import useClipBoard from "../../hooks/useClipBoard";
 import useSelectedFlipping from "../../hooks/useSelectedFlipping";
 import useSelectedDeleting from "../../hooks/useSelectedDeleting";
@@ -29,8 +29,8 @@ function ChartIndicatorMenu({ handler }: ChartIndicatorMenuProps) {
     PopoverPosition | undefined
   >(chartIndicatorMenuPositionState);
   const clipBoard = useRecoilValue<ClipBoard>(clipBoardState);
+  const holdSetter = useRecoilValue<HoldSetter>(holdSetterState);
   const indicator = useRecoilValue<Indicator>(indicatorState);
-  const mouseDown = useRecoilValue<MouseDown>(mouseDownState);
   const selector = useRecoilValue<Selector>(selectorState);
 
   const { handleCut, handleCopy, handlePaste } = useClipBoard();
@@ -56,8 +56,8 @@ function ChartIndicatorMenu({ handler }: ChartIndicatorMenuProps) {
         <MenuItem
           disabled={
             indicator === null ||
-            selector.changingCords !== null ||
-            selector.completedCords !== null
+            selector.setting !== null ||
+            selector.completed !== null
           }
           onClick={() => {
             handler.setHold();
@@ -67,7 +67,7 @@ function ChartIndicatorMenu({ handler }: ChartIndicatorMenuProps) {
           Start Setting Hold
         </MenuItem>
         <MenuItem
-          disabled={indicator === null || mouseDown !== null}
+          disabled={indicator === null || holdSetter !== null}
           onClick={() => {
             handler.select();
             setMenuPosition(undefined);
@@ -92,9 +92,9 @@ function ChartIndicatorMenu({ handler }: ChartIndicatorMenuProps) {
         <Divider />
         <MenuItem
           disabled={
-            selector.completedCords === null ||
-            selector.completedCords.mouseUpColumn === null ||
-            selector.completedCords.mouseUpRowIdx === null
+            selector.completed === null ||
+            selector.completed.mouseUpColumn === null ||
+            selector.completed.mouseUpRowIdx === null
           }
           onClick={() => {
             handleCut();
@@ -108,9 +108,9 @@ function ChartIndicatorMenu({ handler }: ChartIndicatorMenuProps) {
         </MenuItem>
         <MenuItem
           disabled={
-            selector.completedCords === null ||
-            selector.completedCords.mouseUpColumn === null ||
-            selector.completedCords.mouseUpRowIdx === null
+            selector.completed === null ||
+            selector.completed.mouseUpColumn === null ||
+            selector.completed.mouseUpRowIdx === null
           }
           onClick={() => {
             handleCopy();
@@ -137,9 +137,9 @@ function ChartIndicatorMenu({ handler }: ChartIndicatorMenuProps) {
         <Divider />
         <MenuItem
           disabled={
-            selector.completedCords === null ||
-            selector.completedCords.mouseUpColumn === null ||
-            selector.completedCords.mouseUpRowIdx === null
+            selector.completed === null ||
+            selector.completed.mouseUpColumn === null ||
+            selector.completed.mouseUpRowIdx === null
           }
           onClick={() => {
             handleFlip(true, false);
@@ -153,9 +153,9 @@ function ChartIndicatorMenu({ handler }: ChartIndicatorMenuProps) {
         </MenuItem>
         <MenuItem
           disabled={
-            selector.completedCords === null ||
-            selector.completedCords.mouseUpColumn === null ||
-            selector.completedCords.mouseUpRowIdx === null
+            selector.completed === null ||
+            selector.completed.mouseUpColumn === null ||
+            selector.completed.mouseUpRowIdx === null
           }
           onClick={() => {
             handleFlip(false, true);
@@ -169,9 +169,9 @@ function ChartIndicatorMenu({ handler }: ChartIndicatorMenuProps) {
         </MenuItem>
         <MenuItem
           disabled={
-            selector.completedCords === null ||
-            selector.completedCords.mouseUpColumn === null ||
-            selector.completedCords.mouseUpRowIdx === null
+            selector.completed === null ||
+            selector.completed.mouseUpColumn === null ||
+            selector.completed.mouseUpRowIdx === null
           }
           onClick={() => {
             handleFlip(true, true);
@@ -185,9 +185,9 @@ function ChartIndicatorMenu({ handler }: ChartIndicatorMenuProps) {
         </MenuItem>
         <MenuItem
           disabled={
-            selector.completedCords === null ||
-            selector.completedCords.mouseUpColumn === null ||
-            selector.completedCords.mouseUpRowIdx === null
+            selector.completed === null ||
+            selector.completed.mouseUpColumn === null ||
+            selector.completed.mouseUpRowIdx === null
           }
           onClick={() => {
             handleDelete();
