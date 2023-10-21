@@ -258,7 +258,7 @@ function Chart() {
           let beforeNotes: Note[] = notes[indicator.column].filter(
             (note: Note) => note.rowIdx < start
           );
-          const foundBeforeNote: Note | undefined = beforeNotes
+          const foundBeforeNote: Note | undefined = [...beforeNotes]
             .reverse()
             .find((note: Note) => ["X", "M", "W"].includes(note.type));
           if (foundBeforeNote) {
@@ -317,7 +317,7 @@ function Chart() {
           let beforeNotes: Note[] = notes[indicator.column].filter(
             (note: Note) => note.rowIdx < start
           );
-          const foundBeforeNote: Note | undefined = beforeNotes
+          const foundBeforeNote: Note | undefined = [...beforeNotes]
             .reverse()
             .find((note: Note) => ["X", "M", "W"].includes(note.type));
           if (foundBeforeNote) {
