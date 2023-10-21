@@ -3,6 +3,7 @@ import { Block, Note } from "../../types/chart";
 import { ChartSnapshot, Zoom } from "../../types/ui";
 import {
   blocksState,
+  columnsState,
   editBlockDialogFormState,
   isProtectedState,
   noteSizeState,
@@ -14,14 +15,16 @@ import {
 import BlockControllerButton from "./BlockControllerButton";
 import { ZOOM_VALUES } from "../../service/zoom";
 import { EditBlockDialogForm } from "../../types/dialog";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import BlockControllerMenu from "./BlockControllerMenu";
+import { IDENTIFIER_WIDTH, MENU_BAR_HEIGHT } from "../../service/styles";
 
 function BlockController() {
   const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
+  const columns = useRecoilValue<number>(columnsState);
   const noteSize = useRecoilValue<number>(noteSizeState);
   const zoom = useRecoilValue<Zoom>(zoomState);
   const setEditBlockDialogForm = useSetRecoilState<EditBlockDialogForm>(
@@ -30,6 +33,12 @@ function BlockController() {
   const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
   const setRedoShapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
+
+  // 縦の枠線のサイズ(px)をnoteSizeの0.05倍(偶数に丸めるように切り捨て、最小値は2)として計算
+  const verticalBorderSize = useMemo(
+    () => Math.max(Math.floor(noteSize * 0.025) * 2, 2),
+    [noteSize]
+  );
 
   const handleAdd = useCallback(
     (blockIdx: number) => {
@@ -215,7 +224,16 @@ function BlockController() {
   );
 
   return (
-    <div>
+    <div
+      style={{
+        maxWidth: `calc(100vw - ${
+          MENU_BAR_HEIGHT +
+          IDENTIFIER_WIDTH +
+          columns * noteSize +
+          verticalBorderSize
+        }px)`,
+      }}
+    >
       {blocks.map((block: Block, blockIdx: number) => (
         <BlockControllerButton
           key={blockIdx}
@@ -224,8 +242,8 @@ function BlockController() {
           }
           blockIdx={blockIdx}
           isLastBlock={blockIdx === blocks.length - 1}
-          textFirst={`${block.bpm}BPM, 1/${block.split}`}
-          textSecond={`Delay: ${block.delay}(ms)`}
+          textFirst={`${block.bpm} BPM, 1/${block.split}`}
+          textSecond={`Delay: ${block.delay} (ms)`}
         />
       ))}
       <BlockControllerMenu

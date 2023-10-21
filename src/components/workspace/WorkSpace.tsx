@@ -38,11 +38,9 @@ function WorkSpace() {
     // 初回レンダリング時にnoteSizeを初期設定
     handleWindowResize();
 
-    // イベントリスナーを登録
+    // イベントリスナーを登録し、アンマウント時にすべて解除
     window.addEventListener("resize", handleWindowResize); // noteSize変更
     window.addEventListener("keydown", handleKeyDown); // キー入力
-
-    // アンマウント時に上記イベントリスナーをすべて解除
     return () => {
       window.removeEventListener("resize", handleWindowResize);
       window.removeEventListener("keydown", handleKeyDown);

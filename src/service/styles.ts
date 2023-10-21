@@ -1,7 +1,7 @@
 /**
- * Identifierの幅(px)
+ * Identifierの横幅(px)
  */
-export const IDENTIFIER_WIDTH: number = 40;
+export const IDENTIFIER_WIDTH: number = 36;
 
 /**
  * MenuBarの高さ、および、展開していないMenuDrawerの横幅(px)
@@ -11,7 +11,7 @@ export const MENU_BAR_HEIGHT: number = 48;
 /**
  * 展開したMenuDrawerの横幅(px)
  */
-export const MENU_DRAWER_OPENED_WIDTH = 200;
+export const MENU_DRAWER_OPENED_WIDTH = 180;
 
 /**
  * MUIコンポーネントのz-indexのデフォルト値

@@ -472,14 +472,13 @@ function Chart() {
   return (
     <>
       {[...Array(columns)].map((_, column: number) => (
-        <React.Fragment key={column}>
+        <div key={column} style={{ display: "flex" }}>
           {column === 0 && (
             <BorderLine
               style={{ height: "100%", width: `${verticalBorderSize * 0.5}px` }}
             />
           )}
           <div
-            style={{ display: "flex" }}
             onContextMenu={(
               event: React.MouseEvent<HTMLSpanElement, MouseEvent>
             ) => {
@@ -495,6 +494,7 @@ function Chart() {
             onMouseLeave={onMouseLeave}
             onMouseDown={onMouseDown}
             onMouseUp={onMouseUp}
+            style={{ display: "flex" }}
           >
             <BorderLine
               style={{ height: "100%", width: `${verticalBorderSize * 0.5}px` }}
@@ -521,7 +521,7 @@ function Chart() {
               style={{ height: "100%", width: `${verticalBorderSize * 0.5}px` }}
             />
           )}
-        </React.Fragment>
+        </div>
       ))}
       <ChartIndicator />
       <ChartIndicatorMenu

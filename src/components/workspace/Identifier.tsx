@@ -62,10 +62,14 @@ function Identifier() {
                 <React.Fragment key={rectangleIdx}>
                   <Paper
                     square
-                    sx={{ height: `${rectangleHeight}px`, textAlign: "center" }}
+                    sx={{
+                      height: `${rectangleHeight}px`,
+                      textAlign: "center",
+                      width: "100%",
+                    }}
                   >
                     <Typography p={0} variant="caption">
-                      {`${blockIdx + 1}:${rectangleIdx + 1}`}
+                      {`${blockIdx + 1}: ${rectangleIdx + 1}`}
                     </Typography>
                   </Paper>
                   {/* 譜面のブロック内の節ごとに分割する枠線 */}

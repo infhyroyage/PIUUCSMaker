@@ -78,19 +78,7 @@ function MenuBar() {
   return (
     <AppBar position="sticky">
       <Toolbar sx={{ height: `${MENU_BAR_HEIGHT}px` }} variant="dense">
-        <Box
-          sx={(theme: Theme) => ({
-            width: `${
-              isOpenedMenuDrawer ? MENU_DRAWER_OPENED_WIDTH : MENU_BAR_HEIGHT
-            }px`,
-            transition: theme.transitions.create("width", {
-              easing: theme.transitions.easing.sharp,
-              duration: isOpenedMenuDrawer
-                ? theme.transitions.duration.enteringScreen
-                : theme.transitions.duration.leavingScreen,
-            }),
-          })}
-        />
+        <div style={{ width: `${MENU_BAR_HEIGHT}px` }} />
         <Box flexGrow={1}>
           <Typography variant="subtitle1" noWrap component="div">
             {`${isProtected ? "*" : ""}${ucsName || "PIU UCS Maker"}`}
@@ -103,7 +91,7 @@ function MenuBar() {
             </Typography>
           )}
         </Box>
-        <Stack alignItems="center" direction="row" spacing={{ xs: 1, sm: 1.5 }}>
+        <Stack alignItems="center" direction="row" spacing={{ xs: 0, sm: 1 }}>
           <FormControl size="small">
             <Select
               disabled={isPlaying}
@@ -144,7 +132,7 @@ function MenuBar() {
           <Stack
             alignItems="center"
             direction="row"
-            spacing={{ xs: 0.5, sm: 0.75 }}
+            spacing={{ xs: 0, sm: 0.5 }}
           >
             <IconButton color="inherit" onClick={onClickVolumeButton}>
               {muteVolBuf !== null ? (

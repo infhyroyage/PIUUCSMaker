@@ -49,7 +49,7 @@ function BlockControllerButton({
 
   return (
     <>
-      <Card raised square>
+      <Card raised square sx={{ width: "100%" }}>
         <CardActionArea onClick={onClickCardActionArea}>
           <CardContent
             sx={{
