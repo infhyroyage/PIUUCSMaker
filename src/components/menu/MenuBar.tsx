@@ -9,7 +9,6 @@ import {
   columnsState,
   isPerformanceState,
   isProtectedState,
-  isOpenedMenuDrawerState,
 } from "../../service/atoms";
 import {
   AppBar,
@@ -31,10 +30,7 @@ import VolumeDownIcon from "@mui/icons-material/VolumeDown";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import VolumeMuteIcon from "@mui/icons-material/VolumeMute";
 import { Zoom } from "../../types/menu";
-import {
-  MENU_BAR_HEIGHT,
-  MENU_DRAWER_OPENED_WIDTH,
-} from "../../service/styles";
+import { MENU_BAR_HEIGHT } from "../../service/styles";
 
 function MenuBar() {
   const [muteVolBuf, setMuteVolBuf] = useState<number | null>(null);
@@ -42,7 +38,6 @@ function MenuBar() {
     useRecoilState<number>(volumeValueState);
   const [zoom, setZoom] = useRecoilState<Zoom>(zoomState);
   const columns = useRecoilValue<5 | 10>(columnsState);
-  const isOpenedMenuDrawer = useRecoilValue<boolean>(isOpenedMenuDrawerState);
   const isPerformance = useRecoilValue<boolean>(isPerformanceState);
   const isPlaying = useRecoilValue<boolean>(isPlayingState);
   const isProtected = useRecoilValue<boolean>(isProtectedState);

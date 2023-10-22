@@ -484,10 +484,12 @@ function Chart() {
               event: React.MouseEvent<HTMLSpanElement, MouseEvent>
             ) => {
               event.preventDefault();
-              setPosition({
-                top: event.clientY,
-                left: event.clientX,
-              });
+              if (!isPlaying) {
+                setPosition({
+                  top: event.clientY,
+                  left: event.clientX,
+                });
+              }
             }}
             onMouseMove={(
               event: React.MouseEvent<HTMLSpanElement, MouseEvent>
