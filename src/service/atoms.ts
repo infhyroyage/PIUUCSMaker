@@ -5,13 +5,7 @@ import { ChartSnapshot } from "../types/ucs";
 import { Indicator } from "../types/chart";
 import { ClipBoard } from "../types/ucs";
 import { ChartIndicatorMenuPosition, Zoom } from "../types/menu";
-import { AdjustBlockDialogOpen, EditBlockDialogForm } from "../types/dialog";
 import { BlockControllerMenuPosition } from "../types/menu";
-
-export const adjustBlockDialogOpenState = atom<AdjustBlockDialogOpen>({
-  key: "adjustBlockDialogOpen",
-  default: { fixed: "bpm", open: false },
-});
 
 /**
  * BlockControllerMenuのメニュー対象の譜面のブロックのインデックス
@@ -92,6 +86,14 @@ export const indicatorState = atom<Indicator>({
  */
 export const isDarkModeState = atom<boolean>({
   key: "isDarkMode",
+  default: false,
+});
+
+/**
+ * AdjustBlockDialogを表示する場合はtrue、表示しない場合はfalse
+ */
+export const isOpenedAdjustBlockDialogState = atom<boolean>({
+  key: "isOpenedAdjustBlockDialog",
   default: false,
 });
 

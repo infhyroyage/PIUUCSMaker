@@ -1,18 +1,15 @@
 import { memo } from "react";
 import { Divider, Menu, MenuItem, MenuList } from "@mui/material";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import {
-  adjustBlockDialogOpenState,
+  isOpenedAdjustBlockDialogState,
   blockControllerMenuBlockIdxState,
   blockControllerMenuPositionState,
 } from "../../service/atoms";
 import { BlockControllerMenuProps } from "../../types/props";
 import { BlockControllerMenuPosition } from "../../types/menu";
-import { AdjustBlockDialogOpen } from "../../types/dialog";
 
 function BlockControllerMenu({ blockNum, handler }: BlockControllerMenuProps) {
-  const [adjustBlockDialogOpen, setAdjustBlockDialogOpen] =
-    useRecoilState<AdjustBlockDialogOpen>(adjustBlockDialogOpenState);
   const [menuBlockIdx, setMenuBlockIdx] = useRecoilState<number | null>(
     blockControllerMenuBlockIdxState
   );
@@ -20,6 +17,9 @@ function BlockControllerMenu({ blockNum, handler }: BlockControllerMenuProps) {
     useRecoilState<BlockControllerMenuPosition>(
       blockControllerMenuPositionState
     );
+  const setIsOpenedAdjustBlockDialog = useSetRecoilState<boolean>(
+    isOpenedAdjustBlockDialogState
+  );
 
   return (
     <Menu
@@ -42,10 +42,7 @@ function BlockControllerMenu({ blockNum, handler }: BlockControllerMenuProps) {
         </MenuItem>
         <MenuItem
           onClick={() => {
-            setAdjustBlockDialogOpen({
-              fixed: adjustBlockDialogOpen.fixed,
-              open: true,
-            });
+            setIsOpenedAdjustBlockDialog(true);
             setMenuPosition(undefined);
           }}
         >

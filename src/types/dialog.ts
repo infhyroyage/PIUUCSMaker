@@ -1,10 +1,18 @@
 import { Block, Note } from "./ucs";
 
+/**
+ * AdjustBlockDialogの入力フォーム
+ */
 export type AdjustBlockDialogForm = {
   /**
    * BPM値
    */
   bpm: number;
+
+  /**
+   * 3つのパラメーターの調整時に1つだけ固定するパラメーター名
+   */
+  fixed: "bpm" | "rows" | "split";
 
   /**
    * 行数
@@ -15,11 +23,6 @@ export type AdjustBlockDialogForm = {
    * Split値
    */
   split: number;
-};
-
-export type AdjustBlockDialogOpen = {
-  fixed: "bpm" | "rows" | "split"; // TODO: AdjustBlockDialogFormに移す
-  open: boolean;
 };
 
 /**
