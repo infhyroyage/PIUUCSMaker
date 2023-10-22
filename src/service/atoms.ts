@@ -32,6 +32,9 @@ export const blockControllerMenuPositionState =
     default: undefined,
   });
 
+/**
+ * 譜面のブロックの集合
+ */
 export const blocksState = atom<Block[]>({
   key: "blocks",
   default: [],
@@ -48,6 +51,10 @@ export const chartIndicatorMenuPositionState = atom<ChartIndicatorMenuPosition>(
   }
 );
 
+/**
+ * 選択領域に含まれるCopiedNoteの集合をコピーできるクリップボード
+ * 1度もコピーしていない場合はnull
+ */
 export const clipBoardState = atom<ClipBoard>({
   key: "clipBoard",
   default: null,
@@ -60,22 +67,6 @@ export const clipBoardState = atom<ClipBoard>({
 export const columnsState = atom<5 | 10>({
   key: "columns",
   default: 5,
-});
-
-/**
- * EditBlockDialogの表示フラグ・入力値
- */
-export const editBlockDialogFormState = atom<EditBlockDialogForm>({
-  key: "editBlockDialogForm",
-  default: {
-    beat: "",
-    blockIdx: -1,
-    bpm: "",
-    delay: "",
-    open: false,
-    rows: "",
-    split: "",
-  },
 });
 
 /**
@@ -101,6 +92,14 @@ export const indicatorState = atom<Indicator>({
  */
 export const isDarkModeState = atom<boolean>({
   key: "isDarkMode",
+  default: false,
+});
+
+/**
+ * EditBlockDialogを表示する場合はtrue、表示しない場合はfalse
+ */
+export const isOpenedEditBlockDialogState = atom<boolean>({
+  key: "isOpenedEditBlockDialog",
   default: false,
 });
 
@@ -161,6 +160,9 @@ export const mp3NameState = atom<string | null>({
   default: null,
 });
 
+/**
+ * 単ノート/ホールドの始点/ホールドの中間/ホールドの終点の集合
+ */
 export const notesState = atom<Note[][]>({
   key: "notes",
   default: [],

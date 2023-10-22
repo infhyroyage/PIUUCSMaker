@@ -48,10 +48,9 @@ type BlockControllerMenuHandler = {
 
   /**
    * 「Edit」選択時の動作
-   * @param {number} blockIdx 譜面のブロックのインデックス
    * @returns
    */
-  edit: (blockIdx: number) => void;
+  edit: () => void;
 
   /**
    * 「Insert into Next」選択時の動作

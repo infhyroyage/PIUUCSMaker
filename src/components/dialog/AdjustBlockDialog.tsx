@@ -41,6 +41,11 @@ const roundBpm = (bpm: number): number =>
       );
 
 function AdjustBlockDialog() {
+  const [form, setForm] = useState<AdjustBlockDialogForm>({
+    bpm: -1,
+    rows: -1,
+    split: -1,
+  });
   const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
   const [open, setOpen] = useRecoilState<AdjustBlockDialogOpen>(
@@ -54,11 +59,6 @@ function AdjustBlockDialog() {
   const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
   const setRedoShapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
-  const [form, setForm] = useState<AdjustBlockDialogForm>({
-    bpm: -1,
-    rows: -1,
-    split: -1,
-  });
 
   useEffect(
     () =>
@@ -67,112 +67,112 @@ function AdjustBlockDialog() {
         rows: menuBlockIdx === null ? -1 : blocks[menuBlockIdx].rows,
         split: menuBlockIdx === null ? -1 : blocks[menuBlockIdx].split,
       }),
-    [blocks, menuBlockIdx]
+    [blocks, menuBlockIdx, setForm]
   );
 
   const onUpdate = useCallback(() => {
-    if (menuBlockIdx !== null) {
-      // menuBlockIdx番目の譜面のブロックの行数の差分
-      const deltaRows: number = Number(form.rows) - blocks[menuBlockIdx].rows;
+    // BlockControllerMenuのメニューを開いていない場合はNOP
+    if (menuBlockIdx === null) return;
 
-      // 元に戻す/やり直すスナップショットの集合を更新
-      setUndoSnapshots([
-        ...undoSnapshots,
-        { blocks, notes: deltaRows === 0 ? null : notes },
-      ]);
-      setRedoShapshots([]);
+    // menuBlockIdx番目の譜面のブロックの行数の差分
+    const deltaRows: number = Number(form.rows) - blocks[menuBlockIdx].rows;
 
-      // menuBlockIdx番目以降の譜面のブロックをすべて更新
-      const updatedBlocks: Block[] = [...Array(blocks.length)].map(
-        (_, blockIdx: number) =>
-          blockIdx === menuBlockIdx
-            ? {
-                accumulatedRows: blocks[menuBlockIdx].accumulatedRows,
-                beat: blocks[menuBlockIdx].beat,
-                bpm: roundBpm(form.bpm),
-                delay: blocks[menuBlockIdx].delay,
-                rows: form.rows,
-                split: form.split,
-              }
-            : blockIdx > menuBlockIdx
-            ? {
-                ...blocks[blockIdx],
-                accumulatedRows:
-                  blocks[blockIdx - 1].accumulatedRows +
-                  blocks[blockIdx - 1].rows +
-                  deltaRows,
-              }
-            : blocks[blockIdx]
-      );
+    // 元に戻す/やり直すスナップショットの集合を更新
+    setUndoSnapshots([
+      ...undoSnapshots,
+      { blocks, notes: deltaRows === 0 ? null : notes },
+    ]);
+    setRedoShapshots([]);
 
-      // 行数を変更した場合のみ、menuBlockIdx番目以降の譜面のブロックに該当する
-      // 単ノート/ホールドの始点/ホールドの中間/ホールドの終点をすべて更新
-      let updatedNotes: Note[][] = [...notes];
-      if (deltaRows !== 0) {
-        // 以下の譜面のブロックに該当する単ノート/ホールドの始点/ホールドの中間/ホールドの終点をすべて更新
-        // * (menuBlockIdx - 1)番目以前: 更新しない
-        // * menuBlockIdx番目          : 譜面全体の行インデックスをスケーリング(空白 < X < H < M < W)
-        // * (menuBlockIdx + 1)番目以降: 譜面全体の行インデックスを譜面のブロックの行数の差分ズラす
-        updatedNotes = [...notes].map((ns: Note[]) => [
-          // (menuBlockIdx - 1)番目以前の譜面のブロック
-          ...ns.filter(
-            (note: Note) => note.rowIdx < blocks[menuBlockIdx].accumulatedRows
-          ),
-          // menuBlockIdx番目の譜面のブロック
-          ...ns
-            .filter(
-              (note: Note) =>
-                note.rowIdx >= blocks[menuBlockIdx].accumulatedRows &&
-                note.rowIdx <
-                  blocks[menuBlockIdx].accumulatedRows +
-                    blocks[menuBlockIdx].rows
-            )
-            .reduce((prev: Note[], note: Note) => {
-              const scaledRowIdx: number =
-                blocks[menuBlockIdx].accumulatedRows +
-                Math.floor(
-                  ((note.rowIdx - blocks[menuBlockIdx].accumulatedRows) *
-                    Number(form.rows)) /
-                    blocks[menuBlockIdx].rows
-                );
-              const prevScaledNote: Note | undefined = prev.find(
-                (note: Note) => note.rowIdx === scaledRowIdx
-              );
+    // menuBlockIdx番目以降の譜面のブロックをすべて更新
+    const updatedBlocks: Block[] = [...Array(blocks.length)].map(
+      (_, blockIdx: number) =>
+        blockIdx === menuBlockIdx
+          ? {
+              accumulatedRows: blocks[menuBlockIdx].accumulatedRows,
+              beat: blocks[menuBlockIdx].beat,
+              bpm: roundBpm(form.bpm),
+              delay: blocks[menuBlockIdx].delay,
+              rows: form.rows,
+              split: form.split,
+            }
+          : blockIdx > menuBlockIdx
+          ? {
+              ...blocks[blockIdx],
+              accumulatedRows:
+                blocks[blockIdx - 1].accumulatedRows +
+                blocks[blockIdx - 1].rows +
+                deltaRows,
+            }
+          : blocks[blockIdx]
+    );
 
-              return prevScaledNote
-                ? [
-                    ...prev.slice(0, prev.length - 1),
-                    {
-                      rowIdx: scaledRowIdx,
-                      type:
-                        prevScaledNote.type === "X" ||
-                        (prevScaledNote.type === "H" &&
-                          ["M", "W"].includes(note.type)) ||
-                        (prevScaledNote.type === "M" && note.type === "W")
-                          ? note.type
-                          : prevScaledNote.type,
-                    },
-                  ]
-                : [...prev, { rowIdx: scaledRowIdx, type: note.type }];
-            }, []),
-          // (menuBlockIdx + 1)番目以降の譜面のブロック
-          ...ns
-            .filter(
-              (note: Note) =>
-                note.rowIdx >=
+    // 行数を変更した場合のみ、menuBlockIdx番目以降の譜面のブロックに該当する
+    // 単ノート/ホールドの始点/ホールドの中間/ホールドの終点をすべて更新
+    let updatedNotes: Note[][] = [...notes];
+    if (deltaRows !== 0) {
+      // 以下の譜面のブロックに該当する単ノート/ホールドの始点/ホールドの中間/ホールドの終点をすべて更新
+      // * (menuBlockIdx - 1)番目以前: 更新しない
+      // * menuBlockIdx番目          : 譜面全体の行インデックスをスケーリング(空白 < X < H < M < W)
+      // * (menuBlockIdx + 1)番目以降: 譜面全体の行インデックスを譜面のブロックの行数の差分ズラす
+      updatedNotes = [...notes].map((ns: Note[]) => [
+        // (menuBlockIdx - 1)番目以前の譜面のブロック
+        ...ns.filter(
+          (note: Note) => note.rowIdx < blocks[menuBlockIdx].accumulatedRows
+        ),
+        // menuBlockIdx番目の譜面のブロック
+        ...ns
+          .filter(
+            (note: Note) =>
+              note.rowIdx >= blocks[menuBlockIdx].accumulatedRows &&
+              note.rowIdx <
                 blocks[menuBlockIdx].accumulatedRows + blocks[menuBlockIdx].rows
-            )
-            .map((note: Note) => {
-              return { rowIdx: note.rowIdx + deltaRows, type: note.type };
-            }),
-        ]);
-      }
+          )
+          .reduce((prev: Note[], note: Note) => {
+            const scaledRowIdx: number =
+              blocks[menuBlockIdx].accumulatedRows +
+              Math.floor(
+                ((note.rowIdx - blocks[menuBlockIdx].accumulatedRows) *
+                  Number(form.rows)) /
+                  blocks[menuBlockIdx].rows
+              );
+            const prevScaledNote: Note | undefined = prev.find(
+              (note: Note) => note.rowIdx === scaledRowIdx
+            );
 
-      setIsProtected(true);
-
-      setBlocks(updatedBlocks);
-      if (deltaRows !== 0) setNotes(updatedNotes);
+            return prevScaledNote
+              ? [
+                  ...prev.slice(0, prev.length - 1),
+                  {
+                    rowIdx: scaledRowIdx,
+                    type:
+                      prevScaledNote.type === "X" ||
+                      (prevScaledNote.type === "H" &&
+                        ["M", "W"].includes(note.type)) ||
+                      (prevScaledNote.type === "M" && note.type === "W")
+                        ? note.type
+                        : prevScaledNote.type,
+                  },
+                ]
+              : [...prev, { rowIdx: scaledRowIdx, type: note.type }];
+          }, []),
+        // (menuBlockIdx + 1)番目以降の譜面のブロック
+        ...ns
+          .filter(
+            (note: Note) =>
+              note.rowIdx >=
+              blocks[menuBlockIdx].accumulatedRows + blocks[menuBlockIdx].rows
+          )
+          .map((note: Note) => {
+            return { rowIdx: note.rowIdx + deltaRows, type: note.type };
+          }),
+      ]);
     }
+
+    setIsProtected(true);
+
+    setBlocks(updatedBlocks);
+    if (deltaRows !== 0) setNotes(updatedNotes);
 
     setMenuBlockIdx(null);
     setOpen({ fixed: open.fixed, open: false });

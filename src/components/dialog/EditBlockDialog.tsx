@@ -1,9 +1,9 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import {
   blockControllerMenuBlockIdxState,
   blocksState,
-  editBlockDialogFormState,
+  isOpenedEditBlockDialogState,
   isProtectedState,
   notesState,
   redoSnapshotsState,
@@ -67,26 +67,46 @@ const validate = (form: EditBlockDialogForm): EditBlockDialogError | null => {
 };
 
 function EditBlockDialog() {
+  const [form, setForm] = useState<EditBlockDialogForm>({
+    beat: "",
+    bpm: "",
+    delay: "",
+    rows: "",
+    split: "",
+  });
   const [resultError, setResultError] = useState<EditBlockDialogError | "">("");
   const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
-  const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
-  const [form, setForm] = useRecoilState<EditBlockDialogForm>(
-    editBlockDialogFormState
+  const [menuBlockIdx, setMenuBlockIdx] = useRecoilState<number | null>(
+    blockControllerMenuBlockIdxState
   );
+  const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
+  const [open, setOpen] = useRecoilState<boolean>(isOpenedEditBlockDialogState);
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
   const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
-  const setMenuBlockIdx = useSetRecoilState<number | null>(
-    blockControllerMenuBlockIdxState
-  );
   const setRedoShapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
 
+  useEffect(
+    () =>
+      setForm({
+        beat: menuBlockIdx === null ? "" : `${blocks[menuBlockIdx].beat}`,
+        bpm: menuBlockIdx === null ? "" : `${blocks[menuBlockIdx].bpm}`,
+        delay: menuBlockIdx === null ? "" : `${blocks[menuBlockIdx].delay}`,
+        rows: menuBlockIdx === null ? "" : `${blocks[menuBlockIdx].rows}`,
+        split: menuBlockIdx === null ? "" : `${blocks[menuBlockIdx].split}`,
+      }),
+    [blocks, menuBlockIdx, setForm]
+  );
+
   const onUpdate = useCallback(() => {
+    // BlockControllerMenuのメニューを開いていない場合はNOP
+    if (menuBlockIdx === null) return;
+
     const result: EditBlockDialogError | null = validate(form);
     if (result === null) {
-      // form.blockIdx番目の譜面のブロックの行数の差分
-      const deltaRows: number = Number(form.rows) - blocks[form.blockIdx].rows;
+      // menuBlockIdx番目の譜面のブロックの行数の差分
+      const deltaRows: number = Number(form.rows) - blocks[menuBlockIdx].rows;
 
       // 元に戻す/やり直すスナップショットの集合を更新
       setUndoSnapshots([
@@ -95,19 +115,19 @@ function EditBlockDialog() {
       ]);
       setRedoShapshots([]);
 
-      // form.blockIdx番目以降の譜面のブロックをすべて更新
+      // menuBlockIdx番目以降の譜面のブロックをすべて更新
       const updatedBlocks: Block[] = [...Array(blocks.length)].map(
         (_, blockIdx: number) =>
-          blockIdx === form.blockIdx
+          blockIdx === menuBlockIdx
             ? {
-                accumulatedRows: blocks[form.blockIdx].accumulatedRows,
+                accumulatedRows: blocks[menuBlockIdx].accumulatedRows,
                 beat: Number(form.beat),
                 bpm: Number(form.bpm),
                 delay: Number(form.delay),
                 rows: Number(form.rows),
                 split: Number(form.split),
               }
-            : blockIdx > form.blockIdx
+            : blockIdx > menuBlockIdx
             ? {
                 ...blocks[blockIdx],
                 accumulatedRows:
@@ -118,35 +138,35 @@ function EditBlockDialog() {
             : blocks[blockIdx]
       );
 
-      // 行数を変更した場合のみ、form.blockIdx番目以降の譜面のブロックに該当する
+      // 行数を変更した場合のみ、menuBlockIdx番目以降の譜面のブロックに該当する
       // 単ノート/ホールドの始点/ホールドの中間/ホールドの終点をすべて更新
       let updatedNotes: Note[][] = [...notes];
       if (deltaRows !== 0) {
         // 以下の譜面のブロックに該当する単ノート/ホールドの始点/ホールドの中間/ホールドの終点をすべて更新
-        // * (form.blockIdx - 1)番目以前: 更新しない
-        // * form.blockIdx番目          : 譜面全体の行インデックスをスケーリング(空白 < X < H < M < W)
-        // * (form.blockIdx + 1)番目以降: 譜面全体の行インデックスを譜面のブロックの行数の差分ズラす
+        // * (menuBlockIdx - 1)番目以前: 更新しない
+        // * menuBlockIdx番目          : 譜面全体の行インデックスをスケーリング(空白 < X < H < M < W)
+        // * (menuBlockIdx + 1)番目以降: 譜面全体の行インデックスを譜面のブロックの行数の差分ズラす
         updatedNotes = [...notes].map((ns: Note[]) => [
-          // (form.blockIdx - 1)番目以前の譜面のブロック
+          // (menuBlockIdx - 1)番目以前の譜面のブロック
           ...ns.filter(
-            (note: Note) => note.rowIdx < blocks[form.blockIdx].accumulatedRows
+            (note: Note) => note.rowIdx < blocks[menuBlockIdx].accumulatedRows
           ),
-          // form.blockIdx番目の譜面のブロック
+          // menuBlockIdx番目の譜面のブロック
           ...ns
             .filter(
               (note: Note) =>
-                note.rowIdx >= blocks[form.blockIdx].accumulatedRows &&
+                note.rowIdx >= blocks[menuBlockIdx].accumulatedRows &&
                 note.rowIdx <
-                  blocks[form.blockIdx].accumulatedRows +
-                    blocks[form.blockIdx].rows
+                  blocks[menuBlockIdx].accumulatedRows +
+                    blocks[menuBlockIdx].rows
             )
             .reduce((prev: Note[], note: Note) => {
               const scaledRowIdx: number =
-                blocks[form.blockIdx].accumulatedRows +
+                blocks[menuBlockIdx].accumulatedRows +
                 Math.floor(
-                  ((note.rowIdx - blocks[form.blockIdx].accumulatedRows) *
+                  ((note.rowIdx - blocks[menuBlockIdx].accumulatedRows) *
                     Number(form.rows)) /
-                    blocks[form.blockIdx].rows
+                    blocks[menuBlockIdx].rows
                 );
               const prevScaledNote: Note | undefined = prev.find(
                 (note: Note) => note.rowIdx === scaledRowIdx
@@ -168,13 +188,12 @@ function EditBlockDialog() {
                   ]
                 : [...prev, { rowIdx: scaledRowIdx, type: note.type }];
             }, []),
-          // (form.blockIdx + 1)番目以降の譜面のブロック
+          // (menuBlockIdx + 1)番目以降の譜面のブロック
           ...ns
             .filter(
               (note: Note) =>
                 note.rowIdx >=
-                blocks[form.blockIdx].accumulatedRows +
-                  blocks[form.blockIdx].rows
+                blocks[menuBlockIdx].accumulatedRows + blocks[menuBlockIdx].rows
             )
             .map((note: Note) => {
               return { rowIdx: note.rowIdx + deltaRows, type: note.type };
@@ -186,16 +205,9 @@ function EditBlockDialog() {
 
       setBlocks(updatedBlocks);
       if (deltaRows !== 0) setNotes(updatedNotes);
+
       setMenuBlockIdx(null);
-      setForm({
-        beat: "",
-        blockIdx: -1,
-        bpm: "",
-        delay: "",
-        rows: "",
-        open: false,
-        split: "",
-      });
+      setOpen(false);
     } else {
       // バリデーションエラーのテキストフィールドを表示
       setResultError(result);
@@ -203,12 +215,13 @@ function EditBlockDialog() {
   }, [
     blocks,
     form,
+    menuBlockIdx,
     notes,
     setBlocks,
-    setForm,
     setIsProtected,
     setMenuBlockIdx,
     setNotes,
+    setOpen,
     setResultError,
     setRedoShapshots,
     setUndoSnapshots,
@@ -217,19 +230,11 @@ function EditBlockDialog() {
 
   const onClose = useCallback(() => {
     setMenuBlockIdx(null);
-    setForm({
-      beat: "",
-      blockIdx: -1,
-      bpm: "",
-      delay: "",
-      rows: "",
-      open: false,
-      split: "",
-    });
-  }, [setForm, setMenuBlockIdx]);
+    setOpen(false);
+  }, [setForm, setOpen]);
 
   return (
-    <Dialog open={form.open} onClose={onClose}>
+    <Dialog open={open} onClose={onClose}>
       <DialogTitle>Edit Block</DialogTitle>
       <DialogContent>
         <Stack spacing={3} mt={1}>

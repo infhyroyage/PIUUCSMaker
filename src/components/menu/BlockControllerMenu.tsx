@@ -33,7 +33,7 @@ function BlockControllerMenu({ blockNum, handler }: BlockControllerMenuProps) {
         <MenuItem
           onClick={() => {
             if (menuBlockIdx !== null) {
-              handler.edit(menuBlockIdx);
+              handler.edit();
               setMenuPosition(undefined);
             }
           }}

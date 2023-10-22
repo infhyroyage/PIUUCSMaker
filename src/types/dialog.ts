@@ -1,25 +1,59 @@
 import { Block, Note } from "./ucs";
 
 export type AdjustBlockDialogForm = {
+  /**
+   * BPM値
+   */
   bpm: number;
+
+  /**
+   * 行数
+   */
   rows: number;
+
+  /**
+   * Split値
+   */
   split: number;
 };
 
 export type AdjustBlockDialogOpen = {
-  fixed: "bpm" | "rows" | "split";
+  fixed: "bpm" | "rows" | "split"; // TODO: AdjustBlockDialogFormに移す
   open: boolean;
 };
 
+/**
+ * EditBlockDialogでバリデーションエラーが発生したテキストボックス名
+ */
 export type EditBlockDialogError = "beat" | "bpm" | "delay" | "rows" | "split";
 
+/**
+ * EditBlockDialogの入力フォーム
+ */
 export type EditBlockDialogForm = {
+  /**
+   * Beat値の文字列
+   */
   beat: string;
-  blockIdx: number;
+
+  /**
+   * BPM値の文字列
+   */
   bpm: string;
+
+  /**
+   * Delay値の文字列
+   */
   delay: string;
-  open: boolean;
+
+  /**
+   * 行数の文字列
+   */
   rows: string;
+
+  /**
+   * Split値の文字列
+   */
   split: string;
 };
 
@@ -89,7 +123,8 @@ export type NewUCSValidation = {
   block: Block;
 
   /**
-   * 列数 Single/SinglePerformance譜面の場合は5、Double/DoublePerformance譜面の場合は10
+   * 列数
+   * Single/SinglePerformance譜面の場合は5、Double/DoublePerformance譜面の場合は10
    */
   columns: 5 | 10;
 
@@ -99,9 +134,28 @@ export type NewUCSValidation = {
   isPerformance: boolean;
 };
 
+/**
+ * useUploadingUCSでのバリデーションが通った入力値
+ */
 export type UploadingUCSValidation = {
+  /**
+   * 譜面のブロックの集合
+   */
   blocks: Block[];
+
+  /**
+   * 列数
+   * Single/SinglePerformance譜面の場合は5、Double/DoublePerformance譜面の場合は10
+   */
   columns: 5 | 10;
+
+  /**
+   * SinglePerformance/DoublePerformance譜面の場合はtrue、Single/Double譜面の場合はfalse
+   */
   isPerformance: boolean;
+
+  /**
+   * 単ノート/ホールドの始点/ホールドの中間/ホールドの終点の集合
+   */
   notes: Note[][];
 };

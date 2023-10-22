@@ -5,7 +5,7 @@ import { ChartSnapshot } from "../../types/ucs";
 import {
   blocksState,
   columnsState,
-  editBlockDialogFormState,
+  isOpenedEditBlockDialogState,
   isProtectedState,
   noteSizeState,
   notesState,
@@ -15,7 +15,6 @@ import {
 } from "../../service/atoms";
 import BlockControllerButton from "./BlockControllerButton";
 import { ZOOM_VALUES } from "../../service/zoom";
-import { EditBlockDialogForm } from "../../types/dialog";
 import { useCallback, useMemo } from "react";
 import BlockControllerMenu from "../menu/BlockControllerMenu";
 import { IDENTIFIER_WIDTH, MENU_BAR_HEIGHT } from "../../service/styles";
@@ -28,8 +27,8 @@ function BlockController() {
   const columns = useRecoilValue<number>(columnsState);
   const noteSize = useRecoilValue<number>(noteSizeState);
   const zoom = useRecoilValue<Zoom>(zoomState);
-  const setEditBlockDialogForm = useSetRecoilState<EditBlockDialogForm>(
-    editBlockDialogFormState
+  const setIsOpenedEditBlockDialog = useSetRecoilState<boolean>(
+    isOpenedEditBlockDialogState
   );
   const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
   const setRedoShapshots =
@@ -119,17 +118,8 @@ function BlockController() {
   );
 
   const handleEdit = useCallback(
-    (blockIdx: number) =>
-      setEditBlockDialogForm({
-        beat: `${blocks[blockIdx].beat}`,
-        blockIdx,
-        bpm: `${blocks[blockIdx].bpm}`,
-        delay: `${blocks[blockIdx].delay}`,
-        open: true,
-        rows: `${blocks[blockIdx].rows}`,
-        split: `${blocks[blockIdx].split}`,
-      }),
-    [blocks, setEditBlockDialogForm]
+    () => setIsOpenedEditBlockDialog(true),
+    [setIsOpenedEditBlockDialog]
   );
 
   const handleDelete = useCallback(

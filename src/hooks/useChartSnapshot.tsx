@@ -5,8 +5,8 @@ import {
   blockControllerMenuPositionState,
   blocksState,
   chartIndicatorMenuPositionState,
-  editBlockDialogFormState,
   indicatorState,
+  isOpenedEditBlockDialogState,
   isOpenedNewUCSDialogState,
   isProtectedState,
   notesState,
@@ -20,7 +20,6 @@ import {
   ChartIndicatorMenuPosition,
 } from "../types/menu";
 import { ChartSnapshot } from "../types/ucs";
-import { EditBlockDialogForm } from "../types/dialog";
 
 function useChartSnapshot() {
   const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
@@ -29,8 +28,8 @@ function useChartSnapshot() {
     useRecoilState<ChartSnapshot[]>(redoSnapshotsState);
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
-  const editBlockDialogForm = useRecoilValue<EditBlockDialogForm>(
-    editBlockDialogFormState
+  const isOpenedEditBlockDialog = useRecoilValue<boolean>(
+    isOpenedEditBlockDialogState
   );
   const isOpenedNewUCSDialog = useRecoilValue<boolean>(
     isOpenedNewUCSDialogState
@@ -52,7 +51,7 @@ function useChartSnapshot() {
     if (
       redoSnapshots.length === 0 ||
       isOpenedNewUCSDialog ||
-      editBlockDialogForm.open
+      isOpenedEditBlockDialog
     )
       return;
 
@@ -78,7 +77,7 @@ function useChartSnapshot() {
     if (snapshot.blocks !== null) setBlocks(snapshot.blocks);
     if (snapshot.notes !== null) setNotes(snapshot.notes);
   }, [
-    editBlockDialogForm.open,
+    isOpenedEditBlockDialog,
     isOpenedNewUCSDialog,
     redoSnapshots,
     undoSnapshots,
@@ -98,7 +97,7 @@ function useChartSnapshot() {
     if (
       undoSnapshots.length === 0 ||
       isOpenedNewUCSDialog ||
-      editBlockDialogForm.open
+      isOpenedEditBlockDialog
     )
       return;
 
@@ -125,7 +124,7 @@ function useChartSnapshot() {
     if (snapshot.blocks !== null) setBlocks(snapshot.blocks);
     if (snapshot.notes !== null) setNotes(snapshot.notes);
   }, [
-    editBlockDialogForm.open,
+    isOpenedEditBlockDialog,
     isOpenedNewUCSDialog,
     redoSnapshots,
     undoSnapshots,
