@@ -22,7 +22,7 @@ import {
 } from "../../service/atoms";
 import { ChangeEvent, useState, useTransition } from "react";
 import {
-  NewUCSDialogErrors,
+  NewUCSDialogError,
   NewUCSDialogForm,
   NewUCSValidation,
 } from "../../types/dialog";
@@ -31,7 +31,7 @@ import { ChartSnapshot } from "../../types/ucs";
 
 const validateAndLoadUCS = (
   form: NewUCSDialogForm
-): NewUCSValidation | NewUCSDialogErrors => {
+): NewUCSValidation | NewUCSDialogError => {
   // UCSファイル名のチェック
   if (form.ucsName.length === 0) {
     return "ucsName";
@@ -127,7 +127,7 @@ function NewUCSDialog() {
   });
   const [isOpenedNewUCSDialog, setIsOpenedNewUCSDialog] =
     useRecoilState<boolean>(isOpenedNewUCSDialogState);
-  const [resultError, setResultError] = useState<NewUCSDialogErrors | "">("");
+  const [resultError, setResultError] = useState<NewUCSDialogError | "">("");
   const setBlocks = useSetRecoilState<Block[]>(blocksState);
   const setColumns = useSetRecoilState<5 | 10>(columnsState);
   const setIsPerformance = useSetRecoilState<boolean>(isPerformanceState);
@@ -143,7 +143,7 @@ function NewUCSDialog() {
 
   const onCreate = () =>
     startTransition(() => {
-      const result: NewUCSValidation | NewUCSDialogErrors =
+      const result: NewUCSValidation | NewUCSDialogError =
         validateAndLoadUCS(form);
       if (typeof result === "string") {
         // バリデーションエラーのテキストフィールドを表示
