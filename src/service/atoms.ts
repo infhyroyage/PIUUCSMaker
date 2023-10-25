@@ -57,6 +57,7 @@ export const clipBoardState = atom<ClipBoard>({
 /**
  * 列数
  * Single/SinglePerformance譜面の場合は5、Double/DoublePerformance譜面の場合は10
+ * TODO: notesStateの第1インデックスの個数で判断できるため削除したい
  */
 export const columnsState = atom<5 | 10>({
   key: "columns",
