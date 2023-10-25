@@ -20,7 +20,10 @@ import {
   Radio,
   Typography,
 } from "@mui/material";
-import { AdjustBlockDialogForm } from "../../types/dialog";
+import {
+  AdjustBlockDialogForm,
+  AdjustBlockDialogFormFixed,
+} from "../../types/dialog";
 import { Block, Note } from "../../types/ucs";
 import { ChartSnapshot } from "../../types/ucs";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
@@ -38,9 +41,9 @@ const roundBpm = (bpm: number): number =>
       );
 
 function AdjustBlockDialog() {
+  const [fixed, setFixed] = useState<AdjustBlockDialogFormFixed>("bpm");
   const [form, setForm] = useState<AdjustBlockDialogForm>({
     bpm: -1,
-    fixed: "bpm",
     rows: -1,
     split: -1,
   });
@@ -62,11 +65,10 @@ function AdjustBlockDialog() {
     () =>
       setForm({
         bpm: menuBlockIdx === null ? -1 : blocks[menuBlockIdx].bpm,
-        fixed: form.fixed,
         rows: menuBlockIdx === null ? -1 : blocks[menuBlockIdx].rows,
         split: menuBlockIdx === null ? -1 : blocks[menuBlockIdx].split,
       }),
-    [blocks, form, menuBlockIdx, setForm]
+    [blocks, menuBlockIdx, setForm]
   );
 
   const onUpdate = useCallback(() => {
@@ -220,8 +222,8 @@ function AdjustBlockDialog() {
             </Grid>
             <Grid item xs={1}>
               <Radio
-                checked={form.fixed === "split"}
-                onChange={() => setForm({ ...form, fixed: "split" })}
+                checked={fixed === "split"}
+                onChange={() => setFixed("split")}
                 value="split"
               />
             </Grid>
@@ -229,7 +231,7 @@ function AdjustBlockDialog() {
               Split
             </Grid>
             <Grid item xs={5}>
-              {form.fixed === "split" ? (
+              {fixed === "split" ? (
                 blocks[menuBlockIdx].split
               ) : (
                 <Typography variant="h6">
@@ -241,7 +243,7 @@ function AdjustBlockDialog() {
               <ArrowRightIcon />
             </Grid>
             <Grid item xs={5}>
-              {form.fixed === "split" ? (
+              {fixed === "split" ? (
                 `${form.split} (fixed)`
               ) : (
                 <Typography variant="h6">{form.split}</Typography>
@@ -251,21 +253,16 @@ function AdjustBlockDialog() {
             <Grid item xs={2}>
               <Button
                 disabled={
-                  form.fixed === "split" ||
-                  (form.fixed === "bpm" && form.rows % form.split !== 0) ||
-                  (form.fixed === "bpm" && form.rows < form.split) ||
-                  (form.fixed === "rows" && form.bpm * form.split > 999)
+                  fixed === "split" ||
+                  (fixed === "bpm" && form.rows % form.split !== 0) ||
+                  (fixed === "bpm" && form.rows < form.split) ||
+                  (fixed === "rows" && form.bpm * form.split > 999)
                 }
                 fullWidth
                 onClick={() =>
                   setForm({
-                    bpm:
-                      form.fixed === "bpm" ? form.bpm : form.bpm * form.split,
-                    fixed: form.fixed,
-                    rows:
-                      form.fixed === "rows"
-                        ? form.rows
-                        : form.rows / form.split,
+                    bpm: fixed === "bpm" ? form.bpm : form.bpm * form.split,
+                    rows: fixed === "rows" ? form.rows : form.rows / form.split,
                     split: 1,
                   })
                 }
@@ -277,19 +274,18 @@ function AdjustBlockDialog() {
             <Grid item xs={2}>
               <Button
                 disabled={
-                  form.fixed === "split" ||
+                  fixed === "split" ||
                   form.split % 2 !== 0 ||
                   form.split < 2 ||
-                  (form.fixed === "bpm" && form.rows % 2 !== 0) ||
-                  (form.fixed === "bpm" && form.rows < 2) ||
-                  (form.fixed === "rows" && form.bpm > 499.5)
+                  (fixed === "bpm" && form.rows % 2 !== 0) ||
+                  (fixed === "bpm" && form.rows < 2) ||
+                  (fixed === "rows" && form.bpm > 499.5)
                 }
                 fullWidth
                 onClick={() =>
                   setForm({
-                    bpm: form.fixed === "bpm" ? form.bpm : form.bpm * 2,
-                    fixed: form.fixed,
-                    rows: form.fixed === "rows" ? form.rows : form.rows / 2,
+                    bpm: fixed === "bpm" ? form.bpm : form.bpm * 2,
+                    rows: fixed === "rows" ? form.rows : form.rows / 2,
                     split: form.split / 2,
                   })
                 }
@@ -301,25 +297,24 @@ function AdjustBlockDialog() {
             <Grid item xs={2}>
               <Button
                 disabled={
-                  form.fixed === "split" ||
+                  fixed === "split" ||
                   form.split < 2 ||
-                  (form.fixed === "bpm" &&
+                  (fixed === "bpm" &&
                     (form.rows * (form.split - 1)) % form.split !== 0) ||
-                  (form.fixed === "bpm" &&
+                  (fixed === "bpm" &&
                     form.rows * (form.split - 1) < form.split) ||
-                  (form.fixed === "rows" &&
+                  (fixed === "rows" &&
                     form.bpm * form.split > 999 * (form.split - 1))
                 }
                 fullWidth
                 onClick={() =>
                   setForm({
                     bpm:
-                      form.fixed === "bpm"
+                      fixed === "bpm"
                         ? form.bpm
                         : (form.bpm * form.split) / (form.split - 1),
-                    fixed: form.fixed,
                     rows:
-                      form.fixed === "rows"
+                      fixed === "rows"
                         ? form.rows
                         : (form.rows * (form.split - 1)) / form.split,
                     split: form.split - 1,
@@ -333,23 +328,22 @@ function AdjustBlockDialog() {
             <Grid item xs={2}>
               <Button
                 disabled={
-                  form.fixed === "split" ||
+                  fixed === "split" ||
                   form.split > 127 ||
-                  (form.fixed === "bpm" &&
+                  (fixed === "bpm" &&
                     (form.rows * (form.split + 1)) % form.split !== 0) ||
-                  (form.fixed === "rows" &&
+                  (fixed === "rows" &&
                     form.bpm * form.split * 10 < form.split + 1)
                 }
                 fullWidth
                 onClick={() =>
                   setForm({
                     bpm:
-                      form.fixed === "bpm"
+                      fixed === "bpm"
                         ? form.bpm
                         : (form.bpm * form.split) / (form.split + 1),
-                    fixed: form.fixed,
                     rows:
-                      form.fixed === "rows"
+                      fixed === "rows"
                         ? form.rows
                         : (form.rows * (form.split + 1)) / form.split,
                     split: form.split + 1,
@@ -363,17 +357,16 @@ function AdjustBlockDialog() {
             <Grid item xs={2}>
               <Button
                 disabled={
-                  form.fixed === "split" ||
+                  fixed === "split" ||
                   form.split > 64 ||
-                  (form.fixed === "bpm" && form.rows > 64) ||
-                  (form.fixed === "rows" && form.bpm < 0.2)
+                  (fixed === "bpm" && form.rows > 64) ||
+                  (fixed === "rows" && form.bpm < 0.2)
                 }
                 fullWidth
                 onClick={() =>
                   setForm({
-                    bpm: form.fixed === "bpm" ? form.bpm : form.bpm / 2,
-                    fixed: form.fixed,
-                    rows: form.fixed === "rows" ? form.rows : form.rows * 2,
+                    bpm: fixed === "bpm" ? form.bpm : form.bpm / 2,
+                    rows: fixed === "rows" ? form.rows : form.rows * 2,
                     split: form.split * 2,
                   })
                 }
@@ -385,21 +378,19 @@ function AdjustBlockDialog() {
             <Grid item xs={2}>
               <Button
                 disabled={
-                  form.fixed === "split" ||
-                  (form.fixed === "bpm" &&
-                    (form.rows * 128) % form.split !== 0) ||
-                  (form.fixed === "rows" && form.bpm * form.split < 12.8)
+                  fixed === "split" ||
+                  (fixed === "bpm" && (form.rows * 128) % form.split !== 0) ||
+                  (fixed === "rows" && form.bpm * form.split < 12.8)
                 }
                 fullWidth
                 onClick={() =>
                   setForm({
                     bpm:
-                      form.fixed === "bpm"
+                      fixed === "bpm"
                         ? form.bpm
                         : (form.bpm * form.split) / 128,
-                    fixed: form.fixed,
                     rows:
-                      form.fixed === "rows"
+                      fixed === "rows"
                         ? form.rows
                         : (form.rows * 128) / form.split,
                     split: 128,
@@ -415,8 +406,8 @@ function AdjustBlockDialog() {
             </Grid>
             <Grid item xs={1}>
               <Radio
-                checked={form.fixed === "rows"}
-                onChange={() => setForm({ ...form, fixed: "rows" })}
+                checked={fixed === "rows"}
+                onChange={() => setFixed("rows")}
                 value="rows"
               />
             </Grid>
@@ -424,7 +415,7 @@ function AdjustBlockDialog() {
               Rows
             </Grid>
             <Grid item xs={5}>
-              {form.fixed === "rows" ? (
+              {fixed === "rows" ? (
                 blocks[menuBlockIdx].rows
               ) : (
                 <Typography variant="h6">
@@ -436,7 +427,7 @@ function AdjustBlockDialog() {
               <ArrowRightIcon />
             </Grid>
             <Grid item xs={5}>
-              {form.fixed === "rows" ? (
+              {fixed === "rows" ? (
                 `${form.rows} (fixed)`
               ) : (
                 <Typography variant="h6">{form.rows}</Typography>
@@ -447,20 +438,19 @@ function AdjustBlockDialog() {
             <Grid item xs={2}>
               <Button
                 disabled={
-                  form.fixed === "rows" ||
+                  fixed === "rows" ||
                   form.rows % 2 !== 0 ||
                   form.rows < 2 ||
-                  (form.fixed === "bpm" && form.split % 2 !== 0) ||
-                  (form.fixed === "bpm" && form.split < 2) ||
-                  (form.fixed === "split" && form.bpm < 0.2)
+                  (fixed === "bpm" && form.split % 2 !== 0) ||
+                  (fixed === "bpm" && form.split < 2) ||
+                  (fixed === "split" && form.bpm < 0.2)
                 }
                 fullWidth
                 onClick={() =>
                   setForm({
-                    bpm: form.fixed === "bpm" ? form.bpm : form.bpm / 2,
-                    fixed: form.fixed,
+                    bpm: fixed === "bpm" ? form.bpm : form.bpm / 2,
                     rows: form.rows / 2,
-                    split: form.fixed === "split" ? form.split : form.split / 2,
+                    split: fixed === "split" ? form.split : form.split / 2,
                   })
                 }
                 variant="contained"
@@ -473,17 +463,16 @@ function AdjustBlockDialog() {
             <Grid item xs={2}>
               <Button
                 disabled={
-                  form.fixed === "rows" ||
-                  (form.fixed === "bpm" && form.split > 64) ||
-                  (form.fixed === "split" && form.bpm > 499.5)
+                  fixed === "rows" ||
+                  (fixed === "bpm" && form.split > 64) ||
+                  (fixed === "split" && form.bpm > 499.5)
                 }
                 fullWidth
                 onClick={() =>
                   setForm({
-                    bpm: form.fixed === "bpm" ? form.bpm : form.bpm * 2,
-                    fixed: form.fixed,
+                    bpm: fixed === "bpm" ? form.bpm : form.bpm * 2,
                     rows: form.rows * 2,
-                    split: form.fixed === "split" ? form.split : form.split * 2,
+                    split: fixed === "split" ? form.split : form.split * 2,
                   })
                 }
                 variant="contained"
@@ -497,8 +486,8 @@ function AdjustBlockDialog() {
             </Grid>
             <Grid item xs={1}>
               <Radio
-                checked={form.fixed === "bpm"}
-                onChange={() => setForm({ ...form, fixed: "bpm" })}
+                checked={fixed === "bpm"}
+                onChange={() => setFixed("bpm")}
                 value="bpm"
               />
             </Grid>
@@ -506,7 +495,7 @@ function AdjustBlockDialog() {
               BPM
             </Grid>
             <Grid item xs={5}>
-              {form.fixed === "bpm" ? (
+              {fixed === "bpm" ? (
                 blocks[menuBlockIdx].bpm
               ) : (
                 <Typography variant="h6">{blocks[menuBlockIdx].bpm}</Typography>
@@ -516,7 +505,7 @@ function AdjustBlockDialog() {
               <ArrowRightIcon />
             </Grid>
             <Grid item xs={5}>
-              {form.fixed === "bpm" ? (
+              {fixed === "bpm" ? (
                 `${form.bpm} (fixed)`
               ) : (
                 <Typography variant="h6">{roundBpm(form.bpm)}</Typography>
@@ -527,19 +516,18 @@ function AdjustBlockDialog() {
             <Grid item xs={2}>
               <Button
                 disabled={
-                  form.fixed === "bpm" ||
+                  fixed === "bpm" ||
                   form.bpm < 0.2 ||
-                  (form.fixed === "rows" && form.split > 64) ||
-                  (form.fixed === "split" && form.rows % 2 !== 0) ||
-                  (form.fixed === "split" && form.rows < 2)
+                  (fixed === "rows" && form.split > 64) ||
+                  (fixed === "split" && form.rows % 2 !== 0) ||
+                  (fixed === "split" && form.rows < 2)
                 }
                 fullWidth
                 onClick={() =>
                   setForm({
                     bpm: form.bpm / 2,
-                    fixed: form.fixed,
-                    rows: form.fixed === "rows" ? form.rows : form.rows / 2,
-                    split: form.fixed === "split" ? form.split : form.split * 2,
+                    rows: fixed === "rows" ? form.rows : form.rows / 2,
+                    split: fixed === "split" ? form.split : form.split * 2,
                   })
                 }
                 variant="contained"
@@ -552,18 +540,17 @@ function AdjustBlockDialog() {
             <Grid item xs={2}>
               <Button
                 disabled={
-                  form.fixed === "bpm" ||
+                  fixed === "bpm" ||
                   form.bpm > 499.5 ||
-                  (form.fixed === "rows" && form.split % 2 !== 0) ||
-                  (form.fixed === "rows" && form.split < 2)
+                  (fixed === "rows" && form.split % 2 !== 0) ||
+                  (fixed === "rows" && form.split < 2)
                 }
                 fullWidth
                 onClick={() =>
                   setForm({
                     bpm: form.bpm * 2,
-                    fixed: form.fixed,
-                    rows: form.fixed === "rows" ? form.rows : form.rows * 2,
-                    split: form.fixed === "split" ? form.split : form.split / 2,
+                    rows: fixed === "rows" ? form.rows : form.rows * 2,
+                    split: fixed === "split" ? form.split : form.split / 2,
                   })
                 }
                 variant="contained"

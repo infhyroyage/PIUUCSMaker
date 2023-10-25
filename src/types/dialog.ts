@@ -10,11 +10,6 @@ export type AdjustBlockDialogForm = {
   bpm: number;
 
   /**
-   * 3つのパラメーターの調整時に1つだけ固定するパラメーター名
-   */
-  fixed: "bpm" | "rows" | "split";
-
-  /**
    * 行数
    */
   rows: number;
@@ -24,6 +19,11 @@ export type AdjustBlockDialogForm = {
    */
   split: number;
 };
+
+/**
+ * AdjustBlockDialogの入力フォームで1つだけ固定するパラメーター名
+ */
+export type AdjustBlockDialogFormFixed = "bpm" | "rows" | "split";
 
 /**
  * EditBlockDialogでバリデーションエラーが発生したテキストボックス名
