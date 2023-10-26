@@ -9,7 +9,6 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
   blocksState,
   clipBoardState,
-  columnsState,
   indicatorState,
   isProtectedState,
   notesState,
@@ -25,7 +24,6 @@ function useClipBoard() {
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
   const blocks = useRecoilValue<Block[]>(blocksState);
-  const columns = useRecoilValue<5 | 10>(columnsState);
   const indicator = useRecoilValue<Indicator>(indicatorState);
   const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
   const setRedoShapshots =
@@ -154,7 +152,7 @@ function useClipBoard() {
         startColumn: indicator.column,
         startRowIdx: indicator.rowIdx,
         goalColumn:
-          Math.min(indicator.column + clipBoard.columnLength, columns) - 1,
+          Math.min(indicator.column + clipBoard.columnLength, notes.length) - 1,
         goalRowIdx:
           Math.min(indicator.rowIdx + clipBoard.rowLength, totalRows) - 1,
       },
@@ -163,7 +161,6 @@ function useClipBoard() {
     });
   }, [
     clipBoard,
-    columns,
     indicator,
     notes,
     setIsProtected,

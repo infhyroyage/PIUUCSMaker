@@ -13,7 +13,6 @@ import {
   isOpenedNewUCSDialogState,
   blocksState,
   notesState,
-  columnsState,
   isPerformanceState,
   ucsNameState,
   isProtectedState,
@@ -129,7 +128,6 @@ function NewUCSDialog() {
     useRecoilState<boolean>(isOpenedNewUCSDialogState);
   const [resultError, setResultError] = useState<NewUCSDialogError | "">("");
   const setBlocks = useSetRecoilState<Block[]>(blocksState);
-  const setColumns = useSetRecoilState<5 | 10>(columnsState);
   const setIsPerformance = useSetRecoilState<boolean>(isPerformanceState);
   const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
   const setNotes = useSetRecoilState<Note[][]>(notesState);
@@ -150,7 +148,6 @@ function NewUCSDialog() {
         setResultError(result);
       } else {
         setBlocks([result.block]);
-        setColumns(result.columns);
         setIsPerformance(result.isPerformance);
         setIsProtected(false);
         setNotes(

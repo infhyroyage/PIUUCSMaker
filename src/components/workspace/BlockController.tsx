@@ -4,7 +4,6 @@ import { Zoom } from "../../types/menu";
 import { ChartSnapshot } from "../../types/ucs";
 import {
   blocksState,
-  columnsState,
   isOpenedEditBlockDialogState,
   isProtectedState,
   noteSizeState,
@@ -24,7 +23,6 @@ function BlockController() {
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
-  const columns = useRecoilValue<number>(columnsState);
   const noteSize = useRecoilValue<number>(noteSizeState);
   const zoom = useRecoilValue<Zoom>(zoomState);
   const setIsOpenedEditBlockDialog = useSetRecoilState<boolean>(
@@ -38,6 +36,17 @@ function BlockController() {
   const verticalBorderSize = useMemo(
     () => Math.max(Math.floor(noteSize * 0.025) * 2, 2),
     [noteSize]
+  );
+
+  const maxWidth = useMemo(
+    () =>
+      `calc(100vw - ${
+        MENU_BAR_HEIGHT +
+        IDENTIFIER_WIDTH +
+        notes.length * noteSize +
+        verticalBorderSize
+      }px)`,
+    [notes.length, noteSize, verticalBorderSize]
   );
 
   const handleAdd = useCallback(
@@ -215,16 +224,7 @@ function BlockController() {
   );
 
   return (
-    <div
-      style={{
-        maxWidth: `calc(100vw - ${
-          MENU_BAR_HEIGHT +
-          IDENTIFIER_WIDTH +
-          columns * noteSize +
-          verticalBorderSize
-        }px)`,
-      }}
-    >
+    <div style={{ maxWidth }}>
       {blocks.map((block: Block, blockIdx: number) => (
         <BlockControllerButton
           key={blockIdx}

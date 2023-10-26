@@ -3,7 +3,6 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
   blocksState,
   chartIndicatorMenuPositionState,
-  columnsState,
   indicatorState,
   isPlayingState,
   isProtectedState,
@@ -40,7 +39,6 @@ function Chart() {
   const [selector, setSelector] = useRecoilState<Selector>(selectorState);
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
-  const columns = useRecoilValue<5 | 10>(columnsState);
   const isPlaying = useRecoilValue<boolean>(isPlayingState);
   const noteSize = useRecoilValue<number>(noteSizeState);
   const zoom = useRecoilValue<Zoom>(zoomState);
@@ -499,7 +497,7 @@ function Chart() {
 
   return (
     <>
-      {[...Array(columns)].map((_, column: number) => (
+      {[...Array(notes.length)].map((_, column: number) => (
         <div key={column} style={{ display: "flex" }}>
           {column === 0 && (
             <BorderLine
@@ -546,7 +544,7 @@ function Chart() {
               style={{ height: "100%", width: `${verticalBorderSize * 0.5}px` }}
             />
           </div>
-          {column === columns - 1 && (
+          {column === notes.length - 1 && (
             <BorderLine
               style={{ height: "100%", width: `${verticalBorderSize * 0.5}px` }}
             />

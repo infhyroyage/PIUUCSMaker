@@ -2,7 +2,6 @@ import { useCallback, useTransition } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import {
   blocksState,
-  columnsState,
   isPerformanceState,
   isProtectedState,
   notesState,
@@ -15,7 +14,6 @@ import { ChartSnapshot } from "../types/ucs";
 
 function useDownloadingUCS() {
   const blocks = useRecoilValue<Block[]>(blocksState);
-  const columns = useRecoilValue<5 | 10>(columnsState);
   const isPerformance = useRecoilValue<boolean>(isPerformanceState);
   const notes = useRecoilValue<Note[][]>(notesState);
   const ucsName = useRecoilValue<string | null>(ucsNameState);
@@ -34,7 +32,7 @@ function useDownloadingUCS() {
     startTransition(() => {
       // UCSファイルを生成
       let content: string = ":Format=1\r\n";
-      if (columns === 5) {
+      if (notes.length === 5) {
         if (isPerformance) {
           content += ":Mode=S-Performance\r\n";
         } else {
@@ -70,7 +68,7 @@ function useDownloadingUCS() {
             // ダウンロード処理時間の短縮のため、譜面全体の行のインデックスrowIdxに
             // 単ノート/ホールドの始点/ホールドの中間/ホールドの終点の情報が存在する場合のみ
             // find関数を実行して、「X」/「M」/「H」/「W」/「.」を追記
-            [...Array(columns)].forEach((_, column: number) => {
+            [...Array(notes.length)].forEach((_, column: number) => {
               const foundNote: Note | undefined = notes[column].find(
                 (note: Note) => note.rowIdx === rowIdx
               );
@@ -79,7 +77,7 @@ function useDownloadingUCS() {
           } else {
             // 譜面全体の行のインデックスrowIdxに単ノート/ホールドの始点/ホールドの中間/ホールドの終点
             // の情報が存在しない場合は「.」を追記
-            content += [...Array(columns)].map(() => ".").join("");
+            content += [...Array(notes.length)].map(() => ".").join("");
           }
           content += "\r\n";
         });
@@ -101,7 +99,6 @@ function useDownloadingUCS() {
     });
   }, [
     blocks,
-    columns,
     isPerformance,
     notes,
     setIsProtected,

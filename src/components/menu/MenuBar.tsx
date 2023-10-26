@@ -4,15 +4,10 @@ import {
   volumeValueState,
   zoomState,
   isPlayingState,
-  mp3NameState,
-  ucsNameState,
-  columnsState,
-  isPerformanceState,
   isProtectedState,
 } from "../../service/atoms";
 import {
   AppBar,
-  Box,
   FormControl,
   IconButton,
   MenuItem,
@@ -20,31 +15,26 @@ import {
   SelectChangeEvent,
   Slider,
   Stack,
-  Theme,
   Toolbar,
-  Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import VolumeOffIcon from "@mui/icons-material/VolumeOff";
 import VolumeDownIcon from "@mui/icons-material/VolumeDown";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import VolumeMuteIcon from "@mui/icons-material/VolumeMute";
 import { Zoom } from "../../types/menu";
 import { MENU_BAR_HEIGHT } from "../../service/styles";
+import MenuBarTitle from "./MenuBarTitle";
 
 function MenuBar() {
   const [muteVolBuf, setMuteVolBuf] = useState<number | null>(null);
   const [volumeValue, setVolumeValue] =
     useRecoilState<number>(volumeValueState);
   const [zoom, setZoom] = useRecoilState<Zoom>(zoomState);
-  const columns = useRecoilValue<5 | 10>(columnsState);
-  const isPerformance = useRecoilValue<boolean>(isPerformanceState);
   const isPlaying = useRecoilValue<boolean>(isPlayingState);
   const isProtected = useRecoilValue<boolean>(isProtectedState);
-  const mp3Name = useRecoilValue<string | null>(mp3NameState);
-  const ucsName = useRecoilValue<string | null>(ucsNameState);
 
-  const onClickVolumeButton = () => {
+  const onClickVolumeButton = useCallback(() => {
     if (muteVolBuf === null) {
       setMuteVolBuf(volumeValue);
       setVolumeValue(0);
@@ -52,7 +42,7 @@ function MenuBar() {
       setVolumeValue(muteVolBuf);
       setMuteVolBuf(null);
     }
-  };
+  }, [muteVolBuf, setMuteVolBuf, setVolumeValue, volumeValue]);
 
   // 編集中に離脱した場合、その離脱を抑止する組込みダイアログを表示
   useEffect(() => {
@@ -74,18 +64,7 @@ function MenuBar() {
     <AppBar position="sticky">
       <Toolbar sx={{ height: `${MENU_BAR_HEIGHT}px` }} variant="dense">
         <div style={{ width: `${MENU_BAR_HEIGHT}px` }} />
-        <Box flexGrow={1}>
-          <Typography variant="subtitle1" noWrap component="div">
-            {`${isProtected ? "*" : ""}${ucsName || "PIU UCS Maker"}`}
-          </Typography>
-          {ucsName !== null && (
-            <Typography variant="caption" noWrap component="div">
-              {`${columns === 5 ? "Single" : "Double"} ${
-                isPerformance ? "Performance" : ""
-              }${mp3Name ? ` (${mp3Name})` : ""}`}
-            </Typography>
-          )}
-        </Box>
+        <MenuBarTitle />
         <Stack alignItems="center" direction="row" spacing={{ xs: 0, sm: 1 }}>
           <FormControl size="small">
             <Select

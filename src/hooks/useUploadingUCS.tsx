@@ -3,7 +3,6 @@ import { useSetRecoilState } from "recoil";
 import { Block, Note } from "../types/ucs";
 import {
   blocksState,
-  columnsState,
   isPerformanceState,
   isProtectedState,
   notesState,
@@ -216,13 +215,12 @@ const validateAndLoadUCS = (
   block.rows = rows;
   blocks.push(block);
 
-  return { blocks, columns, isPerformance, notes };
+  return { blocks, isPerformance, notes };
 };
 
 function useUploadingUCS() {
   const [isUploadingUCS, setIsUploadingUCS] = useState<boolean>(false);
   const setBlocks = useSetRecoilState<Block[]>(blocksState);
-  const setColumns = useSetRecoilState<5 | 10>(columnsState);
   const setIsPerformance = useSetRecoilState<boolean>(isPerformanceState);
   const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
   const setNotes = useSetRecoilState<Note[][]>(notesState);
@@ -255,7 +253,6 @@ function useUploadingUCS() {
             setUserErrorMessage(result);
           } else {
             setBlocks(result.blocks);
-            setColumns(result.columns);
             setIsPerformance(result.isPerformance);
             setIsProtected(false);
             setNotes(result.notes);
@@ -271,7 +268,6 @@ function useUploadingUCS() {
     },
     [
       setBlocks,
-      setColumns,
       setIsUploadingUCS,
       setUserErrorMessage,
       setIsPerformance,

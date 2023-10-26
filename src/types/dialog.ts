@@ -126,8 +126,7 @@ export type NewUCSValidation = {
   block: Block;
 
   /**
-   * 列数
-   * Single/SinglePerformance譜面の場合は5、Double/DoublePerformance譜面の場合は10
+   * 列数(Single/SinglePerformance譜面の場合は5、Double/DoublePerformance譜面の場合は10)
    */
   columns: 5 | 10;
 
@@ -147,18 +146,13 @@ export type UploadingUCSValidation = {
   blocks: Block[];
 
   /**
-   * 列数
-   * Single/SinglePerformance譜面の場合は5、Double/DoublePerformance譜面の場合は10
-   */
-  columns: 5 | 10;
-
-  /**
    * SinglePerformance/DoublePerformance譜面の場合はtrue、Single/Double譜面の場合はfalse
    */
   isPerformance: boolean;
 
   /**
    * 単ノート/ホールドの始点/ホールドの中間/ホールドの終点の集合
+   * 第1インデックスの要素数は列数(Single/SinglePerformance譜面の場合は5、Double/DoublePerformance譜面の場合は10)と一致
    */
   notes: Note[][];
 };

@@ -55,16 +55,6 @@ export const clipBoardState = atom<ClipBoard>({
 });
 
 /**
- * 列数
- * Single/SinglePerformance譜面の場合は5、Double/DoublePerformance譜面の場合は10
- * TODO: notesStateの第1インデックスの個数で判断できるため削除したい
- */
-export const columnsState = atom<5 | 10>({
-  key: "columns",
-  default: 5,
-});
-
-/**
  * ホールド設置中の表示パラメーター
  * ホールド設置中ではない場合はnull
  */
@@ -165,6 +155,7 @@ export const mp3NameState = atom<string | null>({
 
 /**
  * 単ノート/ホールドの始点/ホールドの中間/ホールドの終点の集合
+ * 第1インデックスの要素数は列数(Single/SinglePerformance譜面の場合は5、Double/DoublePerformance譜面の場合は10)と一致
  */
 export const notesState = atom<Note[][]>({
   key: "notes",
