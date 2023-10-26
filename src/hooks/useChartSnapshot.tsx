@@ -77,8 +77,10 @@ function useChartSnapshot() {
     if (snapshot.blocks !== null) setBlocks(snapshot.blocks);
     if (snapshot.notes !== null) setNotes(snapshot.notes);
   }, [
+    blocks,
     isOpenedEditBlockDialog,
     isOpenedNewUCSDialog,
+    notes,
     redoSnapshots,
     undoSnapshots,
     setBlockControllerMenuPosition,
@@ -124,8 +126,10 @@ function useChartSnapshot() {
     if (snapshot.blocks !== null) setBlocks(snapshot.blocks);
     if (snapshot.notes !== null) setNotes(snapshot.notes);
   }, [
+    blocks,
     isOpenedEditBlockDialog,
     isOpenedNewUCSDialog,
+    notes,
     redoSnapshots,
     undoSnapshots,
     setBlockControllerMenuPosition,

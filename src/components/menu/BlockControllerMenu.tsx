@@ -1,15 +1,17 @@
-import { memo } from "react";
+import { memo, useMemo } from "react";
 import { Divider, Menu, MenuItem, MenuList } from "@mui/material";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
   isOpenedAdjustBlockDialogState,
   blockControllerMenuBlockIdxState,
   blockControllerMenuPositionState,
+  blocksState,
 } from "../../service/atoms";
 import { BlockControllerMenuProps } from "../../types/props";
 import { BlockControllerMenuPosition } from "../../types/menu";
+import { Block } from "../../types/ucs";
 
-function BlockControllerMenu({ blockNum, handler }: BlockControllerMenuProps) {
+function BlockControllerMenu({ handler }: BlockControllerMenuProps) {
   const [menuBlockIdx, setMenuBlockIdx] = useRecoilState<number | null>(
     blockControllerMenuBlockIdxState
   );
@@ -17,9 +19,12 @@ function BlockControllerMenu({ blockNum, handler }: BlockControllerMenuProps) {
     useRecoilState<BlockControllerMenuPosition>(
       blockControllerMenuPositionState
     );
+  const blocks = useRecoilValue<Block[]>(blocksState);
   const setIsOpenedAdjustBlockDialog = useSetRecoilState<boolean>(
     isOpenedAdjustBlockDialogState
   );
+
+  const blockNum = useMemo(() => blocks.length, [blocks.length]);
 
   return (
     <Menu

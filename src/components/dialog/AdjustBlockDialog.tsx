@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import {
   blocksState,
@@ -60,6 +60,11 @@ function AdjustBlockDialog() {
   const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
   const setRedoShapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
+
+  const menuBlock = useMemo(
+    () => (menuBlockIdx ? blocks[menuBlockIdx] : null),
+    [blocks, menuBlockIdx]
+  );
 
   useEffect(
     () =>
@@ -198,7 +203,8 @@ function AdjustBlockDialog() {
   }, [setMenuBlockIdx, setOpen]);
 
   return (
-    menuBlockIdx !== null && (
+    menuBlockIdx !== null &&
+    menuBlock !== null && (
       <Dialog open={open} onClose={onClose}>
         <DialogTitle>Adjust Split/Rows/BPM</DialogTitle>
         <DialogContent>
@@ -416,11 +422,9 @@ function AdjustBlockDialog() {
             </Grid>
             <Grid item xs={5}>
               {fixed === "rows" ? (
-                blocks[menuBlockIdx].rows
+                menuBlock.rows
               ) : (
-                <Typography variant="h6">
-                  {blocks[menuBlockIdx].rows}
-                </Typography>
+                <Typography variant="h6">{menuBlock.rows}</Typography>
               )}
             </Grid>
             <Grid item xs={1}>
@@ -496,9 +500,9 @@ function AdjustBlockDialog() {
             </Grid>
             <Grid item xs={5}>
               {fixed === "bpm" ? (
-                blocks[menuBlockIdx].bpm
+                menuBlock.bpm
               ) : (
-                <Typography variant="h6">{blocks[menuBlockIdx].bpm}</Typography>
+                <Typography variant="h6">{menuBlock.bpm}</Typography>
               )}
             </Grid>
             <Grid item xs={1}>

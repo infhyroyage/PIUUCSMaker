@@ -78,11 +78,6 @@ type BlockControllerMenuHandler = {
  */
 export type BlockControllerMenuProps = {
   /**
-   * 譜面のブロックの個数
-   */
-  blockNum: number;
-
-  /**
    * メニュー選択時の動作
    */
   handler: BlockControllerMenuHandler;

@@ -223,9 +223,9 @@ function BlockController() {
     ]
   );
 
-  return (
-    <div style={{ maxWidth }}>
-      {blocks.map((block: Block, blockIdx: number) => (
+  const allBlockControllerButton = useMemo(
+    () =>
+      blocks.map((block: Block, blockIdx: number) => (
         <BlockControllerButton
           key={blockIdx}
           blockHeight={
@@ -236,9 +236,14 @@ function BlockController() {
           textFirst={`${block.bpm} BPM, 1/${block.split}`}
           textSecond={`Delay: ${block.delay} (ms)`}
         />
-      ))}
+      )),
+    [blocks, noteSize, zoom.idx]
+  );
+
+  return (
+    <div style={{ maxWidth }}>
+      {allBlockControllerButton}
       <BlockControllerMenu
-        blockNum={blocks.length}
         handler={{
           add: handleAdd,
           insert: handleInsert,

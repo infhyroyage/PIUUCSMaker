@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useMemo } from "react";
 import { ChartVerticalProps } from "../../types/props";
 import { Block, Note } from "../../types/ucs";
 import { useRecoilValue } from "recoil";
@@ -9,9 +9,9 @@ import ChartVerticalRectangles from "./ChartVerticalRectangles";
 function ChartVertical({ blockYDists, column, notes }: ChartVerticalProps) {
   const blocks = useRecoilValue<Block[]>(blocksState);
 
-  return (
-    <>
-      {blocks.map((block: Block, blockIdx: number) => (
+  const allChartVerticalRectangles = useMemo(
+    () =>
+      blocks.map((block: Block, blockIdx: number) => (
         <ChartVerticalRectangles
           key={blockIdx}
           isEven={blockIdx % 2 === 0}
@@ -19,7 +19,13 @@ function ChartVertical({ blockYDists, column, notes }: ChartVerticalProps) {
           rows={block.rows}
           split={block.split}
         />
-      ))}
+      )),
+    [blocks]
+  );
+
+  return (
+    <>
+      {allChartVerticalRectangles}
       {notes.map((note: Note, i: number) => {
         // noteが属する譜面のブロックのインデックスを取得
         // どの譜面のブロックにも属さない場合はChartVerticalNoteImagesのレンダリング対象外とする
