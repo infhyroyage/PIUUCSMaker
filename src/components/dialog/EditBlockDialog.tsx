@@ -84,7 +84,7 @@ function EditBlockDialog() {
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
   const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
-  const setRedoShapshots =
+  const setRedoSnapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
 
   useEffect(
@@ -113,7 +113,7 @@ function EditBlockDialog() {
         ...undoSnapshots,
         { blocks, notes: deltaRows === 0 ? null : notes },
       ]);
-      setRedoShapshots([]);
+      setRedoSnapshots([]);
 
       // menuBlockIdx番目以降の譜面のブロックをすべて更新
       const updatedBlocks: Block[] = [...Array(blocks.length)].map(
@@ -223,7 +223,7 @@ function EditBlockDialog() {
     setNotes,
     setOpen,
     setResultError,
-    setRedoShapshots,
+    setRedoSnapshots,
     setUndoSnapshots,
     undoSnapshots,
   ]);

@@ -17,7 +17,7 @@ function useSelectedFlipping() {
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
   const selector = useRecoilValue<Selector>(selectorState);
   const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
-  const setRedoShapshots =
+  const setRedoSnapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
 
   /**
@@ -33,7 +33,7 @@ function useSelectedFlipping() {
 
       // 元に戻す/やり直すスナップショットの集合を更新
       setUndoSnapshots([...undoSnapshots, { blocks: null, notes }]);
-      setRedoShapshots([]);
+      setRedoSnapshots([]);
 
       setIsProtected(true);
 
@@ -105,7 +105,7 @@ function useSelectedFlipping() {
       selector.completed,
       setIsProtected,
       setNotes,
-      setRedoShapshots,
+      setRedoSnapshots,
       setUndoSnapshots,
       undoSnapshots,
     ]

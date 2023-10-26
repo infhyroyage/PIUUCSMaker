@@ -43,7 +43,7 @@ function Chart() {
   const noteSize = useRecoilValue<number>(noteSizeState);
   const zoom = useRecoilValue<Zoom>(zoomState);
   const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
-  const setRedoShapshots =
+  const setRedoSnapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
 
   // 各譜面のブロックを設置するトップバーからのy座標の距離(px)を計算
@@ -393,7 +393,7 @@ function Chart() {
 
         // 元に戻す/やり直すスナップショットの集合を更新
         setUndoSnapshots([...undoSnapshots, { blocks: null, notes }]);
-        setRedoShapshots([]);
+        setRedoSnapshots([]);
 
         setIsProtected(true);
 
@@ -450,7 +450,7 @@ function Chart() {
       setHoldSetter,
       setIsProtected,
       setNotes,
-      setRedoShapshots,
+      setRedoSnapshots,
       setSelector,
       setUndoSnapshots,
       undoSnapshots,
@@ -504,7 +504,7 @@ function Chart() {
 
     // 元に戻す/やり直すスナップショットの集合を更新
     setUndoSnapshots([...undoSnapshots, { blocks, notes: null }]);
-    setRedoShapshots([]);
+    setRedoSnapshots([]);
 
     setIsProtected(true);
 
@@ -536,7 +536,7 @@ function Chart() {
     setBlocks,
     setIndicator,
     setIsProtected,
-    setRedoShapshots,
+    setRedoSnapshots,
     setUndoSnapshots,
     undoSnapshots,
   ]);

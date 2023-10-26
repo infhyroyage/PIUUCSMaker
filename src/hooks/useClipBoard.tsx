@@ -26,7 +26,7 @@ function useClipBoard() {
   const blocks = useRecoilValue<Block[]>(blocksState);
   const indicator = useRecoilValue<Indicator>(indicatorState);
   const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
-  const setRedoShapshots =
+  const setRedoSnapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
 
   // 全譜面のブロックの行数の総和を計算
@@ -75,7 +75,7 @@ function useClipBoard() {
 
     // 元に戻す/やり直すスナップショットの集合を更新
     setUndoSnapshots([...undoSnapshots, { blocks: null, notes }]);
-    setRedoShapshots([]);
+    setRedoSnapshots([]);
 
     setIsProtected(true);
 
@@ -101,7 +101,7 @@ function useClipBoard() {
     selector.completed,
     setIsProtected,
     setNotes,
-    setRedoShapshots,
+    setRedoSnapshots,
     setUndoSnapshots,
     undoSnapshots,
   ]);
@@ -112,7 +112,7 @@ function useClipBoard() {
 
     // 元に戻す/やり直すスナップショットの集合を更新
     setUndoSnapshots([...undoSnapshots, { blocks: null, notes }]);
-    setRedoShapshots([]);
+    setRedoSnapshots([]);
 
     setIsProtected(true);
 
@@ -165,7 +165,7 @@ function useClipBoard() {
     notes,
     setIsProtected,
     setNotes,
-    setRedoShapshots,
+    setRedoSnapshots,
     setSelector,
     setUndoSnapshots,
     totalRows,

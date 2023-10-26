@@ -29,7 +29,7 @@ function BlockController() {
     isOpenedEditBlockDialogState
   );
   const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
-  const setRedoShapshots =
+  const setRedoSnapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
 
   // 縦の枠線のサイズ(px)をnoteSizeの0.05倍(偶数に丸めるように切り捨て、最小値は2)として計算
@@ -53,7 +53,7 @@ function BlockController() {
     (blockIdx: number) => {
       // 元に戻す/やり直すスナップショットの集合を更新
       setUndoSnapshots([...undoSnapshots, { blocks, notes: null }]);
-      setRedoShapshots([]);
+      setRedoSnapshots([]);
 
       setIsProtected(true);
 
@@ -72,7 +72,7 @@ function BlockController() {
       blocks,
       setBlocks,
       setIsProtected,
-      setRedoShapshots,
+      setRedoSnapshots,
       setUndoSnapshots,
       undoSnapshots,
     ]
@@ -82,7 +82,7 @@ function BlockController() {
     (blockIdx: number) => {
       // 元に戻す/やり直すスナップショットの集合を更新
       setUndoSnapshots([...undoSnapshots, { blocks, notes }]);
-      setRedoShapshots([]);
+      setRedoSnapshots([]);
 
       setIsProtected(true);
 
@@ -120,7 +120,7 @@ function BlockController() {
       setBlocks,
       setIsProtected,
       setNotes,
-      setRedoShapshots,
+      setRedoSnapshots,
       setUndoSnapshots,
       undoSnapshots,
     ]
@@ -135,7 +135,7 @@ function BlockController() {
     (blockIdx: number) => {
       // 元に戻す/やり直すスナップショットの集合を更新
       setUndoSnapshots([...undoSnapshots, { blocks, notes }]);
-      setRedoShapshots([]);
+      setRedoSnapshots([]);
 
       setIsProtected(true);
 
@@ -160,7 +160,7 @@ function BlockController() {
       setBlocks,
       setIsProtected,
       setNotes,
-      setRedoShapshots,
+      setRedoSnapshots,
       setUndoSnapshots,
       undoSnapshots,
     ]
@@ -170,7 +170,7 @@ function BlockController() {
     (blockIdx: number) => {
       // 元に戻す/やり直すスナップショットの集合を更新
       setUndoSnapshots([...undoSnapshots, { blocks, notes: null }]);
-      setRedoShapshots([]);
+      setRedoSnapshots([]);
 
       setIsProtected(true);
 
@@ -189,7 +189,7 @@ function BlockController() {
       blocks,
       setBlocks,
       setIsProtected,
-      setRedoShapshots,
+      setRedoSnapshots,
       setUndoSnapshots,
       undoSnapshots,
     ]
@@ -199,7 +199,7 @@ function BlockController() {
     (blockIdx: number) => {
       // 元に戻す/やり直すスナップショットの集合を更新
       setUndoSnapshots([...undoSnapshots, { blocks, notes: null }]);
-      setRedoShapshots([]);
+      setRedoSnapshots([]);
 
       setIsProtected(true);
 
@@ -217,7 +217,7 @@ function BlockController() {
       blocks,
       setBlocks,
       setIsProtected,
-      setRedoShapshots,
+      setRedoSnapshots,
       setUndoSnapshots,
       undoSnapshots,
     ]

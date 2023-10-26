@@ -58,7 +58,7 @@ function AdjustBlockDialog() {
     blockControllerMenuBlockIdxState
   );
   const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
-  const setRedoShapshots =
+  const setRedoSnapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
 
   const menuBlock = useMemo(
@@ -88,7 +88,7 @@ function AdjustBlockDialog() {
       ...undoSnapshots,
       { blocks, notes: deltaRows === 0 ? null : notes },
     ]);
-    setRedoShapshots([]);
+    setRedoSnapshots([]);
 
     // menuBlockIdx番目以降の譜面のブロックをすべて更新
     const updatedBlocks: Block[] = [...Array(blocks.length)].map(
@@ -192,7 +192,7 @@ function AdjustBlockDialog() {
     setMenuBlockIdx,
     setNotes,
     setOpen,
-    setRedoShapshots,
+    setRedoSnapshots,
     setUndoSnapshots,
     undoSnapshots,
   ]);
