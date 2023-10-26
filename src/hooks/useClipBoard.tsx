@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo } from "react";
 import { Block, Note } from "../types/ucs";
-import { SelectedCords, Selector } from "../types/chart";
+import { SelectorCompletedCords, Selector } from "../types/chart";
 import { ChartSnapshot } from "../types/ucs";
 import { Indicator } from "../types/chart";
 import { ClipBoard } from "../types/ucs";
@@ -17,11 +17,11 @@ import {
   selectorState,
   undoSnapshotsState,
 } from "../service/atoms";
-import useSelectedCords from "./useSelectedCords";
 
 function useClipBoard() {
   const [clipBoard, setClipBoard] = useRecoilState<ClipBoard>(clipBoardState);
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
+  const [selector, setSelector] = useRecoilState<Selector>(selectorState);
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
   const blocks = useRecoilValue<Block[]>(blocksState);
@@ -30,9 +30,6 @@ function useClipBoard() {
   const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
   const setRedoShapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
-  const setSelector = useSetRecoilState<Selector>(selectorState);
-
-  const { getSelectedCords } = useSelectedCords();
 
   // 全譜面のブロックの行数の総和を計算
   const totalRows = useMemo(
@@ -42,41 +39,41 @@ function useClipBoard() {
     [blocks]
   );
 
-  const updateClipBoard = useCallback(
-    (selectedCords: SelectedCords) => {
-      setClipBoard({
-        columnLength: selectedCords.goalColumn + 1 - selectedCords.startColumn,
-        copiedNotes: [
-          ...Array(selectedCords.goalColumn - selectedCords.startColumn + 1),
-        ]
-          .map((_, deltaColumn: number) =>
-            notes[selectedCords.startColumn + deltaColumn]
-              .filter(
-                (note: Note) =>
-                  note.rowIdx >= selectedCords.startRowIdx &&
-                  note.rowIdx <= selectedCords.goalRowIdx
-              )
-              .map((note: Note) => {
-                return {
-                  deltaColumn,
-                  deltaRowIdx: note.rowIdx - selectedCords.startRowIdx,
-                  type: note.type,
-                };
-              })
-          )
-          .flat(),
-        rowLength: selectedCords.goalRowIdx + 1 - selectedCords.startRowIdx,
-      });
-    },
-    [notes, setClipBoard]
-  );
+  const handleCopy = useCallback(() => {
+    // 選択領域が非表示/入力中の場合はNOP
+    if (selector.completed === null) return;
+
+    const completedCords: SelectorCompletedCords = selector.completed;
+    setClipBoard({
+      columnLength: completedCords.goalColumn + 1 - completedCords.startColumn,
+      copiedNotes: [
+        ...Array(completedCords.goalColumn - completedCords.startColumn + 1),
+      ]
+        .map((_, deltaColumn: number) =>
+          notes[completedCords.startColumn + deltaColumn]
+            .filter(
+              (note: Note) =>
+                note.rowIdx >= completedCords.startRowIdx &&
+                note.rowIdx <= completedCords.goalRowIdx
+            )
+            .map((note: Note) => {
+              return {
+                deltaColumn,
+                deltaRowIdx: note.rowIdx - completedCords.startRowIdx,
+                type: note.type,
+              };
+            })
+        )
+        .flat(),
+      rowLength: completedCords.goalRowIdx + 1 - completedCords.startRowIdx,
+    });
+  }, [notes, selector.completed, setClipBoard]);
 
   const handleCut = useCallback(() => {
     // 選択領域が非表示/入力中の場合はNOP
-    const selectedCords: null | SelectedCords = getSelectedCords();
-    if (selectedCords === null) return;
+    if (selector.completed === null) return;
 
-    updateClipBoard(selectedCords);
+    handleCopy();
 
     // 元に戻す/やり直すスナップショットの集合を更新
     setUndoSnapshots([...undoSnapshots, { blocks: null, notes }]);
@@ -85,37 +82,31 @@ function useClipBoard() {
     setIsProtected(true);
 
     // 選択領域に含まれる領域のみ、単ノート/ホールドの始点/ホールドの中間/ホールドの終点のカット対象とする
+    const completedCords: SelectorCompletedCords = selector.completed;
     setNotes(
       notes.map((ns: Note[], column: number) =>
-        column < selectedCords.startColumn || column > selectedCords.goalColumn
+        column < completedCords.startColumn ||
+        column > completedCords.goalColumn
           ? ns
           : [
               ...ns.filter(
                 (note: Note) =>
-                  note.rowIdx < selectedCords.startRowIdx ||
-                  note.rowIdx > selectedCords.goalRowIdx
+                  note.rowIdx < completedCords.startRowIdx ||
+                  note.rowIdx > completedCords.goalRowIdx
               ),
             ]
       )
     );
   }, [
-    getSelectedCords,
+    handleCopy,
     notes,
+    selector.completed,
     setIsProtected,
     setNotes,
     setRedoShapshots,
     setUndoSnapshots,
-    updateClipBoard,
     undoSnapshots,
   ]);
-
-  const handleCopy = useCallback(() => {
-    // 選択領域が非表示/入力中の場合はNOP
-    const selectedCords: null | SelectedCords = getSelectedCords();
-    if (selectedCords === null) return;
-
-    updateClipBoard(selectedCords);
-  }, [updateClipBoard, getSelectedCords]);
 
   const handlePaste = useCallback(() => {
     // インディケーターが非表示である/1度もコピーしていない場合はNOP
@@ -159,15 +150,16 @@ function useClipBoard() {
 
     // ペースト対象の領域を選択領域として設定
     setSelector({
-      setting: null,
       completed: {
-        mouseDownColumn: indicator.column,
-        mouseDownRowIdx: indicator.rowIdx,
-        mouseUpColumn:
+        startColumn: indicator.column,
+        startRowIdx: indicator.rowIdx,
+        goalColumn:
           Math.min(indicator.column + clipBoard.columnLength, columns) - 1,
-        mouseUpRowIdx:
+        goalRowIdx:
           Math.min(indicator.rowIdx + clipBoard.rowLength, totalRows) - 1,
       },
+      isSettingByMenu: false,
+      setting: null,
     });
   }, [
     clipBoard,

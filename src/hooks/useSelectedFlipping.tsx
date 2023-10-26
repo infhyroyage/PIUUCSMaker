@@ -1,24 +1,24 @@
 import { useCallback, useEffect } from "react";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
   isProtectedState,
   notesState,
   redoSnapshotsState,
+  selectorState,
   undoSnapshotsState,
 } from "../service/atoms";
 import { Note } from "../types/ucs";
-import useSelectedCords from "./useSelectedCords";
 import { ChartSnapshot } from "../types/ucs";
+import { Selector, SelectorCompletedCords } from "../types/chart";
 
 function useSelectedFlipping() {
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
+  const selector = useRecoilValue<Selector>(selectorState);
   const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
   const setRedoShapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
-
-  const { getSelectedCords } = useSelectedCords();
 
   /**
    * 選択領域入力済に該当する単ノート/ホールドの始点/ホールドの中間/ホールドの終点を、すべて左右反転/上下反転する
@@ -29,8 +29,7 @@ function useSelectedFlipping() {
   const handleFlip = useCallback(
     (isHorizontal: boolean, isVertical: boolean) => {
       // 選択領域が非表示/入力中の場合はNOP
-      const selectedCords = getSelectedCords();
-      if (selectedCords === null) return;
+      if (selector.completed === null) return;
 
       // 元に戻す/やり直すスナップショットの集合を更新
       setUndoSnapshots([...undoSnapshots, { blocks: null, notes }]);
@@ -39,9 +38,10 @@ function useSelectedFlipping() {
       setIsProtected(true);
 
       // 選択領域内の各列インデックスに対し、上下反転・左右反転の反転元(from)と反転先(to)をすべて計算
+      const completedCords: SelectorCompletedCords = selector.completed;
       const flippedParams: { from: number; to: number }[] = Array.from(
-        { length: selectedCords.goalColumn - selectedCords.startColumn + 1 },
-        (_, i) => selectedCords.startColumn + i
+        { length: completedCords.goalColumn - completedCords.startColumn + 1 },
+        (_, i) => completedCords.startColumn + i
       ).reduce((prev: { from: number; to: number }[], from: number) => {
         // 2重反転の抑止
         if (
@@ -84,23 +84,25 @@ function useSelectedFlipping() {
         notes.map((ns: Note[]) =>
           ns.filter(
             (note: Note) =>
-              note.rowIdx >= selectedCords.startRowIdx &&
-              note.rowIdx <= selectedCords.goalRowIdx
+              note.rowIdx >= completedCords.startRowIdx &&
+              note.rowIdx <= completedCords.goalRowIdx
           )
         )
       );
 
       setNotes(
         notes.map((ns: Note[], column: number) => [
-          ...ns.filter((note: Note) => note.rowIdx < selectedCords.startRowIdx),
+          ...ns.filter(
+            (note: Note) => note.rowIdx < completedCords.startRowIdx
+          ),
           ...flippedNotes[column],
-          ...ns.filter((note: Note) => note.rowIdx > selectedCords.goalRowIdx),
+          ...ns.filter((note: Note) => note.rowIdx > completedCords.goalRowIdx),
         ])
       );
     },
     [
-      getSelectedCords,
       notes,
+      selector.completed,
       setIsProtected,
       setNotes,
       setRedoShapshots,

@@ -31,7 +31,7 @@ function WorkSpace() {
       // ESCキー押下時に、ホールド設置中・選択領域の表示パラメーターをすべて初期化
       if (event.key === "Escape") {
         setHoldSetter(null);
-        setSelector({ setting: null, completed: null });
+        setSelector({ completed: null, isSettingByMenu: false, setting: null });
       }
     };
 
@@ -53,7 +53,11 @@ function WorkSpace() {
         // 左クリック時のみ、選択領域・マウス押下した場合の表示パラメーターをすべて初期化
         if (event.button === 0) {
           setHoldSetter(null);
-          setSelector({ setting: null, completed: null });
+          setSelector({
+            completed: null,
+            isSettingByMenu: false,
+            setting: null,
+          });
         }
       }}
       style={{

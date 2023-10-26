@@ -141,20 +141,21 @@ function Chart() {
     ) {
       // 選択領域入力時の場合は、入力時の選択領域のみパラメーターを更新
       setSelector({
+        completed: null,
+        isSettingByMenu: selector.isSettingByMenu,
         setting: {
           ...selector.setting,
           mouseUpColumn: column,
           mouseUpRowIdx: rowIdx,
         },
-        completed: null,
       });
     } else if (
       !event.shiftKey &&
       selector.setting !== null &&
-      !selector.setting.isSettingByMenu
+      !selector.isSettingByMenu
     ) {
       // Shift未入力、かつ、「Start Selecting」を選択せずに入力時の選択領域を表示している場合は、選択領域を非表示
-      setSelector({ setting: null, completed: null });
+      setSelector({ setting: null, completed: null, isSettingByMenu: false });
     }
   };
 
@@ -171,15 +172,19 @@ function Chart() {
     // ただし、Shift未入力、かつ、「Start Selecting」を選択せずに入力時の選択領域を表示している場合は、選択領域を非表示
     if (selector.setting !== null) {
       setSelector({
+        completed: null,
+        isSettingByMenu:
+          !event.shiftKey && !selector.isSettingByMenu
+            ? false
+            : selector.isSettingByMenu,
         setting:
-          !event.shiftKey && !selector.setting.isSettingByMenu
+          !event.shiftKey && !selector.isSettingByMenu
             ? null
             : {
                 ...selector.setting,
                 mouseUpColumn: null,
                 mouseUpRowIdx: null,
               },
-        completed: null,
       });
     }
   };
@@ -204,22 +209,22 @@ function Chart() {
     if (event.shiftKey && selector.setting === null) {
       // Shift入力時、かつ、選択領域入力時ではない場合は、入力時の選択領域のみパラメーターを設定
       setSelector({
+        completed: null,
+        isSettingByMenu: false,
         setting: {
-          isSettingByMenu: false,
           mouseDownColumn: indicator.column,
           mouseDownRowIdx: indicator.rowIdx,
           mouseUpColumn: indicator.column,
           mouseUpRowIdx: indicator.rowIdx,
         },
-        completed: null,
       });
     } else if (
       !event.shiftKey &&
-      ((selector.setting !== null && !selector.setting.isSettingByMenu) ||
+      ((selector.setting !== null && !selector.isSettingByMenu) ||
         selector.completed !== null)
     ) {
       // Shift未入力、かつ、「Start Selecting」を選択せずに選択領域を表示している場合は、選択領域を非表示
-      setSelector({ setting: null, completed: null });
+      setSelector({ completed: null, isSettingByMenu: false, setting: null });
     }
   };
 
@@ -379,9 +384,31 @@ function Chart() {
 
     if (selector.setting !== null) {
       // 選択領域入力時の場合は選択領域を入力時→入力後に更新
+      // ただし、選択領域の入力時にマウスの座標が譜面から外れた場合はnullに更新
       setSelector({
+        completed:
+          selector.setting.mouseUpColumn && selector.setting.mouseUpRowIdx
+            ? {
+                goalColumn: Math.max(
+                  selector.setting.mouseDownColumn,
+                  selector.setting.mouseUpColumn
+                ),
+                goalRowIdx: Math.max(
+                  selector.setting.mouseDownRowIdx,
+                  selector.setting.mouseUpRowIdx
+                ),
+                startColumn: Math.min(
+                  selector.setting.mouseDownColumn,
+                  selector.setting.mouseUpColumn
+                ),
+                startRowIdx: Math.min(
+                  selector.setting.mouseDownRowIdx,
+                  selector.setting.mouseUpRowIdx
+                ),
+              }
+            : null,
+        isSettingByMenu: false,
         setting: null,
-        completed: { ...selector.setting },
       });
     }
   };
@@ -411,14 +438,14 @@ function Chart() {
 
     // 「Start Selecting」を選択したインディケーターの表示パラメーターを用いて、選択領域を表示
     setSelector({
+      completed: null,
+      isSettingByMenu: true,
       setting: {
-        isSettingByMenu: true,
         mouseDownColumn: indicator.column,
         mouseDownRowIdx: indicator.rowIdx,
         mouseUpColumn: indicator.column,
         mouseUpRowIdx: indicator.rowIdx,
       },
-      completed: null,
     });
   }, [indicator, holdSetter]);
 
@@ -534,11 +561,35 @@ function Chart() {
           split: handleSplit,
         }}
       />
-      {selector.setting !== null && (
-        <ChartSelector mouseCords={selector.setting} />
-      )}
-      {selector.completed !== null && (
-        <ChartSelector mouseCords={selector.completed} />
+      {selector.setting &&
+        selector.setting.mouseUpColumn &&
+        selector.setting.mouseUpRowIdx && (
+          <ChartSelector
+            goalColumn={Math.max(
+              selector.setting.mouseDownColumn,
+              selector.setting.mouseUpColumn
+            )}
+            goalRowIdx={Math.max(
+              selector.setting.mouseDownRowIdx,
+              selector.setting.mouseUpRowIdx
+            )}
+            startColumn={Math.min(
+              selector.setting.mouseDownColumn,
+              selector.setting.mouseUpColumn
+            )}
+            startRowIdx={Math.min(
+              selector.setting.mouseDownRowIdx,
+              selector.setting.mouseUpRowIdx
+            )}
+          />
+        )}
+      {selector.completed && (
+        <ChartSelector
+          goalColumn={selector.completed.goalColumn}
+          goalRowIdx={selector.completed.goalRowIdx}
+          startColumn={selector.completed.startColumn}
+          startRowIdx={selector.completed.startRowIdx}
+        />
       )}
     </>
   );

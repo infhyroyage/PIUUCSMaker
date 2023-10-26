@@ -193,7 +193,7 @@ export const redoSnapshotsState = atom<ChartSnapshot[]>({
  */
 export const selectorState = atom<Selector>({
   key: "selector",
-  default: { setting: null, completed: null },
+  default: { completed: null, isSettingByMenu: false, setting: null },
 });
 
 export const successMessageState = atom<string>({

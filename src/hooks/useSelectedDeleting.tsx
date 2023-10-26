@@ -1,24 +1,24 @@
 import { useCallback, useEffect } from "react";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
   isProtectedState,
   notesState,
   redoSnapshotsState,
+  selectorState,
   undoSnapshotsState,
 } from "../service/atoms";
 import { Note } from "../types/ucs";
-import useSelectedCords from "./useSelectedCords";
 import { ChartSnapshot } from "../types/ucs";
+import { Selector, SelectorCompletedCords } from "../types/chart";
 
 function useSelectedDeleting() {
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
+  const selector = useRecoilValue<Selector>(selectorState);
   const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
   const setRedoShapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
-
-  const { getSelectedCords } = useSelectedCords();
 
   /**
    * 選択領域入力済に該当する単ノート/ホールドの始点/ホールドの中間/ホールドの終点をすべて削除する
@@ -26,8 +26,7 @@ function useSelectedDeleting() {
    */
   const handleDelete = useCallback(() => {
     // 選択領域が非表示/入力中の場合はNOP
-    const selectedCords = getSelectedCords();
-    if (selectedCords === null) return;
+    if (selector.completed === null) return;
 
     // 元に戻す/やり直すスナップショットの集合を更新
     setUndoSnapshots([...undoSnapshots, { blocks: null, notes }]);
@@ -35,25 +34,27 @@ function useSelectedDeleting() {
 
     setIsProtected(true);
 
+    const completedCords: SelectorCompletedCords = selector.completed;
     setNotes(
       notes.map((ns: Note[], column: number) =>
-        column < selectedCords.startColumn || column > selectedCords.goalColumn
+        column < completedCords.startColumn ||
+        column > completedCords.goalColumn
           ? // 選択領域外の列インデックスの場合はそのまま
             ns
           : [
               // 選択領域外の譜面全体での行インデックスのみ抽出
               ...ns.filter(
-                (note: Note) => note.rowIdx < selectedCords.startRowIdx
+                (note: Note) => note.rowIdx < completedCords.startRowIdx
               ),
               ...ns.filter(
-                (note: Note) => note.rowIdx > selectedCords.goalRowIdx
+                (note: Note) => note.rowIdx > completedCords.goalRowIdx
               ),
             ]
       )
     );
   }, [
-    getSelectedCords,
     notes,
+    selector.completed,
     setIsProtected,
     setNotes,
     setRedoShapshots,

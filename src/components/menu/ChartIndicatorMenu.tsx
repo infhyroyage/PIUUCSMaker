@@ -90,11 +90,7 @@ function ChartIndicatorMenu({ handler }: ChartIndicatorMenuProps) {
         </MenuItem>
         <Divider />
         <MenuItem
-          disabled={
-            selector.completed === null ||
-            selector.completed.mouseUpColumn === null ||
-            selector.completed.mouseUpRowIdx === null
-          }
+          disabled={selector.completed === null}
           onClick={() => {
             handleCut();
             setMenuPosition(undefined);
@@ -106,11 +102,7 @@ function ChartIndicatorMenu({ handler }: ChartIndicatorMenuProps) {
           </Typography>
         </MenuItem>
         <MenuItem
-          disabled={
-            selector.completed === null ||
-            selector.completed.mouseUpColumn === null ||
-            selector.completed.mouseUpRowIdx === null
-          }
+          disabled={selector.completed === null}
           onClick={() => {
             handleCopy();
             setMenuPosition(undefined);
@@ -135,11 +127,7 @@ function ChartIndicatorMenu({ handler }: ChartIndicatorMenuProps) {
         </MenuItem>
         <Divider />
         <MenuItem
-          disabled={
-            selector.completed === null ||
-            selector.completed.mouseUpColumn === null ||
-            selector.completed.mouseUpRowIdx === null
-          }
+          disabled={selector.completed === null}
           onClick={() => {
             handleFlip(true, false);
             setMenuPosition(undefined);
@@ -151,11 +139,7 @@ function ChartIndicatorMenu({ handler }: ChartIndicatorMenuProps) {
           </Typography>
         </MenuItem>
         <MenuItem
-          disabled={
-            selector.completed === null ||
-            selector.completed.mouseUpColumn === null ||
-            selector.completed.mouseUpRowIdx === null
-          }
+          disabled={selector.completed === null}
           onClick={() => {
             handleFlip(false, true);
             setMenuPosition(undefined);
@@ -167,11 +151,7 @@ function ChartIndicatorMenu({ handler }: ChartIndicatorMenuProps) {
           </Typography>
         </MenuItem>
         <MenuItem
-          disabled={
-            selector.completed === null ||
-            selector.completed.mouseUpColumn === null ||
-            selector.completed.mouseUpRowIdx === null
-          }
+          disabled={selector.completed === null}
           onClick={() => {
             handleFlip(true, true);
             setMenuPosition(undefined);
@@ -183,11 +163,7 @@ function ChartIndicatorMenu({ handler }: ChartIndicatorMenuProps) {
           </Typography>
         </MenuItem>
         <MenuItem
-          disabled={
-            selector.completed === null ||
-            selector.completed.mouseUpColumn === null ||
-            selector.completed.mouseUpRowIdx === null
-          }
+          disabled={selector.completed === null}
           onClick={() => {
             handleDelete();
             setMenuPosition(undefined);

@@ -57,31 +57,6 @@ export type Indicator = null | {
 };
 
 /**
- * 選択領域入力済の座標を構成するパラメーター
- */
-export type SelectedCords = {
-  /**
-   * 選択領域の終点の列インデックス
-   */
-  goalColumn: number;
-
-  /**
-   * 選択領域の終点の譜面全体での行インデックス
-   */
-  goalRowIdx: number;
-
-  /**
-   * 選択領域の始点の列インデックス
-   */
-  startColumn: number;
-
-  /**
-   * 選択領域の始点の譜面全体での行インデックス
-   */
-  startRowIdx: number;
-};
-
-/**
  * 選択領域の表示パラメーター
  */
 export type Selector = {
@@ -89,27 +64,50 @@ export type Selector = {
    * 選択領域入力後のマウスの各座標
    * 選択領域未入力/入力時の場合はnull
    */
-  completed: null | SelectorMouseCords;
+  completed: null | SelectorCompletedCords;
+
+  /**
+   * ChartIndicatorMenuの「Starting Selecting」からの選択領域入力中の場合はtrue、
+   * 選択領域未入力/入力済の場合や、Shiftキー入力したままドラッグアンドドロップ操作からの選択領域入力中の場合はfalse
+   */
+  isSettingByMenu: boolean;
 
   /**
    * 選択領域の入力時のマウスの各座標
    * 選択領域未入力/入力済の場合はnull
    */
-  setting:
-    | null
-    | (SelectorMouseCords & {
-        /**
-         * ChartIndicatorMenuの「Starting Selecting」から選択領域を入力する場合はtrue、
-         * Shiftキー入力したままドラッグアンドドロップ操作から選択領域を入力する場合はfalse
-         */
-        isSettingByMenu: boolean;
-      });
+  setting: null | SelectorSettingCords;
 };
 
 /**
- * 選択領域の入力開始時、および、入力時/入力終了時のマウスの各座標を構成するパラメーター
+ * 選択領域入力後の座標を構成するパラメーター
  */
-export type SelectorMouseCords = {
+export type SelectorCompletedCords = {
+  /**
+   * 選択領域の右下の列インデックス
+   */
+  goalColumn: number;
+
+  /**
+   * 選択領域の右下の譜面全体での行インデックス
+   */
+  goalRowIdx: number;
+
+  /**
+   * 選択領域の左上の列インデックス
+   */
+  startColumn: number;
+
+  /**
+   * 選択領域の左上の譜面全体での行インデックス
+   */
+  startRowIdx: number;
+};
+
+/**
+ * 選択領域の入力開始時・入力時のマウスの座標を構成するパラメーター
+ */
+export type SelectorSettingCords = {
   /**
    * 選択領域の入力開始時のマウスの座標での列インデックス
    * Single/SinglePerformance譜面の場合は0〜4、Double/DoublePerformance譜面の場合は0〜9
@@ -122,14 +120,14 @@ export type SelectorMouseCords = {
   mouseDownRowIdx: number;
 
   /**
-   * 選択領域の入力時/入力終了時のマウスの座標での列インデックス
+   * 選択領域の入力時のマウスの座標での列インデックス
    * Single/SinglePerformance譜面の場合は0〜4、Double/DoublePerformance譜面の場合は0〜9
    * 選択領域の入力時にマウスの座標が譜面から外れた場合はnull
    */
   mouseUpColumn: number | null;
 
   /**
-   * 選択領域の入力時/入力終了時のマウスの座標での譜面全体での行インデックス
+   * 選択領域の入力時のマウスの座標での譜面全体での行インデックス
    * 選択領域の入力時にマウスの座標が譜面から外れた場合はnull
    */
   mouseUpRowIdx: number | null;

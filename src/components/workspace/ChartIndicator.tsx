@@ -112,7 +112,7 @@ function ChartIndicator() {
             backgroundColor:
               holdSetter && holdSetter.isSettingByMenu
                 ? "rgba(255, 170, 170, 0.5)"
-                : selector.setting && selector.setting.isSettingByMenu
+                : selector.isSettingByMenu
                 ? "rgba(255, 170, 255, 0.5)"
                 : "rgba(170, 170, 255, 0.5)",
             pointerEvents: "none",

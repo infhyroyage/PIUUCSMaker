@@ -1,5 +1,4 @@
 import { Note } from "./ucs";
-import { SelectorMouseCords } from "./chart";
 
 /**
  * BlockControllerButtonのprops
@@ -134,9 +133,24 @@ export type ChartIndicatorMenuProps = {
  */
 export type ChartSelectorProps = {
   /**
-   * 選択領域の入力開始時、および、入力時/入力終了時のマウスの各座標を構成するパラメーター
+   * 選択領域の右下の列インデックス
    */
-  mouseCords: SelectorMouseCords;
+  goalColumn: number;
+
+  /**
+   * 選択領域の右下の譜面全体での行インデックス
+   */
+  goalRowIdx: number;
+
+  /**
+   * 選択領域の左上の列インデックス
+   */
+  startColumn: number;
+
+  /**
+   * 選択領域の左上の譜面全体での行インデックス
+   */
+  startRowIdx: number;
 };
 
 /**

@@ -69,7 +69,7 @@ function useChartSnapshot() {
 
     // インディケーター・選択領域・メニューをすべて非表示
     setIndicator(null);
-    setSelector({ setting: null, completed: null });
+    setSelector({ completed: null, isSettingByMenu: false, setting: null });
     setBlockControllerMenuPosition(undefined);
     setChartIndicatorMenuPosition(undefined);
 
@@ -116,7 +116,7 @@ function useChartSnapshot() {
 
     // インディケーター・選択領域・メニューをすべて非表示
     setIndicator(null);
-    setSelector({ setting: null, completed: null });
+    setSelector({ completed: null, isSettingByMenu: false, setting: null });
     setBlockControllerMenuPosition(undefined);
     setChartIndicatorMenuPosition(undefined);
 
