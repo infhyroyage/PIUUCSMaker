@@ -38,61 +38,64 @@ function useSelectedFlipping() {
 
       setIsProtected(true);
 
-      setNotes(
-        notes.map((ns: Note[], column: number) =>
-          column < selectedCords.startColumn ||
-          column > selectedCords.goalColumn
-            ? // 選択領域外の列インデックスの場合はそのまま
-              ns
-            : [
-                // 選択領域外の譜面全体での行インデックスの場合はそのまま
-                ...ns.filter(
-                  (note: Note) => note.rowIdx < selectedCords.startRowIdx
-                ),
-                ...(isHorizontal
-                  ? // 左右反転
-                    notes[
-                      selectedCords.startColumn +
-                        selectedCords.goalColumn -
-                        column
-                    ]
-                  : ns
-                )
-                  // 選択領域内の譜面全体での行インデックスのみ抽出
-                  .filter(
-                    (note: Note) =>
-                      note.rowIdx >= selectedCords.startRowIdx &&
-                      note.rowIdx <= selectedCords.goalRowIdx
-                  )
-                  .map<Note>((note: Note) =>
-                    isVertical
-                      ? // 上下反転
-                        {
-                          rowIdx:
-                            selectedCords.startRowIdx +
-                            selectedCords.goalRowIdx -
-                            note.rowIdx,
-                          type:
-                            note.type === "M"
-                              ? "W"
-                              : note.type === "W"
-                              ? "M"
-                              : note.type,
-                        }
-                      : note
-                  )
-                  .reduce(
-                    // 上下反転
-                    (prev: Note[], note: Note) =>
-                      isVertical ? [note].concat(prev) : prev.concat(note),
-                    []
-                  ),
-                // 選択領域外の譜面全体での行インデックスの場合はそのまま
-                ...ns.filter(
-                  (note: Note) => note.rowIdx > selectedCords.goalRowIdx
-                ),
-              ]
+      // 選択領域内の各列インデックスに対し、上下反転・左右反転の反転元(from)と反転先(to)をすべて計算
+      const flippedParams: { from: number; to: number }[] = Array.from(
+        { length: selectedCords.goalColumn - selectedCords.startColumn + 1 },
+        (_, i) => selectedCords.startColumn + i
+      ).reduce((prev: { from: number; to: number }[], from: number) => {
+        // 2重反転の抑止
+        if (
+          prev.find((param: { from: number; to: number }) => param.to === from)
         )
+          return prev;
+
+        // 列インデックスの上下反転・左右反転先を計算
+        let to: number = from;
+        if (isVertical) {
+          to =
+            to % 5 === 0 || to % 5 === 3
+              ? to + 1
+              : to % 5 === 1 || to % 5 === 4
+              ? to - 1
+              : to;
+        }
+        if (isHorizontal) {
+          to = notes.length - to - 1;
+        }
+        return [...prev, { from, to }];
+      }, []);
+
+      // 選択領域内の譜面全体の行インデックスでの単ノート/ホールドの始点/ホールドの中間/ホールドの終点を対象に、
+      // 上下反転・左右反転を実行
+      const flippedNotes: Note[][] = [...Array(notes.length)].reduce(
+        (prev: Note[][], _, column: number) => {
+          const foundParam: { from: number; to: number } | undefined =
+            flippedParams.find(
+              (param: { from: number; to: number }) => param.from === column
+            );
+          if (foundParam) {
+            [prev[foundParam.from], prev[foundParam.to]] = [
+              prev[foundParam.to],
+              prev[foundParam.from],
+            ];
+          }
+          return prev;
+        },
+        notes.map((ns: Note[]) =>
+          ns.filter(
+            (note: Note) =>
+              note.rowIdx >= selectedCords.startRowIdx &&
+              note.rowIdx <= selectedCords.goalRowIdx
+          )
+        )
+      );
+
+      setNotes(
+        notes.map((ns: Note[], column: number) => [
+          ...ns.filter((note: Note) => note.rowIdx < selectedCords.startRowIdx),
+          ...flippedNotes[column],
+          ...ns.filter((note: Note) => note.rowIdx > selectedCords.goalRowIdx),
+        ])
       );
     },
     [
