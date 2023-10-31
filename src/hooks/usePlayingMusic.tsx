@@ -133,11 +133,13 @@ function usePlayingMusic() {
     }
   }, [volumeValue]);
 
+  // 再生中は上下手動スクロールを抑止
+  useEffect(() => {
+    document.body.style.overflowY = isPlaying ? "hidden" : "scroll";
+  }, [isPlaying]);
+
   useEffect(() => {
     if (!isPlaying) return;
-
-    // 手動での上下スクロールを抑止
-    document.body.style.overflowY = "hidden";
 
     // 自動スクロールスタート地点でのブラウザの画面のy座標を初期化
     // 現在のブラウザの画面が最上部以外の場合はそのy座標とし、最上部の場合は0番目の譜面のブロックのDelayが正の場合において
@@ -321,9 +323,6 @@ function usePlayingMusic() {
     }, 1000 / FPS);
 
     return () => {
-      // 手動での上下スクロール抑止を解除
-      document.body.style.overflowY = "scroll";
-
       // 自動スクロールを停止
       clearInterval(scrollIntervalId);
 
