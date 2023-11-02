@@ -87,7 +87,7 @@ function ChartVerticalNoteImages({
             src={IMAGE_BINARIES[column % 5].hold}
             alt={`hold${column % 5}`}
             width={`${noteSize}px`}
-            height={`${unitRowHeight}px`}
+            height={`${unitRowHeight - noteSize * 0.5}px`}
             style={{
               position: "absolute",
               top: `${top + noteSize * 0.5}px`,
@@ -113,7 +113,7 @@ function ChartVerticalNoteImages({
           height={`${unitRowHeight}px`}
           style={{
             position: "absolute",
-            top: `${top + noteSize * 0.5}px`,
+            top: `${top}px`,
             left: `${
               IDENTIFIER_WIDTH + verticalBorderSize * 0.5 + noteSize * column
             }px`,
@@ -128,24 +128,44 @@ function ChartVerticalNoteImages({
     case "W":
       // ホールドの終点の画像
       return (
-        <img
-          src={IMAGE_BINARIES[column % 5].note}
-          alt={`note${column % 5}`}
-          width={`${noteSize}px`}
-          height={`${noteSize}px`}
-          style={{
-            position: "absolute",
-            top: `${top}px`,
-            left: `${
-              IDENTIFIER_WIDTH + verticalBorderSize * 0.5 + noteSize * column
-            }px`,
-            userSelect: "none",
-            zIndex: (rowIdx + 1) * 10,
-          }}
-          onDragStart={(event: React.DragEvent<HTMLImageElement>) =>
-            event.preventDefault()
-          }
-        />
+        <>
+          <img
+            src={IMAGE_BINARIES[column % 5].hold}
+            alt={`hold${column % 5}`}
+            width={`${noteSize}px`}
+            height={`${noteSize * 0.5}px`}
+            style={{
+              position: "absolute",
+              top: `${top}px`,
+              left: `${
+                IDENTIFIER_WIDTH + verticalBorderSize * 0.5 + noteSize * column
+              }px`,
+              userSelect: "none",
+              zIndex: (rowIdx + 1) * 10 - 1,
+            }}
+            onDragStart={(event: React.DragEvent<HTMLImageElement>) =>
+              event.preventDefault()
+            }
+          />
+          <img
+            src={IMAGE_BINARIES[column % 5].note}
+            alt={`note${column % 5}`}
+            width={`${noteSize}px`}
+            height={`${noteSize}px`}
+            style={{
+              position: "absolute",
+              top: `${top}px`,
+              left: `${
+                IDENTIFIER_WIDTH + verticalBorderSize * 0.5 + noteSize * column
+              }px`,
+              userSelect: "none",
+              zIndex: (rowIdx + 1) * 10,
+            }}
+            onDragStart={(event: React.DragEvent<HTMLImageElement>) =>
+              event.preventDefault()
+            }
+          />
+        </>
       );
   }
 }
