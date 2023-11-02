@@ -415,7 +415,8 @@ function Chart() {
         // ただし、選択領域の入力時にマウスの座標が譜面から外れた場合はnullに更新
         setSelector({
           completed:
-            selector.setting.mouseUpColumn && selector.setting.mouseUpRowIdx
+            selector.setting.mouseUpColumn !== null &&
+            selector.setting.mouseUpRowIdx !== null
               ? {
                   goalColumn: Math.max(
                     selector.setting.mouseDownColumn,
@@ -605,9 +606,9 @@ function Chart() {
           split: handleSplit,
         }}
       />
-      {selector.setting &&
-        selector.setting.mouseUpColumn &&
-        selector.setting.mouseUpRowIdx && (
+      {selector.setting !== null &&
+        selector.setting.mouseUpColumn !== null &&
+        selector.setting.mouseUpRowIdx !== null && (
           <ChartSelector
             goalColumn={Math.max(
               selector.setting.mouseDownColumn,
@@ -627,7 +628,7 @@ function Chart() {
             )}
           />
         )}
-      {selector.completed && (
+      {selector.completed !== null && (
         <ChartSelector
           goalColumn={selector.completed.goalColumn}
           goalRowIdx={selector.completed.goalRowIdx}
