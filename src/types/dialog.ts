@@ -26,9 +26,14 @@ export type AdjustBlockDialogForm = {
 export type AdjustBlockDialogFormFixed = "bpm" | "rows" | "split";
 
 /**
- * EditBlockDialogでバリデーションエラーが発生したテキストボックス名
+ * EditBlockDialogでバリデーションエラーが発生したテキストボックスのラベル
  */
-export type EditBlockDialogError = "beat" | "bpm" | "delay" | "rows" | "split";
+export type EditBlockDialogError =
+  | "Beat"
+  | "BPM"
+  | "Delay(ms)"
+  | "Rows"
+  | "Split";
 
 /**
  * EditBlockDialogの入力フォーム
@@ -61,16 +66,56 @@ export type EditBlockDialogForm = {
 };
 
 /**
- * NewUCSDialogでバリデーションエラーが発生したテキストボックス名
+ * EditBlockDialogでのバリデーション値
+ */
+export type EditBlockDialogValidation = {
+  /**
+   * Beat値
+   * 1〜64が有効範囲
+   */
+  beat: number;
+
+  /**
+   * BPM値
+   * 有効数字7桁までの0.1〜999が有効範囲
+   */
+  bpm: number;
+
+  /**
+   * Delay値
+   * 単位はbeatを使用せずmsで統一
+   * 有効数字7桁までの-999999〜999999が有効範囲
+   */
+  delay: number;
+
+  /**
+   * バリデーションエラー時のエラーメッセージ
+   * バリデーションエラーでない場合は空配列
+   */
+  errors: EditBlockDialogError[];
+
+  /**
+   * 行数
+   */
+  rows: number;
+
+  /**
+   * Split値
+   * 1〜128が有効範囲
+   */
+  split: number;
+};
+
+/**
+ * NewUCSDialogでバリデーションエラーが発生したテキストボックスのラベル
  */
 export type NewUCSDialogError =
-  | "beat"
-  | "bpm"
-  | "delay"
-  | "mode"
-  | "rows"
-  | "split"
-  | "ucsName";
+  | "Beat"
+  | "BPM"
+  | "Delay(ms)"
+  | "Rows"
+  | "Split"
+  | "UCS File Name";
 
 /**
  * NewUCSDialogの入力フォーム
@@ -117,23 +162,44 @@ export type NewUCSDialogForm = {
 };
 
 /**
- * NewUCSDialogでのバリデーションが通った入力値
+ * NewUCSDialogでのバリデーション値
  */
-export type NewUCSValidation = {
+export type NewUCSDialogValidation = {
   /**
-   * 譜面のブロック
+   * Beat値
+   * 1〜64が有効範囲
    */
-  block: Block;
+  beat: number;
 
   /**
-   * 列数(Single/SinglePerformance譜面の場合は5、Double/DoublePerformance譜面の場合は10)
+   * BPM値
+   * 有効数字7桁までの0.1〜999が有効範囲
    */
-  columns: 5 | 10;
+  bpm: number;
 
   /**
-   * SinglePerformance/DoublePerformance譜面の場合はtrue、Single/Double譜面の場合はfalse
+   * Delay値
+   * 単位はbeatを使用せずmsで統一
+   * 有効数字7桁までの-999999〜999999が有効範囲
    */
-  isPerformance: boolean;
+  delay: number;
+
+  /**
+   * バリデーションエラー時のエラーメッセージ
+   * バリデーションエラーでない場合は空配列
+   */
+  errors: NewUCSDialogError[];
+
+  /**
+   * 行数
+   */
+  rows: number;
+
+  /**
+   * Split値
+   * 1〜128が有効範囲
+   */
+  split: number;
 };
 
 /**

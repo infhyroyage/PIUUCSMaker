@@ -18,11 +18,17 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import { EditBlockDialogError, EditBlockDialogForm } from "../../types/dialog";
+import {
+  EditBlockDialogError,
+  EditBlockDialogForm,
+  EditBlockDialogValidation,
+} from "../../types/dialog";
 import { Block, Note } from "../../types/ucs";
 import { ChartSnapshot } from "../../types/ucs";
 
-const validate = (form: EditBlockDialogForm): EditBlockDialogError | null => {
+const validate = (form: EditBlockDialogForm): EditBlockDialogValidation => {
+  const errors: EditBlockDialogError[] = [];
+
   // BPMのチェック
   const bpm: number = Number(form.bpm);
   if (
@@ -31,7 +37,7 @@ const validate = (form: EditBlockDialogForm): EditBlockDialogError | null => {
     bpm > 999 ||
     form.bpm.replace(".", "").length > 7
   ) {
-    return "bpm";
+    errors.push("BPM");
   }
 
   // Delayのチェック
@@ -42,28 +48,28 @@ const validate = (form: EditBlockDialogForm): EditBlockDialogError | null => {
     delay > 999999 ||
     form.delay.replace("-", "").replace(".", "").length > 7
   ) {
-    return "delay";
+    errors.push("Delay(ms)");
   }
 
   // Splitのチェック
   const split = Number(form.split);
   if (!Number.isInteger(split) || split < 1 || split > 128) {
-    return "split";
+    errors.push("Split");
   }
 
   // Beatのチェック
   const beat = Number(form.beat);
   if (!Number.isInteger(beat) || beat < 1 || beat > 64) {
-    return "beat";
+    errors.push("Beat");
   }
 
   // Rowsのチェック
   const rows = Number(form.rows);
   if (!Number.isInteger(rows) || rows < 1) {
-    return "rows";
+    errors.push("Rows");
   }
 
-  return null;
+  return { beat, bpm, delay, errors, rows, split };
 };
 
 function EditBlockDialog() {
@@ -74,7 +80,7 @@ function EditBlockDialog() {
     rows: "",
     split: "",
   });
-  const [resultError, setResultError] = useState<EditBlockDialogError | "">("");
+  const [errors, setErrors] = useState<EditBlockDialogError[]>([]);
   const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
   const [menuBlockIdx, setMenuBlockIdx] = useRecoilState<number | null>(
     blockControllerMenuBlockIdxState
@@ -103,10 +109,10 @@ function EditBlockDialog() {
     // BlockControllerMenuのメニューを開いていない場合はNOP
     if (menuBlockIdx === null) return;
 
-    const result: EditBlockDialogError | null = validate(form);
-    if (result === null) {
+    const result: EditBlockDialogValidation = validate(form);
+    if (result.errors.length === 0) {
       // menuBlockIdx番目の譜面のブロックの行数の差分
-      const deltaRows: number = Number(form.rows) - blocks[menuBlockIdx].rows;
+      const deltaRows: number = result.rows - blocks[menuBlockIdx].rows;
 
       // 元に戻す/やり直すスナップショットの集合を更新
       setUndoSnapshots([
@@ -121,11 +127,11 @@ function EditBlockDialog() {
           blockIdx === menuBlockIdx
             ? {
                 accumulatedRows: blocks[menuBlockIdx].accumulatedRows,
-                beat: Number(form.beat),
-                bpm: Number(form.bpm),
-                delay: Number(form.delay),
-                rows: Number(form.rows),
-                split: Number(form.split),
+                beat: result.beat,
+                bpm: result.bpm,
+                delay: result.delay,
+                rows: result.rows,
+                split: result.split,
               }
             : blockIdx > menuBlockIdx
             ? {
@@ -165,7 +171,7 @@ function EditBlockDialog() {
                 blocks[menuBlockIdx].accumulatedRows +
                 Math.floor(
                   ((note.rowIdx - blocks[menuBlockIdx].accumulatedRows) *
-                    Number(form.rows)) /
+                    result.rows) /
                     blocks[menuBlockIdx].rows
                 );
               const prevScaledNote: Note | undefined = prev.find(
@@ -209,8 +215,8 @@ function EditBlockDialog() {
       setMenuBlockIdx(null);
       setOpen(false);
     } else {
-      // バリデーションエラーのテキストフィールドを表示
-      setResultError(result);
+      // バリデーションエラーのテキストフィールドをすべて表示
+      setErrors(result.errors);
     }
   }, [
     blocks,
@@ -222,7 +228,7 @@ function EditBlockDialog() {
     setMenuBlockIdx,
     setNotes,
     setOpen,
-    setResultError,
+    setErrors,
     setRedoSnapshots,
     setUndoSnapshots,
     undoSnapshots,
@@ -239,7 +245,7 @@ function EditBlockDialog() {
       <DialogContent>
         <Stack spacing={3} mt={1}>
           <TextField
-            error={resultError === "bpm"}
+            error={errors.includes("BPM")}
             fullWidth
             helperText="Number of 4th Beats per Minute(0.1 - 999)"
             label="BPM"
@@ -255,7 +261,7 @@ function EditBlockDialog() {
             value={form.bpm}
           />
           <TextField
-            error={resultError === "delay"}
+            error={errors.includes("Delay(ms)")}
             fullWidth
             helperText="Offset time of Scrolling(-999999 - 999999)"
             label="Delay(ms)"
@@ -271,7 +277,7 @@ function EditBlockDialog() {
             value={form.delay}
           />
           <TextField
-            error={resultError === "split"}
+            error={errors.includes("Split")}
             fullWidth
             helperText="Number of UCS File's Rows per 4th Beat(1 - 128)"
             label="Split"
@@ -287,7 +293,7 @@ function EditBlockDialog() {
             value={form.split}
           />
           <TextField
-            error={resultError === "beat"}
+            error={errors.includes("Beat")}
             fullWidth
             helperText="Number of 4th Beats per Measure(1 - 64)"
             label="Beat"
@@ -303,7 +309,7 @@ function EditBlockDialog() {
             value={form.beat}
           />
           <TextField
-            error={resultError === "rows"}
+            error={errors.includes("Rows")}
             fullWidth
             helperText="Number of UCS File's Rows(Over 1)"
             label="Rows"

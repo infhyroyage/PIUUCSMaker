@@ -23,41 +23,17 @@ import { ChangeEvent, useState, useTransition } from "react";
 import {
   NewUCSDialogError,
   NewUCSDialogForm,
-  NewUCSValidation,
+  NewUCSDialogValidation,
 } from "../../types/dialog";
 import { Block, Note } from "../../types/ucs";
 import { ChartSnapshot } from "../../types/ucs";
 
-const validateAndLoadUCS = (
-  form: NewUCSDialogForm
-): NewUCSValidation | NewUCSDialogError => {
+const validate = (form: NewUCSDialogForm): NewUCSDialogValidation => {
+  const errors: NewUCSDialogError[] = [];
+
   // UCSファイル名のチェック
   if (form.ucsName.length === 0) {
-    return "ucsName";
-  }
-
-  // モードのチェック
-  let columns: 5 | 10;
-  let isPerformance: boolean;
-  switch (form.mode) {
-    case "Single":
-      columns = 5;
-      isPerformance = false;
-      break;
-    case "SinglePerformance":
-      columns = 5;
-      isPerformance = true;
-      break;
-    case "Double":
-      columns = 10;
-      isPerformance = false;
-      break;
-    case "DoublePerformance":
-      columns = 10;
-      isPerformance = true;
-      break;
-    default:
-      return "mode";
+    errors.push("UCS File Name");
   }
 
   // BPMのチェック
@@ -68,7 +44,7 @@ const validateAndLoadUCS = (
     bpm > 999 ||
     form.bpm.replace(".", "").length > 7
   ) {
-    return "bpm";
+    errors.push("BPM");
   }
 
   // Delayのチェック
@@ -79,38 +55,34 @@ const validateAndLoadUCS = (
     delay > 999999 ||
     form.delay.replace("-", "").replace(".", "").length > 7
   ) {
-    return "delay";
+    errors.push("Delay(ms)");
   }
 
   // Splitのチェック
   const split = Number(form.split);
   if (!Number.isInteger(split) || split < 1 || split > 128) {
-    return "split";
+    errors.push("Split");
   }
 
   // Beatのチェック
   const beat = Number(form.beat);
   if (!Number.isInteger(beat) || beat < 1 || beat > 64) {
-    return "beat";
+    errors.push("Beat");
   }
 
   // Rowsのチェック
   const rows = Number(form.rows);
   if (!Number.isInteger(rows) || rows < 1) {
-    return "rows";
+    errors.push("Rows");
   }
 
   return {
-    block: {
-      accumulatedRows: 0,
-      beat,
-      bpm,
-      delay,
-      rows,
-      split,
-    },
-    columns,
-    isPerformance,
+    beat,
+    bpm,
+    delay,
+    errors,
+    rows,
+    split,
   };
 };
 
@@ -126,7 +98,7 @@ function NewUCSDialog() {
   });
   const [isOpenedNewUCSDialog, setIsOpenedNewUCSDialog] =
     useRecoilState<boolean>(isOpenedNewUCSDialogState);
-  const [resultError, setResultError] = useState<NewUCSDialogError | "">("");
+  const [errors, setErrors] = useState<NewUCSDialogError[]>([]);
   const setBlocks = useSetRecoilState<Block[]>(blocksState);
   const setIsPerformance = useSetRecoilState<boolean>(isPerformanceState);
   const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
@@ -141,17 +113,24 @@ function NewUCSDialog() {
 
   const onCreate = () =>
     startTransition(() => {
-      const result: NewUCSValidation | NewUCSDialogError =
-        validateAndLoadUCS(form);
-      if (typeof result === "string") {
-        // バリデーションエラーのテキストフィールドを表示
-        setResultError(result);
-      } else {
-        setBlocks([result.block]);
-        setIsPerformance(result.isPerformance);
+      const result: NewUCSDialogValidation = validate(form);
+      if (result.errors.length === 0) {
+        setBlocks([
+          {
+            accumulatedRows: 0,
+            beat: result.beat,
+            bpm: result.bpm,
+            delay: result.delay,
+            rows: result.rows,
+            split: result.split,
+          },
+        ]);
+        setIsPerformance(
+          ["SinglePerformance", "DoublePerformance"].includes(form.mode)
+        );
         setIsProtected(false);
         setNotes(
-          Array(result.columns)
+          Array(["Single", "SinglePerformance"].includes(form.mode) ? 5 : 10)
             .fill(null)
             .map<Note[]>(() => [])
         );
@@ -159,6 +138,9 @@ function NewUCSDialog() {
         setUcsName(`${form.ucsName}.ucs`);
         setUndoSnapshots([]);
         setIsOpenedNewUCSDialog(false);
+      } else {
+        // バリデーションエラーのテキストフィールドを表示
+        setErrors(result.errors);
       }
     });
 
@@ -171,7 +153,7 @@ function NewUCSDialog() {
         <Stack spacing={3} mt={1}>
           <TextField
             disabled={isPending}
-            error={resultError === "ucsName"}
+            error={errors.includes("UCS File Name")}
             fullWidth
             helperText="Not Set Extension(.ucs)"
             label="UCS File Name"
@@ -184,7 +166,6 @@ function NewUCSDialog() {
           />
           <TextField
             disabled={isPending}
-            error={resultError === "mode"}
             fullWidth
             label="Mode"
             margin="dense"
@@ -202,7 +183,7 @@ function NewUCSDialog() {
           </TextField>
           <TextField
             disabled={isPending}
-            error={resultError === "bpm"}
+            error={errors.includes("BPM")}
             fullWidth
             helperText="Number of 4th Beats per Minute(0.1 - 999)"
             label="BPM"
@@ -216,7 +197,7 @@ function NewUCSDialog() {
           />
           <TextField
             disabled={isPending}
-            error={resultError === "delay"}
+            error={errors.includes("Delay(ms)")}
             fullWidth
             helperText="Offset time of Scrolling(-999999 - 999999)"
             label="Delay(ms)"
@@ -230,7 +211,7 @@ function NewUCSDialog() {
           />
           <TextField
             disabled={isPending}
-            error={resultError === "split"}
+            error={errors.includes("Split")}
             fullWidth
             helperText="Number of UCS File's Rows per 4th Beat(1 - 128)"
             label="Split"
@@ -244,7 +225,7 @@ function NewUCSDialog() {
           />
           <TextField
             disabled={isPending}
-            error={resultError === "beat"}
+            error={errors.includes("Beat")}
             fullWidth
             helperText="Number of 4th Beats per Measure(1 - 64)"
             label="Beat"
@@ -258,7 +239,7 @@ function NewUCSDialog() {
           />
           <TextField
             disabled={isPending}
-            error={resultError === "rows"}
+            error={errors.includes("Rows")}
             fullWidth
             helperText="Number of UCS File's Rows(Over 1)"
             label="Rows"
