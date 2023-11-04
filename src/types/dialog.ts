@@ -137,13 +137,19 @@ export type NewUCSValidation = {
 };
 
 /**
- * useUploadingUCSでのバリデーションが通った入力値
+ * useUploadingUCSでのバリデーション値
  */
 export type UploadingUCSValidation = {
   /**
    * 譜面のブロックの集合
    */
   blocks: Block[];
+
+  /**
+   * バリデーションエラー時のエラーメッセージ
+   * バリデーションエラーでない場合はnull
+   */
+  errMsg: string | null;
 
   /**
    * SinglePerformance/DoublePerformance譜面の場合はtrue、Single/Double譜面の場合はfalse

@@ -14,12 +14,17 @@ import {
 import { UploadingUCSValidation } from "../types/dialog";
 import { ChartSnapshot } from "../types/ucs";
 
-const validateAndLoadUCS = (
-  content: string
-): UploadingUCSValidation | string => {
+const validate = (content: string): UploadingUCSValidation => {
+  const blocks: Block[] = [];
+
   // ucsファイルの改行コードがCRLF形式かのチェック
   if (content.indexOf("\r\n") === -1) {
-    return "改行コードがCRLF形式ではありません";
+    return {
+      blocks,
+      errMsg: "改行コードがCRLF形式ではありません",
+      isPerformance: false,
+      notes: [],
+    };
   }
 
   const lines: string[] = content.split("\r\n");
@@ -30,16 +35,31 @@ const validateAndLoadUCS = (
   fileLinesNum++;
   line = lines.shift();
   if (!line) {
-    return `ucsファイルの${fileLinesNum}行目以降が記載されていません`;
+    return {
+      blocks,
+      errMsg: `ucsファイルの${fileLinesNum}行目以降が記載されていません`,
+      isPerformance: false,
+      notes: [],
+    };
   } else if (line !== ":Format=1") {
-    return `ucsファイルの${fileLinesNum}行目が不正です`;
+    return {
+      blocks,
+      errMsg: `ucsファイルの${fileLinesNum}行目が不正です`,
+      isPerformance: false,
+      notes: [],
+    };
   }
 
   // 譜面形式(2行目)のチェック・取得
   fileLinesNum++;
   line = lines.shift();
   if (!line) {
-    return `ucsファイルの${fileLinesNum}行目以降が記載されていません`;
+    return {
+      blocks,
+      errMsg: `ucsファイルの${fileLinesNum}行目以降が記載されていません`,
+      isPerformance: false,
+      notes: [],
+    };
   } else if (
     ![
       ":Mode=Single",
@@ -48,10 +68,14 @@ const validateAndLoadUCS = (
       ":Mode=D-Performance",
     ].includes(line)
   ) {
-    return `ucsファイルの${fileLinesNum}行目が不正です`;
+    return {
+      blocks,
+      errMsg: `ucsファイルの${fileLinesNum}行目が不正です`,
+      isPerformance: false,
+      notes: [],
+    };
   }
 
-  const blocks: Block[] = [];
   const columns: 5 | 10 = [":Mode=Single", ":Mode=S-Performance"].includes(line)
     ? 5
     : 10;
@@ -79,13 +103,23 @@ const validateAndLoadUCS = (
   fileLinesNum++;
   line = lines.shift();
   if (!line) {
-    return `ucsファイルの${fileLinesNum}行目以降が記載されていません`;
+    return {
+      blocks,
+      errMsg: `ucsファイルの${fileLinesNum}行目以降が記載されていません`,
+      isPerformance,
+      notes,
+    };
   }
 
   while (!!line) {
     // 改行のみではないかのチェック
     if (line.length === 0) {
-      return `ucsファイルの${fileLinesNum}行目が不正です`;
+      return {
+        blocks,
+        errMsg: `ucsファイルの${fileLinesNum}行目が不正です`,
+        isPerformance,
+        notes,
+      };
     }
 
     // 譜面のブロックのヘッダー部のチェック・取得
@@ -93,7 +127,12 @@ const validateAndLoadUCS = (
       if (block !== null) {
         // 直前の譜面のブロックの行数が0になっていないかどうかチェック
         if (rows === 0) {
-          return `ucsファイルの${fileLinesNum}行目が不正です`;
+          return {
+            blocks,
+            errMsg: `ucsファイルの${fileLinesNum}行目が不正です`,
+            isPerformance,
+            notes,
+          };
         }
 
         // 譜面のブロックの行数を更新して格納
@@ -105,50 +144,105 @@ const validateAndLoadUCS = (
 
       // 譜面のブロックのBPM値のチェック・取得
       if (line.substring(0, 5) !== ":BPM=") {
-        return `ucsファイルの${fileLinesNum}行目が不正です`;
+        return {
+          blocks,
+          errMsg: `ucsファイルの${fileLinesNum}行目が不正です`,
+          isPerformance,
+          notes,
+        };
       }
       const bpm: number = Number(line.substring(5));
       if (Number.isNaN(bpm)) {
-        return `ucsファイルの${fileLinesNum}行目が不正です`;
+        return {
+          blocks,
+          errMsg: `ucsファイルの${fileLinesNum}行目が不正です`,
+          isPerformance,
+          notes,
+        };
       }
 
       // 譜面のブロックのDelay値のチェック・取得
       fileLinesNum++;
       line = lines.shift();
       if (!line) {
-        return `ucsファイルの${fileLinesNum}行目以降が記載されていません`;
+        return {
+          blocks,
+          errMsg: `ucsファイルの${fileLinesNum}行目以降が記載されていません`,
+          isPerformance,
+          notes,
+        };
       } else if (line.substring(0, 7) !== ":Delay=") {
-        return `ucsファイルの${fileLinesNum}行目が不正です`;
+        return {
+          blocks,
+          errMsg: `ucsファイルの${fileLinesNum}行目が不正です`,
+          isPerformance,
+          notes,
+        };
       }
       const delay: number = Number(line.substring(7));
       if (Number.isNaN(delay)) {
-        return `ucsファイルの${fileLinesNum}行目が不正です`;
+        return {
+          blocks,
+          errMsg: `ucsファイルの${fileLinesNum}行目が不正です`,
+          isPerformance,
+          notes,
+        };
       }
 
       // 譜面のブロックのBeat値のチェック・取得
       fileLinesNum++;
       line = lines.shift();
       if (!line) {
-        return `ucsファイルの${fileLinesNum}行目以降が記載されていません`;
+        return {
+          blocks,
+          errMsg: `ucsファイルの${fileLinesNum}行目以降が記載されていません`,
+          isPerformance,
+          notes,
+        };
       } else if (line.substring(0, 6) !== ":Beat=") {
-        return `ucsファイルの${fileLinesNum}行目が不正です`;
+        return {
+          blocks,
+          errMsg: `ucsファイルの${fileLinesNum}行目が不正です`,
+          isPerformance,
+          notes,
+        };
       }
       const beat: number = Number(line.substring(6));
       if (Number.isNaN(beat)) {
-        return `ucsファイルの${fileLinesNum}行目が不正です`;
+        return {
+          blocks,
+          errMsg: `ucsファイルの${fileLinesNum}行目が不正です`,
+          isPerformance,
+          notes,
+        };
       }
 
       // 譜面のブロックのSplit値のチェック・取得
       fileLinesNum++;
       line = lines.shift();
       if (!line) {
-        return `ucsファイルの${fileLinesNum}行目以降が記載されていません`;
+        return {
+          blocks,
+          errMsg: `ucsファイルの${fileLinesNum}行目以降が記載されていません`,
+          isPerformance,
+          notes,
+        };
       } else if (line.substring(0, 7) !== ":Split=") {
-        return `ucsファイルの${fileLinesNum}行目が不正です`;
+        return {
+          blocks,
+          errMsg: `ucsファイルの${fileLinesNum}行目が不正です`,
+          isPerformance,
+          notes,
+        };
       }
       const split: number = Number(line.substring(7));
       if (Number.isNaN(split)) {
-        return `ucsファイルの${fileLinesNum}行目が不正です`;
+        return {
+          blocks,
+          errMsg: `ucsファイルの${fileLinesNum}行目が不正です`,
+          isPerformance,
+          notes,
+        };
       }
 
       // 新たな譜面のブロックの解析開始
@@ -168,12 +262,22 @@ const validateAndLoadUCS = (
 
     // 1個目の譜面のブロックのヘッダー部のチェック
     if (block === null) {
-      return `ucsファイルの${fileLinesNum}行目が不正です`;
+      return {
+        blocks,
+        errMsg: `ucsファイルの${fileLinesNum}行目が不正です`,
+        isPerformance,
+        notes,
+      };
     }
 
     // 譜面のブロックのヘッダー部以外の列数をチェック
     if (line.length !== columns) {
-      return `ucsファイルの${fileLinesNum}行目が不正です`;
+      return {
+        blocks,
+        errMsg: `ucsファイルの${fileLinesNum}行目が不正です`,
+        isPerformance,
+        notes,
+      };
     }
 
     // 単ノート/ホールドの情報を解析し、そのインスタンスを追加
@@ -198,7 +302,12 @@ const validateAndLoadUCS = (
         case ".":
           break;
         default:
-          return `ucsファイルの${fileLinesNum}行目が不正です`;
+          return {
+            blocks,
+            errMsg: `ucsファイルの${fileLinesNum}行目が不正です`,
+            isPerformance,
+            notes,
+          };
       }
     }
 
@@ -210,12 +319,17 @@ const validateAndLoadUCS = (
 
   // 最後のブロックをリストに格納
   if (block === null) {
-    return `ucsファイルの${fileLinesNum}行目が不正です`;
+    return {
+      blocks,
+      errMsg: `ucsファイルの${fileLinesNum}行目が不正です`,
+      isPerformance,
+      notes,
+    };
   }
   block.rows = rows;
   blocks.push(block);
 
-  return { blocks, isPerformance, notes };
+  return { blocks, errMsg: null, isPerformance, notes };
 };
 
 function useUploadingUCS() {
@@ -247,11 +361,8 @@ function useUploadingUCS() {
       fileList[0]
         .text()
         .then((content: string) => {
-          const result: UploadingUCSValidation | string =
-            validateAndLoadUCS(content);
-          if (typeof result === "string") {
-            setUserErrorMessage(result);
-          } else {
+          const result: UploadingUCSValidation = validate(content);
+          if (result.errMsg === null) {
             setBlocks(result.blocks);
             setIsPerformance(result.isPerformance);
             setIsProtected(false);
@@ -259,6 +370,8 @@ function useUploadingUCS() {
             setRedoSnapshots([]);
             setUcsName(fileList[0].name);
             setUndoSnapshots([]);
+          } else {
+            setUserErrorMessage(result.errMsg);
           }
 
           // 同じUCSファイルを再アップロードできるように初期化
