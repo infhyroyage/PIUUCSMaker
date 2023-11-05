@@ -10,7 +10,7 @@ import {
   ucsNameState,
   undoSnapshotsState,
   userErrorMessageState,
-} from "../service/atoms";
+} from "../services/atoms";
 import { UploadingUCSValidation } from "../types/dialog";
 import { ChartSnapshot } from "../types/ucs";
 

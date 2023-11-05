@@ -1,10 +1,10 @@
 import { memo, useMemo } from "react";
 import { useRecoilValue } from "recoil";
-import { noteSizeState, zoomState } from "../../service/atoms";
+import { noteSizeState, zoomState } from "../../services/atoms";
 import { ChartVerticalRectanglesProps } from "../../types/props";
 import BorderLine from "./BorderLine";
 import { Zoom } from "../../types/menu";
-import { ZOOM_VALUES } from "../../service/zoom";
+import { ZOOM_VALUES } from "../../services/zoom";
 
 function ChartVerticalRectangles({
   isEven,

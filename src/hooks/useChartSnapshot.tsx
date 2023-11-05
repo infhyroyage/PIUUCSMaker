@@ -13,7 +13,7 @@ import {
   redoSnapshotsState,
   selectorState,
   undoSnapshotsState,
-} from "../service/atoms";
+} from "../services/atoms";
 import { Indicator, Selector } from "../types/chart";
 import {
   BlockControllerMenuPosition,

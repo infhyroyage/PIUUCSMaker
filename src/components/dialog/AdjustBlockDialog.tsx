@@ -8,7 +8,7 @@ import {
   blockControllerMenuBlockIdxState,
   notesState,
   isProtectedState,
-} from "../../service/atoms";
+} from "../../services/atoms";
 import {
   Button,
   Dialog,

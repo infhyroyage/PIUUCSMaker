@@ -6,7 +6,7 @@ import {
   blockControllerMenuBlockIdxState,
   blockControllerMenuPositionState,
   blocksState,
-} from "../../service/atoms";
+} from "../../services/atoms";
 import { BlockControllerMenuProps } from "../../types/props";
 import { BlockControllerMenuPosition } from "../../types/menu";
 import { Block } from "../../types/ucs";

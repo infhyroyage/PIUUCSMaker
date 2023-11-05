@@ -1,8 +1,8 @@
 import { Button, Stack, Typography } from "@mui/material";
 import useUploadingUCS from "../../hooks/useUploadingUCS";
 import { useSetRecoilState } from "recoil";
-import { isOpenedNewUCSDialogState } from "../../service/atoms";
-import { MENU_BAR_HEIGHT } from "../../service/styles";
+import { isOpenedNewUCSDialogState } from "../../services/atoms";
+import { MENU_BAR_HEIGHT } from "../../services/styles";
 
 function ReadyUCS() {
   const setIsOpenedNewUCSDialog = useSetRecoilState<boolean>(

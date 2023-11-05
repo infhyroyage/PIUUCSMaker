@@ -15,7 +15,7 @@ import {
   redoSnapshotsState,
   selectorState,
   undoSnapshotsState,
-} from "../service/atoms";
+} from "../services/atoms";
 
 function useClipBoard() {
   const [clipBoard, setClipBoard] = useRecoilState<ClipBoard>(clipBoardState);

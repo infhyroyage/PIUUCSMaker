@@ -8,7 +8,7 @@ import {
   notesState,
   redoSnapshotsState,
   undoSnapshotsState,
-} from "../../service/atoms";
+} from "../../services/atoms";
 import {
   Button,
   Dialog,
@@ -27,7 +27,7 @@ import {
   validateDelay,
   validateRows,
   validateSplit,
-} from "../../service/validation";
+} from "../../services/validation";
 
 function EditBlockDialog() {
   const [form, setForm] = useState<EditBlockDialogForm>({

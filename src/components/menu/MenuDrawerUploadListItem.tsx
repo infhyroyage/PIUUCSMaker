@@ -7,9 +7,9 @@ import {
   Tooltip,
 } from "@mui/material";
 import { useRecoilValue } from "recoil";
-import { isOpenedMenuDrawerState } from "../../service/atoms";
+import { isOpenedMenuDrawerState } from "../../services/atoms";
 import { MenuDrawerUploadListItemProps } from "../../types/props";
-import { MENU_BAR_HEIGHT } from "../../service/styles";
+import { MENU_BAR_HEIGHT } from "../../services/styles";
 
 function MenuDrawerUploadListItem({
   disabled,

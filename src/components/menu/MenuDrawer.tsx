@@ -27,15 +27,15 @@ import {
   ucsNameState,
   undoSnapshotsState,
   zoomState,
-} from "../../service/atoms";
+} from "../../services/atoms";
 import MenuDrawerListItem from "./MenuDrawerListItem";
 import { Zoom } from "../../types/menu";
 import { ChartSnapshot } from "../../types/ucs";
-import { ZOOM_VALUES } from "../../service/zoom";
+import { ZOOM_VALUES } from "../../services/zoom";
 import {
   MENU_BAR_HEIGHT,
   MENU_DRAWER_OPENED_WIDTH,
-} from "../../service/styles";
+} from "../../services/styles";
 import usePlayingMusic from "../../hooks/usePlayingMusic";
 import useUploadingUCS from "../../hooks/useUploadingUCS";
 import useDownloadingUCS from "../../hooks/useDownloadingUCS";

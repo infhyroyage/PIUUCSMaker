@@ -1,11 +1,11 @@
-import { ZOOM_VALUES } from "../../service/zoom";
+import { ZOOM_VALUES } from "../../services/zoom";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
   volumeValueState,
   zoomState,
   isPlayingState,
   isProtectedState,
-} from "../../service/atoms";
+} from "../../services/atoms";
 import {
   AppBar,
   FormControl,
@@ -23,7 +23,7 @@ import VolumeDownIcon from "@mui/icons-material/VolumeDown";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import VolumeMuteIcon from "@mui/icons-material/VolumeMute";
 import { Zoom } from "../../types/menu";
-import { MENU_BAR_HEIGHT } from "../../service/styles";
+import { MENU_BAR_HEIGHT } from "../../services/styles";
 import MenuBarTitle from "./MenuBarTitle";
 
 function MenuBar() {

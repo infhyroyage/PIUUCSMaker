@@ -4,12 +4,12 @@ import {
   holdSetterState,
   noteSizeState,
   selectorState,
-} from "../../service/atoms";
+} from "../../services/atoms";
 import Chart from "./Chart";
 import Identifier from "./Identifier";
 import BlockController from "./BlockController";
 import { HoldSetter, Selector } from "../../types/chart";
-import { MENU_BAR_HEIGHT } from "../../service/styles";
+import { MENU_BAR_HEIGHT } from "../../services/styles";
 
 function WorkSpace() {
   const setHoldSetter = useSetRecoilState<HoldSetter>(holdSetterState);

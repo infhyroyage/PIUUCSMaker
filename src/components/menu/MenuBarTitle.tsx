@@ -6,7 +6,7 @@ import {
   mp3NameState,
   notesState,
   ucsNameState,
-} from "../../service/atoms";
+} from "../../services/atoms";
 import { Note } from "../../types/ucs";
 import { useMemo } from "react";
 

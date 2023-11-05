@@ -13,7 +13,7 @@ import {
   selectorState,
   undoSnapshotsState,
   zoomState,
-} from "../../service/atoms";
+} from "../../services/atoms";
 import BorderLine from "./BorderLine";
 import ChartVertical from "./ChartVertical";
 import { Block, Note } from "../../types/ucs";
@@ -22,7 +22,7 @@ import { ChartIndicatorMenuPosition, Zoom } from "../../types/menu";
 import { ChartSnapshot } from "../../types/ucs";
 import { Selector } from "../../types/chart";
 import { Indicator } from "../../types/chart";
-import { ZOOM_VALUES } from "../../service/zoom";
+import { ZOOM_VALUES } from "../../services/zoom";
 import ChartIndicator from "./ChartIndicator";
 import ChartIndicatorMenu from "../menu/ChartIndicatorMenu";
 import ChartSelector from "./ChartSelector";

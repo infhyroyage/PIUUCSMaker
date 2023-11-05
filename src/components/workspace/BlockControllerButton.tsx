@@ -4,7 +4,7 @@ import {
   blockControllerMenuBlockIdxState,
   blockControllerMenuPositionState,
   noteSizeState,
-} from "../../service/atoms";
+} from "../../services/atoms";
 import {
   Card,
   CardActionArea,

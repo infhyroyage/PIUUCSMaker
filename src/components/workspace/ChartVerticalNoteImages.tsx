@@ -1,11 +1,11 @@
 import { memo, useMemo } from "react";
-import { IMAGE_BINARIES } from "../../service/assets";
+import { IMAGE_BINARIES } from "../../services/assets";
 import { ChartVerticalNoteImagesProps } from "../../types/props";
 import { useRecoilValue } from "recoil";
-import { noteSizeState, zoomState } from "../../service/atoms";
-import { ZOOM_VALUES } from "../../service/zoom";
+import { noteSizeState, zoomState } from "../../services/atoms";
+import { ZOOM_VALUES } from "../../services/zoom";
 import { Zoom } from "../../types/menu";
-import { IDENTIFIER_WIDTH } from "../../service/styles";
+import { IDENTIFIER_WIDTH } from "../../services/styles";
 
 function ChartVerticalNoteImages({
   accumulatedRows,

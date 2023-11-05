@@ -8,7 +8,7 @@ import {
   redoSnapshotsState,
   ucsNameState,
   undoSnapshotsState,
-} from "../service/atoms";
+} from "../services/atoms";
 import { Block, Note } from "../types/ucs";
 import { ChartSnapshot } from "../types/ucs";
 

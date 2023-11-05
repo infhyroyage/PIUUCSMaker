@@ -12,10 +12,10 @@ import {
   userErrorMessageState,
   volumeValueState,
   zoomState,
-} from "../service/atoms";
+} from "../services/atoms";
 import { Zoom } from "../types/menu";
 import { Block, Note } from "../types/ucs";
-import { ZOOM_VALUES } from "../service/zoom";
+import { ZOOM_VALUES } from "../services/zoom";
 
 function usePlayingMusic() {
   const [isUploadingMP3, setIsUploadingMP3] = useState<boolean>(false);

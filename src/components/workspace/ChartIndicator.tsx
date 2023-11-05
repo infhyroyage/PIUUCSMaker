@@ -1,15 +1,15 @@
 import { useMemo } from "react";
 import { Theme, useTheme } from "@mui/material";
-import { IMAGE_BINARIES } from "../../service/assets";
+import { IMAGE_BINARIES } from "../../services/assets";
 import { useRecoilValue } from "recoil";
 import {
   indicatorState,
   holdSetterState,
   noteSizeState,
   selectorState,
-} from "../../service/atoms";
+} from "../../services/atoms";
 import { Indicator, HoldSetter, Selector } from "../../types/chart";
-import { IDENTIFIER_WIDTH } from "../../service/styles";
+import { IDENTIFIER_WIDTH } from "../../services/styles";
 
 function ChartIndicator() {
   const holdSetter = useRecoilValue<HoldSetter>(holdSetterState);

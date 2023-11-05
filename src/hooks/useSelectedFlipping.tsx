@@ -6,7 +6,7 @@ import {
   redoSnapshotsState,
   selectorState,
   undoSnapshotsState,
-} from "../service/atoms";
+} from "../services/atoms";
 import { Note } from "../types/ucs";
 import { ChartSnapshot } from "../types/ucs";
 import { Selector, SelectorCompletedCords } from "../types/chart";

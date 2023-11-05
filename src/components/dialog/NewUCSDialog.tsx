@@ -18,7 +18,7 @@ import {
   isProtectedState,
   redoSnapshotsState,
   undoSnapshotsState,
-} from "../../service/atoms";
+} from "../../services/atoms";
 import { ChangeEvent, useState, useTransition } from "react";
 import { NewUCSDialogError, NewUCSDialogForm } from "../../types/dialog";
 import { Block, Note } from "../../types/ucs";
@@ -29,7 +29,7 @@ import {
   validateDelay,
   validateRows,
   validateSplit,
-} from "../../service/validation";
+} from "../../services/validation";
 
 function NewUCSDialog() {
   const [form, setForm] = useState<NewUCSDialogForm>({

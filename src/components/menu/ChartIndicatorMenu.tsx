@@ -14,7 +14,7 @@ import {
   indicatorState,
   holdSetterState,
   selectorState,
-} from "../../service/atoms";
+} from "../../services/atoms";
 import { ChartIndicatorMenuProps } from "../../types/props";
 import { HoldSetter, Selector } from "../../types/chart";
 import { Indicator } from "../../types/chart";

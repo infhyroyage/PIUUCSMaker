@@ -2,7 +2,7 @@ import { memo, useMemo } from "react";
 import { ChartVerticalProps } from "../../types/props";
 import { Block, Note } from "../../types/ucs";
 import { useRecoilValue } from "recoil";
-import { blocksState } from "../../service/atoms";
+import { blocksState } from "../../services/atoms";
 import ChartVerticalNoteImages from "./ChartVerticalNoteImages";
 import ChartVerticalRectangles from "./ChartVerticalRectangles";
 

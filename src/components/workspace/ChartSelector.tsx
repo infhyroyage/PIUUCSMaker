@@ -1,12 +1,12 @@
 import { memo, useMemo } from "react";
 import { Theme, useTheme } from "@mui/material";
 import { useRecoilValue } from "recoil";
-import { blocksState, noteSizeState, zoomState } from "../../service/atoms";
+import { blocksState, noteSizeState, zoomState } from "../../services/atoms";
 import { ChartSelectorProps } from "../../types/props";
 import { Block } from "../../types/ucs";
 import { Zoom } from "../../types/menu";
-import { ZOOM_VALUES } from "../../service/zoom";
-import { IDENTIFIER_WIDTH } from "../../service/styles";
+import { ZOOM_VALUES } from "../../services/zoom";
+import { IDENTIFIER_WIDTH } from "../../services/styles";
 
 function ChartSelector({
   goalColumn,

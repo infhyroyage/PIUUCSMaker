@@ -11,12 +11,12 @@ import {
   redoSnapshotsState,
   undoSnapshotsState,
   zoomState,
-} from "../../service/atoms";
+} from "../../services/atoms";
 import BlockControllerButton from "./BlockControllerButton";
-import { ZOOM_VALUES } from "../../service/zoom";
+import { ZOOM_VALUES } from "../../services/zoom";
 import { useCallback, useMemo } from "react";
 import BlockControllerMenu from "../menu/BlockControllerMenu";
-import { IDENTIFIER_WIDTH, MENU_BAR_HEIGHT } from "../../service/styles";
+import { IDENTIFIER_WIDTH, MENU_BAR_HEIGHT } from "../../services/styles";
 
 function BlockController() {
   const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
