@@ -31,7 +31,7 @@ import {
 import MenuDrawerListItem from "./MenuDrawerListItem";
 import { Zoom } from "../../types/menu";
 import { ChartSnapshot } from "../../types/ucs";
-import { ZOOM_VALUES } from "../../services/zoom";
+import { ZOOM_VALUES } from "../../services/assets";
 import {
   MENU_BAR_HEIGHT,
   MENU_DRAWER_OPENED_WIDTH,

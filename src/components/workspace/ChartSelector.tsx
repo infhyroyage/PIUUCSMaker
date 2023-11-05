@@ -5,7 +5,7 @@ import { blocksState, noteSizeState, zoomState } from "../../services/atoms";
 import { ChartSelectorProps } from "../../types/props";
 import { Block } from "../../types/ucs";
 import { Zoom } from "../../types/menu";
-import { ZOOM_VALUES } from "../../services/zoom";
+import { ZOOM_VALUES } from "../../services/assets";
 import { IDENTIFIER_WIDTH } from "../../services/styles";
 
 function ChartSelector({

@@ -13,7 +13,7 @@ import {
   zoomState,
 } from "../../services/atoms";
 import BlockControllerButton from "./BlockControllerButton";
-import { ZOOM_VALUES } from "../../services/zoom";
+import { ZOOM_VALUES } from "../../services/assets";
 import { useCallback, useMemo } from "react";
 import BlockControllerMenu from "../menu/BlockControllerMenu";
 import { IDENTIFIER_WIDTH, MENU_BAR_HEIGHT } from "../../services/styles";

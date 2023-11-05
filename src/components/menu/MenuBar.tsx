@@ -1,4 +1,4 @@
-import { ZOOM_VALUES } from "../../services/zoom";
+import { ZOOM_VALUES } from "../../services/assets";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
   volumeValueState,

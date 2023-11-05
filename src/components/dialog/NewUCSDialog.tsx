@@ -29,7 +29,7 @@ import {
   validateDelay,
   validateRows,
   validateSplit,
-} from "../../services/validation";
+} from "../../services/validations";
 
 function NewUCSDialog() {
   const [form, setForm] = useState<NewUCSDialogForm>({

@@ -4,7 +4,7 @@ import { noteSizeState, zoomState } from "../../services/atoms";
 import { ChartVerticalRectanglesProps } from "../../types/props";
 import BorderLine from "./BorderLine";
 import { Zoom } from "../../types/menu";
-import { ZOOM_VALUES } from "../../services/zoom";
+import { ZOOM_VALUES } from "../../services/assets";
 
 function ChartVerticalRectangles({
   isEven,

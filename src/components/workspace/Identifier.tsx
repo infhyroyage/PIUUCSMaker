@@ -4,7 +4,7 @@ import { Block } from "../../types/ucs";
 import { blocksState, noteSizeState, zoomState } from "../../services/atoms";
 import BorderLine from "./BorderLine";
 import { Zoom } from "../../types/menu";
-import { ZOOM_VALUES } from "../../services/zoom";
+import { ZOOM_VALUES } from "../../services/assets";
 import { Paper, Typography } from "@mui/material";
 import { IDENTIFIER_WIDTH } from "../../services/styles";
 

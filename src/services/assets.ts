@@ -19,3 +19,8 @@ export const IMAGE_BINARIES: { note: string; hold: string }[] = [
   { note: Note3, hold: Hold3 },
   { note: Note4, hold: Hold4 },
 ];
+
+/**
+ * 倍率の値
+ */
+export const ZOOM_VALUES: number[] = [1, 2, 3, 4, 6, 8, 12, 16, 24, 32, 48, 64];

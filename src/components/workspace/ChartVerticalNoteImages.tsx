@@ -3,7 +3,7 @@ import { IMAGE_BINARIES } from "../../services/assets";
 import { ChartVerticalNoteImagesProps } from "../../types/props";
 import { useRecoilValue } from "recoil";
 import { noteSizeState, zoomState } from "../../services/atoms";
-import { ZOOM_VALUES } from "../../services/zoom";
+import { ZOOM_VALUES } from "../../services/assets";
 import { Zoom } from "../../types/menu";
 import { IDENTIFIER_WIDTH } from "../../services/styles";
 

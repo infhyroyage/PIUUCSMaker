@@ -27,7 +27,7 @@ import {
   validateDelay,
   validateRows,
   validateSplit,
-} from "../../services/validation";
+} from "../../services/validations";
 
 function EditBlockDialog() {
   const [form, setForm] = useState<EditBlockDialogForm>({
