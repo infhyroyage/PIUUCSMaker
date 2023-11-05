@@ -210,10 +210,10 @@ function NewUCSDialog() {
       </DialogContent>
       <DialogActions>
         <Button disabled={isPending} onClick={onClose}>
-          Cancel
+          CANCEL
         </Button>
         <Button disabled={isPending} onClick={onCreate}>
-          Create
+          CREATE
         </Button>
       </DialogActions>
     </Dialog>
