@@ -5,7 +5,7 @@ const config: Config.InitialOptions = {
   coverageReporters: ["text"],
   coverageThreshold: {
     global: {
-      lines: 80,
+      statements: 80,
     },
   },
   moduleFileExtensions: ["ts", "tsx", "js", "jsx"],
