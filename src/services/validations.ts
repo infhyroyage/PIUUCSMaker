@@ -31,7 +31,6 @@ export const validateBpm = (bpmStr: string): number | null => {
 export const validateDelay = (delayStr: string): number | null => {
   const delay: number = Number(delayStr);
   return delayStr === "" ||
-    delayStr === null ||
     delayStr.replace("-", "").replace(".", "").length > 7 ||
     Number.isNaN(delay) ||
     delay < -999999 ||
