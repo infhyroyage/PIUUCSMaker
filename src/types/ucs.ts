@@ -10,20 +10,16 @@ export type Block = {
 
   /**
    * Beat値
-   * 1〜64が有効範囲
    */
   beat: number;
 
   /**
    * BPM値
-   * 有効数字7桁までの0.1〜999が有効範囲
    */
   bpm: number;
 
   /**
-   * Delay値
-   * 単位はbeatを使用せずmsで統一
-   * 有効数字7桁までの-999999〜999999が有効範囲
+   * Delay値(ms単位)
    */
   delay: number;
 
@@ -34,7 +30,6 @@ export type Block = {
 
   /**
    * Split値
-   * 1〜128が有効範囲
    */
   split: number;
 };

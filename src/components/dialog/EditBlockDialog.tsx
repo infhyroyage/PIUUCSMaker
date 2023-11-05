@@ -18,59 +18,16 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import {
-  EditBlockDialogError,
-  EditBlockDialogForm,
-  EditBlockDialogValidation,
-} from "../../types/dialog";
+import { EditBlockDialogError, EditBlockDialogForm } from "../../types/dialog";
 import { Block, Note } from "../../types/ucs";
 import { ChartSnapshot } from "../../types/ucs";
-
-const validate = (form: EditBlockDialogForm): EditBlockDialogValidation => {
-  const errors: EditBlockDialogError[] = [];
-
-  // BPMのチェック
-  const bpm: number = Number(form.bpm);
-  if (
-    Number.isNaN(bpm) ||
-    bpm < 0.1 ||
-    bpm > 999 ||
-    form.bpm.replace(".", "").length > 7
-  ) {
-    errors.push("BPM");
-  }
-
-  // Delayのチェック
-  const delay: number = Number(form.delay);
-  if (
-    Number.isNaN(delay) ||
-    delay < -999999 ||
-    delay > 999999 ||
-    form.delay.replace("-", "").replace(".", "").length > 7
-  ) {
-    errors.push("Delay(ms)");
-  }
-
-  // Splitのチェック
-  const split = Number(form.split);
-  if (!Number.isInteger(split) || split < 1 || split > 128) {
-    errors.push("Split");
-  }
-
-  // Beatのチェック
-  const beat = Number(form.beat);
-  if (!Number.isInteger(beat) || beat < 1 || beat > 64) {
-    errors.push("Beat");
-  }
-
-  // Rowsのチェック
-  const rows = Number(form.rows);
-  if (!Number.isInteger(rows) || rows < 1) {
-    errors.push("Rows");
-  }
-
-  return { beat, bpm, delay, errors, rows, split };
-};
+import {
+  validateBeat,
+  validateBpm,
+  validateDelay,
+  validateRows,
+  validateSplit,
+} from "../../service/validation";
 
 function EditBlockDialog() {
   const [form, setForm] = useState<EditBlockDialogForm>({
@@ -109,10 +66,21 @@ function EditBlockDialog() {
     // BlockControllerMenuのメニューを開いていない場合はNOP
     if (menuBlockIdx === null) return;
 
-    const result: EditBlockDialogValidation = validate(form);
-    if (result.errors.length === 0) {
+    // バリデーションチェック
+    const beat: number | null = validateBeat(form.beat);
+    const bpm: number | null = validateBpm(form.bpm);
+    const delay: number | null = validateDelay(form.delay);
+    const rows: number | null = validateRows(form.rows);
+    const split: number | null = validateSplit(form.split);
+    if (
+      beat !== null &&
+      bpm !== null &&
+      delay !== null &&
+      rows !== null &&
+      split !== null
+    ) {
       // menuBlockIdx番目の譜面のブロックの行数の差分
-      const deltaRows: number = result.rows - blocks[menuBlockIdx].rows;
+      const deltaRows: number = rows - blocks[menuBlockIdx].rows;
 
       // 元に戻す/やり直すスナップショットの集合を更新
       setUndoSnapshots([
@@ -127,11 +95,11 @@ function EditBlockDialog() {
           blockIdx === menuBlockIdx
             ? {
                 accumulatedRows: blocks[menuBlockIdx].accumulatedRows,
-                beat: result.beat,
-                bpm: result.bpm,
-                delay: result.delay,
-                rows: result.rows,
-                split: result.split,
+                beat: beat,
+                bpm: bpm,
+                delay: delay,
+                rows: rows,
+                split: split,
               }
             : blockIdx > menuBlockIdx
             ? {
@@ -171,7 +139,7 @@ function EditBlockDialog() {
                 blocks[menuBlockIdx].accumulatedRows +
                 Math.floor(
                   ((note.rowIdx - blocks[menuBlockIdx].accumulatedRows) *
-                    result.rows) /
+                    rows) /
                     blocks[menuBlockIdx].rows
                 );
               const prevScaledNote: Note | undefined = prev.find(
@@ -216,7 +184,13 @@ function EditBlockDialog() {
       setOpen(false);
     } else {
       // バリデーションエラーのテキストフィールドをすべて表示
-      setErrors(result.errors);
+      const errors: EditBlockDialogError[] = [];
+      if (beat === null) errors.push("Beat");
+      if (bpm === null) errors.push("BPM");
+      if (delay === null) errors.push("Delay(ms)");
+      if (rows === null) errors.push("Rows");
+      if (split === null) errors.push("Split");
+      setErrors(errors);
     }
   }, [
     blocks,

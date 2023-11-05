@@ -20,71 +20,16 @@ import {
   undoSnapshotsState,
 } from "../../service/atoms";
 import { ChangeEvent, useState, useTransition } from "react";
-import {
-  NewUCSDialogError,
-  NewUCSDialogForm,
-  NewUCSDialogValidation,
-} from "../../types/dialog";
+import { NewUCSDialogError, NewUCSDialogForm } from "../../types/dialog";
 import { Block, Note } from "../../types/ucs";
 import { ChartSnapshot } from "../../types/ucs";
-
-const validate = (form: NewUCSDialogForm): NewUCSDialogValidation => {
-  const errors: NewUCSDialogError[] = [];
-
-  // UCSファイル名のチェック
-  if (form.ucsName.length === 0) {
-    errors.push("UCS File Name");
-  }
-
-  // BPMのチェック
-  const bpm: number = Number(form.bpm);
-  if (
-    Number.isNaN(bpm) ||
-    bpm < 0.1 ||
-    bpm > 999 ||
-    form.bpm.replace(".", "").length > 7
-  ) {
-    errors.push("BPM");
-  }
-
-  // Delayのチェック
-  const delay: number = Number(form.delay);
-  if (
-    Number.isNaN(delay) ||
-    delay < -999999 ||
-    delay > 999999 ||
-    form.delay.replace("-", "").replace(".", "").length > 7
-  ) {
-    errors.push("Delay(ms)");
-  }
-
-  // Splitのチェック
-  const split = Number(form.split);
-  if (!Number.isInteger(split) || split < 1 || split > 128) {
-    errors.push("Split");
-  }
-
-  // Beatのチェック
-  const beat = Number(form.beat);
-  if (!Number.isInteger(beat) || beat < 1 || beat > 64) {
-    errors.push("Beat");
-  }
-
-  // Rowsのチェック
-  const rows = Number(form.rows);
-  if (!Number.isInteger(rows) || rows < 1) {
-    errors.push("Rows");
-  }
-
-  return {
-    beat,
-    bpm,
-    delay,
-    errors,
-    rows,
-    split,
-  };
-};
+import {
+  validateBeat,
+  validateBpm,
+  validateDelay,
+  validateRows,
+  validateSplit,
+} from "../../service/validation";
 
 function NewUCSDialog() {
   const [form, setForm] = useState<NewUCSDialogForm>({
@@ -113,18 +58,21 @@ function NewUCSDialog() {
 
   const onCreate = () =>
     startTransition(() => {
-      const result: NewUCSDialogValidation = validate(form);
-      if (result.errors.length === 0) {
-        setBlocks([
-          {
-            accumulatedRows: 0,
-            beat: result.beat,
-            bpm: result.bpm,
-            delay: result.delay,
-            rows: result.rows,
-            split: result.split,
-          },
-        ]);
+      // バリデーションチェック
+      const beat: number | null = validateBeat(form.beat);
+      const bpm: number | null = validateBpm(form.bpm);
+      const delay: number | null = validateDelay(form.delay);
+      const rows: number | null = validateRows(form.rows);
+      const split: number | null = validateSplit(form.split);
+      if (
+        beat !== null &&
+        bpm !== null &&
+        delay !== null &&
+        rows !== null &&
+        split !== null &&
+        form.ucsName.length > 0
+      ) {
+        setBlocks([{ accumulatedRows: 0, beat, bpm, delay, rows, split }]);
         setIsPerformance(
           ["SinglePerformance", "DoublePerformance"].includes(form.mode)
         );
@@ -139,8 +87,15 @@ function NewUCSDialog() {
         setUndoSnapshots([]);
         setIsOpenedNewUCSDialog(false);
       } else {
-        // バリデーションエラーのテキストフィールドを表示
-        setErrors(result.errors);
+        // バリデーションエラーのテキストフィールドをすべて表示
+        const errors: NewUCSDialogError[] = [];
+        if (beat === null) errors.push("Beat");
+        if (bpm === null) errors.push("BPM");
+        if (delay === null) errors.push("Delay(ms)");
+        if (rows === null) errors.push("Rows");
+        if (split === null) errors.push("Split");
+        if (form.ucsName.length === 0) errors.push("UCS File Name");
+        setErrors(errors);
       }
     });
 

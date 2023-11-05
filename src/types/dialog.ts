@@ -66,47 +66,6 @@ export type EditBlockDialogForm = {
 };
 
 /**
- * EditBlockDialogでのバリデーション値
- */
-export type EditBlockDialogValidation = {
-  /**
-   * Beat値
-   * 1〜64が有効範囲
-   */
-  beat: number;
-
-  /**
-   * BPM値
-   * 有効数字7桁までの0.1〜999が有効範囲
-   */
-  bpm: number;
-
-  /**
-   * Delay値
-   * 単位はbeatを使用せずmsで統一
-   * 有効数字7桁までの-999999〜999999が有効範囲
-   */
-  delay: number;
-
-  /**
-   * バリデーションエラー時のエラーメッセージ
-   * バリデーションエラーでない場合は空配列
-   */
-  errors: EditBlockDialogError[];
-
-  /**
-   * 行数
-   */
-  rows: number;
-
-  /**
-   * Split値
-   * 1〜128が有効範囲
-   */
-  split: number;
-};
-
-/**
  * NewUCSDialogでバリデーションエラーが発生したテキストボックスのラベル
  */
 export type NewUCSDialogError =
@@ -159,47 +118,6 @@ export type NewUCSDialogForm = {
    * ucsファイル名(拡張子抜き)
    */
   ucsName: string;
-};
-
-/**
- * NewUCSDialogでのバリデーション値
- */
-export type NewUCSDialogValidation = {
-  /**
-   * Beat値
-   * 1〜64が有効範囲
-   */
-  beat: number;
-
-  /**
-   * BPM値
-   * 有効数字7桁までの0.1〜999が有効範囲
-   */
-  bpm: number;
-
-  /**
-   * Delay値
-   * 単位はbeatを使用せずmsで統一
-   * 有効数字7桁までの-999999〜999999が有効範囲
-   */
-  delay: number;
-
-  /**
-   * バリデーションエラー時のエラーメッセージ
-   * バリデーションエラーでない場合は空配列
-   */
-  errors: NewUCSDialogError[];
-
-  /**
-   * 行数
-   */
-  rows: number;
-
-  /**
-   * Split値
-   * 1〜128が有効範囲
-   */
-  split: number;
 };
 
 /**
