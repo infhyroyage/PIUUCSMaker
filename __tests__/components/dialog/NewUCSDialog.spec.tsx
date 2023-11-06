@@ -1,10 +1,10 @@
 import "@testing-library/jest-dom";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { render, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { RecoilRoot, useSetRecoilState } from "recoil";
 import NewUCSDialog from "../../../src/components/dialog/NewUCSDialog";
 import { isOpenedNewUCSDialogState } from "../../../src/services/atoms";
 import { Block, ChartSnapshot, Note } from "../../../src/types/ucs";
-import userEvent from "@testing-library/user-event";
 
 const mockSetBlocks = jest.fn();
 const mockSetIsPerformance = jest.fn();
@@ -55,7 +55,7 @@ describe("NewUCSDialog", () => {
   });
 
   it("Rerender all inputs changed different values", async () => {
-    const { getByLabelText } = render(
+    const { findByText, getByLabelText } = render(
       <RecoilRoot
         initializeState={({ set }) => {
           set(isOpenedNewUCSDialogState, true);
@@ -65,27 +65,20 @@ describe("NewUCSDialog", () => {
       </RecoilRoot>
     );
 
-    fireEvent.change(getByLabelText("UCS File Name"), {
-      target: { value: "foo" },
-    });
+    await userEvent.clear(getByLabelText("UCS File Name"));
+    await userEvent.type(getByLabelText("UCS File Name"), "foo");
     await userEvent.click(getByLabelText("Mode"));
-    const item = await screen.findByText("Double Performance");
-    await userEvent.click(item);
-    fireEvent.change(getByLabelText("BPM"), {
-      target: { value: "123.4567" },
-    });
-    fireEvent.change(getByLabelText("Delay(ms)"), {
-      target: { value: "0.1234567" },
-    });
-    fireEvent.change(getByLabelText("Split"), {
-      target: { value: "4" },
-    });
-    fireEvent.change(getByLabelText("Beat"), {
-      target: { value: "3" },
-    });
-    fireEvent.change(getByLabelText("Rows"), {
-      target: { value: "10" },
-    });
+    await userEvent.click(await findByText("Double Performance"));
+    await userEvent.clear(getByLabelText("BPM"));
+    await userEvent.type(getByLabelText("BPM"), "123.4567");
+    await userEvent.clear(getByLabelText("Delay(ms)"));
+    await userEvent.type(getByLabelText("Delay(ms)"), "0.1234567");
+    await userEvent.clear(getByLabelText("Split"));
+    await userEvent.type(getByLabelText("Split"), "4");
+    await userEvent.clear(getByLabelText("Beat"));
+    await userEvent.type(getByLabelText("Beat"), "3");
+    await userEvent.clear(getByLabelText("Rows"));
+    await userEvent.type(getByLabelText("Rows"), "10");
 
     await waitFor(() => {
       expect(getByLabelText("UCS File Name")).toHaveValue("foo");
@@ -109,7 +102,7 @@ describe("NewUCSDialog", () => {
       </RecoilRoot>
     );
 
-    fireEvent.click(getByText("CANCEL"));
+    await userEvent.click(getByText("CANCEL"));
 
     await waitFor(() => expect(queryByRole("dialog")).not.toBeInTheDocument());
   });
@@ -134,7 +127,7 @@ describe("NewUCSDialog", () => {
       </RecoilRoot>
     );
 
-    fireEvent.click(getByText("CREATE"));
+    await userEvent.click(getByText("CREATE"));
 
     await waitFor(() => {
       expect(mockSetBlocks).toHaveBeenCalledWith<[Block[]]>([
@@ -174,31 +167,24 @@ describe("NewUCSDialog", () => {
       </RecoilRoot>
     );
 
-    fireEvent.change(getByLabelText("UCS File Name"), {
-      target: { value: "" },
-    });
-    fireEvent.change(getByLabelText("BPM"), {
-      target: { value: "1000" },
-    });
-    fireEvent.change(getByLabelText("Delay(ms)"), {
-      target: { value: "" },
-    });
-    fireEvent.change(getByLabelText("Split"), {
-      target: { value: "0" },
-    });
-    fireEvent.change(getByLabelText("Beat"), {
-      target: { value: "-1" },
-    });
-    fireEvent.change(getByLabelText("Rows"), {
-      target: { value: "10.5" },
-    });
-    fireEvent.click(getByText("CREATE"));
+    await userEvent.clear(getByLabelText("UCS File Name"));
+    await userEvent.clear(getByLabelText("BPM"));
+    await userEvent.type(getByLabelText("BPM"), "1000");
+    await userEvent.clear(getByLabelText("Delay(ms)"));
+    await userEvent.type(getByLabelText("Delay(ms)"), "1234.5678");
+    await userEvent.clear(getByLabelText("Split"));
+    await userEvent.type(getByLabelText("Split"), "0");
+    await userEvent.clear(getByLabelText("Beat"));
+    await userEvent.type(getByLabelText("Beat"), "-1");
+    await userEvent.clear(getByLabelText("Rows"));
+    await userEvent.type(getByLabelText("Rows"), "10.5");
+    await userEvent.click(getByText("CREATE"));
 
     await waitFor(() => {
       expect(queryByRole("dialog")).toBeInTheDocument();
       expect(getByLabelText("UCS File Name")).toHaveValue("");
       expect(getByLabelText("BPM")).toHaveValue(1000);
-      expect(getByLabelText("Delay(ms)")).toHaveValue(null);
+      expect(getByLabelText("Delay(ms)")).toHaveValue(1234.5678);
       expect(getByLabelText("Split")).toHaveValue(0);
       expect(getByLabelText("Beat")).toHaveValue(-1);
       expect(getByLabelText("Rows")).toHaveValue(10.5);
