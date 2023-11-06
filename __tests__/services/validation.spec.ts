@@ -17,7 +17,7 @@ describe("validateBeat", () => {
 
   it("Fail with empty", () => expect(validateBeat("")).toBeNull());
 
-  it("Fail with Decimal", () => expect(validateBeat("2.1")).toBeNull());
+  it("Fail with decimal", () => expect(validateBeat("2.1")).toBeNull());
 
   it("Fail with non-number", () => expect(validateBeat("abc")).toBeNull());
 });
@@ -69,7 +69,7 @@ describe("validateRows", () => {
 
   it("Fail with empty", () => expect(validateRows("")).toBeNull());
 
-  it("Fail with Decimal", () => expect(validateRows("2.1")).toBeNull());
+  it("Fail with decimal", () => expect(validateRows("2.1")).toBeNull());
 
   it("Fail with non-number", () => expect(validateRows("abc")).toBeNull());
 });
@@ -85,7 +85,7 @@ describe("validateSplit", () => {
 
   it("Fail with empty", () => expect(validateSplit("")).toBeNull());
 
-  it("Fail with Decimal", () => expect(validateSplit("2.1")).toBeNull());
+  it("Fail with decimal", () => expect(validateSplit("2.1")).toBeNull());
 
   it("Fail with non-number", () => expect(validateSplit("abc")).toBeNull());
 });

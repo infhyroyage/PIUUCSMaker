@@ -3,7 +3,7 @@ import { render } from "@testing-library/react";
 import BorderLine from "../../../src/components/workspace/BorderLine";
 
 describe("BorderLine", () => {
-  it("Render Correctly", () => {
+  it("Render correctly", () => {
     const style = { height: "1px", width: "2px" };
     const { container } = render(<BorderLine style={style} />);
 
