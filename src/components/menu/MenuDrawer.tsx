@@ -64,7 +64,7 @@ function MenuDrawer() {
   const { isUploadingUCS, onUploadUCS } = useUploadingUCS();
 
   useEffect(() => {
-    if (zoom.top !== null) scrollTo({ top: zoom.top });
+    if (zoom.top !== null) scrollTo({ top: zoom.top, behavior: "instant" });
   }, [zoom]);
 
   return (

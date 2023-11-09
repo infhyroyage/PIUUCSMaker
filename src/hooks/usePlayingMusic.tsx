@@ -303,7 +303,7 @@ function usePlayingMusic() {
             verocityIdx += 1;
           }
         }
-        window.scrollTo({ top });
+        window.scrollTo({ top, behavior: "instant" });
 
         // ブラウザの画面のy座標に応じてビート音を再生
         if (
