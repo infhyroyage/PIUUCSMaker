@@ -9,7 +9,7 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-      day: "sunday"
+      day: "wednesday"
       time: "10:00"
       timezone: "Asia/Tokyo"
     assignees:
