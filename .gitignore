@@ -1,2 +1,4 @@
 node_modules
-public/PIUUCSMaker
+public/*.png
+public/*.wav
+public/bundle.js
