@@ -25,7 +25,7 @@ const config: Configuration = {
   },
   output: {
     filename: "bundle.js",
-    path: path.join(__dirname, "public"),
+    path: path.join(__dirname, "public/PIUUCSMaker"),
   },
   resolve: {
     extensions: [".ts", ".tsx", ".js", ".jsx"],
