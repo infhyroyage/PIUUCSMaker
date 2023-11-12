@@ -16,7 +16,7 @@ import Beat from "../sounds/beat.wav";
  */
 export const BEAT_BINARY: string =
   process.env.NODE_ENV === "production"
-    ? "https://github.com/infhyroyage/PIUUCSMaker/raw/main/src/sounds/beat.wav"
+    ? "https://raw.githubusercontent.com/infhyroyage/PIUUCSMaker/main/src/sounds/beat.wav"
     : Beat;
 
 /**
