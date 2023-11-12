@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import beatWav from "../sounds/beat.wav";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
   blocksState,
@@ -15,7 +14,7 @@ import {
 } from "../services/atoms";
 import { Zoom } from "../types/menu";
 import { Block, Note } from "../types/ucs";
-import { ZOOM_VALUES } from "../services/assets";
+import { BEAT_BINARY, ZOOM_VALUES } from "../services/assets";
 
 function usePlayingMusic() {
   const [isUploadingMP3, setIsUploadingMP3] = useState<boolean>(false);
@@ -43,7 +42,7 @@ function usePlayingMusic() {
   const start = () => {
     // beat.wavをデコードして読み込んでいない場合は読み込んでおく
     if (beatAudioBuffer.current === null) {
-      fetch(beatWav)
+      fetch(BEAT_BINARY)
         .then((response) => response.arrayBuffer())
         .then((arrayBuffer) => {
           // AudioContextを初期化していない場合は初期化しておく
