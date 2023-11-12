@@ -1,4 +1,4 @@
-name: Check Pull Request before Merging
+name: Run Test before Merging Pull Request
 
 on:
   pull_request:
@@ -9,7 +9,7 @@ env:
   NODE_VERSION: "16.20.1"
 
 jobs:
-  check:
+  test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
