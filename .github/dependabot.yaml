@@ -24,3 +24,16 @@ updates:
     labels: []
     reviewers:
       - "infhyroyage"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
+      time: "11:00"
+      timezone: "Asia/Tokyo"
+    assignees:
+      - "infhyroyage"
+    labels: []
+    reviewers:
+      - "infhyroyage"
