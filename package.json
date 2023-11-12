@@ -36,6 +36,6 @@
   },
   "scripts": {
     "start": "webpack-dev-server --mode development -d inline-source-map --port 3000",
-    "test": "jest"
+    "test": "jest --reporters default --coverageReporters text --verbose"
   }
 }
