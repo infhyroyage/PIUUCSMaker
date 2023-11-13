@@ -26,6 +26,13 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
 
+      - name: Restore cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-piuucsmaker-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
+          restore-keys: ${{ runner.os }}-piuucsmaker-${{ hashFiles('**/package-lock.json') }}-
+
       - name: Find Current Pull Request
         uses: jwalton/gh-find-current-pr@v1.3.2
         id: findPr
