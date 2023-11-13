@@ -8,6 +8,11 @@ on:
 env:
   NODE_VERSION: "16.20.1"
 
+permissions:
+  checks: write
+  pull-requests: write
+  contents: write
+
 jobs:
   test:
     runs-on: ubuntu-latest
