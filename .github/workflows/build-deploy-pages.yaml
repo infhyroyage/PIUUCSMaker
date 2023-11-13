@@ -55,6 +55,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Test
+        run: npx jest test --coverage --coverageReporters="json-summary"
+
+      - name: Create Coverage Badges
+        uses: jaywcjlove/coverage-badges-cli@v1.1.1
+        with:
+          output: public/badges.svg
+
       - name: Build
         run: |
           npx webpack --mode production
