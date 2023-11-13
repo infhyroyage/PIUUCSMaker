@@ -7,6 +7,8 @@ import {
 } from "../../src/services/validations";
 
 describe("validateBeat", () => {
+  it("Pass with 0", () => expect(validateBeat("0")).toBe(0));
+
   it("Pass with 1", () => expect(validateBeat("1")).toBe(1));
 
   it("Pass with 64", () => expect(validateBeat("64")).toBe(64));
