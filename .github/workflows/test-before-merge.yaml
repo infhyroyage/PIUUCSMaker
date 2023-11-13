@@ -21,15 +21,11 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
 
-      - name: Restore cache
-        uses: actions/cache@v3
+      - name: Find Current Pull Request
+        uses: jwalton/gh-find-current-pr@v1.3.2
+        id: findPr
+
+      - name: Jest coverage report
+        uses: ArtiomTr/jest-coverage-report-action@v2.2.6
         with:
-          path: ~/.npm
-          key: ${{ runner.os }}-piuucsmaker-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
-          restore-keys: ${{ runner.os }}-piuucsmaker-${{ hashFiles('**/package-lock.json') }}-
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Test
-        run: npx jest
+          prnumber: ${{ steps.findPr.outputs.number }}
