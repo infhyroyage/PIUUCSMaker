@@ -45,7 +45,7 @@ function WorkSpace() {
       window.removeEventListener("resize", handleWindowResize);
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [setNoteSize, setSelector]);
+  }, [setHoldSetter, setNoteSize, setSelector]);
 
   return (
     <div

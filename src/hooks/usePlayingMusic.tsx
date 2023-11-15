@@ -67,7 +67,7 @@ function usePlayingMusic() {
     setIsPlaying(true);
   };
 
-  const stop = () => setIsPlaying(false);
+  const stop = useCallback(() => setIsPlaying(false), [setIsPlaying]);
 
   // ビート音用の音量を0(ミュート)から1(MAX)まで動的に設定
   useEffect(() => {
@@ -343,7 +343,7 @@ function usePlayingMusic() {
         musicGainNode.current.disconnect();
       }
     };
-  }, [isPlaying]);
+  }, [blocks, isPlaying, noteSize, notes, stop, zoom.idx]);
 
   return { isUploadingMP3, onUploadMP3, start, stop };
 }

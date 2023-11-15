@@ -331,7 +331,7 @@ function Chart() {
             ];
           }
         } else {
-          const hold: Note[] = Array.from<any, Note>(
+          const hold: Note[] = Array.from<unknown, Note>(
             { length: goal - start + 1 },
             (_, idx: number) => {
               return {
@@ -475,7 +475,7 @@ function Chart() {
       rowIdx: indicator.rowIdx,
       top: indicator.top,
     });
-  }, [indicator, setHoldSetter]);
+  }, [indicator, selector.completed, selector.setting, setHoldSetter]);
 
   const handleSelect = useCallback(() => {
     // インディケーターが非表示/ホールド設置中の場合はNOP
@@ -492,7 +492,7 @@ function Chart() {
         mouseUpRowIdx: indicator.rowIdx,
       },
     });
-  }, [indicator, holdSetter]);
+  }, [indicator, holdSetter, setSelector]);
 
   const handleSplit = useCallback(() => {
     // インディケーターが非表示/譜面のブロックの先頭の行にインディケーターが存在する場合はNOP
