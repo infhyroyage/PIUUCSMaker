@@ -40,6 +40,7 @@
     "webpack-dev-server": "^4.15.1"
   },
   "scripts": {
+    "lint": "eslint '**/*.{ts,tsx}'",
     "start": "webpack-dev-server --mode development -d inline-source-map --port 3000",
     "test": "jest"
   }

@@ -111,17 +111,7 @@ const validate = (content: string): UploadingUCSValidation => {
     };
   }
 
-  while (!!line) {
-    // 改行のみではないかのチェック
-    if (line.length === 0) {
-      return {
-        blocks,
-        errMsg: `ucsファイルの${fileLinesNum}行目が不正です`,
-        isPerformance,
-        notes,
-      };
-    }
-
+  while (line) {
     // 譜面のブロックのヘッダー部のチェック・取得
     if (line[0] === ":") {
       if (block !== null) {

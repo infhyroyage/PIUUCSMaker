@@ -211,7 +211,7 @@ function EditBlockDialog() {
   const onClose = useCallback(() => {
     setMenuBlockIdx(null);
     setOpen(false);
-  }, [setForm, setOpen]);
+  }, [setMenuBlockIdx, setOpen]);
 
   return (
     <Dialog open={open} onClose={onClose}>

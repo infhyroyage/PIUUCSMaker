@@ -5,12 +5,9 @@ import {
   isPerformanceState,
   isProtectedState,
   notesState,
-  redoSnapshotsState,
   ucsNameState,
-  undoSnapshotsState,
 } from "../services/atoms";
 import { Block, Note } from "../types/ucs";
-import { ChartSnapshot } from "../types/ucs";
 
 function useDownloadingUCS() {
   const blocks = useRecoilValue<Block[]>(blocksState);
@@ -18,10 +15,6 @@ function useDownloadingUCS() {
   const notes = useRecoilValue<Note[][]>(notesState);
   const ucsName = useRecoilValue<string | null>(ucsNameState);
   const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
-  const setRedoSnapshots =
-    useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
-  const setUndoSnapshots =
-    useSetRecoilState<ChartSnapshot[]>(undoSnapshotsState);
 
   const [isPending, startTransition] = useTransition();
 
@@ -97,16 +90,7 @@ function useDownloadingUCS() {
       // 編集中の離脱の抑止を解除
       setIsProtected(false);
     });
-  }, [
-    blocks,
-    isPerformance,
-    notes,
-    setIsProtected,
-    setRedoSnapshots,
-    setUndoSnapshots,
-    startTransition,
-    ucsName,
-  ]);
+  }, [blocks, isPerformance, notes, setIsProtected, startTransition, ucsName]);
 
   return { isDownloadingUCS: isPending, downloadUCS };
 }
