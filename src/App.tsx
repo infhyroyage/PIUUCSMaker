@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from "react";
+import ReactGA from "react-ga4";
 import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import UserErrorSnackbar from "./components/snackbar/UserErrorSnackbar";
 import WorkSpace from "./components/workspace/WorkSpace";
@@ -34,6 +35,12 @@ function App() {
       }),
     [isDarkMode]
   );
+
+  useEffect(() => {
+    if (process.env.NODE_ENV === "production") {
+      ReactGA.initialize("G-XLZYQZ4979");
+    }
+  }, []);
 
   useEffect(
     () =>
