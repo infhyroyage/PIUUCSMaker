@@ -38,6 +38,6 @@ jobs:
         with:
           eslint_flags: "**/*.{ts,tsx}"
           fail_on_error: true
-          filter_mode: nofilter
+          filter_mode: file
           level: warning
           reporter: github-pr-review
