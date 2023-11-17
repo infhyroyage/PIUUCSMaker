@@ -30,59 +30,6 @@ export type BlockControllerButtonProps = {
   textSecond: string;
 };
 
-type BlockControllerMenuHandler = {
-  /**
-   * 「Add at Bottom」選択時の動作
-   * @param {number} blockIdx 譜面のブロックのインデックス
-   * @returns
-   */
-  add: (blockIdx: number) => void;
-
-  /**
-   * 「Delete」選択時の動作
-   * @param {number} blockIdx 譜面のブロックのインデックス
-   * @returns
-   */
-  delete: (blockIdx: number) => void;
-
-  /**
-   * 「Edit」選択時の動作
-   * @returns
-   */
-  edit: () => void;
-
-  /**
-   * 「Insert into Next」選択時の動作
-   * @param {number} blockIdx 譜面のブロックのインデックス
-   * @returns
-   */
-  insert: (blockIdx: number) => void;
-
-  /**
-   * 「Merge with Above」選択時の動作
-   * @param {number} blockIdx 譜面のブロックのインデックス
-   * @returns
-   */
-  mergeAbove: (blockIdx: number) => void;
-
-  /**
-   * 「Merge with Below」選択時の動作
-   * @param {number} blockIdx 譜面のブロックのインデックス
-   * @returns
-   */
-  mergeBelow: (blockIdx: number) => void;
-};
-
-/**
- * BlockControllerMenuのprops
- */
-export type BlockControllerMenuProps = {
-  /**
-   * メニュー選択時の動作
-   */
-  handler: BlockControllerMenuHandler;
-};
-
 /**
  * BorderLineのprops
  */
@@ -91,36 +38,6 @@ export type BorderLineProps = {
    * インラインスタイル
    */
   style?: React.CSSProperties;
-};
-
-type ChartIndicatorMenuHandler = {
-  /**
-   * 「Start Selecting」選択時の動作
-   * @returns
-   */
-  select: () => void;
-
-  /**
-   * 「Start Setting Hold」選択時の動作
-   * @returns
-   */
-  setHold: () => void;
-
-  /**
-   * 「Split Block」選択時の動作
-   * @returns
-   */
-  split: () => void;
-};
-
-/**
- * ChartIndicatorMenuのprops
- */
-export type ChartIndicatorMenuProps = {
-  /**
-   * メニュー選択時の動作
-   */
-  handler: ChartIndicatorMenuHandler;
 };
 
 /**

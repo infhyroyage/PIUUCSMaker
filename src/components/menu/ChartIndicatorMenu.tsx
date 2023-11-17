@@ -1,4 +1,3 @@
-import { memo } from "react";
 import {
   Divider,
   ListItemText,
@@ -7,34 +6,177 @@ import {
   MenuList,
   Typography,
 } from "@mui/material";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
   chartIndicatorMenuPositionState,
   clipBoardState,
   indicatorState,
   holdSetterState,
   selectorState,
+  blocksState,
+  isProtectedState,
+  redoSnapshotsState,
+  undoSnapshotsState,
 } from "../../services/atoms";
-import { ChartIndicatorMenuProps } from "../../types/props";
 import { HoldSetter, Selector } from "../../types/chart";
 import { Indicator } from "../../types/chart";
-import { ClipBoard } from "../../types/ucs";
+import { Block, ChartSnapshot, ClipBoard } from "../../types/ucs";
 import useClipBoard from "../../hooks/useClipBoard";
 import useSelectedFlipping from "../../hooks/useSelectedFlipping";
 import useSelectedDeleting from "../../hooks/useSelectedDeleting";
 import { ChartIndicatorMenuPosition } from "../../types/menu";
+import { useCallback } from "react";
 
-function ChartIndicatorMenu({ handler }: ChartIndicatorMenuProps) {
+function ChartIndicatorMenu() {
+  const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
+  const [holdSetter, setHoldSetter] =
+    useRecoilState<HoldSetter>(holdSetterState);
+  const [indicator, setIndicator] = useRecoilState<Indicator>(indicatorState);
   const [menuPosition, setMenuPosition] =
     useRecoilState<ChartIndicatorMenuPosition>(chartIndicatorMenuPositionState);
+  const [selector, setSelector] = useRecoilState<Selector>(selectorState);
+  const [undoSnapshots, setUndoSnapshots] =
+    useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
   const clipBoard = useRecoilValue<ClipBoard>(clipBoardState);
-  const holdSetter = useRecoilValue<HoldSetter>(holdSetterState);
-  const indicator = useRecoilValue<Indicator>(indicatorState);
-  const selector = useRecoilValue<Selector>(selectorState);
+  const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
+  const setRedoSnapshots =
+    useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
 
   const { handleCut, handleCopy, handlePaste } = useClipBoard();
   const { handleFlip } = useSelectedFlipping();
   const { handleDelete } = useSelectedDeleting();
+
+  const onClickStartSettingHold = useCallback(() => {
+    // インディケーターが非表示/選択領域が表示中の場合はNOP
+    if (
+      indicator === null ||
+      selector.setting !== null ||
+      selector.completed !== null
+    )
+      return;
+
+    // 「Start Setting Hold」を選択したインディケーターの表示パラメーターを用いて、
+    // ホールド設置中の表示パラメーターを保持
+    setHoldSetter({
+      column: indicator.column,
+      isSettingByMenu: true,
+      rowIdx: indicator.rowIdx,
+      top: indicator.top,
+    });
+
+    setMenuPosition(undefined);
+  }, [
+    indicator,
+    selector.completed,
+    selector.setting,
+    setHoldSetter,
+    setMenuPosition,
+  ]);
+
+  const onClickStartSelecting = useCallback(() => {
+    // インディケーターが非表示/ホールド設置中の場合はNOP
+    if (indicator === null || holdSetter !== null) return;
+
+    // 「Start Selecting」を選択したインディケーターの表示パラメーターを用いて、選択領域を表示
+    setSelector({
+      completed: null,
+      isSettingByMenu: true,
+      setting: {
+        mouseDownColumn: indicator.column,
+        mouseDownRowIdx: indicator.rowIdx,
+        mouseUpColumn: indicator.column,
+        mouseUpRowIdx: indicator.rowIdx,
+      },
+    });
+
+    setMenuPosition(undefined);
+  }, [holdSetter, indicator, setMenuPosition, setSelector]);
+
+  const onClickSplitBlock = useCallback(() => {
+    // インディケーターが非表示/譜面のブロックの先頭の行にインディケーターが存在する場合はNOP
+    if (
+      indicator === null ||
+      (indicator !== null &&
+        indicator.rowIdx === indicator.blockAccumulatedRows)
+    )
+      return;
+
+    // 元に戻す/やり直すスナップショットの集合を更新
+    setUndoSnapshots([...undoSnapshots, { blocks, notes: null }]);
+    setRedoSnapshots([]);
+
+    setIsProtected(true);
+
+    // blockIdx番目の譜面のブロックを、(rowIdx- 1)番目以前とrowIdx番目とで分割
+    setBlocks([
+      ...blocks.slice(0, indicator.blockIdx),
+      {
+        ...blocks[indicator.blockIdx],
+        rows: indicator.rowIdx - indicator.blockAccumulatedRows,
+      },
+      {
+        ...blocks[indicator.blockIdx],
+        accumulatedRows: indicator.rowIdx,
+        rows:
+          blocks[indicator.blockIdx].rows +
+          indicator.blockAccumulatedRows -
+          indicator.rowIdx,
+      },
+      ...blocks.slice(indicator.blockIdx + 1),
+    ]);
+    setIndicator({
+      ...indicator,
+      blockIdx: indicator.blockIdx + 1,
+      blockAccumulatedRows: indicator.rowIdx,
+    });
+
+    setMenuPosition(undefined);
+  }, [
+    blocks,
+    indicator,
+    setBlocks,
+    setIndicator,
+    setIsProtected,
+    setMenuPosition,
+    setRedoSnapshots,
+    setUndoSnapshots,
+    undoSnapshots,
+  ]);
+
+  const onClickCut = useCallback(() => {
+    handleCut();
+    setMenuPosition(undefined);
+  }, [handleCut, setMenuPosition]);
+
+  const onClickCopy = useCallback(() => {
+    handleCopy();
+    setMenuPosition(undefined);
+  }, [handleCopy, setMenuPosition]);
+
+  const onClickPaste = useCallback(() => {
+    handlePaste();
+    setMenuPosition(undefined);
+  }, [handlePaste, setMenuPosition]);
+
+  const onClickFlipHorizontal = useCallback(() => {
+    handleFlip(true, false);
+    setMenuPosition(undefined);
+  }, [handleFlip, setMenuPosition]);
+
+  const onClickFlipVertical = useCallback(() => {
+    handleFlip(false, true);
+    setMenuPosition(undefined);
+  }, [handleFlip, setMenuPosition]);
+
+  const onClickMirror = useCallback(() => {
+    handleFlip(true, true);
+    setMenuPosition(undefined);
+  }, [handleFlip, setMenuPosition]);
+
+  const onClickDelete = useCallback(() => {
+    handleDelete();
+    setMenuPosition(undefined);
+  }, [handleDelete, setMenuPosition]);
 
   return (
     <Menu
@@ -58,19 +200,13 @@ function ChartIndicatorMenu({ handler }: ChartIndicatorMenuProps) {
             selector.setting !== null ||
             selector.completed !== null
           }
-          onClick={() => {
-            handler.setHold();
-            setMenuPosition(undefined);
-          }}
+          onClick={onClickStartSettingHold}
         >
           Start Setting Hold
         </MenuItem>
         <MenuItem
           disabled={indicator === null || holdSetter !== null}
-          onClick={() => {
-            handler.select();
-            setMenuPosition(undefined);
-          }}
+          onClick={onClickStartSelecting}
         >
           Start Selecting
         </MenuItem>
@@ -81,33 +217,18 @@ function ChartIndicatorMenu({ handler }: ChartIndicatorMenuProps) {
             (indicator !== null &&
               indicator.rowIdx === indicator.blockAccumulatedRows)
           }
-          onClick={() => {
-            handler.split();
-            setMenuPosition(undefined);
-          }}
+          onClick={onClickSplitBlock}
         >
           Split Block
         </MenuItem>
         <Divider />
-        <MenuItem
-          disabled={selector.completed === null}
-          onClick={() => {
-            handleCut();
-            setMenuPosition(undefined);
-          }}
-        >
+        <MenuItem disabled={selector.completed === null} onClick={onClickCut}>
           <ListItemText>Cut</ListItemText>
           <Typography variant="body2" color="text.secondary">
             Ctrl+X
           </Typography>
         </MenuItem>
-        <MenuItem
-          disabled={selector.completed === null}
-          onClick={() => {
-            handleCopy();
-            setMenuPosition(undefined);
-          }}
-        >
+        <MenuItem disabled={selector.completed === null} onClick={onClickCopy}>
           <ListItemText>Copy</ListItemText>
           <Typography variant="body2" color="text.secondary">
             Ctrl+C
@@ -115,10 +236,7 @@ function ChartIndicatorMenu({ handler }: ChartIndicatorMenuProps) {
         </MenuItem>
         <MenuItem
           disabled={indicator === null || clipBoard === null}
-          onClick={() => {
-            handlePaste();
-            setMenuPosition(undefined);
-          }}
+          onClick={onClickPaste}
         >
           <ListItemText>Paste</ListItemText>
           <Typography variant="body2" color="text.secondary">
@@ -128,10 +246,7 @@ function ChartIndicatorMenu({ handler }: ChartIndicatorMenuProps) {
         <Divider />
         <MenuItem
           disabled={selector.completed === null}
-          onClick={() => {
-            handleFlip(true, false);
-            setMenuPosition(undefined);
-          }}
+          onClick={onClickFlipHorizontal}
         >
           <ListItemText>Flip Horizontal</ListItemText>
           <Typography variant="body2" color="text.secondary">
@@ -140,10 +255,7 @@ function ChartIndicatorMenu({ handler }: ChartIndicatorMenuProps) {
         </MenuItem>
         <MenuItem
           disabled={selector.completed === null}
-          onClick={() => {
-            handleFlip(false, true);
-            setMenuPosition(undefined);
-          }}
+          onClick={onClickFlipVertical}
         >
           <ListItemText>Flip Vertical</ListItemText>
           <Typography variant="body2" color="text.secondary">
@@ -152,10 +264,7 @@ function ChartIndicatorMenu({ handler }: ChartIndicatorMenuProps) {
         </MenuItem>
         <MenuItem
           disabled={selector.completed === null}
-          onClick={() => {
-            handleFlip(true, true);
-            setMenuPosition(undefined);
-          }}
+          onClick={onClickMirror}
         >
           <ListItemText>Mirror</ListItemText>
           <Typography variant="body2" color="text.secondary">
@@ -164,10 +273,7 @@ function ChartIndicatorMenu({ handler }: ChartIndicatorMenuProps) {
         </MenuItem>
         <MenuItem
           disabled={selector.completed === null}
-          onClick={() => {
-            handleDelete();
-            setMenuPosition(undefined);
-          }}
+          onClick={onClickDelete}
         >
           <ListItemText>Delete</ListItemText>
           <Typography variant="body2" color="text.secondary">
@@ -179,4 +285,4 @@ function ChartIndicatorMenu({ handler }: ChartIndicatorMenuProps) {
   );
 }
 
-export default memo(ChartIndicatorMenu);
+export default ChartIndicatorMenu;

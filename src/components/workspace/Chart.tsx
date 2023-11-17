@@ -28,7 +28,6 @@ import ChartIndicatorMenu from "../menu/ChartIndicatorMenu";
 import ChartSelector from "./ChartSelector";
 
 function Chart() {
-  const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
   const [indicator, setIndicator] = useRecoilState<Indicator>(indicatorState);
   const [holdSetter, setHoldSetter] =
     useRecoilState<HoldSetter>(holdSetterState);
@@ -39,6 +38,7 @@ function Chart() {
   const [selector, setSelector] = useRecoilState<Selector>(selectorState);
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
+  const blocks = useRecoilValue<Block[]>(blocksState);
   const isPlaying = useRecoilValue<boolean>(isPlayingState);
   const noteSize = useRecoilValue<number>(noteSizeState);
   const zoom = useRecoilValue<Zoom>(zoomState);
@@ -458,90 +458,6 @@ function Chart() {
     ]
   );
 
-  const handleSetHold = useCallback(() => {
-    // インディケーターが非表示/選択領域が表示中の場合はNOP
-    if (
-      indicator === null ||
-      selector.setting !== null ||
-      selector.completed !== null
-    )
-      return;
-
-    // 「Start Setting Hold」を選択したインディケーターの表示パラメーターを用いて、
-    // ホールド設置中の表示パラメーターを保持
-    setHoldSetter({
-      column: indicator.column,
-      isSettingByMenu: true,
-      rowIdx: indicator.rowIdx,
-      top: indicator.top,
-    });
-  }, [indicator, selector.completed, selector.setting, setHoldSetter]);
-
-  const handleSelect = useCallback(() => {
-    // インディケーターが非表示/ホールド設置中の場合はNOP
-    if (indicator === null || holdSetter !== null) return;
-
-    // 「Start Selecting」を選択したインディケーターの表示パラメーターを用いて、選択領域を表示
-    setSelector({
-      completed: null,
-      isSettingByMenu: true,
-      setting: {
-        mouseDownColumn: indicator.column,
-        mouseDownRowIdx: indicator.rowIdx,
-        mouseUpColumn: indicator.column,
-        mouseUpRowIdx: indicator.rowIdx,
-      },
-    });
-  }, [indicator, holdSetter, setSelector]);
-
-  const handleSplit = useCallback(() => {
-    // インディケーターが非表示/譜面のブロックの先頭の行にインディケーターが存在する場合はNOP
-    if (
-      indicator === null ||
-      (indicator !== null &&
-        indicator.rowIdx === indicator.blockAccumulatedRows)
-    )
-      return;
-
-    // 元に戻す/やり直すスナップショットの集合を更新
-    setUndoSnapshots([...undoSnapshots, { blocks, notes: null }]);
-    setRedoSnapshots([]);
-
-    setIsProtected(true);
-
-    // blockIdx番目の譜面のブロックを、(rowIdx- 1)番目以前とrowIdx番目とで分割
-    setBlocks([
-      ...blocks.slice(0, indicator.blockIdx),
-      {
-        ...blocks[indicator.blockIdx],
-        rows: indicator.rowIdx - indicator.blockAccumulatedRows,
-      },
-      {
-        ...blocks[indicator.blockIdx],
-        accumulatedRows: indicator.rowIdx,
-        rows:
-          blocks[indicator.blockIdx].rows +
-          indicator.blockAccumulatedRows -
-          indicator.rowIdx,
-      },
-      ...blocks.slice(indicator.blockIdx + 1),
-    ]);
-    setIndicator({
-      ...indicator,
-      blockIdx: indicator.blockIdx + 1,
-      blockAccumulatedRows: indicator.rowIdx,
-    });
-  }, [
-    blocks,
-    indicator,
-    setBlocks,
-    setIndicator,
-    setIsProtected,
-    setRedoSnapshots,
-    setUndoSnapshots,
-    undoSnapshots,
-  ]);
-
   return (
     <>
       {[...Array(notes.length)].map((_, column: number) => (
@@ -599,13 +515,7 @@ function Chart() {
         </div>
       ))}
       <ChartIndicator />
-      <ChartIndicatorMenu
-        handler={{
-          setHold: handleSetHold,
-          select: handleSelect,
-          split: handleSplit,
-        }}
-      />
+      <ChartIndicatorMenu />
       {selector.setting !== null &&
         selector.setting.mouseUpColumn !== null &&
         selector.setting.mouseUpRowIdx !== null && (
