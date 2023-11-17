@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { Block, Note } from "../types/ucs";
 import {
@@ -142,27 +142,6 @@ function useChartSnapshot() {
     setRedoSnapshots,
     setUndoSnapshots,
   ]);
-
-  // キー入力のイベントリスナーを登録
-  // アンマウント時に上記イベントリスナーを解除
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.ctrlKey) {
-        switch (event.key.toLowerCase()) {
-          case "y":
-            handleRedo();
-            break;
-          case "z":
-            handleUndo();
-            break;
-          default:
-            break;
-        }
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleRedo, handleUndo]);
 
   return { handleRedo, handleUndo };
 }

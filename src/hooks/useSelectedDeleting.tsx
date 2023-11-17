@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
   isProtectedState,
@@ -61,18 +61,6 @@ function useSelectedDeleting() {
     setUndoSnapshots,
     undoSnapshots,
   ]);
-
-  // キー入力のイベントリスナーを登録
-  // アンマウント時に上記イベントリスナーを解除
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Delete") {
-        handleDelete();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleDelete]);
 
   return { handleDelete };
 }

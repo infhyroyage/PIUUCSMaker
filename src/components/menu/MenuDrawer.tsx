@@ -67,6 +67,25 @@ function MenuDrawer() {
     if (zoom.top !== null) scrollTo({ top: zoom.top, behavior: "instant" });
   }, [zoom]);
 
+  // キー入力のイベントリスナーを登録
+  // アンマウント時に上記イベントリスナーを解除
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      switch (event.key.toLowerCase()) {
+        case "y":
+          if (event.ctrlKey) handleRedo();
+          break;
+        case "z":
+          if (event.ctrlKey) handleUndo();
+          break;
+        default:
+          break;
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [handleRedo, handleUndo]);
+
   return (
     <Drawer
       variant="permanent"

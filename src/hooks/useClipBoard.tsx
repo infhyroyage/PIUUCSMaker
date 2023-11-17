@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { Block, Note } from "../types/ucs";
 import { SelectorCompletedCords, Selector } from "../types/chart";
 import { ChartSnapshot } from "../types/ucs";
@@ -171,30 +171,6 @@ function useClipBoard() {
     totalRows,
     undoSnapshots,
   ]);
-
-  // キー入力のイベントリスナーを登録
-  // アンマウント時に上記イベントリスナーを解除
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.ctrlKey) {
-        switch (event.key.toLowerCase()) {
-          case "c":
-            handleCopy();
-            break;
-          case "v":
-            handlePaste();
-            break;
-          case "x":
-            handleCut();
-            break;
-          default:
-            break;
-        }
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleCopy, handleCut, handlePaste]);
 
   return { handleCut, handleCopy, handlePaste };
 }

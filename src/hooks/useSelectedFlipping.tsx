@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
   isProtectedState,
@@ -110,28 +110,6 @@ function useSelectedFlipping() {
       undoSnapshots,
     ]
   );
-
-  // キー入力のイベントリスナーを登録
-  // アンマウント時に上記イベントリスナーを解除
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      switch (event.key.toLowerCase()) {
-        case "m":
-          handleFlip(true, true);
-          break;
-        case "x":
-          handleFlip(true, false);
-          break;
-        case "y":
-          handleFlip(false, true);
-          break;
-        default:
-          break;
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleFlip]);
 
   return { handleFlip };
 }

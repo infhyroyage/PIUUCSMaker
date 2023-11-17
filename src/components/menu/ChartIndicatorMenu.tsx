@@ -25,7 +25,7 @@ import useClipBoard from "../../hooks/useClipBoard";
 import useSelectedFlipping from "../../hooks/useSelectedFlipping";
 import useSelectedDeleting from "../../hooks/useSelectedDeleting";
 import { ChartIndicatorMenuPosition } from "../../types/menu";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 
 function ChartIndicatorMenu() {
   const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
@@ -177,6 +177,44 @@ function ChartIndicatorMenu() {
     handleDelete();
     setMenuPosition(undefined);
   }, [handleDelete, setMenuPosition]);
+
+  // キー入力のイベントリスナーを登録し、アンマウント時に解除
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      switch (event.key.toLowerCase()) {
+        case "c":
+          if (event.ctrlKey) {
+            handleCopy();
+          }
+          break;
+        case "delete":
+          handleDelete();
+          break;
+        case "m":
+          handleFlip(true, true);
+          break;
+        case "v":
+          if (event.ctrlKey) {
+            handlePaste();
+          }
+          break;
+        case "x":
+          if (event.ctrlKey) {
+            handleCut();
+          } else {
+            handleFlip(true, false);
+          }
+          break;
+        case "y":
+          handleFlip(false, true);
+          break;
+        default:
+          break;
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [handleCopy, handleCut, handleDelete, handleFlip, handlePaste]);
 
   return (
     <Menu
