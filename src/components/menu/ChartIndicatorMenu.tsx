@@ -1,11 +1,4 @@
-import {
-  Divider,
-  ListItemText,
-  Menu,
-  MenuItem,
-  MenuList,
-  Typography,
-} from "@mui/material";
+import { Divider, Menu, MenuList } from "@mui/material";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
   chartIndicatorMenuPositionState,
@@ -26,6 +19,7 @@ import useSelectedFlipping from "../../hooks/useSelectedFlipping";
 import useSelectedDeleting from "../../hooks/useSelectedDeleting";
 import { ChartIndicatorMenuPosition } from "../../types/menu";
 import { useCallback, useEffect } from "react";
+import ChartIndicatorMenuItem from "./ChartIndicatorMenuItem";
 
 function ChartIndicatorMenu() {
   const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
@@ -232,92 +226,74 @@ function ChartIndicatorMenu() {
       }}
     >
       <MenuList dense>
-        <MenuItem
+        <ChartIndicatorMenuItem
           disabled={
             indicator === null ||
             selector.setting !== null ||
             selector.completed !== null
           }
+          label="Start Setting Hold"
           onClick={onClickStartSettingHold}
-        >
-          Start Setting Hold
-        </MenuItem>
-        <MenuItem
+        />
+        <ChartIndicatorMenuItem
           disabled={indicator === null || holdSetter !== null}
+          label="Start Selecting"
           onClick={onClickStartSelecting}
-        >
-          Start Selecting
-        </MenuItem>
+        />
         <Divider />
-        <MenuItem
+        <ChartIndicatorMenuItem
           disabled={
             indicator === null ||
             (indicator !== null &&
               indicator.rowIdx === indicator.blockAccumulatedRows)
           }
+          label="Split Block"
           onClick={onClickSplitBlock}
-        >
-          Split Block
-        </MenuItem>
+        />
         <Divider />
-        <MenuItem disabled={selector.completed === null} onClick={onClickCut}>
-          <ListItemText>Cut</ListItemText>
-          <Typography variant="body2" color="text.secondary">
-            Ctrl+X
-          </Typography>
-        </MenuItem>
-        <MenuItem disabled={selector.completed === null} onClick={onClickCopy}>
-          <ListItemText>Copy</ListItemText>
-          <Typography variant="body2" color="text.secondary">
-            Ctrl+C
-          </Typography>
-        </MenuItem>
-        <MenuItem
+        <ChartIndicatorMenuItem
+          disabled={selector.completed === null}
+          label="Cut"
+          keyLabel="Ctrl+X"
+          onClick={onClickCut}
+        />
+        <ChartIndicatorMenuItem
+          disabled={selector.completed === null}
+          label="Copy"
+          keyLabel="Ctrl+C"
+          onClick={onClickCopy}
+        />
+        <ChartIndicatorMenuItem
           disabled={indicator === null || clipBoard === null}
+          label="Paste"
+          keyLabel="Ctrl+V"
           onClick={onClickPaste}
-        >
-          <ListItemText>Paste</ListItemText>
-          <Typography variant="body2" color="text.secondary">
-            Ctrl+V
-          </Typography>
-        </MenuItem>
+        />
         <Divider />
-        <MenuItem
+        <ChartIndicatorMenuItem
           disabled={selector.completed === null}
+          label="Flip Horizontal"
+          keyLabel="X"
           onClick={onClickFlipHorizontal}
-        >
-          <ListItemText>Flip Horizontal</ListItemText>
-          <Typography variant="body2" color="text.secondary">
-            X
-          </Typography>
-        </MenuItem>
-        <MenuItem
+        />
+        <ChartIndicatorMenuItem
           disabled={selector.completed === null}
+          label="Flip Vertical"
+          keyLabel="Y"
           onClick={onClickFlipVertical}
-        >
-          <ListItemText>Flip Vertical</ListItemText>
-          <Typography variant="body2" color="text.secondary">
-            Y
-          </Typography>
-        </MenuItem>
-        <MenuItem
+        />
+        <ChartIndicatorMenuItem
           disabled={selector.completed === null}
+          label="Mirror"
+          keyLabel="M"
           onClick={onClickMirror}
-        >
-          <ListItemText>Mirror</ListItemText>
-          <Typography variant="body2" color="text.secondary">
-            M
-          </Typography>
-        </MenuItem>
-        <MenuItem
+        />
+        <ChartIndicatorMenuItem
           disabled={selector.completed === null}
+          label="Delete"
+          keyLabel=""
           onClick={onClickDelete}
-        >
-          <ListItemText>Delete</ListItemText>
-          <Typography variant="body2" color="text.secondary">
-            Delete
-          </Typography>
-        </MenuItem>
+        />
       </MenuList>
     </Menu>
   );

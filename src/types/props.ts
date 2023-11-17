@@ -41,6 +41,31 @@ export type BorderLineProps = {
 };
 
 /**
+ * ChartIndicatorMenuItemのprops
+ */
+export type ChartIndicatorMenuItemProps = {
+  /**
+   * 非活性の場合はtrue、活性の場合はfalse
+   */
+  disabled?: boolean;
+
+  /**
+   * ラベル
+   */
+  label: string;
+
+  /**
+   * ショートカットキーのラベル
+   */
+  keyLabel?: string;
+
+  /**
+   * 押下時の動作
+   */
+  onClick?: React.MouseEventHandler<HTMLLIElement>;
+};
+
+/**
  * ChartSelectorのprops
  */
 export type ChartSelectorProps = {
@@ -152,7 +177,7 @@ export type ChartVerticalNoteImagesProps = {
  */
 export type MenuDrawerListItemProps = {
   /**
-   * 無効化する場合はtrue、そうでない場合はfalse
+   * 非活性の場合はtrue、活性の場合はfalse
    */
   disabled?: boolean;
 
