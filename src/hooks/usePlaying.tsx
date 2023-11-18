@@ -16,7 +16,7 @@ import { Zoom } from "../types/menu";
 import { Block, Note } from "../types/ucs";
 import { BEAT_BINARY, ZOOM_VALUES } from "../services/assets";
 
-function usePlayingMusic() {
+function usePlaying() {
   const [isUploadingMP3, setIsUploadingMP3] = useState<boolean>(false);
   const [isPlaying, setIsPlaying] = useRecoilState<boolean>(isPlayingState);
   const blocks = useRecoilValue<Block[]>(blocksState);
@@ -348,4 +348,4 @@ function usePlayingMusic() {
   return { isUploadingMP3, onUploadMP3, start, stop };
 }
 
-export default usePlayingMusic;
+export default usePlaying;

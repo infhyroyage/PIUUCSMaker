@@ -36,7 +36,7 @@ import {
   MENU_BAR_HEIGHT,
   MENU_DRAWER_OPENED_WIDTH,
 } from "../../services/styles";
-import usePlayingMusic from "../../hooks/usePlayingMusic";
+import usePlaying from "../../hooks/usePlaying";
 import useUploadingUCS from "../../hooks/useUploadingUCS";
 import useDownloadingUCS from "../../hooks/useDownloadingUCS";
 import MenuDrawerUploadListItem from "./MenuDrawerUploadListItem";
@@ -60,7 +60,7 @@ function MenuDrawer() {
 
   const { isDownloadingUCS, downloadUCS } = useDownloadingUCS();
   const { handleRedo, handleUndo } = useChartSnapshot();
-  const { isUploadingMP3, onUploadMP3, start, stop } = usePlayingMusic();
+  const { isUploadingMP3, onUploadMP3, start, stop } = usePlaying();
   const { isUploadingUCS, onUploadUCS } = useUploadingUCS();
 
   useEffect(() => {
