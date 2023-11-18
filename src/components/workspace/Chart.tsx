@@ -26,6 +26,7 @@ import { ZOOM_VALUES } from "../../services/assets";
 import ChartIndicator from "./ChartIndicator";
 import ChartIndicatorMenu from "../menu/ChartIndicatorMenu";
 import ChartSelector from "./ChartSelector";
+import useVerticalBorderSize from "../../hooks/useVerticalBorderSize";
 
 function Chart() {
   const [indicator, setIndicator] = useRecoilState<Indicator>(indicatorState);
@@ -46,6 +47,8 @@ function Chart() {
   const setRedoSnapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
 
+  const verticalBorderSize = useVerticalBorderSize();
+
   // 各譜面のブロックを設置するトップバーからのy座標の距離(px)を計算
   const blockYDists: number[] = useMemo(
     () =>
@@ -65,12 +68,6 @@ function Chart() {
         []
       ),
     [blocks, noteSize, zoom.idx]
-  );
-
-  // 縦の枠線のサイズ(px)をnoteSizeの0.05倍(偶数に丸めるように切り捨て、最小値は2)として計算
-  const verticalBorderSize = useMemo(
-    () => Math.max(Math.floor(noteSize * 0.025) * 2, 2),
-    [noteSize]
   );
 
   const handleMouseMove = useCallback(

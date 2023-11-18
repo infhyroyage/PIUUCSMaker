@@ -12,6 +12,7 @@ import { Zoom } from "../../types/menu";
 import { ZOOM_VALUES } from "../../services/assets";
 import { IDENTIFIER_WIDTH } from "../../services/styles";
 import { Selector } from "../../types/chart";
+import useVerticalBorderSize from "../../hooks/useVerticalBorderSize";
 
 function ChartSelector() {
   const blocks = useRecoilValue<Block[]>(blocksState);
@@ -21,11 +22,7 @@ function ChartSelector() {
 
   const theme: Theme = useTheme();
 
-  // 縦の枠線のサイズ(px)をnoteSizeの0.05倍(偶数に丸めるように切り捨て、最小値は2)として計算
-  const verticalBorderSize = useMemo(
-    () => Math.max(Math.floor(noteSize * 0.025) * 2, 2),
-    [noteSize]
-  );
+  const verticalBorderSize = useVerticalBorderSize();
 
   // 選択領域の左上の列インデックスを計算(選択領域を表示しない場合はnull)
   const startColumn = useMemo(

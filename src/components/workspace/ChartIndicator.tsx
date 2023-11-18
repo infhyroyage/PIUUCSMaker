@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { Theme, useTheme } from "@mui/material";
 import { IMAGE_BINARIES } from "../../services/assets";
 import { useRecoilValue } from "recoil";
@@ -10,6 +9,7 @@ import {
 } from "../../services/atoms";
 import { Indicator, HoldSetter, Selector } from "../../types/chart";
 import { IDENTIFIER_WIDTH } from "../../services/styles";
+import useVerticalBorderSize from "../../hooks/useVerticalBorderSize";
 
 function ChartIndicator() {
   const holdSetter = useRecoilValue<HoldSetter>(holdSetterState);
@@ -17,13 +17,9 @@ function ChartIndicator() {
   const noteSize = useRecoilValue<number>(noteSizeState);
   const selector = useRecoilValue<Selector>(selectorState);
 
-  // 縦の枠線のサイズ(px)をnoteSizeの0.05倍(偶数に丸めるように切り捨て、最小値は2)として計算
-  const verticalBorderSize = useMemo(
-    () => Math.max(Math.floor(noteSize * 0.025) * 2, 2),
-    [noteSize]
-  );
-
   const theme: Theme = useTheme();
+
+  const verticalBorderSize = useVerticalBorderSize();
 
   return (
     indicator !== null && (

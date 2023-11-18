@@ -6,6 +6,7 @@ import { noteSizeState, zoomState } from "../../services/atoms";
 import { ZOOM_VALUES } from "../../services/assets";
 import { Zoom } from "../../types/menu";
 import { IDENTIFIER_WIDTH } from "../../services/styles";
+import useVerticalBorderSize from "../../hooks/useVerticalBorderSize";
 
 function ChartVerticalNoteImages({
   accumulatedRows,
@@ -18,17 +19,13 @@ function ChartVerticalNoteImages({
   const noteSize = useRecoilValue<number>(noteSizeState);
   const zoom = useRecoilValue<Zoom>(zoomState);
 
+  const verticalBorderSize = useVerticalBorderSize();
+
   // 単ノート/ホールドの始点/ホールドの中間/ホールドの終点が属する
   // 譜面のブロックの1行あたりの高さ(px)を計算
   const unitRowHeight = useMemo(
     () => (2.0 * noteSize * ZOOM_VALUES[zoom.idx]) / split,
     [noteSize, split, zoom.idx]
-  );
-
-  // 縦の枠線のサイズ(px)をnoteSizeの0.05倍(偶数に丸めるように切り捨て、最小値は2)として計算
-  const verticalBorderSize = useMemo(
-    () => Math.max(Math.floor(noteSize * 0.025) * 2, 2),
-    [noteSize]
   );
 
   // 単ノート/ホールドの始点/ホールドの中間/ホールドの終点の譜面全体での行インデックスでの

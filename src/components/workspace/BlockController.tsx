@@ -12,6 +12,7 @@ import { ZOOM_VALUES } from "../../services/assets";
 import { useMemo } from "react";
 import BlockControllerMenu from "../menu/BlockControllerMenu";
 import { IDENTIFIER_WIDTH, MENU_BAR_HEIGHT } from "../../services/styles";
+import useVerticalBorderSize from "../../hooks/useVerticalBorderSize";
 
 function BlockController() {
   const blocks = useRecoilValue<Block[]>(blocksState);
@@ -19,11 +20,7 @@ function BlockController() {
   const noteSize = useRecoilValue<number>(noteSizeState);
   const zoom = useRecoilValue<Zoom>(zoomState);
 
-  // 縦の枠線のサイズ(px)をnoteSizeの0.05倍(偶数に丸めるように切り捨て、最小値は2)として計算
-  const verticalBorderSize = useMemo(
-    () => Math.max(Math.floor(noteSize * 0.025) * 2, 2),
-    [noteSize]
-  );
+  const verticalBorderSize = useVerticalBorderSize();
 
   const maxWidth = useMemo(
     () =>
