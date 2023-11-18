@@ -1,9 +1,12 @@
 import { memo, useMemo } from "react";
-import { IMAGE_BINARIES } from "../../services/assets";
 import { ChartVerticalNoteImagesProps } from "../../types/props";
 import { useRecoilValue } from "recoil";
 import { noteSizeState, zoomState } from "../../services/atoms";
-import { ZOOM_VALUES } from "../../services/assets";
+import {
+  HOLD_BINARIES,
+  NOTE_BINARIES,
+  ZOOM_VALUES,
+} from "../../services/assets";
 import { Zoom } from "../../types/menu";
 import { IDENTIFIER_WIDTH } from "../../services/styles";
 import useVerticalBorderSize from "../../hooks/useVerticalBorderSize";
@@ -37,10 +40,9 @@ function ChartVerticalNoteImages({
 
   switch (type) {
     case "X":
-      // 単ノートの画像
       return (
         <img
-          src={IMAGE_BINARIES[column % 5].note}
+          src={NOTE_BINARIES[column % 5]}
           alt={`note${column % 5}`}
           width={`${noteSize}px`}
           height={`${noteSize}px`}
@@ -59,11 +61,10 @@ function ChartVerticalNoteImages({
         />
       );
     case "M":
-      // ホールドの始点の画像
       return (
         <>
           <img
-            src={IMAGE_BINARIES[column % 5].note}
+            src={NOTE_BINARIES[column % 5]}
             alt={`note${column % 5}`}
             width={`${noteSize}px`}
             height={`${noteSize}px`}
@@ -81,7 +82,7 @@ function ChartVerticalNoteImages({
             }
           />
           <img
-            src={IMAGE_BINARIES[column % 5].hold}
+            src={HOLD_BINARIES[column % 5]}
             alt={`hold${column % 5}`}
             width={`${noteSize}px`}
             height={`${unitRowHeight - noteSize * 0.5}px`}
@@ -101,10 +102,9 @@ function ChartVerticalNoteImages({
         </>
       );
     case "H":
-      // ホールドの画像
       return (
         <img
-          src={IMAGE_BINARIES[column % 5].hold}
+          src={HOLD_BINARIES[column % 5]}
           alt={`hold${column % 5}`}
           width={`${noteSize}px`}
           height={`${unitRowHeight}px`}
@@ -123,11 +123,10 @@ function ChartVerticalNoteImages({
         />
       );
     case "W":
-      // ホールドの終点の画像
       return (
         <>
           <img
-            src={IMAGE_BINARIES[column % 5].hold}
+            src={HOLD_BINARIES[column % 5]}
             alt={`hold${column % 5}`}
             width={`${noteSize}px`}
             height={`${noteSize * 0.5}px`}
@@ -145,7 +144,7 @@ function ChartVerticalNoteImages({
             }
           />
           <img
-            src={IMAGE_BINARIES[column % 5].note}
+            src={NOTE_BINARIES[column % 5]}
             alt={`note${column % 5}`}
             width={`${noteSize}px`}
             height={`${noteSize}px`}

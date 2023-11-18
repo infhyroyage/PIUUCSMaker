@@ -1,5 +1,4 @@
 import { Theme, useTheme } from "@mui/material";
-import { IMAGE_BINARIES } from "../../services/assets";
 import { useRecoilValue } from "recoil";
 import {
   indicatorState,
@@ -10,6 +9,7 @@ import {
 import { Indicator, HoldSetter, Selector } from "../../types/chart";
 import { IDENTIFIER_WIDTH } from "../../services/styles";
 import useVerticalBorderSize from "../../hooks/useVerticalBorderSize";
+import { HOLD_BINARIES, NOTE_BINARIES } from "../../services/assets";
 
 function ChartIndicator() {
   const holdSetter = useRecoilValue<HoldSetter>(holdSetterState);
@@ -29,7 +29,7 @@ function ChartIndicator() {
             {(holdSetter.isSettingByMenu ||
               indicator.rowIdx !== holdSetter.rowIdx) && (
               <img
-                src={IMAGE_BINARIES[indicator.column % 5].note}
+                src={NOTE_BINARIES[indicator.column % 5]}
                 alt={`note${indicator.column % 5}`}
                 width={`${noteSize}px`}
                 height={`${noteSize}px`}
@@ -51,7 +51,7 @@ function ChartIndicator() {
             {indicator.rowIdx !== holdSetter.rowIdx && (
               <>
                 <img
-                  src={IMAGE_BINARIES[indicator.column % 5].hold}
+                  src={HOLD_BINARIES[indicator.column % 5]}
                   alt={`hold${indicator.column % 5}`}
                   width={`${noteSize}px`}
                   height={`${Math.abs(indicator.top - holdSetter.top)}px`}
@@ -72,7 +72,7 @@ function ChartIndicator() {
                   }}
                 />
                 <img
-                  src={IMAGE_BINARIES[indicator.column % 5].note}
+                  src={NOTE_BINARIES[indicator.column % 5]}
                   alt={`note${indicator.column % 5}`}
                   width={`${noteSize}px`}
                   height={`${noteSize}px`}
