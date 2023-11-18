@@ -516,36 +516,7 @@ function Chart() {
       ))}
       <ChartIndicator />
       <ChartIndicatorMenu />
-      {selector.setting !== null &&
-        selector.setting.mouseUpColumn !== null &&
-        selector.setting.mouseUpRowIdx !== null && (
-          <ChartSelector
-            goalColumn={Math.max(
-              selector.setting.mouseDownColumn,
-              selector.setting.mouseUpColumn
-            )}
-            goalRowIdx={Math.max(
-              selector.setting.mouseDownRowIdx,
-              selector.setting.mouseUpRowIdx
-            )}
-            startColumn={Math.min(
-              selector.setting.mouseDownColumn,
-              selector.setting.mouseUpColumn
-            )}
-            startRowIdx={Math.min(
-              selector.setting.mouseDownRowIdx,
-              selector.setting.mouseUpRowIdx
-            )}
-          />
-        )}
-      {selector.completed !== null && (
-        <ChartSelector
-          goalColumn={selector.completed.goalColumn}
-          goalRowIdx={selector.completed.goalRowIdx}
-          startColumn={selector.completed.startColumn}
-          startRowIdx={selector.completed.startRowIdx}
-        />
-      )}
+      <ChartSelector />
     </>
   );
 }

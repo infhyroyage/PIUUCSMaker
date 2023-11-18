@@ -66,31 +66,6 @@ export type ChartIndicatorMenuItemProps = {
 };
 
 /**
- * ChartSelectorのprops
- */
-export type ChartSelectorProps = {
-  /**
-   * 選択領域の右下の列インデックス
-   */
-  goalColumn: number;
-
-  /**
-   * 選択領域の右下の譜面全体での行インデックス
-   */
-  goalRowIdx: number;
-
-  /**
-   * 選択領域の左上の列インデックス
-   */
-  startColumn: number;
-
-  /**
-   * 選択領域の左上の譜面全体での行インデックス
-   */
-  startRowIdx: number;
-};
-
-/**
  * ChartVerticalのprops
  */
 export type ChartVerticalProps = {
