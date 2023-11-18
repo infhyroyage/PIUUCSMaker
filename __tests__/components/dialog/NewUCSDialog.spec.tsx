@@ -6,6 +6,9 @@ import NewUCSDialog from "../../../src/components/dialog/NewUCSDialog";
 import { isOpenedNewUCSDialogState } from "../../../src/services/atoms";
 import { Block, ChartSnapshot, Note } from "../../../src/types/ucs";
 
+const waitForRerender = async () =>
+  new Promise((resolve) => setTimeout(resolve, 0));
+
 const mockSetBlocks = jest.fn();
 const mockSetIsPerformance = jest.fn();
 const mockSetIsProtected = jest.fn();
@@ -68,6 +71,7 @@ describe("NewUCSDialog", () => {
     await userEvent.clear(getByLabelText("UCS File Name"));
     await userEvent.type(getByLabelText("UCS File Name"), "foo");
     await userEvent.click(getByLabelText("Mode"));
+    await waitForRerender();
     await userEvent.click(await findByText("Double Performance"));
     await userEvent.clear(getByLabelText("BPM"));
     await userEvent.type(getByLabelText("BPM"), "123.4567");
@@ -80,6 +84,8 @@ describe("NewUCSDialog", () => {
     await userEvent.clear(getByLabelText("Rows"));
     await userEvent.type(getByLabelText("Rows"), "10");
 
+    await waitForRerender();
+
     await waitFor(() => {
       expect(getByLabelText("UCS File Name")).toHaveValue("foo");
       expect(getByLabelText("Mode")).toHaveTextContent("Double Performance");
@@ -91,7 +97,7 @@ describe("NewUCSDialog", () => {
     });
   });
 
-  it("Render invisibly if CANCEL button is clicked", async () => {
+  it("Rerender invisibly if CANCEL button is clicked", async () => {
     const { getByText, queryByRole } = render(
       <RecoilRoot
         initializeState={({ set }) => {
@@ -104,10 +110,12 @@ describe("NewUCSDialog", () => {
 
     await userEvent.click(getByText("CANCEL"));
 
+    await waitForRerender();
+
     await waitFor(() => expect(queryByRole("dialog")).not.toBeInTheDocument());
   });
 
-  it("Call Recoil setters and render invisibly if CREATE button is clicked with valid inputs", async () => {
+  it("Call Recoil setters and rerender invisibly if CREATE button is clicked with valid inputs", async () => {
     (useSetRecoilState as jest.Mock)
       .mockImplementationOnce(() => mockSetBlocks)
       .mockImplementationOnce(() => mockSetIsPerformance)
@@ -128,6 +136,8 @@ describe("NewUCSDialog", () => {
     );
 
     await userEvent.click(getByText("CREATE"));
+
+    await waitForRerender();
 
     await waitFor(() => {
       expect(mockSetBlocks).toHaveBeenCalledWith<[Block[]]>([
@@ -156,7 +166,7 @@ describe("NewUCSDialog", () => {
     });
   });
 
-  it("Render visibly with errors if CREATE button is clicked with invalid 6 inputs", async () => {
+  it("Rerender visibly with errors if CREATE button is clicked with invalid 6 inputs", async () => {
     const { getByLabelText, getByText, queryByRole } = render(
       <RecoilRoot
         initializeState={({ set }) => {
@@ -179,6 +189,8 @@ describe("NewUCSDialog", () => {
     await userEvent.clear(getByLabelText("Rows"));
     await userEvent.type(getByLabelText("Rows"), "10.5");
     await userEvent.click(getByText("CREATE"));
+
+    await waitForRerender();
 
     await waitFor(() => {
       expect(queryByRole("dialog")).toBeInTheDocument();
