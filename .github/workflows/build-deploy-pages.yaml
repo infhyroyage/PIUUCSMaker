@@ -5,10 +5,10 @@ on:
     branches:
       - main
     paths:
+      - __tests__**
       - .github/workflows/build-deploy-pages.yaml
       - public**
       - src**
-      - .env
       - jest.config.js
       - package*.json
       - tsconfig.json
