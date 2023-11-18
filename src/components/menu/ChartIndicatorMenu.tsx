@@ -18,7 +18,7 @@ import useClipBoard from "../../hooks/useClipBoard";
 import useSelectedFlipping from "../../hooks/useSelectedFlipping";
 import useSelectedDeleting from "../../hooks/useSelectedDeleting";
 import { ChartIndicatorMenuPosition } from "../../types/menu";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect } from "react";
 import ChartIndicatorMenuItem from "./ChartIndicatorMenuItem";
 
 function ChartIndicatorMenu() {
@@ -210,11 +210,6 @@ function ChartIndicatorMenu() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleCopy, handleCut, handleDelete, handleFlip, handlePaste]);
 
-  const isDisabledOtherItem = useMemo(
-    () => selector.completed === null,
-    [selector.completed]
-  );
-
   return (
     <Menu
       anchorReference={menuPosition && "anchorPosition"}
@@ -257,13 +252,13 @@ function ChartIndicatorMenu() {
         />
         <Divider />
         <ChartIndicatorMenuItem
-          disabled={isDisabledOtherItem}
+          disabled={selector.completed === null}
           label="Cut"
           keyLabel="Ctrl+X"
           onClick={onClickCut}
         />
         <ChartIndicatorMenuItem
-          disabled={isDisabledOtherItem}
+          disabled={selector.completed === null}
           label="Copy"
           keyLabel="Ctrl+C"
           onClick={onClickCopy}
@@ -276,25 +271,25 @@ function ChartIndicatorMenu() {
         />
         <Divider />
         <ChartIndicatorMenuItem
-          disabled={isDisabledOtherItem}
+          disabled={selector.completed === null}
           label="Flip Horizontal"
           keyLabel="X"
           onClick={onClickFlipHorizontal}
         />
         <ChartIndicatorMenuItem
-          disabled={isDisabledOtherItem}
+          disabled={selector.completed === null}
           label="Flip Vertical"
           keyLabel="Y"
           onClick={onClickFlipVertical}
         />
         <ChartIndicatorMenuItem
-          disabled={isDisabledOtherItem}
+          disabled={selector.completed === null}
           label="Mirror"
           keyLabel="M"
           onClick={onClickMirror}
         />
         <ChartIndicatorMenuItem
-          disabled={isDisabledOtherItem}
+          disabled={selector.completed === null}
           label="Delete"
           keyLabel="Delete"
           onClick={onClickDelete}
