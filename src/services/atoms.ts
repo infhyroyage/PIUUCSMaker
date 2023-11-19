@@ -9,7 +9,7 @@ import { BlockControllerMenuPosition } from "../types/menu";
 
 /**
  * BlockControllerMenuのメニュー対象の譜面のブロックのインデックス
- * メニューを開いていない場合はnull
+ * BlockControllerMenuのメニューが非表示の場合はnull
  */
 export const blockControllerMenuBlockIdxState = atom<number | null>({
   key: "blockControllerMenuBlockIdx",

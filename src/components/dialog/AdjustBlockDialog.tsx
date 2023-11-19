@@ -62,9 +62,10 @@ function AdjustBlockDialog() {
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
 
   const menuBlock = useMemo(
-    () => (menuBlockIdx ? blocks[menuBlockIdx] : null),
+    () => (menuBlockIdx === null ? null : blocks[menuBlockIdx]),
     [blocks, menuBlockIdx]
   );
+  console.log({ menuBlock, menuBlockIdx });
 
   useEffect(
     () =>

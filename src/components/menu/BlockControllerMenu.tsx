@@ -39,6 +39,11 @@ function BlockControllerMenu() {
 
   const blockNum = useMemo(() => blocks.length, [blocks.length]);
 
+  const onClose = useCallback(() => {
+    setMenuBlockIdx(null);
+    setMenuPosition(undefined);
+  }, [setMenuBlockIdx, setMenuPosition]);
+
   const onClickEdit = useCallback(() => {
     if (menuBlockIdx !== null) {
       setIsOpenedEditBlockDialog(true);
@@ -69,16 +74,15 @@ function BlockControllerMenu() {
             blocks[blocks.length - 1].rows,
         },
       ]);
-      setMenuBlockIdx(null);
-      setMenuPosition(undefined);
+
+      onClose();
     }
   }, [
     blocks,
     menuBlockIdx,
+    onClose,
     setBlocks,
     setIsProtected,
-    setMenuBlockIdx,
-    setMenuPosition,
     setRedoSnapshots,
     setUndoSnapshots,
     undoSnapshots,
@@ -124,17 +128,15 @@ function BlockControllerMenu() {
         )
       );
 
-      setMenuBlockIdx(null);
-      setMenuPosition(undefined);
+      onClose();
     }
   }, [
     blocks,
     menuBlockIdx,
     notes,
+    onClose,
     setBlocks,
     setIsProtected,
-    setMenuBlockIdx,
-    setMenuPosition,
     setNotes,
     setRedoSnapshots,
     setUndoSnapshots,
@@ -160,16 +162,14 @@ function BlockControllerMenu() {
         ...blocks.slice(menuBlockIdx + 1),
       ]);
 
-      setMenuBlockIdx(null);
-      setMenuPosition(undefined);
+      onClose();
     }
   }, [
     blocks,
     menuBlockIdx,
+    onClose,
     setBlocks,
     setIsProtected,
-    setMenuBlockIdx,
-    setMenuPosition,
     setRedoSnapshots,
     setUndoSnapshots,
     undoSnapshots,
@@ -193,16 +193,14 @@ function BlockControllerMenu() {
         ...blocks.slice(menuBlockIdx + 2),
       ]);
 
-      setMenuBlockIdx(null);
-      setMenuPosition(undefined);
+      onClose();
     }
   }, [
     blocks,
     menuBlockIdx,
+    onClose,
     setBlocks,
     setIsProtected,
-    setMenuBlockIdx,
-    setMenuPosition,
     setRedoSnapshots,
     setUndoSnapshots,
     undoSnapshots,
@@ -231,17 +229,15 @@ function BlockControllerMenu() {
       // 譜面のブロックの削除
       setBlocks(blocks.filter((_, idx: number) => idx !== menuBlockIdx));
 
-      setMenuBlockIdx(null);
-      setMenuPosition(undefined);
+      onClose();
     }
   }, [
     blocks,
     menuBlockIdx,
     notes,
+    onClose,
     setBlocks,
     setIsProtected,
-    setMenuBlockIdx,
-    setMenuPosition,
     setNotes,
     setRedoSnapshots,
     setUndoSnapshots,
@@ -253,7 +249,7 @@ function BlockControllerMenu() {
       anchorReference={menuPosition && "anchorPosition"}
       anchorPosition={menuPosition}
       disableRestoreFocus
-      onClose={() => setMenuPosition(undefined)}
+      onClose={onClose}
       open={!!menuPosition}
     >
       <MenuList dense>
