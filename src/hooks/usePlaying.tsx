@@ -84,7 +84,7 @@ function usePlaying() {
 
       // 拡張子チェック
       if (fileList[0].name.split(".").pop() !== "mp3") {
-        setUserErrorMessage("拡張子がmp3ではありません");
+        setUserErrorMessage("Extension is not mp3");
         return;
       }
 
@@ -109,7 +109,7 @@ function usePlaying() {
         .then((decodedAudio: AudioBuffer) => {
           musicAudioBuffer.current = decodedAudio;
           setMp3Name(fileList[0].name);
-          setSuccessMessage(`${fileList[0].name}のアップロードに成功しました`);
+          setSuccessMessage(`${fileList[0].name} was successfully uploaded`);
 
           // 同じMP3ファイルを再アップロードできるように初期化
           event.target.value = "";

@@ -21,7 +21,7 @@ const validate = (content: string): UploadingUCSValidation => {
   if (content.indexOf("\r\n") === -1) {
     return {
       blocks,
-      errMsg: "改行コードがCRLF形式ではありません",
+      errMsg: "Line break code is not CRLF",
       isPerformance: false,
       notes: [],
     };
@@ -37,14 +37,14 @@ const validate = (content: string): UploadingUCSValidation => {
   if (!line) {
     return {
       blocks,
-      errMsg: `ucsファイルの${fileLinesNum}行目以降が記載されていません`,
+      errMsg: `Nothing is written after line ${fileLinesNum} of the ucs file`,
       isPerformance: false,
       notes: [],
     };
   } else if (line !== ":Format=1") {
     return {
       blocks,
-      errMsg: `ucsファイルの${fileLinesNum}行目が不正です`,
+      errMsg: `Line ${fileLinesNum} of the ucs file is invalid`,
       isPerformance: false,
       notes: [],
     };
@@ -56,7 +56,7 @@ const validate = (content: string): UploadingUCSValidation => {
   if (!line) {
     return {
       blocks,
-      errMsg: `ucsファイルの${fileLinesNum}行目以降が記載されていません`,
+      errMsg: `Nothing is written after line ${fileLinesNum} of the ucs file`,
       isPerformance: false,
       notes: [],
     };
@@ -70,7 +70,7 @@ const validate = (content: string): UploadingUCSValidation => {
   ) {
     return {
       blocks,
-      errMsg: `ucsファイルの${fileLinesNum}行目が不正です`,
+      errMsg: `Line ${fileLinesNum} of the ucs file is invalid`,
       isPerformance: false,
       notes: [],
     };
@@ -105,7 +105,7 @@ const validate = (content: string): UploadingUCSValidation => {
   if (!line) {
     return {
       blocks,
-      errMsg: `ucsファイルの${fileLinesNum}行目以降が記載されていません`,
+      errMsg: `Nothing is written after line ${fileLinesNum} of the ucs file`,
       isPerformance,
       notes,
     };
@@ -119,7 +119,7 @@ const validate = (content: string): UploadingUCSValidation => {
         if (rows === 0) {
           return {
             blocks,
-            errMsg: `ucsファイルの${fileLinesNum}行目が不正です`,
+            errMsg: `Line ${fileLinesNum} of the ucs file is invalid`,
             isPerformance,
             notes,
           };
@@ -136,7 +136,7 @@ const validate = (content: string): UploadingUCSValidation => {
       if (line.substring(0, 5) !== ":BPM=") {
         return {
           blocks,
-          errMsg: `ucsファイルの${fileLinesNum}行目が不正です`,
+          errMsg: `Line ${fileLinesNum} of the ucs file is invalid`,
           isPerformance,
           notes,
         };
@@ -145,7 +145,7 @@ const validate = (content: string): UploadingUCSValidation => {
       if (Number.isNaN(bpm)) {
         return {
           blocks,
-          errMsg: `ucsファイルの${fileLinesNum}行目が不正です`,
+          errMsg: `Line ${fileLinesNum} of the ucs file is invalid`,
           isPerformance,
           notes,
         };
@@ -157,14 +157,14 @@ const validate = (content: string): UploadingUCSValidation => {
       if (!line) {
         return {
           blocks,
-          errMsg: `ucsファイルの${fileLinesNum}行目以降が記載されていません`,
+          errMsg: `Nothing is written after line ${fileLinesNum} of the ucs file`,
           isPerformance,
           notes,
         };
       } else if (line.substring(0, 7) !== ":Delay=") {
         return {
           blocks,
-          errMsg: `ucsファイルの${fileLinesNum}行目が不正です`,
+          errMsg: `Line ${fileLinesNum} of the ucs file is invalid`,
           isPerformance,
           notes,
         };
@@ -173,7 +173,7 @@ const validate = (content: string): UploadingUCSValidation => {
       if (Number.isNaN(delay)) {
         return {
           blocks,
-          errMsg: `ucsファイルの${fileLinesNum}行目が不正です`,
+          errMsg: `Line ${fileLinesNum} of the ucs file is invalid`,
           isPerformance,
           notes,
         };
@@ -185,14 +185,14 @@ const validate = (content: string): UploadingUCSValidation => {
       if (!line) {
         return {
           blocks,
-          errMsg: `ucsファイルの${fileLinesNum}行目以降が記載されていません`,
+          errMsg: `Nothing is written after line ${fileLinesNum} of the ucs file`,
           isPerformance,
           notes,
         };
       } else if (line.substring(0, 6) !== ":Beat=") {
         return {
           blocks,
-          errMsg: `ucsファイルの${fileLinesNum}行目が不正です`,
+          errMsg: `Line ${fileLinesNum} of the ucs file is invalid`,
           isPerformance,
           notes,
         };
@@ -201,7 +201,7 @@ const validate = (content: string): UploadingUCSValidation => {
       if (Number.isNaN(beat)) {
         return {
           blocks,
-          errMsg: `ucsファイルの${fileLinesNum}行目が不正です`,
+          errMsg: `Line ${fileLinesNum} of the ucs file is invalid`,
           isPerformance,
           notes,
         };
@@ -213,14 +213,14 @@ const validate = (content: string): UploadingUCSValidation => {
       if (!line) {
         return {
           blocks,
-          errMsg: `ucsファイルの${fileLinesNum}行目以降が記載されていません`,
+          errMsg: `Nothing is written after line ${fileLinesNum} of the ucs file`,
           isPerformance,
           notes,
         };
       } else if (line.substring(0, 7) !== ":Split=") {
         return {
           blocks,
-          errMsg: `ucsファイルの${fileLinesNum}行目が不正です`,
+          errMsg: `Line ${fileLinesNum} of the ucs file is invalid`,
           isPerformance,
           notes,
         };
@@ -229,7 +229,7 @@ const validate = (content: string): UploadingUCSValidation => {
       if (Number.isNaN(split)) {
         return {
           blocks,
-          errMsg: `ucsファイルの${fileLinesNum}行目が不正です`,
+          errMsg: `Line ${fileLinesNum} of the ucs file is invalid`,
           isPerformance,
           notes,
         };
@@ -254,7 +254,7 @@ const validate = (content: string): UploadingUCSValidation => {
     if (block === null) {
       return {
         blocks,
-        errMsg: `ucsファイルの${fileLinesNum}行目が不正です`,
+        errMsg: `Line ${fileLinesNum} of the ucs file is invalid`,
         isPerformance,
         notes,
       };
@@ -264,7 +264,7 @@ const validate = (content: string): UploadingUCSValidation => {
     if (line.length !== columns) {
       return {
         blocks,
-        errMsg: `ucsファイルの${fileLinesNum}行目が不正です`,
+        errMsg: `Line ${fileLinesNum} of the ucs file is invalid`,
         isPerformance,
         notes,
       };
@@ -294,7 +294,7 @@ const validate = (content: string): UploadingUCSValidation => {
         default:
           return {
             blocks,
-            errMsg: `ucsファイルの${fileLinesNum}行目が不正です`,
+            errMsg: `Line ${fileLinesNum} of the ucs file is invalid`,
             isPerformance,
             notes,
           };
@@ -311,7 +311,7 @@ const validate = (content: string): UploadingUCSValidation => {
   if (block === null) {
     return {
       blocks,
-      errMsg: `ucsファイルの${fileLinesNum}行目が不正です`,
+      errMsg: `Line ${fileLinesNum} of the ucs file is invalid`,
       isPerformance,
       notes,
     };
@@ -343,7 +343,7 @@ function useUploadingUCS() {
 
       // 拡張子チェック
       if (fileList[0].name.split(".").pop() !== "ucs") {
-        setUserErrorMessage("拡張子がucsではありません");
+        setUserErrorMessage("Extension is not ucs");
         return;
       }
 
