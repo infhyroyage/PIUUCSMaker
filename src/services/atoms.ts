@@ -187,6 +187,9 @@ export const selectorState = atom<Selector>({
   default: { completed: null, isSettingByMenu: false, setting: null },
 });
 
+/**
+ * SuccessSnackbarで表示するメッセージ
+ */
 export const successMessageState = atom<string>({
   key: "successMessage",
   default: "",
@@ -210,11 +213,18 @@ export const undoSnapshotsState = atom<ChartSnapshot[]>({
   default: [],
 });
 
+/**
+ * UserErrorSnackbarで表示するメッセージ
+ */
 export const userErrorMessageState = atom<string>({
   key: "userErrorMessage",
   default: "",
 });
 
+/**
+ * ビート音・MP3の音楽の音量
+ * 0でミュート、1で最大
+ */
 export const volumeValueState = atom<number>({
   key: "volumeValue",
   default: 0.5,
