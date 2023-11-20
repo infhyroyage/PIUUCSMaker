@@ -65,7 +65,6 @@ function AdjustBlockDialog() {
     () => (menuBlockIdx === null ? null : blocks[menuBlockIdx]),
     [blocks, menuBlockIdx]
   );
-  console.log({ menuBlock, menuBlockIdx });
 
   useEffect(
     () =>
