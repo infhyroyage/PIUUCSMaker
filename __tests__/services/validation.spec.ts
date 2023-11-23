@@ -1,10 +1,22 @@
 import {
+  roundBpm,
   validateBeat,
   validateBpm,
   validateDelay,
   validateRows,
   validateSplit,
 } from "../../src/services/validations";
+
+describe("roundBpm", () => {
+  it("Return the original number if total digits are less than 8", () =>
+    expect(roundBpm(123.4567)).toBe(123.4567));
+
+  it("Round off the decimal if total digits are 8 or more and integer part is less than 7", () =>
+    expect(roundBpm(1.23456789)).toBe(1.234568));
+
+  it("Round up the decimal if total digits are 8 or more and integer part is 7 or more", () =>
+    expect(roundBpm(1234567.89)).toBe(1234568));
+});
 
 describe("validateBeat", () => {
   it("Pass with 1", () => expect(validateBeat("1")).toBe(1));
