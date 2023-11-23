@@ -1,4 +1,16 @@
 /**
+ * 入力したBPM値に対し、整数部と小数部の数値の合計個数が8個以上の場合のみ、最大7個になるように小数点以下を四捨五入する
+ * @param {number} bpm BPM値
+ * @returns {number} 四捨五入したBPM値
+ */
+export const roundBpm = (bpm: number): number =>
+  bpm.toString().replace(".", "").length < 8
+    ? bpm
+    : parseFloat(
+        bpm.toFixed(Math.max(7 - Math.floor(bpm).toString().length, 0))
+      );
+
+/**
  * 指定したBeat値の文字列に対し、有効範囲1〜64の整数値のもとでバリデーションチェック後に変換する
  * @param beatStr Beat値の文字列
  * @returns 変換したBeat値、バリデーションエラーの場合はnull

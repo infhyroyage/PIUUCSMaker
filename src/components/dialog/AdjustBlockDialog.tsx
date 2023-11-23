@@ -27,18 +27,7 @@ import {
 import { Block, Note } from "../../types/ucs";
 import { ChartSnapshot } from "../../types/ucs";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
-
-/**
- * 入力したBPM値に対し、整数部と小数部の数値の合計個数が8個以上の場合のみ、最大7個になるように小数点以下を四捨五入する
- * @param {number} bpm BPM値
- * @returns {number} 四捨五入したBPM値
- */
-const roundBpm = (bpm: number): number =>
-  bpm.toString().replace(".", "").length < 8
-    ? bpm
-    : parseFloat(
-        bpm.toFixed(Math.max(7 - Math.floor(bpm).toString().length, 0))
-      );
+import { roundBpm } from "../../services/validations";
 
 function AdjustBlockDialog() {
   const [fixed, setFixed] = useState<AdjustBlockDialogFormFixed>("bpm");
