@@ -365,7 +365,6 @@ function AdjustBlockDialog() {
                 disabled={
                   fixed === "split" ||
                   form.split > 64 ||
-                  (fixed === "bpm" && form.rows > 64) ||
                   (fixed === "rows" && form.bpm < 0.2)
                 }
                 fullWidth
