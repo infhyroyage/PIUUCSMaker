@@ -93,12 +93,11 @@ function Chart() {
         const blockHeight: number = unitRowHeight * block.rows;
         if (y < blockYDists[idx] + blockHeight) {
           top = y - ((y - blockYDists[idx]) % unitRowHeight);
-          // (top - blockYDists[blockIdx])は必ずunitRowHeightの倍数であるため、
-          // ((top - blockYDists[blockIdx]) / unitRowHeight)は理論上整数値となるが、
-          // 除算時の丸め誤差を取り除くべくMath.floor関数を実行し、rowIdxに必ず整数値を設定する
+          // (top - blockYDists[idx])はunitRowHeightの倍数であるため、((top - blockYDists[idx]) / unitRowHeight)は理論上整数値となるが、
+          // 除算時の丸め誤差を取り除くべくMath.round関数を実行することで、整数値として計算することを必ず保証する
           rowIdx =
             block.accumulatedRows +
-            Math.floor((top - blockYDists[idx]) / unitRowHeight);
+            Math.round((top - blockYDists[idx]) / unitRowHeight);
           return true;
         }
         return false;
