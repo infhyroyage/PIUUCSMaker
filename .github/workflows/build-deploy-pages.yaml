@@ -27,7 +27,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  NODE_VERSION: "16.20.1"
+  NODE_VERSION: "20.10.0"
 
 jobs:
   build:
