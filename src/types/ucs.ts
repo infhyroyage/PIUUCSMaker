@@ -1,108 +1,114 @@
 /**
- * 譜面のブロック
+ * Chart block
  */
 export type Block = {
   /**
-   * 以前までの譜面のブロックの行数の総和
-   * 0番目の譜面のブロックの場合は0
+   * Total numbers of rows in each chart block before this one
+   * 0 if this chart block is first
    */
   accumulatedRows: number;
 
   /**
-   * Beat値
+   * Beat
    */
   beat: number;
 
   /**
-   * BPM値
+   * BPM
    */
   bpm: number;
 
   /**
-   * Delay値(ms単位)
+   * Delay(ms)
    */
   delay: number;
 
   /**
-   * 行数
+   * A number of rows
    */
   rows: number;
 
   /**
-   * Split値
+   * Split
    */
   split: number;
 };
 
 /**
- * 譜面のブロック/単ノート/ホールドの始点/ホールドの中間/ホールドの終点の編集直前のスナップショット
+ * Snapshot just before editing of the chart block, single note, starting point of hold, setting point of hold or end point of hold
  */
 export type ChartSnapshot = {
   /**
-   * 編集直前のblocksStateで管理する値(Block[])
-   * 編集前後で変更しない場合はnull
+   * State managed by blocksState just before editing
+   * null if there is no difference between before and after editing
    */
   blocks: Block[] | null;
 
   /**
-   * 編集直前のnotesStateで管理する値(Note[][])
-   * 編集前後で変更しない場合はnull
+   * State managed by notesState just before editing
+   * null if there is no difference between before and after editing
    */
   notes: Note[][] | null;
 };
 
 /**
- * 選択領域に含まれるCopiedNoteの集合をコピーできるクリップボード
- * 1度もコピーしていない場合はnull
+ * Clipboard to copy and paste a set of single note, starting point of hold, setting point of hold or end point of hold included in the selection area
+ * null if nothing has ever been copied
  */
 export type ClipBoard = null | {
   /**
-   * コピー時の選択領域の列の長さ
+   * Length of column of the selection area when copying
    */
   columnLength: number;
 
   /**
-   * CopiedNoteの集合
+   * A set of single note, starting point of hold, setting point of hold or end point of hold
    */
   copiedNotes: CopiedNote[];
 
   /**
-   * コピー時の選択領域の行の長さ
+   * Length of row of the selection area when copying
    */
   rowLength: number;
 };
 
 /**
- * コピー時の単ノート/ホールドの始点/ホールドの中間/ホールドの終点
+ * Single note, starting point of hold, setting point of hold or end point of hold when copying
  */
 export type CopiedNote = {
   /**
-   * コピー時の選択領域の左上からの列インデックスの増分
+   * Increment of column index at top left of the selection area when copying
    */
   deltaColumn: number;
 
   /**
-   * コピー時の選択領域の左上からの譜面全体での行インデックスの増分
+   * Increment of row index in the entire chart at top left of the selection area when copying
    */
   deltaRowIdx: number;
 
   /**
-   * 単ノートの場合はX、ホールドの始点の場合はM、ホールドの中間の場合はH、ホールドの終点の場合はW
+   * X for a single note,
+   * M for a starting point of hold,
+   * H for a setting point of hold,
+   * W for an end point of hold
    */
   type: "X" | "M" | "H" | "W";
 };
 
 /**
- * 単ノート/ホールドの始点/ホールドの中間/ホールドの終点
+ * Single note, starting point of hold, setting point of hold or end point of hold
  */
 export type Note = {
   /**
-   * 譜面全体での行インデックス
+   * Row index in the entire chart
    */
   rowIdx: number;
 
   /**
-   * 単ノートの場合はX、ホールドの始点の場合はM、ホールドの中間の場合はH、ホールドの終点の場合はW
+   * X for a single note,
+   * M for a starting point of hold,
+   * H for a setting point of hold,
+   * W for an end point of hold
    */
   type: "X" | "M" | "H" | "W";
 };

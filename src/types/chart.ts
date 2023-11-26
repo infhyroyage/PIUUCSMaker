@@ -1,134 +1,132 @@
 /**
- * ホールド設置中の表示パラメーター
- * ホールド設置中ではない場合はnull
+ * Display parameter when setting a hold
+ * null if not setting a hold
  */
 export type HoldSetter = null | {
   /**
-   * ホールド設置開始地点での列インデックス
+   * Column index at the starting point of hold setting
    */
   column: number;
 
   /**
-   * ChartIndicatorMenuの「Starting Setting Hold」からホールド設置を開始する場合はtrue、
-   * ドラッグアンドドロップ操作からホールド設置を開始する場合はfalse
+   * true if starting to set a hold from "Starting Setting Hold" of ChartIndicatorMenu,
+   * otherwise false
    */
   isSettingByMenu: boolean;
 
   /**
-   * ホールド設置開始地点での譜面全体での行のインデックス
+   * Row index in the entire chart at the starting point of hold setting
    */
   rowIdx: number;
 
   /**
-   * ホールド設置開始地点での行のtop値(px)
+   * Top (px) at the row of the starting point of hold setting
    */
   top: number;
 };
 
 /**
- * インディケーターの表示パラメーター
- * インディケーター非表示の場合はnull
+ * Display parameter of indicator
+ * null if the indicator is not displayed
  */
 export type Indicator = null | {
   /**
-   * インディケーターの示す譜面のブロックから以前までの譜面のブロックの行数の総和
+   * Total numbers of rows in each chart block before the one indicated by the indicator
    */
   blockAccumulatedRows: number;
 
   /**
-   * インディケーターの示す譜面のブロックのインデックス
+   * Index of the chart block indicated by the indicator
    */
   blockIdx: number;
 
   /**
-   * インディケーターの列インデックス
+   * Column index indicated by the indicator
    */
   column: number;
 
   /**
-   * インディケーターの示す譜面全体での行のインデックス
+   * Row index in the entire chart indicated by the indicator
    */
   rowIdx: number;
 
   /**
-   * インディケーターのtop値(px)
+   * Top (px) of the indicator
    */
   top: number;
 };
 
 /**
- * 選択領域の表示パラメーター
+ * Display parameter of the selection area
  */
 export type Selector = {
   /**
-   * 選択領域入力後のマウスの各座標
-   * 選択領域未入力/入力時の場合はnull
+   * Coordinates after inputting the selection area
+   * null if the selection area is not inputted or inputting
    */
   completed: null | SelectorCompletedCords;
 
   /**
-   * ChartIndicatorMenuの「Starting Selecting」からの選択領域入力中の場合はtrue、
-   * 選択領域未入力/入力済の場合や、Shiftキー入力したままドラッグアンドドロップ操作からの選択領域入力中の場合はfalse
+   * true if inputting the selection area from "Starting Selecting" of ChartIndicatorMenu,
+   * otherwise false
    */
   isSettingByMenu: boolean;
 
   /**
-   * 選択領域の入力時のマウスの各座標
-   * 選択領域未入力/入力済の場合はnull
+   * Coordinates at the beginning and during input of the selection area
+   * null if the selection area is not inputted or already inputted
    */
   setting: null | SelectorSettingCords;
 };
 
 /**
- * 選択領域入力後の座標を構成するパラメーター
+ * Coordinates after inputting the selection area
  */
 export type SelectorCompletedCords = {
   /**
-   * 選択領域の右下の列インデックス
+   * Column index at the bottom right of the selection area
    */
   goalColumn: number;
 
   /**
-   * 選択領域の右下の譜面全体での行インデックス
+   * Row index in the entire chart at the bottom right of the selection area
    */
   goalRowIdx: number;
 
   /**
-   * 選択領域の左上の列インデックス
+   * Column index at the top left of the selection area
    */
   startColumn: number;
 
   /**
-   * 選択領域の左上の譜面全体での行インデックス
+   * Row index in the entire chart at the top left of the selection area
    */
   startRowIdx: number;
 };
 
 /**
- * 選択領域の入力開始時・入力時のマウスの座標を構成するパラメーター
+ * Coordinates at the beginning and during input of the selection area
  */
 export type SelectorSettingCords = {
   /**
-   * 選択領域の入力開始時のマウスの座標での列インデックス
-   * Single/SinglePerformance譜面の場合は0〜4、Double/DoublePerformance譜面の場合は0〜9
+   * Column index at the beginning input of selection area
    */
   mouseDownColumn: number;
 
   /**
-   * 選択領域の入力開始時のマウスの座標での譜面全体での行インデックス
+   * Row index in the entire chart at the beginning input of selection area
    */
   mouseDownRowIdx: number;
 
   /**
-   * 選択領域の入力時のマウスの座標での列インデックス
-   * Single/SinglePerformance譜面の場合は0〜4、Double/DoublePerformance譜面の場合は0〜9
-   * 選択領域の入力時にマウスの座標が譜面から外れた場合はnull
+   * Column index during input of the selection area
+   * null if the mouse coordinate is out of the chart during input of the selection area
    */
   mouseUpColumn: number | null;
 
   /**
-   * 選択領域の入力時のマウスの座標での譜面全体での行インデックス
-   * 選択領域の入力時にマウスの座標が譜面から外れた場合はnull
+   * Row index in the entire chart during input of the selection area
+   * null if the mouse coordinate is out of the chart during input of the selection area
    */
   mouseUpRowIdx: number | null;
 };

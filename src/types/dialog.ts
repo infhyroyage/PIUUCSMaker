@@ -1,32 +1,32 @@
 import { Block, Note } from "./ucs";
 
 /**
- * AdjustBlockDialogの入力フォーム
+ * Form of AdjustBlockDialog
  */
 export type AdjustBlockDialogForm = {
   /**
-   * BPM値
+   * BPM
    */
   bpm: number;
 
   /**
-   * 行数
+   * A number of rows
    */
   rows: number;
 
   /**
-   * Split値
+   * Split
    */
   split: number;
 };
 
 /**
- * AdjustBlockDialogの入力フォームで1つだけ固定するパラメーター名
+ * Fixed name of only one in the form of AdjustBlockDialog
  */
 export type AdjustBlockDialogFormFixed = "bpm" | "rows" | "split";
 
 /**
- * EditBlockDialogでバリデーションエラーが発生したテキストボックスのラベル
+ * Label with validation error in EditBlockDialog
  */
 export type EditBlockDialogError =
   | "Beat"
@@ -36,37 +36,37 @@ export type EditBlockDialogError =
   | "Split";
 
 /**
- * EditBlockDialogの入力フォーム
+ * Form of EditBlockDialog
  */
 export type EditBlockDialogForm = {
   /**
-   * Beat値の文字列
+   * String of Beat
    */
   beat: string;
 
   /**
-   * BPM値の文字列
+   * String of BPM
    */
   bpm: string;
 
   /**
-   * Delay値の文字列
+   * String of delay
    */
   delay: string;
 
   /**
-   * 行数の文字列
+   * String of a number of rows
    */
   rows: string;
 
   /**
-   * Split値の文字列
+   * String of split
    */
   split: string;
 };
 
 /**
- * NewUCSDialogでバリデーションエラーが発生したテキストボックスのラベル
+ * Label with validation error in NewUCSDialog
  */
 export type NewUCSDialogError =
   | "Beat"
@@ -77,26 +77,26 @@ export type NewUCSDialogError =
   | "UCS File Name";
 
 /**
- * NewUCSDialogの入力フォーム
+ * Form of NewUCSDialog
  */
 export type NewUCSDialogForm = {
   /**
-   * Beat値の文字列
+   * String of beat
    */
   beat: string;
 
   /**
-   * BPM値の文字列
+   * String of BPM
    */
   bpm: string;
 
   /**
-   * Delay値の文字列
+   * String of delay
    */
   delay: string;
 
   /**
-   * 以下のいずれかの文字列で表現する、譜面のモード
+   * Chart mode indicated as following strings:
    * * Single
    * * SinglePerformance
    * * Double
@@ -105,44 +105,45 @@ export type NewUCSDialogForm = {
   mode: string;
 
   /**
-   * 行数の文字列
+   * String of a number of rows
    */
   rows: string;
 
   /**
-   * Split値の文字列
+   * String of split
    */
   split: string;
 
   /**
-   * ucsファイル名(拡張子抜き)
+   * UCS file name except a extension
    */
   ucsName: string;
 };
 
 /**
- * useUploadingUCSでのバリデーション値
+ * Validation value in useUploadingUCS
  */
 export type UploadingUCSValidation = {
   /**
-   * 譜面のブロックの集合
+   * A set of chart block
    */
   blocks: Block[];
 
   /**
-   * バリデーションエラー時のエラーメッセージ
-   * バリデーションエラーでない場合はnull
+   * Error message of validation check
+   * null if validation check is valid
    */
   errMsg: string | null;
 
   /**
-   * SinglePerformance/DoublePerformance譜面の場合はtrue、Single/Double譜面の場合はfalse
+   * true if chart is single performance or double performance,
+   * false if chart is single or double
    */
   isPerformance: boolean;
 
   /**
-   * 単ノート/ホールドの始点/ホールドの中間/ホールドの終点の集合
-   * 第1インデックスの要素数は列数(Single/SinglePerformance譜面の場合は5、Double/DoublePerformance譜面の場合は10)と一致
+   * A set of single note, starting point of hold, setting point of hold or end point of hold,
+   * whose the first index matches the number of columns (5 if chart is single or single performance, 10 if chart is double or double performance)
    */
   notes: Note[][];
 };

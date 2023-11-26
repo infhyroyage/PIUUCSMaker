@@ -1,208 +1,214 @@
 import { Note } from "./ucs";
 
 /**
- * BlockControllerButtonのprops
+ * Props of BlockControllerButton
  */
 export type BlockControllerButtonProps = {
   /**
-   * 譜面のブロックの高さ(px)
+   * Height (px) of chart block
    */
   blockHeight: number;
 
   /**
-   * 譜面のブロックのインデックス
+   * Index of chart block
    */
   blockIdx: number;
 
   /**
-   * 全譜面のブロックのうち自身が最後の場合はtrue、そうでない場合はfalse
+   * true if this chart block is last, otherwise false
    */
   isLastBlock: boolean;
 
   /**
-   * ボタンのテキスト(1段落目)
+   * First paragraph of text
    */
   textFirst: string;
 
   /**
-   * ボタンのテキスト(2段落目)
+   * Second paragraph of text
    */
   textSecond: string;
 };
 
 /**
- * BorderLineのprops
+ * Props of BorderLine
  */
 export type BorderLineProps = {
   /**
-   * インラインスタイル
+   * Inline style
    */
   style?: React.CSSProperties;
 };
 
 /**
- * ChartIndicatorMenuItemのprops
+ * Props of ChartIndicatorMenuItem
  */
 export type ChartIndicatorMenuItemProps = {
   /**
-   * 非活性の場合はtrue、活性の場合はfalse
+   * true if item is inactive, false if one is active
    */
   disabled?: boolean;
 
   /**
-   * ラベル
+   * Label
    */
   label: string;
 
   /**
-   * ショートカットキーのラベル
+   * Label of keyboard shortcut
    */
   keyLabel?: string;
 
   /**
-   * 押下時の動作
+   * Action when clicking a item
    */
   onClick?: React.MouseEventHandler<HTMLLIElement>;
 };
 
 /**
- * ChartVerticalのprops
+ * Props of ChartVertical
  */
 export type ChartVerticalProps = {
   /**
-   * 各譜面のブロックを設置するトップバーからのy座標の距離(px)
+   * Distances (px) of y-coordinate between MenuBar and each chart block
    */
   blockYDists: number[];
 
   /**
-   * 列インデックス
-   * Single/SinglePerformance譜面の場合は0〜4、Double/DoublePerformance譜面の場合は0〜9
+   * Column index
+   * 0, 1, ..., 4 if chart is single or single performance,
+   * 0, 1, ..., 10 if chart is double or double performance
    */
   column: number;
 
   /**
-   * 列インデックスcolumnにおける、単ノート/ホールドの始点/ホールドの中間/ホールドの終点の集合
+   * A set of single note, starting point of hold, setting point of hold or end point of hold at column index
    */
   notes: Note[];
 };
 
 /**
- * ChartVerticalRectanglesのprops
+ * Props of ChartVerticalRectangles
  */
 export type ChartVerticalRectanglesProps = {
   /**
-   * 全譜面のブロックのうち自身が偶数番目の場合はtrue、奇数番目の場合はfalse
+   * true if the index of this chart block is even, otherwise false
    */
   isEven: boolean;
 
   /**
-   * 全譜面のブロックのうち自身が最後の場合はtrue、そうでない場合はfalse
+   * true if this chart block is last, otherwise false
    */
   isLastBlock: boolean;
 
   /**
-   * 譜面のブロックの行数
+   * A number of rows of chart block
    */
   rows: number;
 
   /**
-   * 譜面のブロックのSplit値
+   * Split of chart block
    */
   split: number;
 };
 
 /**
- * ChartVerticalNoteImagesのprops
+ * Props of ChartVerticalNoteImages
  */
 export type ChartVerticalNoteImagesProps = {
   /**
-   * 単ノート/ホールドの始点/ホールドの中間/ホールドの終点が属する譜面のブロック以前までの譜面のブロックの行数の総和
+   * Total numbers of rows in each chart block before one included this single note, starting point of hold, setting point of hold or end point of hold
    */
   accumulatedRows: number;
 
   /**
-   * 単ノート/ホールドの始点/ホールドの中間/ホールドの終点が属する譜面のブロックを設置するトップバーからのy座標の距離(px)
+   * Distance (px) of y-coordinate between MenuBar and chart block included this single note, starting point of hold, setting point of hold or end point of hold
    */
   blockYDist: number;
 
   /**
-   * 列インデックス
-   * Single/SinglePerformance譜面の場合は0〜4、Double/DoublePerformance譜面の場合は0〜9
+   * Column index
+   * 0, 1, ..., 4 if chart is single or single performance,
+   * 0, 1, ..., 10 if chart is double or double performance
    */
   column: number;
 
   /**
-   * 単ノート/ホールドの始点/ホールドの中間/ホールドの終点の譜面全体での行インデックス
+   * Row index in the entire chart
    */
   rowIdx: number;
 
   /**
-   * 単ノート/ホールドの始点/ホールドの中間/ホールドの終点が属する譜面のブロックのSplit値
+   * Split of chart block included this single note, starting point of hold, setting point of hold or end point of hold
    */
   split: number;
 
   /**
-   * 単ノートの場合はX、ホールドの始点の場合はM、ホールドの中間の場合はH、ホールドの終点の場合はW
+   * X for a single note,
+   * M for a starting point of hold,
+   * H for a setting point of hold,
+   * W for an end point of hold
    */
   type: "X" | "M" | "H" | "W";
 };
 
 /**
- * MenuDrawerListItemのprops
+ * Props of MenuDrawerListItem
  */
 export type MenuDrawerListItemProps = {
   /**
-   * 非活性の場合はtrue、活性の場合はfalse
+   * true if item is inactive, false if one is active
    */
   disabled?: boolean;
 
   /**
-   * アイコンのコンポーネント
+   * Icon component
    */
   icon: React.ReactNode;
 
   /**
-   * ラベル
+   * Label
    */
   label: string;
 
   /**
-   * 押下時の動作
+   * Action when clicking a item
    */
   onClick?: React.MouseEventHandler<HTMLDivElement>;
 };
 
 /**
- * MenuDrawerUploadListItemのprops
+ * Props of MenuDrawerUploadListItem
  */
 export type MenuDrawerUploadListItemProps = {
   /**
-   * 無効化する場合はtrue、そうでない場合はfalse
+   * true if item is inactive, false if one is active
    */
   disabled?: boolean;
 
   /**
-   * inputタグのacceptに設定するアップロードに有効な拡張子(冒頭に.を入れること)
+   * Upload activated extension set at accept attribute of input DOM
+   * Note that the prefix must be "."
    */
   extension?: string;
 
   /**
-   * アイコンのコンポーネント
+   * Icon component
    */
   icon: React.ReactNode;
 
   /**
-   * inputタグのidに設定するid名
+   * ID set at id attribute of input DOM
    */
   id: string;
 
   /**
-   * ラベル
+   * Label
    */
   label: string;
 
   /**
-   * 押下時の動作
+   * Action when clicking a item
    */
   onChange: React.ChangeEventHandler<HTMLInputElement>;
 };
