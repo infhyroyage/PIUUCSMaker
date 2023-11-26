@@ -36,8 +36,6 @@ function usePlaying() {
   const musicAudioBuffer = useRef<AudioBuffer | null>(null);
   const beatSourceNode = useRef<AudioBufferSourceNode | null>(null);
   const musicSourceNode = useRef<AudioBufferSourceNode | null>(null);
-  const previousScrollTime = useRef<number>(0);
-  const currentScrollTime = useRef<number>(0);
 
   const start = () => {
     // beat.wavをデコードして読み込んでいない場合は読み込んでおく
@@ -140,7 +138,7 @@ function usePlaying() {
   useEffect(() => {
     if (!isPlaying) return;
 
-    // 自動スクロールスタート地点でのブラウザの画面のy座標を初期化
+    // スクロール開始地点でのブラウザの画面のy座標を初期化
     // 現在のブラウザの画面が最上部以外の場合はそのy座標とし、最上部の場合は0番目の譜面のブロックのDelayが正の場合において
     // ビート音を再生するまでの時間を遅延する必要があるため、その分だけブラウザの画面のy座標を減算する
     let top: number =
@@ -155,18 +153,25 @@ function usePlaying() {
           60000
         : 0;
 
-    // ビート音を再生するタイミング・下へスクロールする速度(px/ms)が変化するタイミングでのブラウザの画面のy座標、
-    // および、現在のブラウザの画面のy座標に応じた自動スクロール経過時間(秒)を計算
-    let verocity: number = -1;
+    // アニメーション実行時に参照する以下のパラメーターをまとめて計算する
+    // * beatTimes      : ブラウザの画面の最上部でアニメーションを開始してから各ビート音を再生を開始するまでの時間(ms)
+    // * borders        : 下へスクロールする速度(px/ms)が変化するタイミングでのブラウザの画面のy座標
+    // * verocities     : 上記タイミングにおけるスクロール速度(px/ms)
+    // * timestampOffset: 現在のブラウザの画面のy座標におけるアニメーション経過時間(ms)
+    // なお、0番目の譜面のブロックのDelayが正の場合はビート音を再生するタイミングを遅延させ、
+    // 負の場合はMP3の音楽を再生するタイミングを遅延させるようbeatTimesとtimestampOffsetを計算する
+    let accumulatedBeatTime: number = Math.max(blocks[0].delay, 0);
     let border: number = 0;
-    type ScrollParam = {
-      beatTops: number[];
-      verocities: { verocity: number; border: number }[];
-      elapsedMusicTime: number;
+    let verocity: number = -1;
+    type AnimationParam = {
+      beatTimes: number[];
+      borders: number[];
+      verocities: number[];
+      timestampOffset: number;
     };
-    const scrollParam: ScrollParam = blocks.reduce(
-      (prev: ScrollParam, block: Block, blockIdx: number) => {
-        // 各譜面のブロックの1行あたりの高さ(px)を計算
+    const animationParam: AnimationParam = blocks.reduce(
+      (prev: AnimationParam, block: Block, blockIdx: number) => {
+        // 譜面のブロックの1行あたりの高さ(px)を計算
         const unitRowHeight: number =
           (2.0 * noteSize * ZOOM_VALUES[zoom.idx]) / block.split;
 
@@ -181,149 +186,176 @@ function usePlaying() {
             )
             .map((note: Note) => note.rowIdx)
         );
-        // ビート音を再生するタイミングでのブラウザの画面のy座標をまとめて追加
-        const tops: number[] = [
+        // ブラウザの画面の最上部でアニメーションを開始してからビート音を再生を開始するまでの時間(ms)をそれぞれ計算
+        const beatTimes: number[] = [
           ...new Set<number>(filteredStarts.flat()), // 平滑化して重複排除
         ]
           .sort((a: number, b: number) => a - b) // 譜面全体での行のインデックスを昇順にソート
           .map(
             (rowIdx: number) =>
-              border + unitRowHeight * (rowIdx - block.accumulatedRows)
-          );
-        prev.beatTops = prev.beatTops.concat(tops);
+              accumulatedBeatTime +
+              (60000 * (rowIdx - block.accumulatedRows)) /
+                (block.bpm * block.split)
+          ); // 自動スクロール時間の計算
+        prev.beatTimes = prev.beatTimes.concat(beatTimes);
 
         // 開始地点からの下へスクロールする速度(px/ms)を計算し、
-        // その速度が変化するブラウザの画面のy座標を追加
+        // その速度が変化するブラウザの画面のy座標と、変化前のスクロール速度を追加
         const blockVerocity: number =
           (2.0 * noteSize * ZOOM_VALUES[zoom.idx] * block.bpm) / 60000;
         if (blockVerocity !== verocity) {
           if (blockIdx > 0) {
-            prev.verocities.push({ verocity, border });
+            prev.borders.push(border);
+            prev.verocities.push(verocity);
           }
           verocity = blockVerocity;
         }
 
-        //自動スクロール経過時間(秒)を現在のブラウザの画面のy座標に応じて追加
+        // 自動スクロール経過時間(ms)を必要に応じてインクリメント
+        if (
+          blockIdx === 0 &&
+          document.documentElement.scrollTop > 0 &&
+          block.delay > 0
+        ) {
+          prev.timestampOffset += block.delay;
+        }
         if (
           border + unitRowHeight * block.rows <
           document.documentElement.scrollTop
         ) {
-          prev.elapsedMusicTime +=
-            (unitRowHeight * block.rows) / (blockVerocity * 1000);
+          prev.timestampOffset +=
+            (60000 * block.rows) / (block.bpm * block.split);
         } else if (border < document.documentElement.scrollTop) {
-          prev.elapsedMusicTime +=
-            (document.documentElement.scrollTop - border) /
-            (blockVerocity * 1000);
+          prev.timestampOffset +=
+            (30000 * (document.documentElement.scrollTop - border)) /
+            (noteSize * ZOOM_VALUES[zoom.idx] * block.bpm);
         }
 
-        // 譜面のブロックの1行あたりの高さ(px)をインクリメント
+        // 以下を譜面のブロック単位でインクリメント
+        // * ブラウザの画面のy座標(px)
+        // * 自動スクロール時間(ms)
         border += unitRowHeight * block.rows;
+        accumulatedBeatTime += (60000 * block.rows) / (block.bpm * block.split);
 
-        // 最後の譜面のブロックの下へスクロールする速度(px/ms)が変化するブラウザの画面のy座標を追加
+        // 最後の譜面のブロックの下へスクロールする速度(px/ms)が変化するブラウザの画面のy座標とスクロール速度を追加
         if (blockIdx === blocks.length - 1) {
-          prev.verocities.push({ verocity, border });
+          prev.borders.push(border);
+          prev.verocities.push(verocity);
         }
 
         return prev;
       },
-      { elapsedMusicTime: 0, beatTops: [], verocities: [] }
+      { borders: [], verocities: [], beatTimes: [], timestampOffset: 0 }
     );
 
-    // ビート音を再生するタイミング・下へスクロールする速度(px/ms)が変化するタイミングでの
-    // 自動スクロール開始時のインデックスを計算
-    let beatTopIdx: number = scrollParam.beatTops.findIndex(
-      (value: number) => value > document.documentElement.scrollTop
+    // 自動スクロール開始時におけるbeatTimesと、borders/verocitiesのインデックスをそれぞれ計算
+    let beatTimeIdx: number = animationParam.beatTimes.findIndex(
+      (beatTime: number) => beatTime >= animationParam.timestampOffset
     );
-    if (beatTopIdx === -1) {
-      beatTopIdx = scrollParam.beatTops.length;
+    if (beatTimeIdx === -1) {
+      beatTimeIdx = animationParam.beatTimes.length;
     }
-    let verocityIdx: number = scrollParam.verocities.findIndex(
-      (value: { verocity: number; border: number }) =>
-        value.border > document.documentElement.scrollTop
+    let borderVerocityIdx: number = animationParam.borders.findIndex(
+      (border: number) => border > document.documentElement.scrollTop
     );
-    if (verocityIdx === -1) {
-      verocityIdx = scrollParam.verocities.length;
+    if (borderVerocityIdx === -1) {
+      borderVerocityIdx = animationParam.borders.length;
     }
 
-    // MP3ファイルの音楽を再生
-    if (audioContext.current && musicGainNode.current) {
-      musicSourceNode.current = audioContext.current.createBufferSource();
-      musicSourceNode.current.buffer = musicAudioBuffer.current;
-      musicSourceNode.current.connect(musicGainNode.current);
-      musicGainNode.current.connect(audioContext.current.destination);
-      musicSourceNode.current.start(
-        // 0番目の譜面のブロックのDelayが負の場合は、現在のブラウザの画面のy座標に応じた自動スクロール経過時間(秒)に応じて、
-        // MP3ファイルの音楽を再生するまでの時間を遅延する
-        blocks[0].delay < 0 &&
-          blocks[0].delay / 1000 + scrollParam.elapsedMusicTime < 0
-          ? (-1 * blocks[0].delay) / 1000 - scrollParam.elapsedMusicTime
-          : 0,
-        // 現在のブラウザの画面のy座標に応じた自動スクロール経過時間(秒)に応じて、MP3ファイルの音楽を再生するオフセットを設定する
-        scrollParam.elapsedMusicTime > 0 &&
-          blocks[0].delay / 1000 + scrollParam.elapsedMusicTime > 0
-          ? blocks[0].delay / 1000 + scrollParam.elapsedMusicTime
-          : 0
-      );
-    }
+    // MP3ファイルの音楽の再生に必要な以下のパラメーターを計算する
+    // * mp3When  : 再生してから実際に音が鳴るまでの遅延時間(秒)
+    // * mp3Offset: 再生するmp3の音楽内での時刻(秒)
+    const mp3When: number = Math.max(
+      -1 * (animationParam.timestampOffset / 1000) -
+        (blocks[0].delay < 0 ? blocks[0].delay / 1000 : 0),
+      0
+    );
+    const mp3Offset: number = Math.max(
+      animationParam.timestampOffset / 1000 +
+        (blocks[0].delay < 0 ? blocks[0].delay / 1000 : 0),
+      0
+    );
 
-    // 60fpsで自動スクロールを開始
-    const FPS: number = 60;
-    previousScrollTime.current = Date.now();
-    const scrollIntervalId: NodeJS.Timeout = setInterval(() => {
-      if (verocityIdx === scrollParam.verocities.length) {
-        // 最後の譜面のブロックをスクロールし終えたら停止
+    // 最初のスクロール・ビート音再生のアニメーション開始
+    let requestId: number;
+    let startTimestamp: number = 0;
+    let prevTimestamp: number = 0;
+    const animate = (timestamp: number) => {
+      if (borderVerocityIdx === animationParam.verocities.length) {
+        // 最後の譜面のブロックをスクロールし終えたらアニメーション停止
         stop();
       } else {
-        // 最後にスクロールした時刻から現在時刻までのスクロール間の時間(ms)elapsedTimeを計算
-        // この時間は理論上は1000 / FPSと一致するが、実動作上は必ずしも一致しない
-        currentScrollTime.current = Date.now();
-        let elapsedScrollTime: number =
-          currentScrollTime.current - previousScrollTime.current;
-        previousScrollTime.current = currentScrollTime.current;
+        // 最後のアニメーションのみタイムスタンプの初期値を設定
+        if (startTimestamp === 0) {
+          startTimestamp = timestamp;
+        }
+        if (prevTimestamp === 0) {
+          prevTimestamp = timestamp;
+        }
 
-        // スクロール後のブラウザの画面のy座標(px)を計算し、スクロール速度を変更しながら下へスクロール
-        while (verocityIdx < scrollParam.verocities.length) {
-          if (
-            top +
-              scrollParam.verocities[verocityIdx].verocity *
-                elapsedScrollTime <=
-            scrollParam.verocities[verocityIdx].border
-          ) {
-            // スクロール前後で譜面のブロックを跨がらない場合は、スクロール後のブラウザの画面のy座標(px)の計算をして終了
-            top +=
-              scrollParam.verocities[verocityIdx].verocity * elapsedScrollTime;
-            break;
-          } else {
-            // スクロール前後で譜面のブロックを跨ぐ場合は、スクロール速度を変更しながらスクロール後のブラウザの画面のy座標(px)を再計算
-            elapsedScrollTime -=
-              (scrollParam.verocities[verocityIdx].border - top) /
-              scrollParam.verocities[verocityIdx].verocity;
-            top = scrollParam.verocities[verocityIdx].border;
-            verocityIdx += 1;
+        // 最後のアニメーション開始時刻から現在のアニメーション開始時刻までの時間(ms)elapsedTimeを計算
+        // 最初のアニメーションの場合は必ず0となり、以降の処理をバイパスする
+        let elapsedTime: number = timestamp - prevTimestamp;
+        prevTimestamp = timestamp;
+        if (elapsedTime > 0) {
+          // スクロール後のブラウザの画面のy座標(px)を計算し、スクロール速度を変更しながら下へスクロール
+          while (borderVerocityIdx < animationParam.verocities.length) {
+            if (
+              top +
+                animationParam.verocities[borderVerocityIdx] * elapsedTime <=
+              animationParam.borders[borderVerocityIdx]
+            ) {
+              // スクロール前後で譜面のブロックを跨がらない場合は、スクロール後のブラウザの画面のy座標(px)の計算をして終了
+              top += animationParam.verocities[borderVerocityIdx] * elapsedTime;
+              break;
+            } else {
+              // スクロール前後で譜面のブロックを跨ぐ場合は、スクロール速度を変更しながらスクロール後のブラウザの画面のy座標(px)を再計算
+              elapsedTime -=
+                (animationParam.borders[borderVerocityIdx] - top) /
+                animationParam.verocities[borderVerocityIdx];
+              top = animationParam.borders[borderVerocityIdx];
+              borderVerocityIdx += 1;
+            }
           }
-        }
-        window.scrollTo({ top, behavior: "instant" });
+          window.scrollTo({ top, behavior: "instant" });
 
-        // ブラウザの画面のy座標に応じてビート音を再生
-        if (
-          beatTopIdx < scrollParam.beatTops.length &&
-          scrollParam.beatTops[beatTopIdx] <= top &&
-          audioContext.current &&
-          beatGainNode.current
-        ) {
-          beatSourceNode.current = audioContext.current.createBufferSource();
-          beatSourceNode.current.buffer = beatAudioBuffer.current;
-          beatSourceNode.current.connect(beatGainNode.current);
-          beatGainNode.current.connect(audioContext.current.destination);
-          beatSourceNode.current.start();
-          beatTopIdx += 1;
+          // ビート音の再生
+          if (
+            beatTimeIdx < animationParam.beatTimes.length &&
+            animationParam.beatTimes[beatTimeIdx] <=
+              animationParam.timestampOffset + timestamp - startTimestamp &&
+            audioContext.current &&
+            beatGainNode.current
+          ) {
+            beatSourceNode.current = audioContext.current.createBufferSource();
+            beatSourceNode.current.buffer = beatAudioBuffer.current;
+            beatSourceNode.current.connect(beatGainNode.current);
+            beatGainNode.current.connect(audioContext.current.destination);
+            beatSourceNode.current.start();
+            beatTimeIdx += 1;
+          }
+        } else if (audioContext.current && musicGainNode.current) {
+          // 最初のアニメーションでMP3ファイルの音楽を再生する
+          musicSourceNode.current = audioContext.current.createBufferSource();
+          musicSourceNode.current.buffer = musicAudioBuffer.current;
+          musicSourceNode.current.connect(musicGainNode.current);
+          musicGainNode.current.connect(audioContext.current.destination);
+          musicSourceNode.current.start(
+            mp3When > 0 ? mp3When + audioContext.current.currentTime : 0,
+            mp3Offset
+          );
+          audioContext.current.currentTime;
         }
+
+        // 次のスクロール・ビート音再生のアニメーション開始
+        requestId = window.requestAnimationFrame(animate);
       }
-    }, 1000 / FPS);
+    };
+    requestId = window.requestAnimationFrame(animate);
 
     return () => {
-      // 自動スクロールを停止
-      clearInterval(scrollIntervalId);
+      // スクロール・ビート音再生のアニメーションの停止
+      cancelAnimationFrame(requestId);
 
       // ビート音の再生を中断
       if (beatSourceNode.current) {
