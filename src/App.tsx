@@ -24,7 +24,7 @@ function App() {
         palette: {
           mode: isDarkMode ? "dark" : "light",
         },
-        // MUIコンポーネントのz-indexのデフォルト値を一律で1000倍にする
+        // Uniformly increase default z-index scales in MUI by 1000 times
         zIndex: Object.keys(MUI_DEFAULT_Z_INDEX).reduce(
           (accumulator: Record<string, number>, key: string) => {
             accumulator[key] = MUI_DEFAULT_Z_INDEX[key] * 1000;
@@ -36,6 +36,7 @@ function App() {
     [isDarkMode]
   );
 
+  // Activate Google Analytics only in production mode
   useEffect(() => {
     if (process.env.NODE_ENV === "production") {
       ReactGA.initialize("G-XLZYQZ4979");

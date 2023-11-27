@@ -11,7 +11,6 @@ if (root) {
     </RecoilRoot>
   );
 
-  // developmentの場合のみStrictModeを外す
   ReactDOM.createRoot(root).render(
     process.env.NODE_ENV === "development" ? (
       app
