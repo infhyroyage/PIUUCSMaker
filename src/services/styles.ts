@@ -1,20 +1,20 @@
 /**
- * Identifierの横幅(px)
+ * Width (px) of Identifier
  */
 export const IDENTIFIER_WIDTH: number = 36;
 
 /**
- * MenuBarの高さ、および、展開していないMenuDrawerの横幅(px)
+ * Height (px) of MenuBar which corresponds to the wiidth (px) of closed MenuDrawer
  */
 export const MENU_BAR_HEIGHT: number = 48;
 
 /**
- * 展開したMenuDrawerの横幅(px)
+ * Width (px) of opened MenuDrawer
  */
 export const MENU_DRAWER_OPENED_WIDTH = 180;
 
 /**
- * MUIコンポーネントのz-indexのデフォルト値
+ * Default z-index scale in MUI
  * @link https://mui.com/material-ui/customization/z-index
  */
 export const MUI_DEFAULT_Z_INDEX: Record<string, number> = {

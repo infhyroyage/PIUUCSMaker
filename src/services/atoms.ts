@@ -8,8 +8,8 @@ import { ChartIndicatorMenuPosition, Zoom } from "../types/menu";
 import { BlockControllerMenuPosition } from "../types/menu";
 
 /**
- * BlockControllerMenuのメニュー対象の譜面のブロックのインデックス
- * BlockControllerMenuのメニューが非表示の場合はnull
+ * Chart block index opening BlockControllerMenu
+ * null if BlockControllerMenu is invisible
  */
 export const blockControllerMenuBlockIdxState = atom<number | null>({
   key: "blockControllerMenuBlockIdx",
@@ -17,8 +17,8 @@ export const blockControllerMenuBlockIdxState = atom<number | null>({
 });
 
 /**
- * BlockControllerMenuのメニューを開くブラウザの画面の座標
- * BlockControllerMenuのメニューが非表示の場合はundefined
+ * Coordinate of the browser screen opening BlockControllerMenu
+ * undefined if BlockControllerMenu is invisible
  */
 export const blockControllerMenuPositionState =
   atom<BlockControllerMenuPosition>({
@@ -27,7 +27,7 @@ export const blockControllerMenuPositionState =
   });
 
 /**
- * 譜面のブロックの集合
+ * A set of chart block
  */
 export const blocksState = atom<Block[]>({
   key: "blocks",
@@ -35,8 +35,8 @@ export const blocksState = atom<Block[]>({
 });
 
 /**
- * ChartIndicatorMenuのメニューを開くブラウザの画面の座標
- * ChartIndicatorMenuのメニューが非表示の場合はundefined
+ * Coordinate of the browser screen opening ChartIndicatorMenu
+ * undefined if ChartIndicatorMenu is invisible
  */
 export const chartIndicatorMenuPositionState = atom<ChartIndicatorMenuPosition>(
   {
@@ -46,8 +46,8 @@ export const chartIndicatorMenuPositionState = atom<ChartIndicatorMenuPosition>(
 );
 
 /**
- * 選択領域に含まれるCopiedNoteの集合をコピーできるクリップボード
- * 1度もコピーしていない場合はnull
+ * Clipboard to copy and paste a set of single note, starting point of hold, setting point of hold or end point of hold included in the selection area
+ * null if nothing has ever been copied
  */
 export const clipBoardState = atom<ClipBoard>({
   key: "clipBoard",
@@ -55,8 +55,8 @@ export const clipBoardState = atom<ClipBoard>({
 });
 
 /**
- * ホールド設置中の表示パラメーター
- * ホールド設置中ではない場合はnull
+ * Display parameter when setting a hold
+ * null if not setting a hold
  */
 export const holdSetterState = atom<HoldSetter>({
   key: "holdSetter",
@@ -64,8 +64,8 @@ export const holdSetterState = atom<HoldSetter>({
 });
 
 /**
- * インディケーターの表示パラメーター
- * インディケーター非表示の場合はnull
+ * Display parameter of indicator
+ * null if the indicator is not displayed
  */
 export const indicatorState = atom<Indicator>({
   key: "indicator",
@@ -73,7 +73,7 @@ export const indicatorState = atom<Indicator>({
 });
 
 /**
- * ダークモードの場合はtrue、ライトモードの場合はfalse
+ * true for dark mode, false for light mode
  */
 export const isDarkModeState = atom<boolean>({
   key: "isDarkMode",
@@ -81,7 +81,7 @@ export const isDarkModeState = atom<boolean>({
 });
 
 /**
- * AdjustBlockDialogを表示する場合はtrue、表示しない場合はfalse
+ * true if AdjustBlockDialog is visible, otherwise false
  */
 export const isOpenedAdjustBlockDialogState = atom<boolean>({
   key: "isOpenedAdjustBlockDialog",
@@ -89,7 +89,7 @@ export const isOpenedAdjustBlockDialogState = atom<boolean>({
 });
 
 /**
- * EditBlockDialogを表示する場合はtrue、表示しない場合はfalse
+ * true if EditBlockDialog is visible, otherwise false
  */
 export const isOpenedEditBlockDialogState = atom<boolean>({
   key: "isOpenedEditBlockDialog",
@@ -97,7 +97,7 @@ export const isOpenedEditBlockDialogState = atom<boolean>({
 });
 
 /**
- * ビート音をミュートにしている場合はtrue、そうではない場合はfalse
+ * true if beat sound is mute, otherwise false
  */
 export const isMuteBeatsState = atom<boolean>({
   key: "isMuteBeats",
@@ -105,7 +105,7 @@ export const isMuteBeatsState = atom<boolean>({
 });
 
 /**
- * MenuDrawerを展開する場合はtrue、展開しない場合はfalse
+ * true if MenuDrawer is expanded, otherwise false
  */
 export const isOpenedMenuDrawerState = atom<boolean>({
   key: "isOpenedMenuDrawer",
@@ -113,7 +113,7 @@ export const isOpenedMenuDrawerState = atom<boolean>({
 });
 
 /**
- * NewUCSDialogを表示する場合はtrue、表示しない場合はfalse
+ * true if NewUCSDialog is visible, otherwise false
  */
 export const isOpenedNewUCSDialogState = atom<boolean>({
   key: "isOpenedNewUCSDialog",
@@ -121,7 +121,8 @@ export const isOpenedNewUCSDialogState = atom<boolean>({
 });
 
 /**
- * SinglePerformance/DoublePerformance譜面の場合はtrue、Single/Double譜面の場合はfalse
+ * true if chart is single performance or double performance,
+ * false if chart is single or double
  */
 export const isPerformanceState = atom<boolean>({
   key: "isPerformance",
@@ -129,7 +130,7 @@ export const isPerformanceState = atom<boolean>({
 });
 
 /**
- * 再生中の場合はtrue、そうでない場合はfalse
+ * true if playing the chart, otherwise false
  */
 export const isPlayingState = atom<boolean>({
   key: "isPlaying",
@@ -137,7 +138,7 @@ export const isPlayingState = atom<boolean>({
 });
 
 /**
- * 編集中の離脱を抑止する場合はtrue、そうでない場合はfalse
+ * true to prevent exit during editing, otherwise false
  */
 export const isProtectedState = atom<boolean>({
   key: "isProtected",
@@ -145,8 +146,8 @@ export const isProtectedState = atom<boolean>({
 });
 
 /**
- * mp3ファイル名(拡張子込)
- * 未アップロード時はnull
+ * MP3 file name included a extension
+ * numm if nothing is uploaded
  */
 export const mp3NameState = atom<string | null>({
   key: "mp3Name",
@@ -154,8 +155,8 @@ export const mp3NameState = atom<string | null>({
 });
 
 /**
- * 単ノート/ホールドの始点/ホールドの中間/ホールドの終点の集合
- * 第1インデックスの要素数は列数(Single/SinglePerformance譜面の場合は5、Double/DoublePerformance譜面の場合は10)と一致
+ * A set of single note, starting point of hold, setting point of hold or end point of hold,
+ * whose the first index matches the number of columns (5 if chart is single or single performance, 10 if chart is double or double performance)
  */
 export const notesState = atom<Note[][]>({
   key: "notes",
@@ -163,7 +164,7 @@ export const notesState = atom<Note[][]>({
 });
 
 /**
- * 正方形である単ノートの1辺のサイズ(px)
+ * Width or height (px) of single note
  */
 export const noteSizeState = atom<number>({
   key: "noteSize",
@@ -171,8 +172,8 @@ export const noteSizeState = atom<number>({
 });
 
 /**
- * やり直すChartSnapshotの集合
- * インデックスが増えるに連れ、過去の編集操作となる
+ * A set of ChartSnapshot for redoing
+ * Become past editing as increasing the index
  */
 export const redoSnapshotsState = atom<ChartSnapshot[]>({
   key: "redoSnapshots",
@@ -180,7 +181,7 @@ export const redoSnapshotsState = atom<ChartSnapshot[]>({
 });
 
 /**
- * 選択領域の表示パラメーター
+ * Display parameter of the selection area
  */
 export const selectorState = atom<Selector>({
   key: "selector",
@@ -188,7 +189,7 @@ export const selectorState = atom<Selector>({
 });
 
 /**
- * SuccessSnackbarで表示するメッセージ
+ * Message displayed SuccessSnackbar
  */
 export const successMessageState = atom<string>({
   key: "successMessage",
@@ -196,8 +197,8 @@ export const successMessageState = atom<string>({
 });
 
 /**
- * ucsファイル名(拡張子込)
- * 未アップロード時はnull
+ * UCS file name included a extension
+ * numm if nothing is uploaded
  */
 export const ucsNameState = atom<string | null>({
   key: "ucsName",
@@ -205,8 +206,8 @@ export const ucsNameState = atom<string | null>({
 });
 
 /**
- * 元に戻すChartSnapshotの集合
- * インデックスが増えるに連れ、最新の編集操作となる
+ * A set of ChartSnapshot for undoing
+ * Become recent editing as increasing the index
  */
 export const undoSnapshotsState = atom<ChartSnapshot[]>({
   key: "undoSnapshots",
@@ -214,7 +215,7 @@ export const undoSnapshotsState = atom<ChartSnapshot[]>({
 });
 
 /**
- * UserErrorSnackbarで表示するメッセージ
+ * Message displayed UserErrorSnackbar
  */
 export const userErrorMessageState = atom<string>({
   key: "userErrorMessage",
@@ -222,8 +223,8 @@ export const userErrorMessageState = atom<string>({
 });
 
 /**
- * ビート音・MP3の音楽の音量
- * 0でミュート、1で最大
+ * Volume value
+ * 0 for mute, 1 for max
  */
 export const volumeValueState = atom<number>({
   key: "volumeValue",
@@ -231,7 +232,7 @@ export const volumeValueState = atom<number>({
 });
 
 /**
- * 拡大/縮小時の表示パラメーター
+ * Display parameter for zoooming in or out
  */
 export const zoomState = atom<Zoom>({
   key: "zoom",

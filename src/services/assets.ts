@@ -11,21 +11,21 @@ import Hold4 from "../images/hold4.png";
 import Beat from "../sounds/beat.wav";
 
 /**
- * ビート音の音声ファイルのバイナリデータ
+ * Audio binary Data of beat sound
  */
 export const BEAT_BINARY: string = Beat;
 
 /**
- * 列インデックスごとのホールドの画像ファイルのバイナリデータ
+ * Image binary Datas of holds per column index
  */
 export const HOLD_BINARIES: string[] = [Hold0, Hold1, Hold2, Hold3, Hold4];
 
 /**
- * 列インデックスごとの単ノートの画像ファイルのバイナリデータ
+ * Image binary Datas of single notes per column index
  */
 export const NOTE_BINARIES: string[] = [Note0, Note1, Note2, Note3, Note4];
 
 /**
- * 倍率の値
+ * Zoom Ratios
  */
 export const ZOOM_VALUES: number[] = [1, 2, 3, 4, 6, 8, 12, 16, 24, 32, 48, 64];

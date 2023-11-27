@@ -1,7 +1,7 @@
 /**
- * 入力したBPM値に対し、整数部と小数部の数値の合計個数が8個以上の場合のみ、最大7個になるように小数点以下を四捨五入する
- * @param {number} bpm BPM値
- * @returns {number} 四捨五入したBPM値
+ * Get BPM rounded decimal parts to a maximum of 7 only when the total number of integer and decimal parts is 8 or more
+ * @param {number} bpm BPM
+ * @returns {number} Rounded BPM
  */
 export const roundBpm = (bpm: number): number =>
   bpm.toString().replace(".", "").length < 8
@@ -11,9 +11,9 @@ export const roundBpm = (bpm: number): number =>
       );
 
 /**
- * 指定したBeat値の文字列に対し、有効範囲1〜64の整数値のもとでバリデーションチェック後に変換する
- * @param beatStr Beat値の文字列
- * @returns 変換したBeat値、バリデーションエラーの場合はnull
+ * Get beat converted to string after checking validation under integer in the valid range of 1 to 64
+ * @param {string} beatStr String of beat
+ * @returns {number | null} Converted beat, null if validation check is invalid
  */
 export const validateBeat = (beatStr: string): number | null => {
   const beat = Number(beatStr);
@@ -21,9 +21,9 @@ export const validateBeat = (beatStr: string): number | null => {
 };
 
 /**
- * 指定したBPM値の文字列に対し、有効数字7桁までの有効範囲0.1〜999のもとでバリデーションチェック後に変換する
- * @param bpmStr BPM値の文字列
- * @returns 変換したBPM値、バリデーションエラーの場合はnull
+ * Get BPM converted to string after checking validation under rounded number to 7 significant digits in the valid range of 0.1 to 999
+ * @param {string} bpmStr String of BPM
+ * @returns {number | null} Converted BPM, null if validation check is invalid
  */
 export const validateBpm = (bpmStr: string): number | null => {
   const bpm: number = Number(bpmStr);
@@ -36,9 +36,9 @@ export const validateBpm = (bpmStr: string): number | null => {
 };
 
 /**
- * 指定したDelay値の文字列に対し、有効数字7桁までの有効範囲-999999〜999999のもとでバリデーションチェック後に変換する
- * @param delayStr Delay値の文字列
- * @returns 変換したDelay値、バリデーションエラーの場合はnull
+ * Get delay converted to string after checking validation under rounded number to 7 significant digits in the valid range of -999999 to 999999
+ * @param {string} delayStr String of delay
+ * @returns {number | null} Converted Delay, null if validation check is invalid
  */
 export const validateDelay = (delayStr: string): number | null => {
   const delay: number = Number(delayStr);
@@ -52,9 +52,9 @@ export const validateDelay = (delayStr: string): number | null => {
 };
 
 /**
- * 指定した行数の文字列に対し、有効範囲1以上の整数値のもとでバリデーションチェック後に変換する
- * @param rowsStr 行数の文字列
- * @returns 変換した行数、バリデーションエラーの場合はnull
+ * Get a number of rows converted to string after checking validation under integer in the valid range of 1
+ * @param {string} rowsStr String of a number of rows
+ * @returns {number | null} A converted number of rows, null if validation check is invalid
  */
 export const validateRows = (rowsStr: string): number | null => {
   const rows = Number(rowsStr);
@@ -62,9 +62,9 @@ export const validateRows = (rowsStr: string): number | null => {
 };
 
 /**
- * 指定したSplit値の文字列に対し、有効範囲1〜128の整数値のもとでバリデーションチェック後に変換する
- * @param splitStr Split値の文字列
- * @returns 変換したSplit値、バリデーションエラーの場合はnull
+ * Get split converted to string after checking validation under integer in the valid range of 1 to 128
+ * @param {string} splitStr String of split
+ * @returns {number | null} Converted Split, null if validation check is invalid
  */
 export const validateSplit = (splitStr: string): number | null => {
   const split = Number(splitStr);
