@@ -59,7 +59,7 @@ jobs:
         run: npx jest test --coverage --coverageReporters="json-summary"
 
       - name: Create Coverage Badges
-        uses: jaywcjlove/coverage-badges-cli@v1.1.1
+        uses: jaywcjlove/coverage-badges-cli@v1.2.1
         with:
           output: public/badges.svg
 
