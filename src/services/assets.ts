@@ -1,14 +1,14 @@
-import Note0 from "../images/note0.png";
-import Note1 from "../images/note1.png";
-import Note2 from "../images/note2.png";
-import Note3 from "../images/note3.png";
-import Note4 from "../images/note4.png";
-import Hold0 from "../images/hold0.png";
-import Hold1 from "../images/hold1.png";
-import Hold2 from "../images/hold2.png";
-import Hold3 from "../images/hold3.png";
-import Hold4 from "../images/hold4.png";
-import Beat from "../sounds/beat.wav";
+import Beat from "../assets/beat.wav";
+import Note0 from "../assets/note0.png";
+import Note1 from "../assets/note1.png";
+import Note2 from "../assets/note2.png";
+import Note3 from "../assets/note3.png";
+import Note4 from "../assets/note4.png";
+import Hold0 from "../assets/hold0.png";
+import Hold1 from "../assets/hold1.png";
+import Hold2 from "../assets/hold2.png";
+import Hold3 from "../assets/hold3.png";
+import Hold4 from "../assets/hold4.png";
 
 /**
  * Audio binary Data of beat sound
