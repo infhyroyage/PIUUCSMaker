@@ -21,13 +21,19 @@ Create and Play Pump It Up UCS Anywhere
 ## Development
 
 ```bash
+# Install
 git clone https://github.com/infhyroyage/PIUUCSMaker.git
 npm i
-git checkout -b feature/XXX
-npm run start
 
+# Develop at http://localhost:5173
+git checkout -b feature/XXX
+npm run dev
+
+# Test & Lint
 npm run test
 npm run lint
+
+# Push & Create PR
 git commit -m "YYY"
 git push origin feature/XXX
 ```
