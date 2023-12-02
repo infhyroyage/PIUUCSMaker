@@ -9,10 +9,11 @@ on:
       - .github/workflows/build-deploy-pages.yaml
       - public**
       - src**
-      - jest.config.js
+      - index.html
+      - jest.config.ts
       - package*.json
-      - tsconfig.json
-      - webpack.config.ts
+      - tsconfig*.json
+      - vite.config.ts
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
@@ -61,17 +62,16 @@ jobs:
       - name: Create Coverage Badges
         uses: jaywcjlove/coverage-badges-cli@v1.2.1
         with:
-          output: public/badges.svg
+          output: dist/badges.svg
 
       - name: Build
         run: |
-          npx webpack --mode production
-          sed -i -e 's|/bundle.js|/PIUUCSMaker/bundle.js|g' public/index.html
+          npm run build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
         with:
-          path: ./public
+          path: ./dist
 
   deploy:
     environment:

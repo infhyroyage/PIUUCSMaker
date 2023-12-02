@@ -33,10 +33,6 @@ npm run dev
 npm run test
 npm run lint
 
-# Check Production Build at http://localhost:4173
-npm run build
-npm run preview
-
 # Push & Create PR
 git commit -m "YYY"
 git push origin feature/XXX
