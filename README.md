@@ -25,7 +25,7 @@ Create and Play Pump It Up UCS Anywhere
 git clone https://github.com/infhyroyage/PIUUCSMaker.git
 npm i
 
-# Develop at http://localhost:3000
+# Develop at http://localhost:5173
 git checkout -b feature/XXX
 npm run dev
 
@@ -33,7 +33,7 @@ npm run dev
 npm run test
 npm run lint
 
-# Check Production Build at http://localhost:8080
+# Check Production Build at http://localhost:4173
 npm run build
 npm run preview
 

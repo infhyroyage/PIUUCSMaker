@@ -1,6 +1,6 @@
 env:
   browser: true
-  es6: true
+  es2020: true
   jest: true
   node: true
 extends:
@@ -12,7 +12,7 @@ extends:
   - plugin:react/jsx-runtime
 parser: "@typescript-eslint/parser"
 parserOptions:
-  ecmaVersion: 6
+  ecmaVersion: 2020
   sourceType: module
 plugins:
   - "@typescript-eslint"
