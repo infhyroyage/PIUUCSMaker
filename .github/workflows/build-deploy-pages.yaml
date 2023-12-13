@@ -64,7 +64,7 @@ jobs:
           npm run build
 
       - name: Create Coverage Badges
-        uses: jaywcjlove/coverage-badges-cli@v1.2.1
+        uses: jaywcjlove/coverage-badges-cli@v1.2.5
         with:
           output: dist/badges.svg
 
