@@ -223,7 +223,12 @@ function AdjustBlockDialog() {
               />
             </Grid>
             <Grid item xs={2}>
-              Split
+              <Typography
+                onClick={() => setFixed("split")}
+                variant={fixed === "split" ? "body2" : "h6"}
+              >
+                Split
+              </Typography>
             </Grid>
             <Grid item xs={5}>
               {fixed === "split" ? (
@@ -406,7 +411,12 @@ function AdjustBlockDialog() {
               />
             </Grid>
             <Grid item xs={2}>
-              Rows
+              <Typography
+                onClick={() => setFixed("rows")}
+                variant={fixed === "rows" ? "body2" : "h6"}
+              >
+                Rows
+              </Typography>
             </Grid>
             <Grid item xs={5}>
               {fixed === "rows" ? (
@@ -484,7 +494,12 @@ function AdjustBlockDialog() {
               />
             </Grid>
             <Grid item xs={2}>
-              BPM
+              <Typography
+                onClick={() => setFixed("bpm")}
+                variant={fixed === "bpm" ? "body2" : "h6"}
+              >
+                BPM
+              </Typography>
             </Grid>
             <Grid item xs={5}>
               {fixed === "bpm" ? (
