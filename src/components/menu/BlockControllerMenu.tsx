@@ -72,6 +72,7 @@ function BlockControllerMenu() {
           accumulatedRows:
             blocks[blocks.length - 1].accumulatedRows +
             blocks[blocks.length - 1].rows,
+          delay: 0,
         },
       ]);
 
@@ -103,6 +104,7 @@ function BlockControllerMenu() {
           ...blocks[menuBlockIdx],
           accumulatedRows:
             blocks[menuBlockIdx].accumulatedRows + blocks[menuBlockIdx].rows,
+          delay: 0,
         },
         ...blocks.slice(menuBlockIdx + 1).map((block: Block) => {
           return {
