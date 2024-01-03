@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import {
   blockControllerMenuBlockIdxState,
@@ -30,6 +30,7 @@ import {
 } from "../../services/validations";
 
 function EditBlockDialog() {
+  const [errors, setErrors] = useState<EditBlockDialogError[]>([]);
   const [form, setForm] = useState<EditBlockDialogForm>({
     beat: "",
     bpm: "",
@@ -37,7 +38,6 @@ function EditBlockDialog() {
     rows: "",
     split: "",
   });
-  const [errors, setErrors] = useState<EditBlockDialogError[]>([]);
   const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
   const [menuBlockIdx, setMenuBlockIdx] = useRecoilState<number | null>(
     blockControllerMenuBlockIdxState
@@ -61,6 +61,14 @@ function EditBlockDialog() {
       }),
     [blocks, menuBlockIdx, setForm]
   );
+
+  // 最初以外の譜面のブロックの場合は入力したDelay値を無視する警告フラグ
+  const isIgnoredDelay = useMemo(() => {
+    if (menuBlockIdx === null || menuBlockIdx === 0) return false;
+
+    const delay: number = Number(form.delay);
+    return !Number.isNaN(delay) && delay !== 0;
+  }, [menuBlockIdx, form.delay]);
 
   const onUpdate = useCallback(() => {
     // BlockControllerMenuのメニューを開いていない場合はNOP
@@ -209,9 +217,17 @@ function EditBlockDialog() {
   ]);
 
   const onClose = useCallback(() => {
+    setErrors([]);
+    setForm({
+      beat: "",
+      bpm: "",
+      delay: "",
+      rows: "",
+      split: "",
+    });
     setMenuBlockIdx(null);
     setOpen(false);
-  }, [setMenuBlockIdx, setOpen]);
+  }, [setErrors, setForm, setMenuBlockIdx, setOpen]);
 
   return (
     <Dialog open={open} onClose={onClose}>
@@ -235,9 +251,13 @@ function EditBlockDialog() {
             value={form.bpm}
           />
           <TextField
-            error={errors.includes("Delay(ms)")}
+            error={errors.includes("Delay(ms)") || isIgnoredDelay}
             fullWidth
-            helperText="Offset time of Scrolling(-999999 - 999999)"
+            helperText={
+              isIgnoredDelay
+                ? "WARNING: Ignore above value and assume 0 automatically except 1st block"
+                : "Offset time of Scrolling(-999999 - 999999)"
+            }
             label="Delay(ms)"
             margin="dense"
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {

@@ -20,7 +20,7 @@ export type Block = {
 
   /**
    * Delay(ms)
-   * Ignore the setting value and assume 0 if this chart block is not first
+   * Ignore value and assume 0 automatically except 1st block
    */
   delay: number;
 
