@@ -26,7 +26,7 @@ function BlockControllerButton({
   const zoom = useRecoilValue<Zoom>(zoomState);
 
   // 最初以外の譜面のブロックの場合はDelay値を無視する警告フラグ
-  const isIgnoreDelay: boolean = useMemo(
+  const isIgnoredDelay: boolean = useMemo(
     () => !isFirstBlock && delay !== 0,
     [delay, isFirstBlock]
   );
@@ -66,8 +66,10 @@ function BlockControllerButton({
               <Typography variant="caption">{`${bpm} BPM, 1/${split}`}</Typography>
               <Typography
                 variant="caption"
-                sx={{ color: isIgnoreDelay ? "red" : undefined }}
-              >{`Delay: ${delay} (ms)${isIgnoreDelay ? " ⚠" : ""}`}</Typography>
+                sx={{ color: isIgnoredDelay ? "red" : undefined }}
+              >{`Delay: ${delay} (ms)${
+                isIgnoredDelay ? " ⚠" : ""
+              }`}</Typography>
             </Stack>
           </CardContent>
         </CardActionArea>
