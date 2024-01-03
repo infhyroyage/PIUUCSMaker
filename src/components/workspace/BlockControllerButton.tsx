@@ -1,10 +1,6 @@
-import { MouseEvent, memo, useCallback, useMemo } from "react";
-import { useRecoilValue, useSetRecoilState } from "recoil";
-import {
-  blockControllerMenuBlockIdxState,
-  blockControllerMenuPositionState,
-  noteSizeState,
-} from "../../services/atoms";
+import { memo, useMemo } from "react";
+import { useRecoilValue } from "recoil";
+import { noteSizeState, zoomState } from "../../services/atoms";
 import {
   Card,
   CardActionArea,
@@ -14,21 +10,31 @@ import {
 } from "@mui/material";
 import BorderLine from "./BorderLine";
 import { BlockControllerButtonProps } from "../../types/props";
-import { BlockControllerMenuPosition } from "../../types/menu";
+import { ZOOM_VALUES } from "../../services/assets";
+import { Zoom } from "../../types/menu";
 
 function BlockControllerButton({
-  blockHeight,
-  blockIdx,
+  bpm,
+  delay,
+  isFirstBlock,
   isLastBlock,
-  textFirst,
-  textSecond,
+  onClick,
+  rows,
+  split,
 }: BlockControllerButtonProps) {
   const noteSize = useRecoilValue<number>(noteSizeState);
-  const setMenuBlockIdx = useSetRecoilState<number | null>(
-    blockControllerMenuBlockIdxState
+  const zoom = useRecoilValue<Zoom>(zoomState);
+
+  // 最初以外の譜面のブロックの場合はDelay値を無視する警告フラグ
+  const isIgnoreDelay: boolean = useMemo(
+    () => !isFirstBlock && delay !== 0,
+    [delay, isFirstBlock]
   );
-  const setMenuPosition = useSetRecoilState<BlockControllerMenuPosition>(
-    blockControllerMenuPositionState
+
+  // 譜面のブロックの高さ(px)
+  const blockHeight: number = useMemo(
+    () => (2.0 * noteSize * ZOOM_VALUES[zoom.idx] * rows) / split,
+    [noteSize, rows, split, zoom.idx]
   );
 
   // 横の枠線のサイズ(px)をnoteSizeの0.05倍(偶数に丸めるように切り捨て、最小値は2)として計算
@@ -38,19 +44,10 @@ function BlockControllerButton({
     [blockHeight, noteSize]
   );
 
-  // 押下したマウスの座標にBlockControllerMenuを表示
-  const onClickCardActionArea = useCallback(
-    (event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => {
-      setMenuBlockIdx(blockIdx);
-      setMenuPosition({ top: event.clientY, left: event.clientX });
-    },
-    [blockIdx, setMenuBlockIdx, setMenuPosition]
-  );
-
   return (
     <>
       <Card raised square sx={{ width: "100%" }}>
-        <CardActionArea onClick={onClickCardActionArea}>
+        <CardActionArea onClick={onClick}>
           <CardContent
             sx={{
               height: `${
@@ -66,8 +63,11 @@ function BlockControllerButton({
               pl={{ xs: 0, sm: 1 }}
               pr={{ xs: 0, sm: 1 }}
             >
-              <Typography variant="caption">{textFirst}</Typography>
-              <Typography variant="caption">{textSecond}</Typography>
+              <Typography variant="caption">{`${bpm} BPM, 1/${split}`}</Typography>
+              <Typography
+                variant="caption"
+                sx={{ color: isIgnoreDelay ? "red" : undefined }}
+              >{`Delay: ${delay} (ms)${isIgnoreDelay ? " ⚠" : ""}`}</Typography>
             </Stack>
           </CardContent>
         </CardActionArea>

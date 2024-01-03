@@ -1,3 +1,4 @@
+import { MouseEvent } from "react";
 import { Note } from "./ucs";
 
 /**
@@ -5,29 +6,38 @@ import { Note } from "./ucs";
  */
 export type BlockControllerButtonProps = {
   /**
-   * Height (px) of chart block
+   * BPM of this chart block
    */
-  blockHeight: number;
+  bpm: number;
 
   /**
-   * Index of chart block
+   * Delay(ms) of this chart block
    */
-  blockIdx: number;
+  delay: number;
+
+  /**
+   * true if this chart block is first, otherwise false
+   */
+  isFirstBlock: boolean;
 
   /**
    * true if this chart block is last, otherwise false
    */
   isLastBlock: boolean;
 
-  /**
-   * First paragraph of text
-   */
-  textFirst: string;
+  onClick: (
+    event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>
+  ) => void;
 
   /**
-   * Second paragraph of text
+   * A number of rows of this chart block
    */
-  textSecond: string;
+  rows: number;
+
+  /**
+   * Split of this chart block
+   */
+  split: number;
 };
 
 /**
