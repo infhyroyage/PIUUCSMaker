@@ -7,7 +7,29 @@
 
 Create and Play Pump It Up UCS Anywhere
 
-## Major Versions
+## Development
+
+1. Install [Node.js](https://nodejs.org/) (Reccomended over v20.x.x).
+2. Fork this repository and clone it.
+3. install NPM packages:
+   ```bash
+   npm i
+   ```
+4. Run localhost server as vite and develop:
+   ```bash
+   npm run dev
+   ```
+5. After Development, run lint and test:
+   ```bash
+   npm run test
+   npm run lint
+   ```
+6. Push to the forked repository and create PR of this one.
+
+> [!WARNING]
+> Unit tests are incompleted, so check making ucs actually with `npm run dev`
+
+## Package Version
 
 | Name       | Ver.    |
 | ---------- | ------- |
@@ -16,31 +38,8 @@ Create and Play Pump It Up UCS Anywhere
 | Typescript | 5.1.6   |
 
 > [!NOTE]
-> All packages except above are maintained by dependabot.
-
-## Development
-
-```bash
-# Install
-git clone https://github.com/infhyroyage/PIUUCSMaker.git
-npm i
-
-# Develop at http://localhost:5173
-git checkout -b feature/XXX
-npm run dev
-
-# Test & Lint
-npm run test
-npm run lint
-
-# Push & Create PR
-git commit -m "YYY"
-git push origin feature/XXX
-```
-
-> [!WARNING]
-> Unit tests are incompleted, so please check making ucs actually with http://localhost:3000
+> All npm packages except above are maintained by dependabot in every Webnesday at 1:00(UTC).
 
 ## License
 
-MIT
+[MIT](LICENSE)
