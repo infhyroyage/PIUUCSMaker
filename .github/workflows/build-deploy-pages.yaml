@@ -57,7 +57,7 @@ jobs:
         run: npm ci
 
       - name: Test
-        run: npx jest test --coverage --coverageReporters="json-summary"
+        run: npx jest --coverage --coverageReporters="json-summary" --runInBand
 
       - name: Build
         run: |
