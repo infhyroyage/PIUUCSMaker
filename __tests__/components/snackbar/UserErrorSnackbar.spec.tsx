@@ -5,9 +5,6 @@ import UserErrorSnackbar from "../../../src/components/snackbar/UserErrorSnackba
 import userEvent from "@testing-library/user-event";
 import { userErrorMessageState } from "../../../src/services/atoms";
 
-const waitForRerender = async () =>
-  new Promise((resolve) => setTimeout(resolve, 0));
-
 describe("UserErrorSnackbar", () => {
   it("Render invisibly if userErrorMessageState is empty", () => {
     const { queryByRole } = render(
@@ -20,7 +17,7 @@ describe("UserErrorSnackbar", () => {
   });
 
   it("Rerender visibly if userErrorMessageState is not empty", async () => {
-    const { getByText } = render(
+    const { getByText, rerender } = render(
       <RecoilRoot
         initializeState={({ set }) => {
           set(userErrorMessageState, "UserErrorMessage");
@@ -30,7 +27,11 @@ describe("UserErrorSnackbar", () => {
       </RecoilRoot>
     );
 
-    await waitForRerender();
+    rerender(
+      <RecoilRoot>
+        <UserErrorSnackbar />
+      </RecoilRoot>
+    );
 
     await waitFor(() =>
       expect(getByText("UserErrorMessage")).toBeInTheDocument()
@@ -38,7 +39,7 @@ describe("UserErrorSnackbar", () => {
   });
 
   it("Rerender invisibly if close button is clicked", async () => {
-    const { findByTitle, queryByText } = render(
+    const { findByTitle, queryByText, rerender } = render(
       <RecoilRoot
         initializeState={({ set }) => {
           set(userErrorMessageState, "UserErrorMessage");
@@ -48,11 +49,19 @@ describe("UserErrorSnackbar", () => {
       </RecoilRoot>
     );
 
-    await waitForRerender();
+    rerender(
+      <RecoilRoot>
+        <UserErrorSnackbar />
+      </RecoilRoot>
+    );
 
     await userEvent.click(await findByTitle("Close"));
 
-    await waitForRerender();
+    rerender(
+      <RecoilRoot>
+        <UserErrorSnackbar />
+      </RecoilRoot>
+    );
 
     await waitFor(() =>
       expect(queryByText("UserErrorMessage")).not.toBeInTheDocument()

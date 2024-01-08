@@ -5,9 +5,6 @@ import SuccessSnackbar from "../../../src/components/snackbar/SuccessSnackbar";
 import { successMessageState } from "../../../src/services/atoms";
 import userEvent from "@testing-library/user-event";
 
-const waitForRerender = async () =>
-  new Promise((resolve) => setTimeout(resolve, 0));
-
 describe("SuccessSnackbar", () => {
   it("Render invisibly if successMessageState is empty", () => {
     const { queryByRole } = render(
@@ -20,7 +17,7 @@ describe("SuccessSnackbar", () => {
   });
 
   it("Rerender visibly if successMessageState is not empty", async () => {
-    const { getByText } = render(
+    const { getByText, rerender } = render(
       <RecoilRoot
         initializeState={({ set }) => {
           set(successMessageState, "SuccessMessage");
@@ -30,7 +27,11 @@ describe("SuccessSnackbar", () => {
       </RecoilRoot>
     );
 
-    await waitForRerender();
+    rerender(
+      <RecoilRoot>
+        <SuccessSnackbar />
+      </RecoilRoot>
+    );
 
     await waitFor(() =>
       expect(getByText("SuccessMessage")).toBeInTheDocument()
@@ -38,7 +39,7 @@ describe("SuccessSnackbar", () => {
   });
 
   it("Rerender invisibly if close button is clicked", async () => {
-    const { findByTitle, queryByText } = render(
+    const { findByTitle, queryByText, rerender } = render(
       <RecoilRoot
         initializeState={({ set }) => {
           set(successMessageState, "SuccessMessage");
@@ -48,11 +49,19 @@ describe("SuccessSnackbar", () => {
       </RecoilRoot>
     );
 
-    await waitForRerender();
+    rerender(
+      <RecoilRoot>
+        <SuccessSnackbar />
+      </RecoilRoot>
+    );
 
     await userEvent.click(await findByTitle("Close"));
 
-    await waitForRerender();
+    rerender(
+      <RecoilRoot>
+        <SuccessSnackbar />
+      </RecoilRoot>
+    );
 
     await waitFor(() =>
       expect(queryByText("SuccessMessage")).not.toBeInTheDocument()
