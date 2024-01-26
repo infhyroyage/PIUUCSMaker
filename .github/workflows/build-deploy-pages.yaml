@@ -10,10 +10,10 @@ on:
       - public**
       - src**
       - index.html
-      - jest.config.ts
       - package*.json
       - tsconfig*.json
       - vite.config.ts
+      - vitest.config.json
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
@@ -57,11 +57,10 @@ jobs:
         run: npm ci
 
       - name: Test
-        run: npx jest --coverage --coverageReporters="json-summary" --runInBand
+        run: npx vitest --coverage.enabled --coverage.reporter=json-summary
 
       - name: Build
-        run: |
-          npm run build
+        run: npm run build
 
       - name: Create Coverage Badges
         uses: jaywcjlove/coverage-badges-cli@v1.2.5

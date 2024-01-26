@@ -1,11 +1,15 @@
-import "@testing-library/jest-dom";
-import { render, waitFor } from "@testing-library/react";
+import "@testing-library/jest-dom/vitest";
+import { afterEach, describe, expect, it } from "vitest";
+import { cleanup, render, waitFor } from "@testing-library/react";
 import { RecoilRoot } from "recoil";
 import UserErrorSnackbar from "../../../src/components/snackbar/UserErrorSnackbar";
 import userEvent from "@testing-library/user-event";
 import { userErrorMessageState } from "../../../src/services/atoms";
 
 describe("UserErrorSnackbar", () => {
+  // https://github.com/vitest-dev/vitest/issues/1430
+  afterEach(() => cleanup());
+
   it("Render invisibly if userErrorMessageState is empty", () => {
     const { queryByRole } = render(
       <RecoilRoot>
@@ -17,18 +21,12 @@ describe("UserErrorSnackbar", () => {
   });
 
   it("Rerender visibly if userErrorMessageState is not empty", async () => {
-    const { getByText, rerender } = render(
+    const { getByText } = render(
       <RecoilRoot
         initializeState={({ set }) => {
           set(userErrorMessageState, "UserErrorMessage");
         }}
       >
-        <UserErrorSnackbar />
-      </RecoilRoot>
-    );
-
-    rerender(
-      <RecoilRoot>
         <UserErrorSnackbar />
       </RecoilRoot>
     );
@@ -39,7 +37,7 @@ describe("UserErrorSnackbar", () => {
   });
 
   it("Rerender invisibly if close button is clicked", async () => {
-    const { findByTitle, queryByText, rerender } = render(
+    const { findByTitle, queryByText } = render(
       <RecoilRoot
         initializeState={({ set }) => {
           set(userErrorMessageState, "UserErrorMessage");
@@ -49,19 +47,7 @@ describe("UserErrorSnackbar", () => {
       </RecoilRoot>
     );
 
-    rerender(
-      <RecoilRoot>
-        <UserErrorSnackbar />
-      </RecoilRoot>
-    );
-
     await userEvent.click(await findByTitle("Close"));
-
-    rerender(
-      <RecoilRoot>
-        <UserErrorSnackbar />
-      </RecoilRoot>
-    );
 
     await waitFor(() =>
       expect(queryByText("UserErrorMessage")).not.toBeInTheDocument()

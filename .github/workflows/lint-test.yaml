@@ -1,4 +1,4 @@
-name: Run ESLint before Merging Pull Request
+name: Run Lint and Test before Merging Pull Request
 
 on:
   pull_request:
@@ -41,3 +41,31 @@ jobs:
           filter_mode: file
           level: warning
           reporter: github-pr-review
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node ${{ env.NODE_VERSION }} Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Restore cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-piuucsmaker-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
+          restore-keys: ${{ runner.os }}-piuucsmaker-${{ hashFiles('**/package-lock.json') }}-
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Test
+        run: npx vitest --coverage.enabled --coverage.reporter=json-summary
+
+      - name: Report Coverage
+        uses: davelosert/vitest-coverage-report-action@v2

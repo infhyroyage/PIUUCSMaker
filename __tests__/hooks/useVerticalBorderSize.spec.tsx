@@ -1,19 +1,20 @@
+import { Mock, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderHook } from "@testing-library/react";
 import { useRecoilValue } from "recoil";
 import useVerticalBorderSize from "../../src/hooks/useVerticalBorderSize";
 
-jest.mock("recoil", () => ({
-  ...jest.requireActual("recoil"),
-  useRecoilValue: jest.fn(),
+vi.mock("recoil", async () => ({
+  ...(await vi.importActual("recoil")),
+  useRecoilValue: vi.fn(),
 }));
 
 describe("useVerticalBorderSize", () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it("Return 2 if noteSize is less than 80", () => {
-    (useRecoilValue as jest.Mock).mockReturnValueOnce(79);
+    (useRecoilValue as Mock).mockReturnValueOnce(79);
 
     const { result } = renderHook(useVerticalBorderSize);
 
@@ -21,7 +22,7 @@ describe("useVerticalBorderSize", () => {
   });
 
   it("Return 4 if noteSize is equal to 80", () => {
-    (useRecoilValue as jest.Mock).mockReturnValueOnce(80);
+    (useRecoilValue as Mock).mockReturnValueOnce(80);
 
     const { result } = renderHook(useVerticalBorderSize);
 
@@ -29,7 +30,7 @@ describe("useVerticalBorderSize", () => {
   });
 
   it("Return more than 2 if noteSize is more than 81", () => {
-    (useRecoilValue as jest.Mock).mockReturnValueOnce(81);
+    (useRecoilValue as Mock).mockReturnValueOnce(81);
 
     const { result } = renderHook(useVerticalBorderSize);
 

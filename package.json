@@ -7,7 +7,7 @@
     "build": "tsc && vite build",
     "dev": "vite",
     "lint": "eslint '**/*.{ts,tsx}'",
-    "test": "jest --runInBand"
+    "test": "vitest"
   },
   "dependencies": {
     "@emotion/react": "^11.11.3",
@@ -20,25 +20,23 @@
     "recoil": "^0.7.7"
   },
   "devDependencies": {
-    "@testing-library/jest-dom": "^6.2.0",
+    "@testing-library/jest-dom": "^6.3.0",
     "@testing-library/react": "^14.1.2",
     "@testing-library/user-event": "^14.5.1",
-    "@types/jest": "^29.5.11",
     "@types/node": "^20.10.0",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
     "@typescript-eslint/eslint-plugin": "^6.17.0",
     "@typescript-eslint/parser": "^6.14.0",
     "@vitejs/plugin-react": "^4.2.1",
+    "@vitest/coverage-v8": "^1.2.1",
     "eslint": "^8.56.0",
-    "eslint-plugin-jest": "^27.6.1",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "jest": "^29.7.0",
-    "jest-environment-jsdom": "^29.7.0",
-    "ts-jest": "^29.1.1",
+    "eslint-plugin-vitest": "^0.3.20",
     "ts-node": "^10.9.2",
     "typescript": "^5.1.6",
-    "vite": "^5.0.11"
+    "vite": "^5.0.11",
+    "vitest": "^1.2.1"
   }
 }
