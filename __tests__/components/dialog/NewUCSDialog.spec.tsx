@@ -1,27 +1,31 @@
-import "@testing-library/jest-dom";
-import { render, waitFor } from "@testing-library/react";
+import "@testing-library/jest-dom/vitest";
+import { Mock, afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { cleanup, render, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { RecoilRoot, useSetRecoilState } from "recoil";
 import NewUCSDialog from "../../../src/components/dialog/NewUCSDialog";
 import { isOpenedNewUCSDialogState } from "../../../src/services/atoms";
 import { Block, ChartSnapshot, Note } from "../../../src/types/ucs";
 
-const mockSetBlocks = jest.fn();
-const mockSetIsPerformance = jest.fn();
-const mockSetIsProtected = jest.fn();
-const mockSetNotes = jest.fn();
-const mockSetRedoSnapshots = jest.fn();
-const mockSetUcsName = jest.fn();
-const mockSetUndoSnapshots = jest.fn();
-jest.mock("recoil", () => ({
-  ...jest.requireActual("recoil"),
-  useSetRecoilState: jest.fn(),
+const mockSetBlocks = vi.fn();
+const mockSetIsPerformance = vi.fn();
+const mockSetIsProtected = vi.fn();
+const mockSetNotes = vi.fn();
+const mockSetRedoSnapshots = vi.fn();
+const mockSetUcsName = vi.fn();
+const mockSetUndoSnapshots = vi.fn();
+vi.mock("recoil", async () => ({
+  ...(await vi.importActual("recoil")),
+  useSetRecoilState: vi.fn(),
 }));
 
 describe("NewUCSDialog", () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
+
+  // https://github.com/vitest-dev/vitest/issues/1430
+  afterEach(() => cleanup());
 
   it("Render invisibly if isOpenedNewUCSDialogState is false", () => {
     const { queryByRole } = render(
@@ -55,7 +59,7 @@ describe("NewUCSDialog", () => {
   });
 
   it("Rerender all inputs changed different values", async () => {
-    const { findByText, getByLabelText, rerender } = render(
+    const { findByText, getByLabelText } = render(
       <RecoilRoot
         initializeState={({ set }) => {
           set(isOpenedNewUCSDialogState, true);
@@ -69,12 +73,6 @@ describe("NewUCSDialog", () => {
     await userEvent.type(getByLabelText("UCS File Name"), "foo");
     await userEvent.click(getByLabelText("Mode"));
 
-    rerender(
-      <RecoilRoot>
-        <NewUCSDialog />
-      </RecoilRoot>
-    );
-
     await userEvent.click(await findByText("Double Performance"));
     await userEvent.clear(getByLabelText("BPM"));
     await userEvent.type(getByLabelText("BPM"), "123.4567");
@@ -86,12 +84,6 @@ describe("NewUCSDialog", () => {
     await userEvent.type(getByLabelText("Beat"), "3");
     await userEvent.clear(getByLabelText("Rows"));
     await userEvent.type(getByLabelText("Rows"), "10");
-
-    rerender(
-      <RecoilRoot>
-        <NewUCSDialog />
-      </RecoilRoot>
-    );
 
     await waitFor(() => {
       expect(getByLabelText("UCS File Name")).toHaveValue("foo");
@@ -105,7 +97,7 @@ describe("NewUCSDialog", () => {
   });
 
   it("Rerender invisibly if CANCEL button is clicked", async () => {
-    const { getByText, queryByRole, rerender } = render(
+    const { getByText, queryByRole } = render(
       <RecoilRoot
         initializeState={({ set }) => {
           set(isOpenedNewUCSDialogState, true);
@@ -116,18 +108,11 @@ describe("NewUCSDialog", () => {
     );
 
     await userEvent.click(getByText("CANCEL"));
-
-    rerender(
-      <RecoilRoot>
-        <NewUCSDialog />
-      </RecoilRoot>
-    );
-
     await waitFor(() => expect(queryByRole("dialog")).not.toBeInTheDocument());
   });
 
   it("Call Recoil setters and rerender invisibly if CREATE button is clicked with valid inputs", async () => {
-    (useSetRecoilState as jest.Mock)
+    (useSetRecoilState as Mock)
       .mockImplementationOnce(() => mockSetBlocks)
       .mockImplementationOnce(() => mockSetIsPerformance)
       .mockImplementationOnce(() => mockSetIsProtected)
@@ -136,7 +121,7 @@ describe("NewUCSDialog", () => {
       .mockImplementationOnce(() => mockSetUcsName)
       .mockImplementationOnce(() => mockSetUndoSnapshots);
 
-    const { getByText, queryByRole, rerender } = render(
+    const { getByText, queryByRole } = render(
       <RecoilRoot
         initializeState={({ set }) => {
           set(isOpenedNewUCSDialogState, true);
@@ -147,12 +132,6 @@ describe("NewUCSDialog", () => {
     );
 
     await userEvent.click(getByText("CREATE"));
-
-    rerender(
-      <RecoilRoot>
-        <NewUCSDialog />
-      </RecoilRoot>
-    );
 
     await waitFor(() => {
       expect(mockSetBlocks).toHaveBeenCalledWith<[Block[]]>([
@@ -182,7 +161,7 @@ describe("NewUCSDialog", () => {
   });
 
   it("Rerender visibly with errors if CREATE button is clicked with invalid 6 inputs", async () => {
-    const { getByLabelText, getByText, queryByRole, rerender } = render(
+    const { getByLabelText, getByText, queryByRole } = render(
       <RecoilRoot
         initializeState={({ set }) => {
           set(isOpenedNewUCSDialogState, true);
@@ -204,12 +183,6 @@ describe("NewUCSDialog", () => {
     await userEvent.clear(getByLabelText("Rows"));
     await userEvent.type(getByLabelText("Rows"), "10.5");
     await userEvent.click(getByText("CREATE"));
-
-    rerender(
-      <RecoilRoot>
-        <NewUCSDialog />
-      </RecoilRoot>
-    );
 
     await waitFor(() => {
       expect(queryByRole("dialog")).toBeInTheDocument();

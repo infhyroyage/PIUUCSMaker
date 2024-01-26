@@ -1,32 +1,30 @@
+import { Mock, beforeEach, describe, expect, it, vi } from "vitest";
 import { act, renderHook } from "@testing-library/react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import useSelectedDeleting from "../../src/hooks/useSelectedDeleting";
 
-const mockSetNotes = jest.fn();
-const mockSetUndoSnapshots = jest.fn();
-const mockSetIsProtected = jest.fn();
-const mockSetRedoSnapshots = jest.fn();
-jest.mock("recoil", () => ({
-  ...jest.requireActual("recoil"),
-  useRecoilState: jest.fn(),
-  useRecoilValue: jest.fn(),
-  useSetRecoilState: jest.fn(),
+const mockSetNotes = vi.fn();
+const mockSetUndoSnapshots = vi.fn();
+const mockSetIsProtected = vi.fn();
+const mockSetRedoSnapshots = vi.fn();
+vi.mock("recoil", async () => ({
+  ...(await vi.importActual("recoil")),
+  useRecoilState: vi.fn(),
+  useRecoilValue: vi.fn(),
+  useSetRecoilState: vi.fn(),
 }));
 
 describe("useSelectedDeleting", () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it("Do nothing if selector.completed is null", () => {
-    (useRecoilState as jest.Mock).mockReturnValueOnce([[], mockSetNotes]);
-    (useRecoilState as jest.Mock).mockReturnValueOnce([
-      [],
-      mockSetUndoSnapshots,
-    ]);
-    (useRecoilValue as jest.Mock).mockReturnValueOnce({ completed: null });
-    (useSetRecoilState as jest.Mock).mockReturnValueOnce(mockSetIsProtected);
-    (useSetRecoilState as jest.Mock).mockReturnValueOnce(mockSetRedoSnapshots);
+    (useRecoilState as Mock).mockReturnValueOnce([[], mockSetNotes]);
+    (useRecoilState as Mock).mockReturnValueOnce([[], mockSetUndoSnapshots]);
+    (useRecoilValue as Mock).mockReturnValueOnce({ completed: null });
+    (useSetRecoilState as Mock).mockReturnValueOnce(mockSetIsProtected);
+    (useSetRecoilState as Mock).mockReturnValueOnce(mockSetRedoSnapshots);
 
     const { result } = renderHook(useSelectedDeleting);
     const { handleDelete } = result.current;
@@ -39,11 +37,11 @@ describe("useSelectedDeleting", () => {
   });
 
   it("Delete notes only with selected area", () => {
-    (useRecoilState as jest.Mock).mockReturnValueOnce([
+    (useRecoilState as Mock).mockReturnValueOnce([
       Array(5).fill([...Array(4)].map((_, i) => ({ rowIdx: i, type: "X" }))),
       mockSetNotes,
     ]);
-    (useRecoilState as jest.Mock).mockReturnValueOnce([
+    (useRecoilState as Mock).mockReturnValueOnce([
       [
         {
           blocks: [
@@ -61,7 +59,7 @@ describe("useSelectedDeleting", () => {
       ],
       mockSetUndoSnapshots,
     ]);
-    (useRecoilValue as jest.Mock).mockReturnValueOnce({
+    (useRecoilValue as Mock).mockReturnValueOnce({
       completed: {
         goalColumn: 3,
         goalRowIdx: 2,
@@ -69,8 +67,8 @@ describe("useSelectedDeleting", () => {
         startRowIdx: 1,
       },
     });
-    (useSetRecoilState as jest.Mock).mockReturnValueOnce(mockSetIsProtected);
-    (useSetRecoilState as jest.Mock).mockReturnValueOnce(mockSetRedoSnapshots);
+    (useSetRecoilState as Mock).mockReturnValueOnce(mockSetIsProtected);
+    (useSetRecoilState as Mock).mockReturnValueOnce(mockSetRedoSnapshots);
 
     const { result } = renderHook(useSelectedDeleting);
     const { handleDelete } = result.current;

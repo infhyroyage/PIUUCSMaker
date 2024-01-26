@@ -1,14 +1,18 @@
-import "@testing-library/jest-dom";
-import { render, waitFor } from "@testing-library/react";
+import "@testing-library/jest-dom/vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { cleanup, render, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import ChartIndicatorMenuItem from "../../../src/components/menu/ChartIndicatorMenuItem";
 
-const mockOnClick = jest.fn();
+const mockOnClick = vi.fn();
 
 describe("ChartIndicatorMenuItem", () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
+
+  // https://github.com/vitest-dev/vitest/issues/1430
+  afterEach(() => cleanup());
 
   it("Render secondary typography if keyLabel is provided", () => {
     const { queryByText } = render(

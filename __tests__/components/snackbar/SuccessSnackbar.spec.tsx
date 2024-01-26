@@ -1,11 +1,15 @@
-import "@testing-library/jest-dom";
-import { render, waitFor } from "@testing-library/react";
+import "@testing-library/jest-dom/vitest";
+import { afterEach, describe, expect, it } from "vitest";
+import { cleanup, render, waitFor } from "@testing-library/react";
 import { RecoilRoot } from "recoil";
 import SuccessSnackbar from "../../../src/components/snackbar/SuccessSnackbar";
 import { successMessageState } from "../../../src/services/atoms";
 import userEvent from "@testing-library/user-event";
 
 describe("SuccessSnackbar", () => {
+  // https://github.com/vitest-dev/vitest/issues/1430
+  afterEach(() => cleanup());
+
   it("Render invisibly if successMessageState is empty", () => {
     const { queryByRole } = render(
       <RecoilRoot>
@@ -17,18 +21,12 @@ describe("SuccessSnackbar", () => {
   });
 
   it("Rerender visibly if successMessageState is not empty", async () => {
-    const { getByText, rerender } = render(
+    const { getByText } = render(
       <RecoilRoot
         initializeState={({ set }) => {
           set(successMessageState, "SuccessMessage");
         }}
       >
-        <SuccessSnackbar />
-      </RecoilRoot>
-    );
-
-    rerender(
-      <RecoilRoot>
         <SuccessSnackbar />
       </RecoilRoot>
     );
@@ -39,7 +37,7 @@ describe("SuccessSnackbar", () => {
   });
 
   it("Rerender invisibly if close button is clicked", async () => {
-    const { findByTitle, queryByText, rerender } = render(
+    const { findByTitle, queryByText } = render(
       <RecoilRoot
         initializeState={({ set }) => {
           set(successMessageState, "SuccessMessage");
@@ -49,19 +47,7 @@ describe("SuccessSnackbar", () => {
       </RecoilRoot>
     );
 
-    rerender(
-      <RecoilRoot>
-        <SuccessSnackbar />
-      </RecoilRoot>
-    );
-
     await userEvent.click(await findByTitle("Close"));
-
-    rerender(
-      <RecoilRoot>
-        <SuccessSnackbar />
-      </RecoilRoot>
-    );
 
     await waitFor(() =>
       expect(queryByText("SuccessMessage")).not.toBeInTheDocument()
