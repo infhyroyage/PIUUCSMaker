@@ -67,10 +67,10 @@ export const StatisticsDialog = () => {
             >
               Total Combo:
               <Box ml={2}>
-                {totalCombo > -1 ? (
-                  totalCombo
-                ) : (
+                {totalCombo === -1 ? (
                   <Skeleton width={`${noteSize}px`} />
+                ) : (
+                  totalCombo
                 )}
               </Box>
             </Typography>
@@ -87,12 +87,23 @@ export const StatisticsDialog = () => {
           ))}
           {[...Array(notes.length)].map((_, column: number) => (
             <Grid item xs={1} key={column}>
-              <Skeleton width={`${noteSize}px`} />
+              {totalCombo === -1 ? (
+                <Skeleton width={`${noteSize}px`} />
+              ) : (
+                <Typography>{notes[column].length}</Typography>
+              )}
             </Grid>
           ))}
           {[...Array(notes.length)].map((_, column: number) => (
             <Grid item xs={1} key={column}>
-              <Skeleton width={`${noteSize}px`} />
+              {totalCombo === -1 ? (
+                <Skeleton width={`${noteSize}px`} />
+              ) : (
+                <Typography variant="caption">
+                  ({Math.round((1000 * notes[column].length) / totalCombo) / 10}
+                  %)
+                </Typography>
+              )}
             </Grid>
           ))}
         </Grid>
