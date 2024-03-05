@@ -81,6 +81,14 @@ export const isDarkModeState = atom<boolean>({
 });
 
 /**
+ * true if beat sound is mute, otherwise false
+ */
+export const isMuteBeatsState = atom<boolean>({
+  key: "isMuteBeats",
+  default: true,
+});
+
+/**
  * true if AdjustBlockDialog is visible, otherwise false
  */
 export const isOpenedAdjustBlockDialogState = atom<boolean>({
@@ -97,14 +105,6 @@ export const isOpenedEditBlockDialogState = atom<boolean>({
 });
 
 /**
- * true if beat sound is mute, otherwise false
- */
-export const isMuteBeatsState = atom<boolean>({
-  key: "isMuteBeats",
-  default: true,
-});
-
-/**
  * true if MenuDrawer is expanded, otherwise false
  */
 export const isOpenedMenuDrawerState = atom<boolean>({
@@ -117,6 +117,14 @@ export const isOpenedMenuDrawerState = atom<boolean>({
  */
 export const isOpenedNewUCSDialogState = atom<boolean>({
   key: "isOpenedNewUCSDialog",
+  default: false,
+});
+
+/**
+ * true if StatisticsDialog is visible, otherwise false
+ */
+export const isOpenedStatisticsDialogState = atom<boolean>({
+  key: "isOpenedStatisticsDialog",
   default: false,
 });
 
