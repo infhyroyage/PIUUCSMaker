@@ -12,6 +12,7 @@ import MusicOffIcon from "@mui/icons-material/MusicOff";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import StopIcon from "@mui/icons-material/Stop";
+import InfoIcon from "@mui/icons-material/Info";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
@@ -22,6 +23,7 @@ import {
   isMuteBeatsState,
   isOpenedMenuDrawerState,
   isOpenedNewUCSDialogState,
+  isOpenedStatisticsDialogState,
   isPlayingState,
   redoSnapshotsState,
   ucsNameState,
@@ -49,6 +51,8 @@ function MenuDrawer() {
   const [isOpenedMenuDrawer, setIsOpenedMenuDrawer] = useRecoilState<boolean>(
     isOpenedMenuDrawerState
   );
+  const [isOpenedStatisticsDialog, setIsOpenedStatisticsDialog] =
+    useRecoilState<boolean>(isOpenedStatisticsDialogState);
   const [zoom, setZoom] = useRecoilState<Zoom>(zoomState);
   const isPlaying = useRecoilValue<boolean>(isPlayingState);
   const redoSnapshots = useRecoilValue<ChartSnapshot[]>(redoSnapshotsState);
@@ -204,6 +208,12 @@ function MenuDrawer() {
           onClick={() => (isPlaying ? stop() : start())}
         />
         <Divider />
+        <MenuDrawerListItem
+          disabled={ucsName === null || isPlaying}
+          icon={<InfoIcon />}
+          label="Statistics"
+          onClick={() => setIsOpenedStatisticsDialog(!isOpenedStatisticsDialog)}
+        />
         <MenuDrawerListItem
           icon={isDarkMode ? <DarkModeIcon /> : <LightModeIcon />}
           label={isDarkMode ? "Dark" : "Light"}
