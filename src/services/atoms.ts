@@ -121,10 +121,10 @@ export const isOpenedNewUCSDialogState = atom<boolean>({
 });
 
 /**
- * true if StatisticsDialog is visible, otherwise false
+ * true if AggregateDialog is visible, otherwise false
  */
-export const isOpenedStatisticsDialogState = atom<boolean>({
-  key: "isOpenedStatisticsDialog",
+export const isOpenedAggregateDialogState = atom<boolean>({
+  key: "isOpenedAggregateDialog",
   default: false,
 });
 

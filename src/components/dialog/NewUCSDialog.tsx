@@ -41,8 +41,7 @@ function NewUCSDialog() {
     rows: "50",
     split: "2",
   });
-  const [isOpenedNewUCSDialog, setIsOpenedNewUCSDialog] =
-    useRecoilState<boolean>(isOpenedNewUCSDialogState);
+  const [open, setOpen] = useRecoilState<boolean>(isOpenedNewUCSDialogState);
   const [errors, setErrors] = useState<NewUCSDialogError[]>([]);
   const setBlocks = useSetRecoilState<Block[]>(blocksState);
   const setIsPerformance = useSetRecoilState<boolean>(isPerformanceState);
@@ -85,7 +84,7 @@ function NewUCSDialog() {
         setRedoSnapshots([]);
         setUcsName(`${form.ucsName}.ucs`);
         setUndoSnapshots([]);
-        setIsOpenedNewUCSDialog(false);
+        setOpen(false);
       } else {
         // バリデーションエラーのテキストフィールドをすべて表示
         const errors: NewUCSDialogError[] = [];
@@ -99,10 +98,10 @@ function NewUCSDialog() {
       }
     });
 
-  const onClose = () => setIsOpenedNewUCSDialog(false);
+  const onClose = () => setOpen(false);
 
   return (
-    <Dialog open={isOpenedNewUCSDialog} onClose={onClose}>
+    <Dialog open={open} onClose={onClose}>
       <DialogTitle>New UCS</DialogTitle>
       <DialogContent>
         <Stack spacing={3} mt={1}>

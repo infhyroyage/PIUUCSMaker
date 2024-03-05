@@ -1,6 +1,6 @@
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
-  isOpenedStatisticsDialogState,
+  isOpenedAggregateDialogState,
   noteSizeState,
   notesState,
 } from "../../services/atoms";
@@ -19,11 +19,9 @@ import { useCallback, useEffect, useState } from "react";
 import { Note } from "../../types/ucs";
 import { NOTE_BINARIES } from "../../services/assets";
 
-export const StatisticsDialog = () => {
+export const AggregateDialog = () => {
   const [totalCombo, setTotalCombo] = useState<number>(-1);
-  const [open, setOpen] = useRecoilState<boolean>(
-    isOpenedStatisticsDialogState
-  );
+  const [open, setOpen] = useRecoilState<boolean>(isOpenedAggregateDialogState);
   const notes = useRecoilValue<Note[][]>(notesState);
   const noteSize = useRecoilValue<number>(noteSizeState);
 
@@ -46,7 +44,7 @@ export const StatisticsDialog = () => {
       onClose={onClose}
       PaperProps={{ style: { maxWidth: `min(85vw, 600px)` } }}
     >
-      <DialogTitle>Statistics</DialogTitle>
+      <DialogTitle>Aggregate</DialogTitle>
       <DialogContent>
         <Grid
           columns={notes.length}

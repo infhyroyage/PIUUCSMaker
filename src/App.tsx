@@ -13,7 +13,7 @@ import SuccessSnackbar from "./components/snackbar/SuccessSnackbar";
 import EditBlockDialog from "./components/dialog/EditBlockDialog";
 import AdjustBlockDialog from "./components/dialog/AdjustBlockDialog";
 import ReadyUCS from "./components/workspace/ReadyUCS";
-import { StatisticsDialog } from "./components/dialog/StatisticsDialog";
+import { AggregateDialog } from "./components/dialog/AggregateDialog";
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useRecoilState<boolean>(isDarkModeState);
@@ -56,10 +56,10 @@ function App() {
       <MenuBar />
       <MenuDrawer />
       {ucsName === null ? <ReadyUCS /> : <WorkSpace />}
+      <AggregateDialog />
       <AdjustBlockDialog />
       <EditBlockDialog />
       <NewUCSDialog />
-      <StatisticsDialog />
       <SuccessSnackbar />
       <UserErrorSnackbar />
     </ThemeProvider>
