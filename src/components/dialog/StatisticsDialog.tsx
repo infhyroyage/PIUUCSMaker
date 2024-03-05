@@ -41,7 +41,11 @@ export const StatisticsDialog = () => {
   }, [setTotalCombo, setOpen]);
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      PaperProps={{ style: { maxWidth: `min(85vw, 600px)` } }}
+    >
       <DialogTitle>Statistics</DialogTitle>
       <DialogContent>
         <Grid
@@ -100,8 +104,7 @@ export const StatisticsDialog = () => {
                 <Skeleton width={`${noteSize}px`} />
               ) : (
                 <Typography variant="caption">
-                  ({Math.round((1000 * notes[column].length) / totalCombo) / 10}
-                  %)
+                  {Math.round((1000 * notes[column].length) / totalCombo) / 10}%
                 </Typography>
               )}
             </Grid>
