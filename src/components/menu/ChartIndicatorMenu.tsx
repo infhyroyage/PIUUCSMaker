@@ -18,7 +18,7 @@ import useClipBoard from "../../hooks/useClipBoard";
 import useSelectedFlipping from "../../hooks/useSelectedFlipping";
 import useSelectedDeleting from "../../hooks/useSelectedDeleting";
 import { ChartIndicatorMenuPosition } from "../../types/menu";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import ChartIndicatorMenuItem from "./ChartIndicatorMenuItem";
 
 function ChartIndicatorMenu() {
@@ -173,27 +173,33 @@ function ChartIndicatorMenu() {
   }, [handleDelete, setMenuPosition]);
 
   // キー入力のイベントリスナーを登録し、アンマウント時に解除
+  const isMac: boolean = useMemo(
+    () => window.navigator.userAgent.indexOf("Mac") !== -1,
+    []
+  );
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       switch (event.key.toLowerCase()) {
         case "c":
-          if (event.ctrlKey) {
+          if (isMac ? event.metaKey : event.ctrlKey) {
             handleCopy();
           }
           break;
         case "delete":
-          handleDelete();
+          if (!isMac) {
+            handleDelete();
+          }
           break;
         case "m":
           handleFlip(true, true);
           break;
         case "v":
-          if (event.ctrlKey) {
+          if (isMac ? event.metaKey : event.ctrlKey) {
             handlePaste();
           }
           break;
         case "x":
-          if (event.ctrlKey) {
+          if (isMac ? event.metaKey : event.ctrlKey) {
             handleCut();
           } else {
             handleFlip(true, false);
@@ -202,13 +208,18 @@ function ChartIndicatorMenu() {
         case "y":
           handleFlip(false, true);
           break;
+        case "backspace":
+          if (isMac) {
+            handleDelete();
+          }
+          break;
         default:
           break;
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleCopy, handleCut, handleDelete, handleFlip, handlePaste]);
+  }, [handleCopy, handleCut, handleDelete, handleFlip, handlePaste, isMac]);
 
   return (
     <Menu
@@ -254,19 +265,19 @@ function ChartIndicatorMenu() {
         <ChartIndicatorMenuItem
           disabled={selector.completed === null}
           label="Cut"
-          keyLabel="Ctrl+X"
+          keyLabel={`${isMac ? "⌘" : "Ctrl"}+X`}
           onClick={onClickCut}
         />
         <ChartIndicatorMenuItem
           disabled={selector.completed === null}
           label="Copy"
-          keyLabel="Ctrl+C"
+          keyLabel={`${isMac ? "⌘" : "Ctrl"}+C`}
           onClick={onClickCopy}
         />
         <ChartIndicatorMenuItem
           disabled={indicator === null || clipBoard === null}
           label="Paste"
-          keyLabel="Ctrl+V"
+          keyLabel={`${isMac ? "⌘" : "Ctrl"}+V`}
           onClick={onClickPaste}
         />
         <Divider />
@@ -291,7 +302,7 @@ function ChartIndicatorMenu() {
         <ChartIndicatorMenuItem
           disabled={selector.completed === null}
           label="Delete"
-          keyLabel="Delete"
+          keyLabel={`${isMac ? "⌘+" : ""}delete`}
           onClick={onClickDelete}
         />
       </MenuList>

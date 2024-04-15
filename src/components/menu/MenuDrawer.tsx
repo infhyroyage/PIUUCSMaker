@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { Divider, Drawer, List, Theme } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import UploadIcon from "@mui/icons-material/Upload";
@@ -71,16 +71,25 @@ function MenuDrawer() {
     if (zoom.top !== null) scrollTo({ top: zoom.top, behavior: "instant" });
   }, [zoom]);
 
-  // キー入力のイベントリスナーを登録
-  // アンマウント時に上記イベントリスナーを解除
+  // キー入力のイベントリスナーを登録し、アンマウント時に解除
+  const isMac: boolean = useMemo(
+    () => window.navigator.userAgent.indexOf("Mac") !== -1,
+    []
+  );
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       switch (event.key.toLowerCase()) {
         case "y":
-          if (event.ctrlKey) handleRedo();
+          if (!isMac && event.ctrlKey) {
+            handleRedo();
+          }
           break;
         case "z":
-          if (event.ctrlKey) handleUndo();
+          if (isMac && event.shiftKey) {
+            handleRedo();
+          } else if (isMac ? event.metaKey : event.ctrlKey) {
+            handleUndo();
+          }
           break;
         default:
           break;
@@ -88,7 +97,7 @@ function MenuDrawer() {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleRedo, handleUndo]);
+  }, [handleRedo, handleUndo, isMac]);
 
   return (
     <Drawer
@@ -149,13 +158,13 @@ function MenuDrawer() {
         <MenuDrawerListItem
           disabled={undoSnapshots.length === 0 || isPlaying}
           icon={<UndoIcon />}
-          label="Undo (Ctrl+Z)"
+          label={`Undo (${isMac ? "⌘" : "Ctrl"}+Z)`}
           onClick={handleUndo}
         />
         <MenuDrawerListItem
           disabled={redoSnapshots.length === 0 || isPlaying}
           icon={<RedoIcon />}
-          label="Redo (Ctrl+Y)"
+          label={`Redo (${isMac ? "⌘+Shift+Z" : "Ctrl+Y"})`}
           onClick={handleRedo}
         />
         <Divider />
