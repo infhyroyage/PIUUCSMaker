@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc && vite build",
     "dev": "vite",
-    "lint": "eslint '**/*.{ts,tsx}'",
+    "lint": "eslint",
     "test": "vitest"
   },
   "dependencies": {
