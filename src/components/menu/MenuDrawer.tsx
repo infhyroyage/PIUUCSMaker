@@ -1,23 +1,28 @@
-import { useEffect, useMemo } from "react";
-import { Divider, Drawer, List, Theme } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import UploadIcon from "@mui/icons-material/Upload";
-import DownloadIcon from "@mui/icons-material/Download";
-import UndoIcon from "@mui/icons-material/Undo";
-import RedoIcon from "@mui/icons-material/Redo";
-import ZoomInIcon from "@mui/icons-material/ZoomIn";
-import ZoomOutIcon from "@mui/icons-material/ZoomOut";
 import AudioFileIcon from "@mui/icons-material/AudioFile";
-import MusicOffIcon from "@mui/icons-material/MusicOff";
-import MusicNoteIcon from "@mui/icons-material/MusicNote";
-import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import StopIcon from "@mui/icons-material/Stop";
-import TableChartIcon from "@mui/icons-material/TableChart";
-import DarkModeIcon from "@mui/icons-material/DarkMode";
-import LightModeIcon from "@mui/icons-material/LightMode";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+import DownloadIcon from "@mui/icons-material/Download";
+import LightModeIcon from "@mui/icons-material/LightMode";
+import MusicNoteIcon from "@mui/icons-material/MusicNote";
+import MusicOffIcon from "@mui/icons-material/MusicOff";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import RedoIcon from "@mui/icons-material/Redo";
+import StopIcon from "@mui/icons-material/Stop";
+import TableChartIcon from "@mui/icons-material/TableChart";
+import UndoIcon from "@mui/icons-material/Undo";
+import UploadIcon from "@mui/icons-material/Upload";
+import ZoomInIcon from "@mui/icons-material/ZoomIn";
+import ZoomOutIcon from "@mui/icons-material/ZoomOut";
+import { Divider, Drawer, List, Theme } from "@mui/material";
+import { useEffect, useMemo } from "react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import useChartSnapshot from "../../hooks/useChartSnapshot";
+import useDownloadingUCS from "../../hooks/useDownloadingUCS";
+import usePlaying from "../../hooks/usePlaying";
+import useUploadingUCS from "../../hooks/useUploadingUCS";
+import { ZOOM_VALUES } from "../../services/assets";
 import {
   isDarkModeState,
   isMuteBeatsState,
@@ -30,19 +35,14 @@ import {
   undoSnapshotsState,
   zoomState,
 } from "../../services/atoms";
-import MenuDrawerListItem from "./MenuDrawerListItem";
-import { Zoom } from "../../types/menu";
-import { ChartSnapshot } from "../../types/ucs";
-import { ZOOM_VALUES } from "../../services/assets";
 import {
   MENU_BAR_HEIGHT,
   MENU_DRAWER_OPENED_WIDTH,
 } from "../../services/styles";
-import usePlaying from "../../hooks/usePlaying";
-import useUploadingUCS from "../../hooks/useUploadingUCS";
-import useDownloadingUCS from "../../hooks/useDownloadingUCS";
+import { Zoom } from "../../types/menu";
+import { ChartSnapshot } from "../../types/ucs";
+import MenuDrawerListItem from "./MenuDrawerListItem";
 import MenuDrawerUploadListItem from "./MenuDrawerUploadListItem";
-import useChartSnapshot from "../../hooks/useChartSnapshot";
 
 function MenuDrawer() {
   const [isDarkMode, setIsDarkMode] = useRecoilState<boolean>(isDarkModeState);
@@ -158,13 +158,13 @@ function MenuDrawer() {
         <MenuDrawerListItem
           disabled={undoSnapshots.length === 0 || isPlaying}
           icon={<UndoIcon />}
-          label={`Undo (${isMac ? "⌘" : "Ctrl"}+Z)`}
+          label="Undo"
           onClick={handleUndo}
         />
         <MenuDrawerListItem
           disabled={redoSnapshots.length === 0 || isPlaying}
           icon={<RedoIcon />}
-          label={`Redo (${isMac ? "⌘+Shift+Z" : "Ctrl+Y"})`}
+          label="Redo"
           onClick={handleRedo}
         />
         <Divider />
