@@ -67,6 +67,7 @@ function WorkSpace() {
         flexGrow: 1,
         justifyContent: "center",
         lineHeight: 0,
+        marginTop: `${MENU_BAR_HEIGHT}px`,
         marginLeft: `${MENU_BAR_HEIGHT}px`,
       }}
     >

@@ -15,6 +15,7 @@ function ReadyUCS() {
       className="flex flex-col items-center justify-center gap-4"
       style={{
         height: `calc(100vh - ${MENU_BAR_HEIGHT}px)`,
+        marginTop: `${MENU_BAR_HEIGHT}px`,
         marginLeft: `${MENU_BAR_HEIGHT}px`,
       }}
     >
