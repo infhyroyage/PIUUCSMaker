@@ -5,11 +5,11 @@ import {
   noteSizeState,
   selectorState,
 } from "../../services/atoms";
+import { MENU_BAR_HEIGHT } from "../../services/styles";
+import { HoldSetter, Selector } from "../../types/chart";
+import BlockController from "./BlockController";
 import Chart from "./Chart";
 import Identifier from "./Identifier";
-import BlockController from "./BlockController";
-import { HoldSetter, Selector } from "../../types/chart";
-import { MENU_BAR_HEIGHT } from "../../services/styles";
 
 function WorkSpace() {
   const setHoldSetter = useSetRecoilState<HoldSetter>(holdSetterState);
@@ -49,6 +49,7 @@ function WorkSpace() {
 
   return (
     <div
+      className="bg-base-100 text-base-content"
       onMouseUp={(event: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
         // 左クリック時のみ、選択領域・マウス押下した場合の表示パラメーターをすべて初期化
         if (event.button === 0) {
