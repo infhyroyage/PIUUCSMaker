@@ -90,6 +90,7 @@ function MenuBar() {
             className="btn btn-sm btn-ghost"
             onClick={onClickVolumeButton}
           >
+            {/* heroicons "speaker-x-mark" and "speaker-wave" */}
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"

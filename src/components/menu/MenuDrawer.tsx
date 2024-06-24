@@ -237,6 +237,7 @@ function MenuDrawer() {
         <MenuDrawerListItem
           icon={
             <label className="swap swap-rotate">
+              {/* heroicon "sun" and "moon" */}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
