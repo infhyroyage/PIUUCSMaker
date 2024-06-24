@@ -112,7 +112,6 @@ function MenuDrawer() {
 
   return (
     <Drawer
-      className="bg-base-200 text-base-content"
       variant="permanent"
       open={isOpenedMenuDrawer}
       PaperProps={{ elevation: 3, height: "100%" }}

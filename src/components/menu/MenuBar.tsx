@@ -46,7 +46,7 @@ function MenuBar() {
 
   return (
     <div
-      className="navbar bg-base-300 text-base-content fixed top-0 w-full py-0 min-h-0"
+      className="navbar bg-base-300 fixed top-0 w-full py-0 min-h-0"
       style={{
         height: `${MENU_BAR_HEIGHT}px`,
         zIndex: 1100000,
@@ -55,7 +55,7 @@ function MenuBar() {
       <MenuBarTitle />
       <form className="flex items-center gap-0 md:gap-1">
         <select
-          className="select select-sm select-bordered bg-base-300 text-base-content"
+          className="select select-sm select-bordered bg-base-300"
           disabled={isPlaying}
           onChange={(event: ChangeEvent<HTMLSelectElement>) =>
             setZoom({

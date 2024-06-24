@@ -1,4 +1,3 @@
-import { CssBaseline } from "@mui/material";
 import { useEffect } from "react";
 import ReactGA from "react-ga4";
 import { useRecoilValue } from "recoil";
@@ -26,7 +25,6 @@ function App() {
 
   return (
     <>
-      <CssBaseline />
       <MenuBar />
       <MenuDrawer />
       {ucsName === null ? <ReadyUCS /> : <WorkSpace />}

@@ -49,7 +49,6 @@ function WorkSpace() {
 
   return (
     <div
-      className="bg-base-100 text-base-content"
       onMouseUp={(event: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
         // 左クリック時のみ、選択領域・マウス押下した場合の表示パラメーターをすべて初期化
         if (event.button === 0) {
