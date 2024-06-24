@@ -1,4 +1,3 @@
-import { Slider } from "@mui/material";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { ZOOM_VALUES } from "../../services/assets";
@@ -20,15 +19,37 @@ function MenuBar() {
   const isPlaying = useRecoilValue<boolean>(isPlayingState);
   const isProtected = useRecoilValue<boolean>(isProtectedState);
 
-  const onClickVolumeButton = useCallback(() => {
-    if (muteVolBuf === null) {
-      setMuteVolBuf(volumeValue);
-      setVolumeValue(0);
-    } else {
-      setVolumeValue(muteVolBuf);
-      setMuteVolBuf(null);
-    }
-  }, [muteVolBuf, setMuteVolBuf, setVolumeValue, volumeValue]);
+  const onChangeSelect = useCallback(
+    (event: ChangeEvent<HTMLSelectElement>) => {
+      // formを送信せず、ページ遷移を行わないようにする
+      event.preventDefault();
+
+      setZoom({
+        idx: Number(event.target.value),
+        top:
+          (document.documentElement.scrollTop *
+            ZOOM_VALUES[Number(event.target.value)]) /
+          ZOOM_VALUES[zoom.idx],
+      });
+    },
+    [setZoom, zoom]
+  );
+
+  const onClickVolumeButton = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>) => {
+      // formを送信せず、ページ遷移を行わないようにする
+      event.preventDefault();
+
+      if (muteVolBuf === null) {
+        setMuteVolBuf(volumeValue);
+        setVolumeValue(0);
+      } else {
+        setVolumeValue(muteVolBuf);
+        setMuteVolBuf(null);
+      }
+    },
+    [muteVolBuf, setMuteVolBuf, setVolumeValue, volumeValue]
+  );
 
   // 編集中に離脱した場合、その離脱を抑止する組込みダイアログを表示
   useEffect(() => {
@@ -46,7 +67,7 @@ function MenuBar() {
 
   return (
     <div
-      className="navbar bg-base-300 fixed top-0 w-full py-0 min-h-0"
+      className="navbar bg-base-300 fixed top-0 w-full px-2 md:px-4 py-0 min-h-0"
       style={{
         height: `${MENU_BAR_HEIGHT}px`,
         zIndex: 1100000,
@@ -57,15 +78,7 @@ function MenuBar() {
         <select
           className="select select-sm select-bordered bg-base-300"
           disabled={isPlaying}
-          onChange={(event: ChangeEvent<HTMLSelectElement>) =>
-            setZoom({
-              idx: Number(event.target.value),
-              top:
-                (document.documentElement.scrollTop *
-                  ZOOM_VALUES[Number(event.target.value)]) /
-                ZOOM_VALUES[zoom.idx],
-            })
-          }
+          onChange={onChangeSelect}
           value={`${zoom.idx}`}
         >
           {ZOOM_VALUES.map((zoomValue: number, idx: number) => (
@@ -96,16 +109,16 @@ function MenuBar() {
               />
             </svg>
           </button>
-          <Slider
+          <input
+            className="range range-xs w-20"
             disabled={muteVolBuf !== null}
             max={1}
             min={0}
-            onChange={(_, value: number | number[]) => {
-              setVolumeValue(value as number);
-            }}
-            size="small"
+            onChange={(event: ChangeEvent<HTMLInputElement>) =>
+              setVolumeValue(Number(event.target.value))
+            }
             step={0.01}
-            sx={{ width: `${MENU_BAR_HEIGHT}px`, color: "white" }}
+            type="range"
             value={muteVolBuf || volumeValue}
           />
         </div>
