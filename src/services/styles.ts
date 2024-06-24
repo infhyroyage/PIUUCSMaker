@@ -33,3 +33,8 @@ export const MUI_DEFAULT_Z_INDEX: Record<string, number> = {
   snackbar: 1400,
   tooltip: 1500,
 };
+
+/**
+ * z-index of SuccessSnackbar and UserErrorSnackbar
+ */
+export const SNACKBAR_Z_INDEX: number = 1400000;
