@@ -1,23 +1,20 @@
-import { Theme, useTheme } from "@mui/material";
 import { useRecoilValue } from "recoil";
+import useVerticalBorderSize from "../../hooks/useVerticalBorderSize";
+import { HOLD_BINARIES, NOTE_BINARIES } from "../../services/assets";
 import {
-  indicatorState,
   holdSetterState,
+  indicatorState,
   noteSizeState,
   selectorState,
 } from "../../services/atoms";
-import { Indicator, HoldSetter, Selector } from "../../types/chart";
-import { IDENTIFIER_WIDTH } from "../../services/styles";
-import useVerticalBorderSize from "../../hooks/useVerticalBorderSize";
-import { HOLD_BINARIES, NOTE_BINARIES } from "../../services/assets";
+import { IDENTIFIER_WIDTH, MENU_BAR_Z_INDEX } from "../../services/styles";
+import { HoldSetter, Indicator, Selector } from "../../types/chart";
 
 function ChartIndicator() {
   const holdSetter = useRecoilValue<HoldSetter>(holdSetterState);
   const indicator = useRecoilValue<Indicator>(indicatorState);
   const noteSize = useRecoilValue<number>(noteSizeState);
   const selector = useRecoilValue<Selector>(selectorState);
-
-  const theme: Theme = useTheme();
 
   const verticalBorderSize = useVerticalBorderSize();
 
@@ -44,7 +41,7 @@ function ChartIndicator() {
                   opacity: holdSetter.isSettingByMenu ? 0.5 : 1,
                   pointerEvents: "none",
                   userSelect: "none",
-                  zIndex: theme.zIndex.appBar - 4,
+                  zIndex: MENU_BAR_Z_INDEX - 4,
                 }}
               />
             )}
@@ -68,7 +65,7 @@ function ChartIndicator() {
                     opacity: holdSetter.isSettingByMenu ? 0.5 : 1,
                     pointerEvents: "none",
                     userSelect: "none",
-                    zIndex: theme.zIndex.appBar - 3,
+                    zIndex: MENU_BAR_Z_INDEX - 3,
                   }}
                 />
                 <img
@@ -87,7 +84,7 @@ function ChartIndicator() {
                     opacity: holdSetter.isSettingByMenu ? 0.5 : 1,
                     pointerEvents: "none",
                     userSelect: "none",
-                    zIndex: theme.zIndex.appBar - 2,
+                    zIndex: MENU_BAR_Z_INDEX - 2,
                   }}
                 />
               </>
@@ -112,7 +109,7 @@ function ChartIndicator() {
                 ? "rgba(255, 170, 255, 0.5)"
                 : "rgba(170, 170, 255, 0.5)",
             pointerEvents: "none",
-            zIndex: theme.zIndex.appBar - 1,
+            zIndex: MENU_BAR_Z_INDEX - 1,
           }}
         />
       </>

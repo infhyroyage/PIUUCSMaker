@@ -7,7 +7,7 @@ import {
   volumeValueState,
   zoomState,
 } from "../../services/atoms";
-import { MENU_BAR_HEIGHT } from "../../services/styles";
+import { MENU_BAR_HEIGHT, MENU_BAR_Z_INDEX } from "../../services/styles";
 import { Zoom } from "../../types/menu";
 import MenuBarTitle from "./MenuBarTitle";
 
@@ -70,7 +70,7 @@ function MenuBar() {
       className="navbar bg-base-300 fixed top-0 w-full px-2 md:px-4 py-0 min-h-0"
       style={{
         height: `${MENU_BAR_HEIGHT}px`,
-        zIndex: 1100000,
+        zIndex: MENU_BAR_Z_INDEX,
       }}
     >
       <MenuBarTitle />

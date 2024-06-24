@@ -9,6 +9,11 @@ export const IDENTIFIER_WIDTH: number = 36;
 export const MENU_BAR_HEIGHT: number = 48;
 
 /**
+ * z-index of MenuBar
+ */
+export const MENU_BAR_Z_INDEX: number = 1100000;
+
+/**
  * Width (px) of opened MenuDrawer
  */
 export const MENU_DRAWER_OPENED_WIDTH = 180;
@@ -16,6 +21,7 @@ export const MENU_DRAWER_OPENED_WIDTH = 180;
 /**
  * Default z-index scale in MUI
  * @link https://mui.com/material-ui/customization/z-index
+ * TODO: 1000倍したものを適用して消す
  */
 export const MUI_DEFAULT_Z_INDEX: Record<string, number> = {
   mobileStepper: 1000,

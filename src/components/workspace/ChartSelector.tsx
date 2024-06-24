@@ -1,26 +1,23 @@
 import { useMemo } from "react";
-import { Theme, useTheme } from "@mui/material";
 import { useRecoilValue } from "recoil";
+import useVerticalBorderSize from "../../hooks/useVerticalBorderSize";
+import { ZOOM_VALUES } from "../../services/assets";
 import {
   blocksState,
   noteSizeState,
   selectorState,
   zoomState,
 } from "../../services/atoms";
-import { Block } from "../../types/ucs";
-import { Zoom } from "../../types/menu";
-import { ZOOM_VALUES } from "../../services/assets";
-import { IDENTIFIER_WIDTH } from "../../services/styles";
+import { IDENTIFIER_WIDTH, MENU_BAR_Z_INDEX } from "../../services/styles";
 import { Selector } from "../../types/chart";
-import useVerticalBorderSize from "../../hooks/useVerticalBorderSize";
+import { Zoom } from "../../types/menu";
+import { Block } from "../../types/ucs";
 
 function ChartSelector() {
   const blocks = useRecoilValue<Block[]>(blocksState);
   const noteSize = useRecoilValue<number>(noteSizeState);
   const selector = useRecoilValue<Selector>(selectorState);
   const zoom = useRecoilValue<Zoom>(zoomState);
-
-  const theme: Theme = useTheme();
 
   const verticalBorderSize = useVerticalBorderSize();
 
@@ -152,7 +149,7 @@ function ChartSelector() {
           height: `${height}px`,
           backgroundColor: "rgba(170, 170, 170, 0.5)",
           pointerEvents: "none",
-          zIndex: theme.zIndex.appBar - 5,
+          zIndex: MENU_BAR_Z_INDEX - 5,
         }}
       />
     )
