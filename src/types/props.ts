@@ -184,7 +184,7 @@ export type MenuDrawerListItemProps = {
   /**
    * Action when clicking a item
    */
-  onClick?: React.MouseEventHandler<HTMLDivElement>;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
 };
 
 /**

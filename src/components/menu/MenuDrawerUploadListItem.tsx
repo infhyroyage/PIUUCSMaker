@@ -1,15 +1,6 @@
 import { memo } from "react";
-import {
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Tooltip,
-} from "@mui/material";
-import { useRecoilValue } from "recoil";
-import { isOpenedMenuDrawerState } from "../../services/atoms";
-import { MenuDrawerUploadListItemProps } from "../../types/props";
 import { MENU_BAR_HEIGHT } from "../../services/styles";
+import { MenuDrawerUploadListItemProps } from "../../types/props";
 
 function MenuDrawerUploadListItem({
   disabled,
@@ -19,43 +10,25 @@ function MenuDrawerUploadListItem({
   label,
   onChange,
 }: MenuDrawerUploadListItemProps) {
-  const isOpenedMenuDrawer = useRecoilValue<boolean>(isOpenedMenuDrawerState);
-
   return (
-    <Tooltip placement="right" title={label}>
-      <ListItem disablePadding sx={{ display: "block" }}>
-        <ListItemButton
-          component="label"
+    <li>
+      <label
+        className="flex flex-col items-start btn btn-ghost rounded-none px-3"
+        htmlFor={id}
+        style={{ height: `${MENU_BAR_HEIGHT}px` }}
+      >
+        <input
+          id={id}
+          type="file"
+          accept={extension}
+          style={{ display: "none" }}
+          onChange={onChange}
           disabled={disabled}
-          htmlFor={id}
-          sx={{
-            justifyContent: isOpenedMenuDrawer ? "initial" : "center",
-            minHeight: `${MENU_BAR_HEIGHT}px`,
-            px: "11.6px",
-          }}
-        >
-          <input
-            id={id}
-            type="file"
-            accept={extension}
-            style={{ display: "none" }}
-            onChange={onChange}
-          />
-          <ListItemIcon
-            sx={{
-              justifyContent: "center",
-              minWidth: 0,
-              mr: isOpenedMenuDrawer ? 3 : "auto",
-            }}
-          >
-            {icon}
-          </ListItemIcon>
-          {isOpenedMenuDrawer && (
-            <ListItemText primary={label} sx={{ opacity: 1 }} />
-          )}
-        </ListItemButton>
-      </ListItem>
-    </Tooltip>
+        />
+        {icon}
+        <p className="text-sm text-left w-full font-normal pl-3">{label}</p>
+      </label>
+    </li>
   );
 }
 

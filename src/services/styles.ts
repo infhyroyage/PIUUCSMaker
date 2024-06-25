@@ -19,6 +19,11 @@ export const MENU_BAR_Z_INDEX: number = 1100000;
 export const MENU_DRAWER_OPENED_WIDTH = 180;
 
 /**
+ * z-index of MenuDrawer
+ */
+export const MENU_DRAWER_Z_INDEX = 1200000;
+
+/**
  * Default z-index scale in MUI
  * @link https://mui.com/material-ui/customization/z-index
  * TODO: 1000倍したものを適用して消す
