@@ -9,7 +9,7 @@ function MenuDrawerListItem({
   onClick,
 }: MenuDrawerListItemProps) {
   return (
-    <li>
+    <li className={disabled ? "disabled" : undefined}>
       <button
         className="flex flex-col items-start btn btn-ghost rounded-none px-3"
         disabled={disabled}
