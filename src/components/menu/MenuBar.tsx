@@ -67,7 +67,7 @@ function MenuBar() {
 
   return (
     <div
-      className="navbar bg-base-300 fixed top-0 w-full px-2 md:px-4 py-0 min-h-0"
+      className="navbar bg-base-300 fixed top-0 w-full px-2 md:px-4 py-0 min-h-0 shadow-lg"
       style={{
         height: `${MENU_BAR_HEIGHT}px`,
         zIndex: MENU_BAR_Z_INDEX,
