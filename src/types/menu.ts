@@ -1,16 +1,24 @@
-import { PopoverPosition } from "@mui/material";
-
 /**
  * Coordinate of the browser screen opening BlockControllerMenu
  * undefined if BlockControllerMenu is invisible
  */
-export type BlockControllerMenuPosition = PopoverPosition | undefined;
+export type BlockControllerMenuPosition =
+  | {
+      top: number;
+      left: number;
+    }
+  | undefined;
 
 /**
  * Coordinate of the browser screen opening ChartIndicatorMenu
  * undefined if ChartIndicatorMenu is invisible
  */
-export type ChartIndicatorMenuPosition = PopoverPosition | undefined;
+export type ChartIndicatorMenuPosition =
+  | {
+      top: number;
+      left: number;
+    }
+  | undefined;
 
 /**
  * Display parameter when zooming in or out

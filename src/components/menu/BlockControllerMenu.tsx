@@ -1,17 +1,17 @@
-import { useCallback, useMemo } from "react";
-import { Divider, Menu, MenuItem, MenuList } from "@mui/material";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import {
-  isOpenedAdjustBlockDialogState,
   blockControllerMenuBlockIdxState,
   blockControllerMenuPositionState,
   blocksState,
+  isOpenedAdjustBlockDialogState,
   isOpenedEditBlockDialogState,
   isProtectedState,
+  notesState,
   redoSnapshotsState,
   undoSnapshotsState,
-  notesState,
 } from "../../services/atoms";
+import { MENU_Z_INDEX } from "../../services/styles";
 import { BlockControllerMenuPosition } from "../../types/menu";
 import { Block, ChartSnapshot, Note } from "../../types/ucs";
 
@@ -36,6 +36,8 @@ function BlockControllerMenu() {
   const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
   const setRedoSnapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
+
+  const menuRef = useRef<HTMLUListElement>(null);
 
   const blockNum = useMemo(() => blocks.length, [blocks.length]);
 
@@ -246,34 +248,77 @@ function BlockControllerMenu() {
     undoSnapshots,
   ]);
 
+  // 表示中は上下手動スクロールを抑止
+  useEffect(() => {
+    document.body.style.overflowY = menuPosition ? "hidden" : "scroll";
+  }, [menuPosition]);
+
   return (
-    <Menu
-      anchorReference={menuPosition && "anchorPosition"}
-      anchorPosition={menuPosition}
-      disableRestoreFocus
-      onClose={onClose}
-      open={!!menuPosition}
-    >
-      <MenuList dense>
-        <MenuItem onClick={onClickEdit}>Edit</MenuItem>
-        <MenuItem onClick={onClickAdjust}>Adjust Split/Rows/BPM</MenuItem>
-        <Divider />
-        <MenuItem onClick={onClickAdd}>Add at Bottom</MenuItem>
-        <MenuItem onClick={onClickInsert}>Insert into Next</MenuItem>
-        <MenuItem disabled={menuBlockIdx === 0} onClick={onClickMergeAbove}>
-          Merge with Above
-        </MenuItem>
-        <MenuItem
-          disabled={menuBlockIdx === blockNum - 1}
-          onClick={onClickMergeBelow}
+    !!menuPosition && (
+      <>
+        <div
+          className="fixed inset-0 opacity-50 bg-black"
+          style={{
+            zIndex: 1200000,
+          }}
+          onClick={(event: React.MouseEvent) => {
+            event.stopPropagation();
+            onClose();
+          }}
+          onContextMenu={(
+            event: React.MouseEvent<HTMLDivElement, MouseEvent>
+          ) => {
+            event.preventDefault();
+            event.stopPropagation();
+            onClose();
+          }}
+        />
+        <ul
+          ref={menuRef}
+          className="menu bg-base-200 rounded-box"
+          style={{
+            position: "fixed",
+            top: menuPosition.top,
+            left: menuPosition.left,
+            zIndex: MENU_Z_INDEX,
+          }}
         >
-          Merge with Below
-        </MenuItem>
-        <MenuItem disabled={blockNum < 2} onClick={onClickDelete}>
-          Delete
-        </MenuItem>
-      </MenuList>
-    </Menu>
+          <li>
+            <button onClick={onClickEdit}>Edit</button>
+          </li>
+          <li>
+            <button onClick={onClickAdjust}>Adjust Split/Rows/BPM</button>
+          </li>
+          <div className="divider my-0" />
+          <li>
+            <button onClick={onClickAdd}>Add at Bottom</button>
+          </li>
+          <li>
+            <button onClick={onClickInsert}>Insert into Next</button>
+          </li>
+          <li className={menuBlockIdx === 0 ? "disabled" : undefined}>
+            <button disabled={menuBlockIdx === 0} onClick={onClickMergeAbove}>
+              Merge with Above
+            </button>
+          </li>
+          <li
+            className={menuBlockIdx === blockNum - 1 ? "disabled" : undefined}
+          >
+            <button
+              disabled={menuBlockIdx === blockNum - 1}
+              onClick={onClickMergeBelow}
+            >
+              Merge with Below
+            </button>
+          </li>
+          <li className={blockNum < 2 ? "disabled" : undefined}>
+            <button disabled={blockNum < 2} onClick={onClickDelete}>
+              Delete
+            </button>
+          </li>
+        </ul>
+      </>
+    )
   );
 }
 
