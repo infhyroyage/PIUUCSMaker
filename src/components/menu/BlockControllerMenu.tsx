@@ -14,6 +14,7 @@ import {
 import { MENU_Z_INDEX } from "../../services/styles";
 import { BlockControllerMenuPosition } from "../../types/menu";
 import { Block, ChartSnapshot, Note } from "../../types/ucs";
+import DarkBackground from "../dialog/DarkBackground";
 
 function BlockControllerMenu() {
   const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
@@ -256,23 +257,7 @@ function BlockControllerMenu() {
   return (
     !!menuPosition && (
       <>
-        <div
-          className="fixed inset-0 opacity-50 bg-black"
-          style={{
-            zIndex: 1200000,
-          }}
-          onClick={(event: React.MouseEvent) => {
-            event.stopPropagation();
-            onClose();
-          }}
-          onContextMenu={(
-            event: React.MouseEvent<HTMLDivElement, MouseEvent>
-          ) => {
-            event.preventDefault();
-            event.stopPropagation();
-            onClose();
-          }}
-        />
+        <DarkBackground onClose={onClose} />
         <ul
           ref={menuRef}
           className="menu bg-base-200 rounded-box"

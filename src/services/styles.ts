@@ -1,4 +1,9 @@
 /**
+ * z-index of DarkBackground
+ */
+export const DARK_BACKGROUND_Z_INDEX: number = 1200000;
+
+/**
  * Width (px) of Identifier
  */
 export const IDENTIFIER_WIDTH: number = 36;

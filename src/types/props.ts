@@ -163,6 +163,16 @@ export type ChartVerticalNoteImagesProps = {
 };
 
 /**
+ * Props of DarkBackground
+ */
+export type DarkBackgroundProps = {
+  /**
+   * Action when clicking a dark background
+   */
+  onClose: () => void;
+};
+
+/**
  * Props of MenuDrawerListItem
  */
 export type MenuDrawerListItemProps = {
