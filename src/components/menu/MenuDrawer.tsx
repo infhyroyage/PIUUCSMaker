@@ -97,7 +97,7 @@ function MenuDrawer() {
 
   return (
     <div
-      className="fixed bg-base-200 transition-width duration-300 flex flex-col whitespace-nowrap box-border shadow-lg"
+      className="fixed bg-base-200 duration-300 flex flex-col whitespace-nowrap box-border shadow-lg"
       style={{
         width: `${
           isOpenedMenuDrawer ? MENU_DRAWER_OPENED_WIDTH : MENU_BAR_HEIGHT
