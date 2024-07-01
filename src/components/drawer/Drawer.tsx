@@ -18,8 +18,8 @@ import {
   zoomState,
 } from "../../services/atoms";
 import {
-  DIALOG_Z_INDEX,
   DRAWER_OPENED_WIDTH,
+  DRAWER_Z_INDEX,
   NAVIGATION_BAR_HEIGHT,
 } from "../../services/styles";
 import { Zoom } from "../../types/menu";
@@ -102,7 +102,7 @@ function Drawer() {
           isOpenedDrawer ? DRAWER_OPENED_WIDTH : NAVIGATION_BAR_HEIGHT
         }px`,
         height: `calc(100vh - ${NAVIGATION_BAR_HEIGHT}px)`,
-        zIndex: DIALOG_Z_INDEX,
+        zIndex: DRAWER_Z_INDEX,
       }}
     >
       <div className="flex-1 overflow-y-auto overflow-x-hidden">
