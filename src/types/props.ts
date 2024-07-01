@@ -163,6 +163,16 @@ export type ChartVerticalNoteImagesProps = {
 };
 
 /**
+ * Props of DialogBackground
+ */
+export type DialogBackgroundProps = {
+  /**
+   * Action when clicking background
+   */
+  onClose: () => void;
+};
+
+/**
  * Props of DrawerListItem
  */
 export type DrawerListItemProps = {
@@ -228,7 +238,7 @@ export type DrawerUploadListItemProps = {
  */
 export type MenuBackgroundProps = {
   /**
-   * Action when clicking a dark background
+   * Action when clicking background
    */
   onClose: () => void;
 };
