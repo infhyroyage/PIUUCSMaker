@@ -4,16 +4,6 @@
 export const IDENTIFIER_WIDTH: number = 36;
 
 /**
- * Height (px) of MenuBar which corresponds to the wiidth (px) of closed MenuDrawer
- */
-export const MENU_BAR_HEIGHT: number = 48;
-
-/**
- * z-index of MenuBar
- */
-export const MENU_BAR_Z_INDEX: number = 1100000;
-
-/**
  * Width (px) of opened MenuDrawer
  */
 export const MENU_DRAWER_OPENED_WIDTH: number = 180;
@@ -48,6 +38,16 @@ export const MUI_DEFAULT_Z_INDEX: Record<string, number> = {
   snackbar: 1400,
   tooltip: 1500,
 };
+
+/**
+ * Height (px) of NavigationBar which corresponds to the wiidth (px) of closed MenuDrawer
+ */
+export const NAVIGATION_BAR_HEIGHT: number = 48;
+
+/**
+ * z-index of NavigationBar
+ */
+export const NAVIGATION_BAR_Z_INDEX: number = 1100000;
 
 /**
  * z-index of SuccessSnackbar and UserErrorSnackbar

@@ -8,7 +8,10 @@ import {
   selectorState,
   zoomState,
 } from "../../services/atoms";
-import { IDENTIFIER_WIDTH, MENU_BAR_Z_INDEX } from "../../services/styles";
+import {
+  IDENTIFIER_WIDTH,
+  NAVIGATION_BAR_Z_INDEX,
+} from "../../services/styles";
 import { Selector } from "../../types/chart";
 import { Zoom } from "../../types/menu";
 import { Block } from "../../types/ucs";
@@ -149,7 +152,7 @@ function ChartSelector() {
           height: `${height}px`,
           backgroundColor: "rgba(170, 170, 170, 0.5)",
           pointerEvents: "none",
-          zIndex: MENU_BAR_Z_INDEX - 5,
+          zIndex: NAVIGATION_BAR_Z_INDEX - 5,
         }}
       />
     )

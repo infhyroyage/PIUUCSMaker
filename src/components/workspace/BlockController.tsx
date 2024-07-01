@@ -1,6 +1,6 @@
+import { MouseEvent, useCallback, useMemo } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import { Block, Note } from "../../types/ucs";
-import { BlockControllerMenuPosition } from "../../types/menu";
+import useVerticalBorderSize from "../../hooks/useVerticalBorderSize";
 import {
   blockControllerMenuBlockIdxState,
   blockControllerMenuPositionState,
@@ -8,11 +8,11 @@ import {
   noteSizeState,
   notesState,
 } from "../../services/atoms";
-import BlockControllerButton from "./BlockControllerButton";
-import { MouseEvent, useCallback, useMemo } from "react";
+import { IDENTIFIER_WIDTH, NAVIGATION_BAR_HEIGHT } from "../../services/styles";
+import { BlockControllerMenuPosition } from "../../types/menu";
+import { Block, Note } from "../../types/ucs";
 import BlockControllerMenu from "../menu/BlockControllerMenu";
-import { IDENTIFIER_WIDTH, MENU_BAR_HEIGHT } from "../../services/styles";
-import useVerticalBorderSize from "../../hooks/useVerticalBorderSize";
+import BlockControllerButton from "./BlockControllerButton";
 
 function BlockController() {
   const blocks = useRecoilValue<Block[]>(blocksState);
@@ -30,7 +30,7 @@ function BlockController() {
   const maxWidth = useMemo(
     () =>
       `calc(100vw - ${
-        MENU_BAR_HEIGHT +
+        NAVIGATION_BAR_HEIGHT +
         IDENTIFIER_WIDTH +
         notes.length * noteSize +
         verticalBorderSize

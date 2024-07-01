@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { MENU_BAR_HEIGHT } from "../../services/styles";
+import { NAVIGATION_BAR_HEIGHT } from "../../services/styles";
 import { MenuDrawerUploadListItemProps } from "../../types/props";
 
 function MenuDrawerUploadListItem({
@@ -15,7 +15,7 @@ function MenuDrawerUploadListItem({
       <label
         className="flex flex-col items-start btn btn-ghost rounded-none px-3"
         htmlFor={id}
-        style={{ height: `${MENU_BAR_HEIGHT}px` }}
+        style={{ height: `${NAVIGATION_BAR_HEIGHT}px` }}
       >
         <input
           id={id}

@@ -80,7 +80,7 @@ export type ChartIndicatorMenuItemProps = {
  */
 export type ChartVerticalProps = {
   /**
-   * Distances (px) of y-coordinate between MenuBar and each chart block
+   * Distances (px) of y-coordinate between NavigationBar and each chart block
    */
   blockYDists: number[];
 
@@ -132,7 +132,7 @@ export type ChartVerticalNoteImagesProps = {
   accumulatedRows: number;
 
   /**
-   * Distance (px) of y-coordinate between MenuBar and chart block included this single note, starting point of hold, setting point of hold or end point of hold
+   * Distance (px) of y-coordinate between NavigationBar and chart block included this single note, starting point of hold, setting point of hold or end point of hold
    */
   blockYDist: number;
 

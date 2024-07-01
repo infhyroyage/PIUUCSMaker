@@ -7,11 +7,14 @@ import {
   volumeValueState,
   zoomState,
 } from "../../services/atoms";
-import { MENU_BAR_HEIGHT, MENU_BAR_Z_INDEX } from "../../services/styles";
+import {
+  NAVIGATION_BAR_HEIGHT,
+  NAVIGATION_BAR_Z_INDEX,
+} from "../../services/styles";
 import { Zoom } from "../../types/menu";
-import MenuBarTitle from "./MenuBarTitle";
+import NavigationBarTitle from "./NavigationBarTitle";
 
-function MenuBar() {
+function NavigationBar() {
   const [muteVolBuf, setMuteVolBuf] = useState<number | null>(null);
   const [volumeValue, setVolumeValue] =
     useRecoilState<number>(volumeValueState);
@@ -69,11 +72,11 @@ function MenuBar() {
     <div
       className="navbar bg-base-300 fixed top-0 w-full px-2 md:px-4 py-0 min-h-0 shadow-lg"
       style={{
-        height: `${MENU_BAR_HEIGHT}px`,
-        zIndex: MENU_BAR_Z_INDEX,
+        height: `${NAVIGATION_BAR_HEIGHT}px`,
+        zIndex: NAVIGATION_BAR_Z_INDEX,
       }}
     >
-      <MenuBarTitle />
+      <NavigationBarTitle />
       <form className="flex items-center gap-0 md:gap-1">
         <select
           className="select select-sm select-bordered bg-base-300"
@@ -128,4 +131,4 @@ function MenuBar() {
   );
 }
 
-export default MenuBar;
+export default NavigationBar;

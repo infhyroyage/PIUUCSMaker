@@ -18,9 +18,9 @@ import {
   zoomState,
 } from "../../services/atoms";
 import {
-  MENU_BAR_HEIGHT,
   MENU_DRAWER_OPENED_WIDTH,
   MENU_DRAWER_Z_INDEX,
+  NAVIGATION_BAR_HEIGHT,
 } from "../../services/styles";
 import { Zoom } from "../../types/menu";
 import { ChartSnapshot } from "../../types/ucs";
@@ -100,9 +100,9 @@ function MenuDrawer() {
       className="fixed bg-base-200 duration-300 flex flex-col whitespace-nowrap box-border shadow-lg"
       style={{
         width: `${
-          isOpenedMenuDrawer ? MENU_DRAWER_OPENED_WIDTH : MENU_BAR_HEIGHT
+          isOpenedMenuDrawer ? MENU_DRAWER_OPENED_WIDTH : NAVIGATION_BAR_HEIGHT
         }px`,
-        height: `calc(100vh - ${MENU_BAR_HEIGHT}px)`,
+        height: `calc(100vh - ${NAVIGATION_BAR_HEIGHT}px)`,
         zIndex: MENU_DRAWER_Z_INDEX,
       }}
     >

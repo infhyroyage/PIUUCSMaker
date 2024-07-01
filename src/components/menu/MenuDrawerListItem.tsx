@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { MENU_BAR_HEIGHT } from "../../services/styles";
+import { NAVIGATION_BAR_HEIGHT } from "../../services/styles";
 import { MenuDrawerListItemProps } from "../../types/props";
 
 function MenuDrawerListItem({
@@ -14,7 +14,7 @@ function MenuDrawerListItem({
         className="flex flex-col items-start btn btn-ghost rounded-none px-3"
         disabled={disabled}
         onClick={onClick}
-        style={{ height: `${MENU_BAR_HEIGHT}px` }}
+        style={{ height: `${NAVIGATION_BAR_HEIGHT}px` }}
       >
         {icon}
         <p className="text-sm text-left w-full font-normal pl-3">{label}</p>

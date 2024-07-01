@@ -1,7 +1,7 @@
 import { useSetRecoilState } from "recoil";
 import useUploadingUCS from "../../hooks/useUploadingUCS";
 import { isOpenedNewUCSDialogState } from "../../services/atoms";
-import { MENU_BAR_HEIGHT } from "../../services/styles";
+import { NAVIGATION_BAR_HEIGHT } from "../../services/styles";
 
 function ReadyUCS() {
   const setIsOpenedNewUCSDialog = useSetRecoilState<boolean>(
@@ -14,9 +14,9 @@ function ReadyUCS() {
     <div
       className="flex flex-col items-center justify-center gap-4"
       style={{
-        height: `calc(100vh - ${MENU_BAR_HEIGHT}px)`,
-        marginTop: `${MENU_BAR_HEIGHT}px`,
-        marginLeft: `${MENU_BAR_HEIGHT}px`,
+        height: `calc(100vh - ${NAVIGATION_BAR_HEIGHT}px)`,
+        marginTop: `${NAVIGATION_BAR_HEIGHT}px`,
+        marginLeft: `${NAVIGATION_BAR_HEIGHT}px`,
       }}
     >
       <button

@@ -9,7 +9,7 @@ import {
 } from "../../services/atoms";
 import { Note } from "../../types/ucs";
 
-function MenuBarTitle() {
+function NavigationBarTitle() {
   const isPerformance = useRecoilValue<boolean>(isPerformanceState);
   const isProtected = useRecoilValue<boolean>(isProtectedState);
   const mp3Name = useRecoilValue<string | null>(mp3NameState);
@@ -47,4 +47,4 @@ function MenuBarTitle() {
   );
 }
 
-export default MenuBarTitle;
+export default NavigationBarTitle;

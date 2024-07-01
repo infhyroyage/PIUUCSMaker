@@ -5,7 +5,7 @@ import {
   noteSizeState,
   selectorState,
 } from "../../services/atoms";
-import { MENU_BAR_HEIGHT } from "../../services/styles";
+import { NAVIGATION_BAR_HEIGHT } from "../../services/styles";
 import { HoldSetter, Selector } from "../../types/chart";
 import BlockController from "./BlockController";
 import Chart from "./Chart";
@@ -67,8 +67,8 @@ function WorkSpace() {
         flexGrow: 1,
         justifyContent: "center",
         lineHeight: 0,
-        marginTop: `${MENU_BAR_HEIGHT}px`,
-        marginLeft: `${MENU_BAR_HEIGHT}px`,
+        marginTop: `${NAVIGATION_BAR_HEIGHT}px`,
+        marginLeft: `${NAVIGATION_BAR_HEIGHT}px`,
       }}
     >
       <div style={{ display: "flex", position: "relative" }}>
@@ -80,7 +80,7 @@ function WorkSpace() {
         style={{
           display: "block",
           width: 0,
-          height: `calc(100vh - ${MENU_BAR_HEIGHT}px)`,
+          height: `calc(100vh - ${NAVIGATION_BAR_HEIGHT}px)`,
         }}
       />
     </div>

@@ -7,7 +7,10 @@ import {
   noteSizeState,
   selectorState,
 } from "../../services/atoms";
-import { IDENTIFIER_WIDTH, MENU_BAR_Z_INDEX } from "../../services/styles";
+import {
+  IDENTIFIER_WIDTH,
+  NAVIGATION_BAR_Z_INDEX,
+} from "../../services/styles";
 import { HoldSetter, Indicator, Selector } from "../../types/chart";
 
 function ChartIndicator() {
@@ -41,7 +44,7 @@ function ChartIndicator() {
                   opacity: holdSetter.isSettingByMenu ? 0.5 : 1,
                   pointerEvents: "none",
                   userSelect: "none",
-                  zIndex: MENU_BAR_Z_INDEX - 4,
+                  zIndex: NAVIGATION_BAR_Z_INDEX - 4,
                 }}
               />
             )}
@@ -65,7 +68,7 @@ function ChartIndicator() {
                     opacity: holdSetter.isSettingByMenu ? 0.5 : 1,
                     pointerEvents: "none",
                     userSelect: "none",
-                    zIndex: MENU_BAR_Z_INDEX - 3,
+                    zIndex: NAVIGATION_BAR_Z_INDEX - 3,
                   }}
                 />
                 <img
@@ -84,7 +87,7 @@ function ChartIndicator() {
                     opacity: holdSetter.isSettingByMenu ? 0.5 : 1,
                     pointerEvents: "none",
                     userSelect: "none",
-                    zIndex: MENU_BAR_Z_INDEX - 2,
+                    zIndex: NAVIGATION_BAR_Z_INDEX - 2,
                   }}
                 />
               </>
@@ -109,7 +112,7 @@ function ChartIndicator() {
                 ? "rgba(255, 170, 255, 0.5)"
                 : "rgba(170, 170, 255, 0.5)",
             pointerEvents: "none",
-            zIndex: MENU_BAR_Z_INDEX - 1,
+            zIndex: NAVIGATION_BAR_Z_INDEX - 1,
           }}
         />
       </>
