@@ -163,19 +163,9 @@ export type ChartVerticalNoteImagesProps = {
 };
 
 /**
- * Props of MenuBackground
+ * Props of DrawerListItem
  */
-export type MenuBackgroundProps = {
-  /**
-   * Action when clicking a dark background
-   */
-  onClose: () => void;
-};
-
-/**
- * Props of MenuDrawerListItem
- */
-export type MenuDrawerListItemProps = {
+export type DrawerListItemProps = {
   /**
    * true if item is inactive, false if one is active
    */
@@ -198,9 +188,9 @@ export type MenuDrawerListItemProps = {
 };
 
 /**
- * Props of MenuDrawerUploadListItem
+ * Props of DrawerUploadListItem
  */
-export type MenuDrawerUploadListItemProps = {
+export type DrawerUploadListItemProps = {
   /**
    * true if item is inactive, false if one is active
    */
@@ -231,4 +221,14 @@ export type MenuDrawerUploadListItemProps = {
    * Action when clicking a item
    */
   onChange: React.ChangeEventHandler<HTMLInputElement>;
+};
+
+/**
+ * Props of MenuBackground
+ */
+export type MenuBackgroundProps = {
+  /**
+   * Action when clicking a dark background
+   */
+  onClose: () => void;
 };

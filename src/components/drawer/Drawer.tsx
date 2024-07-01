@@ -9,7 +9,7 @@ import {
   isDarkModeState,
   isMuteBeatsState,
   isOpenedAggregateDialogState,
-  isOpenedMenuDrawerState,
+  isOpenedDrawerState,
   isOpenedNewUCSDialogState,
   isPlayingState,
   redoSnapshotsState,
@@ -18,24 +18,23 @@ import {
   zoomState,
 } from "../../services/atoms";
 import {
-  MENU_DRAWER_OPENED_WIDTH,
-  MENU_DRAWER_Z_INDEX,
+  DRAWER_OPENED_WIDTH,
+  DRAWER_Z_INDEX,
   NAVIGATION_BAR_HEIGHT,
 } from "../../services/styles";
 import { Zoom } from "../../types/menu";
 import { ChartSnapshot } from "../../types/ucs";
-import MenuDrawerListItem from "./MenuDrawerListItem";
-import MenuDrawerUploadListItem from "./MenuDrawerUploadListItem";
+import DrawerListItem from "./DrawerListItem";
+import DrawerUploadListItem from "./DrawerUploadListItem";
 
-function MenuDrawer() {
+function Drawer() {
   const [isDarkMode, setIsDarkMode] = useRecoilState<boolean>(isDarkModeState);
   const [isMuteBeats, setIsMuteBeats] =
     useRecoilState<boolean>(isMuteBeatsState);
   const [isOpenedAggregateDialog, setIsOpenedAggregateDialog] =
     useRecoilState<boolean>(isOpenedAggregateDialogState);
-  const [isOpenedMenuDrawer, setIsOpenedMenuDrawer] = useRecoilState<boolean>(
-    isOpenedMenuDrawerState
-  );
+  const [isOpenedDrawer, setIsOpenedDrawer] =
+    useRecoilState<boolean>(isOpenedDrawerState);
   const [zoom, setZoom] = useRecoilState<Zoom>(zoomState);
   const isPlaying = useRecoilValue<boolean>(isPlayingState);
   const redoSnapshots = useRecoilValue<ChartSnapshot[]>(redoSnapshotsState);
@@ -100,15 +99,15 @@ function MenuDrawer() {
       className="fixed bg-base-200 duration-300 flex flex-col whitespace-nowrap box-border shadow-lg"
       style={{
         width: `${
-          isOpenedMenuDrawer ? MENU_DRAWER_OPENED_WIDTH : NAVIGATION_BAR_HEIGHT
+          isOpenedDrawer ? DRAWER_OPENED_WIDTH : NAVIGATION_BAR_HEIGHT
         }px`,
         height: `calc(100vh - ${NAVIGATION_BAR_HEIGHT}px)`,
-        zIndex: MENU_DRAWER_Z_INDEX,
+        zIndex: DRAWER_Z_INDEX,
       }}
     >
       <div className="flex-1 overflow-y-auto overflow-x-hidden">
         <ul className="menu w-full p-0">
-          <MenuDrawerListItem
+          <DrawerListItem
             disabled={isPlaying || isUploadingUCS || isDownloadingUCS}
             icon={
               // heroicons "plus"
@@ -130,7 +129,7 @@ function MenuDrawer() {
             label="New UCS"
             onClick={() => setIsOpenedNewUCSDialog(true)}
           />
-          <MenuDrawerUploadListItem
+          <DrawerUploadListItem
             disabled={isPlaying || isUploadingUCS || isDownloadingUCS}
             extension=".ucs"
             icon={
@@ -154,7 +153,7 @@ function MenuDrawer() {
             label={isUploadingUCS ? "Ready..." : "Upload UCS"}
             onChange={onUploadUCS}
           />
-          <MenuDrawerListItem
+          <DrawerListItem
             disabled={
               ucsName === null ||
               isPlaying ||
@@ -182,7 +181,7 @@ function MenuDrawer() {
             onClick={downloadUCS}
           />
           <div className="divider my-0" />
-          <MenuDrawerListItem
+          <DrawerListItem
             disabled={undoSnapshots.length === 0 || isPlaying}
             icon={
               // heroicons "arrow-uturn-left"
@@ -204,7 +203,7 @@ function MenuDrawer() {
             label="Undo"
             onClick={handleUndo}
           />
-          <MenuDrawerListItem
+          <DrawerListItem
             disabled={redoSnapshots.length === 0 || isPlaying}
             icon={
               // heroicons "arrow-uturn-right"
@@ -227,7 +226,7 @@ function MenuDrawer() {
             onClick={handleRedo}
           />
           <div className="divider my-0" />
-          <MenuDrawerListItem
+          <DrawerListItem
             disabled={zoom.idx === ZOOM_VALUES.length - 1 || isPlaying}
             icon={
               // heroicons "magnifying-glass-plus"
@@ -257,7 +256,7 @@ function MenuDrawer() {
               })
             }
           />
-          <MenuDrawerListItem
+          <DrawerListItem
             disabled={zoom.idx === 0 || isPlaying}
             icon={
               // heroicons "magnifying-glass-minus"
@@ -288,7 +287,7 @@ function MenuDrawer() {
             }
           />
           <div className="divider my-0" />
-          <MenuDrawerUploadListItem
+          <DrawerUploadListItem
             disabled={isPlaying || isUploadingMP3}
             extension=".mp3"
             icon={
@@ -312,7 +311,7 @@ function MenuDrawer() {
             label={isUploadingUCS ? "Ready..." : "Upload MP3"}
             onChange={onUploadMP3}
           />
-          <MenuDrawerListItem
+          <DrawerListItem
             icon={
               // heroicons "bell-slash" and "bell"
               <svg
@@ -337,7 +336,7 @@ function MenuDrawer() {
             label={isMuteBeats ? "Mute Beats" : "Unmute Beats"}
             onClick={() => setIsMuteBeats(!isMuteBeats)}
           />
-          <MenuDrawerListItem
+          <DrawerListItem
             disabled={ucsName === null || isUploadingMP3}
             icon={
               // heroicons "pause" and "play"
@@ -364,7 +363,7 @@ function MenuDrawer() {
             onClick={() => (isPlaying ? stop() : start())}
           />
           <div className="divider my-0" />
-          <MenuDrawerListItem
+          <DrawerListItem
             disabled={ucsName === null || isPlaying}
             icon={
               // heroicons "document-text"
@@ -386,7 +385,7 @@ function MenuDrawer() {
             label="Aggregate"
             onClick={() => setIsOpenedAggregateDialog(!isOpenedAggregateDialog)}
           />
-          <MenuDrawerListItem
+          <DrawerListItem
             icon={
               // heroicon "sun" and "moon"
               <svg
@@ -416,7 +415,7 @@ function MenuDrawer() {
       <div className="flex overflow-hidden">
         <ul className="menu w-full p-0">
           <div className="divider my-0" />
-          <MenuDrawerListItem
+          <DrawerListItem
             icon={
               // heroicons "chevron-left" and "chevron-right"
               <svg
@@ -431,15 +430,15 @@ function MenuDrawer() {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   d={
-                    isOpenedMenuDrawer
+                    isOpenedDrawer
                       ? "M15.75 19.5 8.25 12l7.5-7.5"
                       : "m8.25 4.5 7.5 7.5-7.5 7.5"
                   }
                 />
               </svg>
             }
-            label={isOpenedMenuDrawer ? "Fold" : "Expand"}
-            onClick={() => setIsOpenedMenuDrawer(!isOpenedMenuDrawer)}
+            label={isOpenedDrawer ? "Fold" : "Expand"}
+            onClick={() => setIsOpenedDrawer(!isOpenedDrawer)}
           />
         </ul>
       </div>
@@ -447,4 +446,4 @@ function MenuDrawer() {
   );
 }
 
-export default MenuDrawer;
+export default Drawer;

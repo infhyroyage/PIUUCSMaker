@@ -1,15 +1,15 @@
 import { memo } from "react";
 import { NAVIGATION_BAR_HEIGHT } from "../../services/styles";
-import { MenuDrawerUploadListItemProps } from "../../types/props";
+import { DrawerUploadListItemProps } from "../../types/props";
 
-function MenuDrawerUploadListItem({
+function DrawerUploadListItem({
   disabled,
   extension,
   icon,
   id,
   label,
   onChange,
-}: MenuDrawerUploadListItemProps) {
+}: DrawerUploadListItemProps) {
   return (
     <li className={disabled ? "disabled" : undefined}>
       <label
@@ -32,4 +32,4 @@ function MenuDrawerUploadListItem({
   );
 }
 
-export default memo(MenuDrawerUploadListItem);
+export default memo(DrawerUploadListItem);

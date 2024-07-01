@@ -1,13 +1,13 @@
 import { memo } from "react";
 import { NAVIGATION_BAR_HEIGHT } from "../../services/styles";
-import { MenuDrawerListItemProps } from "../../types/props";
+import { DrawerListItemProps } from "../../types/props";
 
-function MenuDrawerListItem({
+function DrawerListItem({
   disabled,
   icon,
   label,
   onClick,
-}: MenuDrawerListItemProps) {
+}: DrawerListItemProps) {
   return (
     <li className={disabled ? "disabled" : undefined}>
       <button
@@ -23,4 +23,4 @@ function MenuDrawerListItem({
   );
 }
 
-export default memo(MenuDrawerListItem);
+export default memo(DrawerListItem);

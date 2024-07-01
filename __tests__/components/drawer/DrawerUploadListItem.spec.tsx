@@ -1,13 +1,13 @@
 import "@testing-library/jest-dom/vitest";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { render, cleanup } from "@testing-library/react";
+import { cleanup, render } from "@testing-library/react";
 import { RecoilRoot } from "recoil";
-import MenuDrawerUploadListItem from "../../../src/components/menu/MenuDrawerUploadListItem";
-import { isOpenedMenuDrawerState } from "../../../src/services/atoms";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import DrawerUploadListItem from "../../../src/components/drawer/DrawerUploadListItem";
+import { isOpenedDrawerState } from "../../../src/services/atoms";
 
 const mockOnClick = vi.fn();
 
-describe("MenuDrawerUploadListItem", () => {
+describe("DrawerUploadListItem", () => {
   beforeEach(() => {
     vi.resetAllMocks();
   });
@@ -15,7 +15,7 @@ describe("MenuDrawerUploadListItem", () => {
   // https://github.com/vitest-dev/vitest/issues/1430
   afterEach(() => cleanup());
 
-  it("Render correctly if MenuDrawer is closed", () => {
+  it("Render correctly if Drawer is closed", () => {
     const props = {
       disabled: false,
       extension: ".txt",
@@ -27,7 +27,7 @@ describe("MenuDrawerUploadListItem", () => {
 
     const { getByRole } = render(
       <RecoilRoot>
-        <MenuDrawerUploadListItem {...props} />
+        <DrawerUploadListItem {...props} />
       </RecoilRoot>
     );
 
@@ -37,7 +37,7 @@ describe("MenuDrawerUploadListItem", () => {
     expect(button.children[1]).toHaveStyle({ "margin-right": "auto" });
   });
 
-  it("Render correctly if MenuDrawer is opened", () => {
+  it("Render correctly if Drawer is opened", () => {
     const props = {
       disabled: false,
       extension: ".txt",
@@ -50,10 +50,10 @@ describe("MenuDrawerUploadListItem", () => {
     const { getByRole } = render(
       <RecoilRoot
         initializeState={({ set }) => {
-          set(isOpenedMenuDrawerState, true);
+          set(isOpenedDrawerState, true);
         }}
       >
-        <MenuDrawerUploadListItem {...props} />
+        <DrawerUploadListItem {...props} />
       </RecoilRoot>
     );
 

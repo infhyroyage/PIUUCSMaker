@@ -5,7 +5,7 @@ import AdjustBlockDialog from "./components/dialog/AdjustBlockDialog";
 import { AggregateDialog } from "./components/dialog/AggregateDialog";
 import EditBlockDialog from "./components/dialog/EditBlockDialog";
 import NewUCSDialog from "./components/dialog/NewUCSDialog";
-import MenuDrawer from "./components/menu/MenuDrawer";
+import Drawer from "./components/drawer/Drawer";
 import NavigationBar from "./components/navbar/NavigationBar";
 import SuccessSnackbar from "./components/snackbar/SuccessSnackbar";
 import UserErrorSnackbar from "./components/snackbar/UserErrorSnackbar";
@@ -26,7 +26,7 @@ function App() {
   return (
     <>
       <NavigationBar />
-      <MenuDrawer />
+      <Drawer />
       {ucsName === null ? <ReadyUCS /> : <WorkSpace />}
       <AggregateDialog />
       <AdjustBlockDialog />

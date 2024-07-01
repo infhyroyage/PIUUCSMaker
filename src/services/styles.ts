@@ -1,17 +1,17 @@
 /**
+ * Width (px) of opened Drawer
+ */
+export const DRAWER_OPENED_WIDTH: number = 180;
+
+/**
+ * z-index of Drawer
+ */
+export const DRAWER_Z_INDEX: number = 1000000;
+
+/**
  * Width (px) of Identifier
  */
 export const IDENTIFIER_WIDTH: number = 36;
-
-/**
- * Width (px) of opened MenuDrawer
- */
-export const MENU_DRAWER_OPENED_WIDTH: number = 180;
-
-/**
- * z-index of MenuDrawer
- */
-export const MENU_DRAWER_Z_INDEX: number = 1000000;
 
 /**
  * z-index of BlockControllerMenu and ChartIndicatorMenu
@@ -40,7 +40,7 @@ export const MUI_DEFAULT_Z_INDEX: Record<string, number> = {
 };
 
 /**
- * Height (px) of NavigationBar which corresponds to the wiidth (px) of closed MenuDrawer
+ * Height (px) of NavigationBar which corresponds to the wiidth (px) of closed Drawer
  */
 export const NAVIGATION_BAR_HEIGHT: number = 48;
 
