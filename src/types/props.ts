@@ -163,9 +163,9 @@ export type ChartVerticalNoteImagesProps = {
 };
 
 /**
- * Props of DarkBackground
+ * Props of MenuBackground
  */
-export type DarkBackgroundProps = {
+export type MenuBackgroundProps = {
   /**
    * Action when clicking a dark background
    */

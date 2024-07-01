@@ -1,12 +1,12 @@
-import { DARK_BACKGROUND_Z_INDEX } from "../../services/styles";
-import { DarkBackgroundProps } from "../../types/props";
+import { MENU_BACKGROUND_Z_INDEX } from "../../services/styles";
+import { MenuBackgroundProps } from "../../types/props";
 
-export default function DarkBackground({ onClose }: DarkBackgroundProps) {
+export default function MenuBackground({ onClose }: MenuBackgroundProps) {
   return (
     <div
-      className="fixed inset-0 opacity-50 bg-black"
+      className="fixed inset-0 opacity-50"
       style={{
-        zIndex: DARK_BACKGROUND_Z_INDEX,
+        zIndex: MENU_BACKGROUND_Z_INDEX,
       }}
       onClick={(event: React.MouseEvent) => {
         event.stopPropagation();

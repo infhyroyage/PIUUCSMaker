@@ -14,7 +14,7 @@ import {
 import { MENU_Z_INDEX } from "../../services/styles";
 import { BlockControllerMenuPosition } from "../../types/menu";
 import { Block, ChartSnapshot, Note } from "../../types/ucs";
-import DarkBackground from "../dialog/DarkBackground";
+import MenuBackground from "./MenuBackground";
 
 function BlockControllerMenu() {
   const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
@@ -257,7 +257,7 @@ function BlockControllerMenu() {
   return (
     !!menuPosition && (
       <>
-        <DarkBackground onClose={onClose} />
+        <MenuBackground onClose={onClose} />
         <ul
           ref={menuRef}
           className="menu bg-base-200 rounded-box"

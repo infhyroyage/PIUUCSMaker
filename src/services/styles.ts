@@ -1,9 +1,4 @@
 /**
- * z-index of DarkBackground
- */
-export const DARK_BACKGROUND_Z_INDEX: number = 1200000;
-
-/**
  * Width (px) of Identifier
  */
 export const IDENTIFIER_WIDTH: number = 36;
@@ -32,6 +27,11 @@ export const MENU_DRAWER_Z_INDEX: number = 1000000;
  * z-index of BlockControllerMenu and ChartIndicatorMenu
  */
 export const MENU_Z_INDEX: number = 1300000;
+
+/**
+ * z-index of MenuBackground
+ */
+export const MENU_BACKGROUND_Z_INDEX: number = MENU_Z_INDEX - 1;
 
 /**
  * Default z-index scale in MUI
