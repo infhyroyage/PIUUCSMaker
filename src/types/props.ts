@@ -72,7 +72,7 @@ export type ChartIndicatorMenuItemProps = {
   /**
    * Action when clicking a item
    */
-  onClick?: React.MouseEventHandler<HTMLLIElement>;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
 };
 
 /**

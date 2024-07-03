@@ -1,25 +1,25 @@
-import { Divider, Menu, MenuList } from "@mui/material";
+import { useCallback, useEffect, useMemo } from "react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import useClipBoard from "../../hooks/useClipBoard";
+import useSelectedDeleting from "../../hooks/useSelectedDeleting";
+import useSelectedFlipping from "../../hooks/useSelectedFlipping";
 import {
+  blocksState,
   chartIndicatorMenuPositionState,
   clipBoardState,
-  indicatorState,
   holdSetterState,
-  selectorState,
-  blocksState,
+  indicatorState,
   isProtectedState,
   redoSnapshotsState,
+  selectorState,
   undoSnapshotsState,
 } from "../../services/atoms";
-import { HoldSetter, Selector } from "../../types/chart";
-import { Indicator } from "../../types/chart";
-import { Block, ChartSnapshot, ClipBoard } from "../../types/ucs";
-import useClipBoard from "../../hooks/useClipBoard";
-import useSelectedFlipping from "../../hooks/useSelectedFlipping";
-import useSelectedDeleting from "../../hooks/useSelectedDeleting";
+import { MENU_Z_INDEX } from "../../services/styles";
+import { HoldSetter, Indicator, Selector } from "../../types/chart";
 import { ChartIndicatorMenuPosition } from "../../types/menu";
-import { useCallback, useEffect, useMemo } from "react";
+import { Block, ChartSnapshot, ClipBoard } from "../../types/ucs";
 import ChartIndicatorMenuItem from "./ChartIndicatorMenuItem";
+import MenuBackground from "./MenuBackground";
 
 function ChartIndicatorMenu() {
   const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
@@ -40,6 +40,11 @@ function ChartIndicatorMenu() {
   const { handleFlip } = useSelectedFlipping();
   const { handleDelete } = useSelectedDeleting();
 
+  const onClose = useCallback(
+    () => setMenuPosition(undefined),
+    [setMenuPosition]
+  );
+
   const onClickStartSettingHold = useCallback(() => {
     // インディケーターが非表示/選択領域が表示中の場合はNOP
     if (
@@ -58,14 +63,8 @@ function ChartIndicatorMenu() {
       top: indicator.top,
     });
 
-    setMenuPosition(undefined);
-  }, [
-    indicator,
-    selector.completed,
-    selector.setting,
-    setHoldSetter,
-    setMenuPosition,
-  ]);
+    onClose();
+  }, [indicator, onClose, selector.completed, selector.setting, setHoldSetter]);
 
   const onClickStartSelecting = useCallback(() => {
     // インディケーターが非表示/ホールド設置中の場合はNOP
@@ -83,8 +82,8 @@ function ChartIndicatorMenu() {
       },
     });
 
-    setMenuPosition(undefined);
-  }, [holdSetter, indicator, setMenuPosition, setSelector]);
+    onClose();
+  }, [holdSetter, indicator, onClose, setSelector]);
 
   const onClickSplitBlock = useCallback(() => {
     // インディケーターが非表示/譜面のブロックの先頭の行にインディケーターが存在する場合はNOP
@@ -124,14 +123,14 @@ function ChartIndicatorMenu() {
       blockAccumulatedRows: indicator.rowIdx,
     });
 
-    setMenuPosition(undefined);
+    onClose();
   }, [
     blocks,
     indicator,
+    onClose,
     setBlocks,
     setIndicator,
     setIsProtected,
-    setMenuPosition,
     setRedoSnapshots,
     setUndoSnapshots,
     undoSnapshots,
@@ -139,38 +138,38 @@ function ChartIndicatorMenu() {
 
   const onClickCut = useCallback(() => {
     handleCut();
-    setMenuPosition(undefined);
-  }, [handleCut, setMenuPosition]);
+    onClose();
+  }, [handleCut, onClose]);
 
   const onClickCopy = useCallback(() => {
     handleCopy();
-    setMenuPosition(undefined);
-  }, [handleCopy, setMenuPosition]);
+    onClose();
+  }, [handleCopy, onClose]);
 
   const onClickPaste = useCallback(() => {
     handlePaste();
-    setMenuPosition(undefined);
-  }, [handlePaste, setMenuPosition]);
+    onClose();
+  }, [handlePaste, onClose]);
 
   const onClickFlipHorizontal = useCallback(() => {
     handleFlip(true, false);
-    setMenuPosition(undefined);
-  }, [handleFlip, setMenuPosition]);
+    onClose();
+  }, [handleFlip, onClose]);
 
   const onClickFlipVertical = useCallback(() => {
     handleFlip(false, true);
-    setMenuPosition(undefined);
-  }, [handleFlip, setMenuPosition]);
+    onClose();
+  }, [handleFlip, onClose]);
 
   const onClickMirror = useCallback(() => {
     handleFlip(true, true);
-    setMenuPosition(undefined);
-  }, [handleFlip, setMenuPosition]);
+    onClose();
+  }, [handleFlip, onClose]);
 
   const onClickDelete = useCallback(() => {
     handleDelete();
-    setMenuPosition(undefined);
-  }, [handleDelete, setMenuPosition]);
+    onClose();
+  }, [handleDelete, onClose]);
 
   // キー入力のイベントリスナーを登録し、アンマウント時に解除
   const isMac: boolean = useMemo(
@@ -221,92 +220,97 @@ function ChartIndicatorMenu() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleCopy, handleCut, handleDelete, handleFlip, handlePaste, isMac]);
 
+  // 表示中は上下手動スクロールを抑止
+  useEffect(() => {
+    document.body.style.overflowY = menuPosition ? "hidden" : "scroll";
+  }, [menuPosition]);
+
   return (
-    <Menu
-      anchorReference={menuPosition && "anchorPosition"}
-      anchorPosition={menuPosition}
-      disableRestoreFocus
-      onClose={() => setMenuPosition(undefined)}
-      open={!!menuPosition}
-      slotProps={{
-        root: {
-          onMouseUp: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) =>
-            event.stopPropagation(),
-        },
-        paper: { sx: { minWidth: 200 } },
-      }}
-    >
-      <MenuList dense>
-        <ChartIndicatorMenuItem
-          disabled={
-            indicator === null ||
-            selector.setting !== null ||
-            selector.completed !== null
+    menuPosition && (
+      <>
+        <MenuBackground onClose={onClose} />
+        <ul
+          className="menu bg-base-200 rounded-box fixed"
+          style={{
+            top: menuPosition.top,
+            left: menuPosition.left,
+            zIndex: MENU_Z_INDEX,
+          }}
+          onMouseUp={(event: React.MouseEvent<HTMLUListElement, MouseEvent>) =>
+            event.stopPropagation()
           }
-          label="Start Setting Hold"
-          onClick={onClickStartSettingHold}
-        />
-        <ChartIndicatorMenuItem
-          disabled={indicator === null || holdSetter !== null}
-          label="Start Selecting"
-          onClick={onClickStartSelecting}
-        />
-        <Divider />
-        <ChartIndicatorMenuItem
-          disabled={
-            indicator === null ||
-            (indicator !== null &&
-              indicator.rowIdx === indicator.blockAccumulatedRows)
-          }
-          label="Split Block"
-          onClick={onClickSplitBlock}
-        />
-        <Divider />
-        <ChartIndicatorMenuItem
-          disabled={selector.completed === null}
-          label="Cut"
-          keyLabel={`${isMac ? "⌘" : "Ctrl"}+X`}
-          onClick={onClickCut}
-        />
-        <ChartIndicatorMenuItem
-          disabled={selector.completed === null}
-          label="Copy"
-          keyLabel={`${isMac ? "⌘" : "Ctrl"}+C`}
-          onClick={onClickCopy}
-        />
-        <ChartIndicatorMenuItem
-          disabled={indicator === null || clipBoard === null}
-          label="Paste"
-          keyLabel={`${isMac ? "⌘" : "Ctrl"}+V`}
-          onClick={onClickPaste}
-        />
-        <Divider />
-        <ChartIndicatorMenuItem
-          disabled={selector.completed === null}
-          label="Flip Horizontal"
-          keyLabel="X"
-          onClick={onClickFlipHorizontal}
-        />
-        <ChartIndicatorMenuItem
-          disabled={selector.completed === null}
-          label="Flip Vertical"
-          keyLabel="Y"
-          onClick={onClickFlipVertical}
-        />
-        <ChartIndicatorMenuItem
-          disabled={selector.completed === null}
-          label="Mirror"
-          keyLabel="M"
-          onClick={onClickMirror}
-        />
-        <ChartIndicatorMenuItem
-          disabled={selector.completed === null}
-          label="Delete"
-          keyLabel={`${isMac ? "⌘+" : ""}delete`}
-          onClick={onClickDelete}
-        />
-      </MenuList>
-    </Menu>
+        >
+          <ChartIndicatorMenuItem
+            disabled={
+              indicator === null ||
+              selector.setting !== null ||
+              selector.completed !== null
+            }
+            label="Start Setting Hold"
+            onClick={onClickStartSettingHold}
+          />
+          <ChartIndicatorMenuItem
+            disabled={indicator === null || holdSetter !== null}
+            label="Start Selecting"
+            onClick={onClickStartSelecting}
+          />
+          <div className="divider my-0" />
+          <ChartIndicatorMenuItem
+            disabled={
+              indicator === null ||
+              (indicator !== null &&
+                indicator.rowIdx === indicator.blockAccumulatedRows)
+            }
+            label="Split Block"
+            onClick={onClickSplitBlock}
+          />
+          <div className="divider my-0" />
+          <ChartIndicatorMenuItem
+            disabled={selector.completed === null}
+            label="Cut"
+            keyLabel={`${isMac ? "⌘" : "Ctrl"}+X`}
+            onClick={onClickCut}
+          />
+          <ChartIndicatorMenuItem
+            disabled={selector.completed === null}
+            label="Copy"
+            keyLabel={`${isMac ? "⌘" : "Ctrl"}+C`}
+            onClick={onClickCopy}
+          />
+          <ChartIndicatorMenuItem
+            disabled={indicator === null || clipBoard === null}
+            label="Paste"
+            keyLabel={`${isMac ? "⌘" : "Ctrl"}+V`}
+            onClick={onClickPaste}
+          />
+          <div className="divider my-0" />
+          <ChartIndicatorMenuItem
+            disabled={selector.completed === null}
+            label="Flip Horizontal"
+            keyLabel="X"
+            onClick={onClickFlipHorizontal}
+          />
+          <ChartIndicatorMenuItem
+            disabled={selector.completed === null}
+            label="Flip Vertical"
+            keyLabel="Y"
+            onClick={onClickFlipVertical}
+          />
+          <ChartIndicatorMenuItem
+            disabled={selector.completed === null}
+            label="Mirror"
+            keyLabel="M"
+            onClick={onClickMirror}
+          />
+          <ChartIndicatorMenuItem
+            disabled={selector.completed === null}
+            label="Delete"
+            keyLabel={`${isMac ? "⌘+" : ""}delete`}
+            onClick={onClickDelete}
+          />
+        </ul>
+      </>
+    )
   );
 }
 

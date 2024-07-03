@@ -1,5 +1,4 @@
 import { memo } from "react";
-import { ListItemText, MenuItem, Typography } from "@mui/material";
 import { ChartIndicatorMenuItemProps } from "../../types/props";
 
 function ChartIndicatorMenuItem({
@@ -9,14 +8,12 @@ function ChartIndicatorMenuItem({
   onClick,
 }: ChartIndicatorMenuItemProps) {
   return (
-    <MenuItem disabled={disabled} onClick={onClick}>
-      <ListItemText>{label}</ListItemText>
-      {keyLabel && (
-        <Typography variant="body2" color="text.secondary">
-          {keyLabel}
-        </Typography>
-      )}
-    </MenuItem>
+    <li className={disabled ? "disabled" : undefined}>
+      <button className="flex" disabled={disabled} onClick={onClick}>
+        <div className="flex-1 text-sm">{label}</div>
+        <div className="flex text-xs">{keyLabel}</div>
+      </button>
+    </li>
   );
 }
 export default memo(ChartIndicatorMenuItem);
