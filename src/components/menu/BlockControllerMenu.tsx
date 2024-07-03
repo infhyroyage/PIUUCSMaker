@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import {
   blockControllerMenuBlockIdxState,
@@ -37,8 +37,6 @@ function BlockControllerMenu() {
   const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
   const setRedoSnapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
-
-  const menuRef = useRef<HTMLUListElement>(null);
 
   const blockNum = useMemo(() => blocks.length, [blocks.length]);
 
@@ -255,14 +253,12 @@ function BlockControllerMenu() {
   }, [menuPosition]);
 
   return (
-    !!menuPosition && (
+    menuPosition && (
       <>
         <MenuBackground onClose={onClose} />
         <ul
-          ref={menuRef}
-          className="menu bg-base-200 rounded-box"
+          className="menu bg-base-200 rounded-box fixed"
           style={{
-            position: "fixed",
             top: menuPosition.top,
             left: menuPosition.left,
             zIndex: MENU_Z_INDEX,
