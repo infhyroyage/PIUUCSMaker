@@ -18,8 +18,8 @@ import { MENU_Z_INDEX } from "../../services/styles";
 import { HoldSetter, Indicator, Selector } from "../../types/chart";
 import { ChartIndicatorMenuPosition } from "../../types/menu";
 import { Block, ChartSnapshot, ClipBoard } from "../../types/ucs";
-import ChartIndicatorMenuItem from "./ChartIndicatorMenuItem";
 import MenuBackground from "./MenuBackground";
+import MenuItem from "./MenuItem";
 
 function ChartIndicatorMenu() {
   const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
@@ -240,7 +240,7 @@ function ChartIndicatorMenu() {
             event.stopPropagation()
           }
         >
-          <ChartIndicatorMenuItem
+          <MenuItem
             disabled={
               indicator === null ||
               selector.setting !== null ||
@@ -249,13 +249,13 @@ function ChartIndicatorMenu() {
             label="Start Setting Hold"
             onClick={onClickStartSettingHold}
           />
-          <ChartIndicatorMenuItem
+          <MenuItem
             disabled={indicator === null || holdSetter !== null}
             label="Start Selecting"
             onClick={onClickStartSelecting}
           />
           <div className="divider my-0" />
-          <ChartIndicatorMenuItem
+          <MenuItem
             disabled={
               indicator === null ||
               (indicator !== null &&
@@ -265,44 +265,44 @@ function ChartIndicatorMenu() {
             onClick={onClickSplitBlock}
           />
           <div className="divider my-0" />
-          <ChartIndicatorMenuItem
+          <MenuItem
             disabled={selector.completed === null}
             label="Cut"
             keyLabel={`${isMac ? "⌘" : "Ctrl"}+X`}
             onClick={onClickCut}
           />
-          <ChartIndicatorMenuItem
+          <MenuItem
             disabled={selector.completed === null}
             label="Copy"
             keyLabel={`${isMac ? "⌘" : "Ctrl"}+C`}
             onClick={onClickCopy}
           />
-          <ChartIndicatorMenuItem
+          <MenuItem
             disabled={indicator === null || clipBoard === null}
             label="Paste"
             keyLabel={`${isMac ? "⌘" : "Ctrl"}+V`}
             onClick={onClickPaste}
           />
           <div className="divider my-0" />
-          <ChartIndicatorMenuItem
+          <MenuItem
             disabled={selector.completed === null}
             label="Flip Horizontal"
             keyLabel="X"
             onClick={onClickFlipHorizontal}
           />
-          <ChartIndicatorMenuItem
+          <MenuItem
             disabled={selector.completed === null}
             label="Flip Vertical"
             keyLabel="Y"
             onClick={onClickFlipVertical}
           />
-          <ChartIndicatorMenuItem
+          <MenuItem
             disabled={selector.completed === null}
             label="Mirror"
             keyLabel="M"
             onClick={onClickMirror}
           />
-          <ChartIndicatorMenuItem
+          <MenuItem
             disabled={selector.completed === null}
             label="Delete"
             keyLabel={`${isMac ? "⌘+" : ""}delete`}

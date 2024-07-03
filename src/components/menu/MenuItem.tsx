@@ -1,12 +1,7 @@
 import { memo } from "react";
-import { ChartIndicatorMenuItemProps } from "../../types/props";
+import { MenuItemProps } from "../../types/props";
 
-function ChartIndicatorMenuItem({
-  disabled,
-  label,
-  keyLabel,
-  onClick,
-}: ChartIndicatorMenuItemProps) {
+function MenuItem({ disabled, keyLabel, label, onClick }: MenuItemProps) {
   return (
     <li className={disabled ? "disabled" : undefined}>
       <button className="flex" disabled={disabled} onClick={onClick}>
@@ -16,4 +11,4 @@ function ChartIndicatorMenuItem({
     </li>
   );
 }
-export default memo(ChartIndicatorMenuItem);
+export default memo(MenuItem);

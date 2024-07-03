@@ -51,31 +51,6 @@ export type BorderLineProps = {
 };
 
 /**
- * Props of ChartIndicatorMenuItem
- */
-export type ChartIndicatorMenuItemProps = {
-  /**
-   * true if item is inactive, false if one is active
-   */
-  disabled?: boolean;
-
-  /**
-   * Label
-   */
-  label: string;
-
-  /**
-   * Label of keyboard shortcut
-   */
-  keyLabel?: string;
-
-  /**
-   * Action when clicking a item
-   */
-  onClick?: React.MouseEventHandler<HTMLButtonElement>;
-};
-
-/**
  * Props of ChartVertical
  */
 export type ChartVerticalProps = {
@@ -241,4 +216,29 @@ export type MenuBackgroundProps = {
    * Action when clicking background
    */
   onClose: () => void;
+};
+
+/**
+ * Props of MenuItem
+ */
+export type MenuItemProps = {
+  /**
+   * true if item is inactive, false if one is active
+   */
+  disabled?: boolean;
+
+  /**
+   * Label of keyboard shortcut
+   */
+  keyLabel?: string;
+
+  /**
+   * Label
+   */
+  label: string;
+
+  /**
+   * Action when clicking a item
+   */
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
 };

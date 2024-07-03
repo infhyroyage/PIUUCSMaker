@@ -15,6 +15,7 @@ import { MENU_Z_INDEX } from "../../services/styles";
 import { BlockControllerMenuPosition } from "../../types/menu";
 import { Block, ChartSnapshot, Note } from "../../types/ucs";
 import MenuBackground from "./MenuBackground";
+import MenuItem from "./MenuItem";
 
 function BlockControllerMenu() {
   const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
@@ -264,39 +265,26 @@ function BlockControllerMenu() {
             zIndex: MENU_Z_INDEX,
           }}
         >
-          <li>
-            <button onClick={onClickEdit}>Edit</button>
-          </li>
-          <li>
-            <button onClick={onClickAdjust}>Adjust Split/Rows/BPM</button>
-          </li>
+          <MenuItem label="Edit" onClick={onClickEdit} />
+          <MenuItem label="Adjust Split/Rows/BPM" onClick={onClickAdjust} />
           <div className="divider my-0" />
-          <li>
-            <button onClick={onClickAdd}>Add at Bottom</button>
-          </li>
-          <li>
-            <button onClick={onClickInsert}>Insert into Next</button>
-          </li>
-          <li className={menuBlockIdx === 0 ? "disabled" : undefined}>
-            <button disabled={menuBlockIdx === 0} onClick={onClickMergeAbove}>
-              Merge with Above
-            </button>
-          </li>
-          <li
-            className={menuBlockIdx === blockNum - 1 ? "disabled" : undefined}
-          >
-            <button
-              disabled={menuBlockIdx === blockNum - 1}
-              onClick={onClickMergeBelow}
-            >
-              Merge with Below
-            </button>
-          </li>
-          <li className={blockNum < 2 ? "disabled" : undefined}>
-            <button disabled={blockNum < 2} onClick={onClickDelete}>
-              Delete
-            </button>
-          </li>
+          <MenuItem label="Add at Bottom" onClick={onClickAdd} />
+          <MenuItem label="Insert into Next" onClick={onClickInsert} />
+          <MenuItem
+            disabled={menuBlockIdx === 0}
+            label="Merge with Above"
+            onClick={onClickMergeAbove}
+          />
+          <MenuItem
+            disabled={menuBlockIdx === blockNum - 1}
+            label="Merge with Below"
+            onClick={onClickMergeBelow}
+          />
+          <MenuItem
+            disabled={blockNum < 2}
+            label="Delete"
+            onClick={onClickDelete}
+          />
         </ul>
       </>
     )
