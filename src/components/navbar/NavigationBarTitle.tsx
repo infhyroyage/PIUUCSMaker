@@ -38,11 +38,9 @@ function NavigationBarTitle() {
   );
 
   return (
-    <div className="flex-1">
-      <div className="flex flex-col">
-        {title}
-        {caption}
-      </div>
+    <div className="flex flex-col">
+      {title}
+      {caption}
     </div>
   );
 }

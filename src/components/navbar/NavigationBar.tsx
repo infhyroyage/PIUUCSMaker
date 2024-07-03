@@ -76,7 +76,9 @@ function NavigationBar() {
         zIndex: NAVIGATION_BAR_Z_INDEX,
       }}
     >
-      <NavigationBarTitle />
+      <div className="flex-1">
+        <NavigationBarTitle />
+      </div>
       <form className="flex items-center gap-0 md:gap-1">
         <select
           className="select select-sm select-bordered bg-base-300"
