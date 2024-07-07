@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useTransition,
+} from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import useEditBlockDialog from "../../hooks/useEditBlockDialog";
 import {
@@ -41,6 +47,7 @@ function EditBlockDialog() {
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
 
   const { closeEditBlockDialog } = useEditBlockDialog();
+  const [isPending, startTransition] = useTransition();
 
   useEffect(
     () =>
@@ -62,151 +69,157 @@ function EditBlockDialog() {
     return !Number.isNaN(delay) && delay !== 0;
   }, [menuBlockIdx, form.delay]);
 
-  const onUpdate = useCallback(() => {
-    // BlockControllerMenuのメニューを開いていない場合はNOP
-    if (menuBlockIdx === null) return;
+  const onUpdate = useCallback(
+    () =>
+      startTransition(() => {
+        // BlockControllerMenuのメニューを開いていない場合はNOP
+        if (menuBlockIdx === null) return;
 
-    // バリデーションチェック
-    const beat: number | null = validateBeat(form.beat);
-    const bpm: number | null = validateBpm(form.bpm);
-    const delay: number | null = validateDelay(form.delay);
-    const rows: number | null = validateRows(form.rows);
-    const split: number | null = validateSplit(form.split);
-    if (
-      beat !== null &&
-      bpm !== null &&
-      delay !== null &&
-      rows !== null &&
-      split !== null
-    ) {
-      // menuBlockIdx番目の譜面のブロックの行数の差分
-      const deltaRows: number = rows - blocks[menuBlockIdx].rows;
+        // バリデーションチェック
+        const beat: number | null = validateBeat(form.beat);
+        const bpm: number | null = validateBpm(form.bpm);
+        const delay: number | null = validateDelay(form.delay);
+        const rows: number | null = validateRows(form.rows);
+        const split: number | null = validateSplit(form.split);
+        if (
+          beat !== null &&
+          bpm !== null &&
+          delay !== null &&
+          rows !== null &&
+          split !== null
+        ) {
+          // menuBlockIdx番目の譜面のブロックの行数の差分
+          const deltaRows: number = rows - blocks[menuBlockIdx].rows;
 
-      // 元に戻す/やり直すスナップショットの集合を更新
-      setUndoSnapshots([
-        ...undoSnapshots,
-        { blocks, notes: deltaRows === 0 ? null : notes },
-      ]);
-      setRedoSnapshots([]);
+          // 元に戻す/やり直すスナップショットの集合を更新
+          setUndoSnapshots([
+            ...undoSnapshots,
+            { blocks, notes: deltaRows === 0 ? null : notes },
+          ]);
+          setRedoSnapshots([]);
 
-      // menuBlockIdx番目以降の譜面のブロックをすべて更新
-      const updatedBlocks: Block[] = [...Array(blocks.length)].map(
-        (_, blockIdx: number) =>
-          blockIdx === menuBlockIdx
-            ? {
-                accumulatedRows: blocks[menuBlockIdx].accumulatedRows,
-                beat: beat,
-                bpm: bpm,
-                delay: delay,
-                rows: rows,
-                split: split,
-              }
-            : blockIdx > menuBlockIdx
-            ? {
-                ...blocks[blockIdx],
-                accumulatedRows:
-                  blocks[blockIdx - 1].accumulatedRows +
-                  blocks[blockIdx - 1].rows +
-                  deltaRows,
-              }
-            : blocks[blockIdx]
-      );
+          // menuBlockIdx番目以降の譜面のブロックをすべて更新
+          const updatedBlocks: Block[] = [...Array(blocks.length)].map(
+            (_, blockIdx: number) =>
+              blockIdx === menuBlockIdx
+                ? {
+                    accumulatedRows: blocks[menuBlockIdx].accumulatedRows,
+                    beat: beat,
+                    bpm: bpm,
+                    delay: delay,
+                    rows: rows,
+                    split: split,
+                  }
+                : blockIdx > menuBlockIdx
+                ? {
+                    ...blocks[blockIdx],
+                    accumulatedRows:
+                      blocks[blockIdx - 1].accumulatedRows +
+                      blocks[blockIdx - 1].rows +
+                      deltaRows,
+                  }
+                : blocks[blockIdx]
+          );
 
-      // 行数を変更した場合のみ、menuBlockIdx番目以降の譜面のブロックに該当する
-      // 単ノート/ホールドの始点/ホールドの中間/ホールドの終点をすべて更新
-      let updatedNotes: Note[][] = [...notes];
-      if (deltaRows !== 0) {
-        // 以下の譜面のブロックに該当する単ノート/ホールドの始点/ホールドの中間/ホールドの終点をすべて更新
-        // * (menuBlockIdx - 1)番目以前: 更新しない
-        // * menuBlockIdx番目          : 譜面全体の行インデックスをスケーリング(空白 < X < H < M < W)
-        // * (menuBlockIdx + 1)番目以降: 譜面全体の行インデックスを譜面のブロックの行数の差分ズラす
-        updatedNotes = [...notes].map((ns: Note[]) => [
-          // (menuBlockIdx - 1)番目以前の譜面のブロック
-          ...ns.filter(
-            (note: Note) => note.rowIdx < blocks[menuBlockIdx].accumulatedRows
-          ),
-          // menuBlockIdx番目の譜面のブロック
-          ...ns
-            .filter(
-              (note: Note) =>
-                note.rowIdx >= blocks[menuBlockIdx].accumulatedRows &&
-                note.rowIdx <
-                  blocks[menuBlockIdx].accumulatedRows +
-                    blocks[menuBlockIdx].rows
-            )
-            .reduce((prev: Note[], note: Note) => {
-              const scaledRowIdx: number =
-                blocks[menuBlockIdx].accumulatedRows +
-                Math.floor(
-                  ((note.rowIdx - blocks[menuBlockIdx].accumulatedRows) *
-                    rows) /
-                    blocks[menuBlockIdx].rows
-                );
-              const prevScaledNote: Note | undefined = prev.find(
-                (note: Note) => note.rowIdx === scaledRowIdx
-              );
+          // 行数を変更した場合のみ、menuBlockIdx番目以降の譜面のブロックに該当する
+          // 単ノート/ホールドの始点/ホールドの中間/ホールドの終点をすべて更新
+          let updatedNotes: Note[][] = [...notes];
+          if (deltaRows !== 0) {
+            // 以下の譜面のブロックに該当する単ノート/ホールドの始点/ホールドの中間/ホールドの終点をすべて更新
+            // * (menuBlockIdx - 1)番目以前: 更新しない
+            // * menuBlockIdx番目          : 譜面全体の行インデックスをスケーリング(空白 < X < H < M < W)
+            // * (menuBlockIdx + 1)番目以降: 譜面全体の行インデックスを譜面のブロックの行数の差分ズラす
+            updatedNotes = [...notes].map((ns: Note[]) => [
+              // (menuBlockIdx - 1)番目以前の譜面のブロック
+              ...ns.filter(
+                (note: Note) =>
+                  note.rowIdx < blocks[menuBlockIdx].accumulatedRows
+              ),
+              // menuBlockIdx番目の譜面のブロック
+              ...ns
+                .filter(
+                  (note: Note) =>
+                    note.rowIdx >= blocks[menuBlockIdx].accumulatedRows &&
+                    note.rowIdx <
+                      blocks[menuBlockIdx].accumulatedRows +
+                        blocks[menuBlockIdx].rows
+                )
+                .reduce((prev: Note[], note: Note) => {
+                  const scaledRowIdx: number =
+                    blocks[menuBlockIdx].accumulatedRows +
+                    Math.floor(
+                      ((note.rowIdx - blocks[menuBlockIdx].accumulatedRows) *
+                        rows) /
+                        blocks[menuBlockIdx].rows
+                    );
+                  const prevScaledNote: Note | undefined = prev.find(
+                    (note: Note) => note.rowIdx === scaledRowIdx
+                  );
 
-              return prevScaledNote
-                ? [
-                    ...prev.slice(0, prev.length - 1),
-                    {
-                      rowIdx: scaledRowIdx,
-                      type:
-                        prevScaledNote.type === "X" ||
-                        (prevScaledNote.type === "H" &&
-                          ["M", "W"].includes(note.type)) ||
-                        (prevScaledNote.type === "M" && note.type === "W")
-                          ? note.type
-                          : prevScaledNote.type,
-                    },
-                  ]
-                : [...prev, { rowIdx: scaledRowIdx, type: note.type }];
-            }, []),
-          // (menuBlockIdx + 1)番目以降の譜面のブロック
-          ...ns
-            .filter(
-              (note: Note) =>
-                note.rowIdx >=
-                blocks[menuBlockIdx].accumulatedRows + blocks[menuBlockIdx].rows
-            )
-            .map((note: Note) => {
-              return { rowIdx: note.rowIdx + deltaRows, type: note.type };
-            }),
-        ]);
-      }
+                  return prevScaledNote
+                    ? [
+                        ...prev.slice(0, prev.length - 1),
+                        {
+                          rowIdx: scaledRowIdx,
+                          type:
+                            prevScaledNote.type === "X" ||
+                            (prevScaledNote.type === "H" &&
+                              ["M", "W"].includes(note.type)) ||
+                            (prevScaledNote.type === "M" && note.type === "W")
+                              ? note.type
+                              : prevScaledNote.type,
+                        },
+                      ]
+                    : [...prev, { rowIdx: scaledRowIdx, type: note.type }];
+                }, []),
+              // (menuBlockIdx + 1)番目以降の譜面のブロック
+              ...ns
+                .filter(
+                  (note: Note) =>
+                    note.rowIdx >=
+                    blocks[menuBlockIdx].accumulatedRows +
+                      blocks[menuBlockIdx].rows
+                )
+                .map((note: Note) => {
+                  return { rowIdx: note.rowIdx + deltaRows, type: note.type };
+                }),
+            ]);
+          }
 
-      setIsProtected(true);
+          setIsProtected(true);
 
-      setBlocks(updatedBlocks);
-      if (deltaRows !== 0) setNotes(updatedNotes);
+          setBlocks(updatedBlocks);
+          if (deltaRows !== 0) setNotes(updatedNotes);
 
-      setMenuBlockIdx(null);
-      closeEditBlockDialog();
-    } else {
-      // バリデーションエラーのテキストフィールドをすべて表示
-      const errors: EditBlockDialogError[] = [];
-      if (beat === null) errors.push("Beat");
-      if (bpm === null) errors.push("BPM");
-      if (delay === null) errors.push("Delay(ms)");
-      if (rows === null) errors.push("Rows");
-      if (split === null) errors.push("Split");
-      setErrors(errors);
-    }
-  }, [
-    blocks,
-    closeEditBlockDialog,
-    form,
-    menuBlockIdx,
-    notes,
-    setBlocks,
-    setIsProtected,
-    setMenuBlockIdx,
-    setNotes,
-    setErrors,
-    setRedoSnapshots,
-    setUndoSnapshots,
-    undoSnapshots,
-  ]);
+          setMenuBlockIdx(null);
+          closeEditBlockDialog();
+        } else {
+          // バリデーションエラーのテキストフィールドをすべて表示
+          const errors: EditBlockDialogError[] = [];
+          if (beat === null) errors.push("Beat");
+          if (bpm === null) errors.push("BPM");
+          if (delay === null) errors.push("Delay(ms)");
+          if (rows === null) errors.push("Rows");
+          if (split === null) errors.push("Split");
+          setErrors(errors);
+        }
+      }),
+    [
+      blocks,
+      closeEditBlockDialog,
+      form,
+      menuBlockIdx,
+      notes,
+      setBlocks,
+      setIsProtected,
+      setMenuBlockIdx,
+      setNotes,
+      setErrors,
+      setRedoSnapshots,
+      setUndoSnapshots,
+      undoSnapshots,
+    ]
+  );
 
   const onClose = useCallback(() => {
     setErrors([]);
@@ -218,8 +231,7 @@ function EditBlockDialog() {
       split: "",
     });
     setMenuBlockIdx(null);
-    closeEditBlockDialog();
-  }, [closeEditBlockDialog, setErrors, setForm, setMenuBlockIdx]);
+  }, [setErrors, setForm, setMenuBlockIdx]);
 
   return (
     <dialog
@@ -233,6 +245,7 @@ function EditBlockDialog() {
           <button
             className="btn btn-sm btn-circle btn-ghost absolute right-6 top-6"
             onClick={onClose}
+            disabled={isPending}
           >
             ✕
           </button>
@@ -253,6 +266,7 @@ function EditBlockDialog() {
                   ? " input-error placeholder:text-error"
                   : ""
               }`}
+              disabled={isPending}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                 setForm({ ...form, bpm: event.target.value });
               }}
@@ -281,6 +295,7 @@ function EditBlockDialog() {
                   ? " input-warning placeholder:text-warning"
                   : ""
               }`}
+              disabled={isPending}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                 setForm({ ...form, delay: event.target.value });
               }}
@@ -308,6 +323,7 @@ function EditBlockDialog() {
                   ? " input-error placeholder:text-error"
                   : ""
               }`}
+              disabled={isPending}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                 setForm({ ...form, split: event.target.value });
               }}
@@ -330,6 +346,7 @@ function EditBlockDialog() {
                   ? " input-error placeholder:text-error"
                   : ""
               }`}
+              disabled={isPending}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                 setForm({ ...form, beat: event.target.value });
               }}
@@ -352,6 +369,7 @@ function EditBlockDialog() {
                   ? " input-error placeholder:text-error"
                   : ""
               }`}
+              disabled={isPending}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                 setForm({ ...form, rows: event.target.value });
               }}
@@ -362,13 +380,17 @@ function EditBlockDialog() {
           </label>
         </div>
         <form method="dialog" className="modal-action">
-          <button className="btn btn-primary" onClick={onUpdate}>
+          <button
+            className="btn btn-primary"
+            disabled={isPending}
+            onClick={onUpdate}
+          >
             UPDATE
           </button>
         </form>
       </div>
       <form method="dialog" className="modal-backdrop" onClick={onClose}>
-        <button />
+        <button disabled={isPending} />
       </form>
     </dialog>
   );
