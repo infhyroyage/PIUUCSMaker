@@ -116,18 +116,20 @@ function NewUCSDialog() {
             </div>
             <input
               className={`input input-sm input-bordered w-full${
-                errors.includes("UCS File Name")
-                  ? " input-error placeholder:text-error"
-                  : ""
+                errors.includes("UCS File Name") ? " input-error" : ""
               }`}
               disabled={isPending}
               onChange={(event: ChangeEvent<HTMLInputElement>) => {
                 setForm({ ...form, ucsName: event.target.value });
               }}
-              placeholder="Not Set Extension(.ucs)"
               type="text"
               value={form.ucsName}
             />
+            {errors.includes("UCS File Name") && (
+              <div className="label text-md label-text text-error">
+                Not Set Extension(.ucs)
+              </div>
+            )}
           </label>
           <label>
             <div className="label text-md font-bold label-text">Mode</div>
@@ -155,18 +157,20 @@ function NewUCSDialog() {
             </div>
             <input
               className={`input input-sm input-bordered w-full${
-                errors.includes("BPM")
-                  ? " input-error placeholder:text-error"
-                  : ""
+                errors.includes("BPM") ? " input-error" : ""
               }`}
               disabled={isPending}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                 setForm({ ...form, bpm: event.target.value });
               }}
-              placeholder="Number of 4th Beats per Minute(0.1 - 999)"
-              type="text"
+              type="number"
               value={form.bpm}
             />
+            {errors.includes("BPM") && (
+              <div className="label text-md label-text text-error">
+                Number of 4th Beats per Minute(0.1 - 999)
+              </div>
+            )}
           </label>
           <label>
             <div
@@ -178,18 +182,20 @@ function NewUCSDialog() {
             </div>
             <input
               className={`input input-sm input-bordered w-full${
-                errors.includes("Delay(ms)")
-                  ? " input-error placeholder:text-error"
-                  : ""
+                errors.includes("Delay(ms)") ? " input-error" : ""
               }`}
               disabled={isPending}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                 setForm({ ...form, delay: event.target.value });
               }}
-              placeholder="Offset time of Scrolling(-999999 - 999999)"
               type="text"
               value={form.delay}
             />
+            {errors.includes("Delay(ms)") && (
+              <div className="label text-md label-text text-error">
+                Offset time of Scrolling(-999999 - 999999)
+              </div>
+            )}
           </label>
           <label>
             <div
@@ -201,18 +207,20 @@ function NewUCSDialog() {
             </div>
             <input
               className={`input input-sm input-bordered w-full${
-                errors.includes("Split")
-                  ? " input-error placeholder:text-error"
-                  : ""
+                errors.includes("Split") ? " input-error" : ""
               }`}
               disabled={isPending}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                 setForm({ ...form, split: event.target.value });
               }}
-              placeholder="Number of UCS File's Rows per 4th Beat(1 - 128)"
               type="number"
               value={form.split}
             />
+            {errors.includes("Split") && (
+              <div className="label text-md label-text text-error">
+                {"Number of UCS File's Rows per 4th Beat(1 - 128)"}
+              </div>
+            )}
           </label>
           <label>
             <div
@@ -224,18 +232,20 @@ function NewUCSDialog() {
             </div>
             <input
               className={`input input-sm input-bordered w-full${
-                errors.includes("Beat")
-                  ? " input-error placeholder:text-error"
-                  : ""
+                errors.includes("Beat") ? " input-error" : ""
               }`}
               disabled={isPending}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                 setForm({ ...form, beat: event.target.value });
               }}
-              placeholder="Number of 4th Beats per Measure(1 - 64)"
               type="number"
               value={form.beat}
             />
+            {errors.includes("Beat") && (
+              <div className="label text-md label-text text-error">
+                Number of 4th Beats per Measure(1 - 64)
+              </div>
+            )}
           </label>
           <label>
             <div
@@ -247,18 +257,20 @@ function NewUCSDialog() {
             </div>
             <input
               className={`input input-sm input-bordered w-full${
-                errors.includes("Rows")
-                  ? " input-error placeholder:text-error"
-                  : ""
+                errors.includes("Rows") ? " input-error" : ""
               }`}
               disabled={isPending}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                 setForm({ ...form, rows: event.target.value });
               }}
-              placeholder="Number of UCS File's Rows(Over 1)"
               type="number"
               value={form.rows}
             />
+            {errors.includes("Rows") && (
+              <div className="label text-md label-text text-error">
+                {"Number of UCS File's Rows(Over 1)"}
+              </div>
+            )}
           </label>
         </div>
         <form method="dialog" className="modal-action">
