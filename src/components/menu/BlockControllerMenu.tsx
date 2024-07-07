@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useMemo } from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
+import useEditBlockDialog from "../../hooks/useEditBlockDialog";
 import {
   blockControllerMenuBlockIdxState,
   blockControllerMenuPositionState,
   blocksState,
   isOpenedAdjustBlockDialogState,
-  isOpenedEditBlockDialogState,
   isProtectedState,
   notesState,
   redoSnapshotsState,
@@ -32,12 +32,11 @@ function BlockControllerMenu() {
   const setIsOpenedAdjustBlockDialog = useSetRecoilState<boolean>(
     isOpenedAdjustBlockDialogState
   );
-  const setIsOpenedEditBlockDialog = useSetRecoilState<boolean>(
-    isOpenedEditBlockDialogState
-  );
   const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
   const setRedoSnapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
+
+  const { openEditBlockDialog } = useEditBlockDialog();
 
   const blockNum = useMemo(() => blocks.length, [blocks.length]);
 
@@ -48,10 +47,10 @@ function BlockControllerMenu() {
 
   const onClickEdit = useCallback(() => {
     if (menuBlockIdx !== null) {
-      setIsOpenedEditBlockDialog(true);
+      openEditBlockDialog();
       setMenuPosition(undefined);
     }
-  }, [menuBlockIdx, setIsOpenedEditBlockDialog, setMenuPosition]);
+  }, [menuBlockIdx, openEditBlockDialog, setMenuPosition]);
 
   const onClickAdjust = useCallback(() => {
     setIsOpenedAdjustBlockDialog(true);

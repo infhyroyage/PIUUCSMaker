@@ -1,26 +1,15 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
+import useEditBlockDialog from "../../hooks/useEditBlockDialog";
 import {
   blockControllerMenuBlockIdxState,
   blocksState,
-  isOpenedEditBlockDialogState,
   isProtectedState,
   notesState,
   redoSnapshotsState,
   undoSnapshotsState,
 } from "../../services/atoms";
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Stack,
-  TextField,
-} from "@mui/material";
-import { EditBlockDialogError, EditBlockDialogForm } from "../../types/dialog";
-import { Block, Note } from "../../types/ucs";
-import { ChartSnapshot } from "../../types/ucs";
+import { DIALOG_Z_INDEX } from "../../services/styles";
 import {
   validateBeat,
   validateBpm,
@@ -28,6 +17,8 @@ import {
   validateRows,
   validateSplit,
 } from "../../services/validations";
+import { EditBlockDialogError, EditBlockDialogForm } from "../../types/dialog";
+import { Block, ChartSnapshot, Note } from "../../types/ucs";
 
 function EditBlockDialog() {
   const [errors, setErrors] = useState<EditBlockDialogError[]>([]);
@@ -43,12 +34,13 @@ function EditBlockDialog() {
     blockControllerMenuBlockIdxState
   );
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
-  const [open, setOpen] = useRecoilState<boolean>(isOpenedEditBlockDialogState);
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
   const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
   const setRedoSnapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
+
+  const { closeEditBlockDialog } = useEditBlockDialog();
 
   useEffect(
     () =>
@@ -189,7 +181,7 @@ function EditBlockDialog() {
       if (deltaRows !== 0) setNotes(updatedNotes);
 
       setMenuBlockIdx(null);
-      setOpen(false);
+      closeEditBlockDialog();
     } else {
       // バリデーションエラーのテキストフィールドをすべて表示
       const errors: EditBlockDialogError[] = [];
@@ -202,6 +194,7 @@ function EditBlockDialog() {
     }
   }, [
     blocks,
+    closeEditBlockDialog,
     form,
     menuBlockIdx,
     notes,
@@ -209,7 +202,6 @@ function EditBlockDialog() {
     setIsProtected,
     setMenuBlockIdx,
     setNotes,
-    setOpen,
     setErrors,
     setRedoSnapshots,
     setUndoSnapshots,
@@ -226,105 +218,154 @@ function EditBlockDialog() {
       split: "",
     });
     setMenuBlockIdx(null);
-    setOpen(false);
-  }, [setErrors, setForm, setMenuBlockIdx, setOpen]);
+    closeEditBlockDialog();
+  }, [closeEditBlockDialog, setErrors, setForm, setMenuBlockIdx]);
 
   return (
-    <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Edit Block</DialogTitle>
-      <DialogContent>
-        <Stack spacing={3} mt={1}>
-          <TextField
-            error={errors.includes("BPM")}
-            fullWidth
-            helperText="Number of 4th Beats per Minute(0.1 - 999)"
-            label="BPM"
-            margin="dense"
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              setForm({
-                ...form,
-                bpm: event.target.value,
-              });
-            }}
-            size="small"
-            type="number"
-            value={form.bpm}
-          />
-          <TextField
-            error={errors.includes("Delay(ms)") || isIgnoredDelay}
-            fullWidth
-            helperText={
-              isIgnoredDelay
-                ? "WARNING: Ignore above value and assume 0 automatically except 1st block"
-                : "Offset time of Scrolling(-999999 - 999999)"
-            }
-            label="Delay(ms)"
-            margin="dense"
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              setForm({
-                ...form,
-                delay: event.target.value,
-              });
-            }}
-            size="small"
-            type="number"
-            value={form.delay}
-          />
-          <TextField
-            error={errors.includes("Split")}
-            fullWidth
-            helperText="Number of UCS File's Rows per 4th Beat(1 - 128)"
-            label="Split"
-            margin="dense"
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              setForm({
-                ...form,
-                split: event.target.value,
-              });
-            }}
-            size="small"
-            type="number"
-            value={form.split}
-          />
-          <TextField
-            error={errors.includes("Beat")}
-            fullWidth
-            helperText="Number of 4th Beats per Measure(1 - 64)"
-            label="Beat"
-            margin="dense"
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              setForm({
-                ...form,
-                beat: event.target.value,
-              });
-            }}
-            size="small"
-            type="number"
-            value={form.beat}
-          />
-          <TextField
-            error={errors.includes("Rows")}
-            fullWidth
-            helperText="Number of UCS File's Rows(Over 1)"
-            label="Rows"
-            margin="dense"
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              setForm({
-                ...form,
-                rows: event.target.value,
-              });
-            }}
-            size="small"
-            type="number"
-            value={form.rows}
-          />
-        </Stack>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button onClick={onUpdate}>Update</Button>
-      </DialogActions>
-    </Dialog>
+    <dialog
+      id="edit-block-dialog"
+      className="modal"
+      style={{ zIndex: DIALOG_Z_INDEX }}
+      data-testid="edit-block-dialog"
+    >
+      <div className="modal-box">
+        <form method="dialog">
+          <button
+            className="btn btn-sm btn-circle btn-ghost absolute right-6 top-6"
+            onClick={onClose}
+          >
+            ✕
+          </button>
+        </form>
+        <h3 className="font-bold text-lg">Edit Block</h3>
+        <div className="flex flex-col gap-4 mt-4">
+          <label>
+            <div
+              className={`label text-md font-bold label-text${
+                errors.includes("BPM") ? " text-error" : ""
+              }`}
+            >
+              BPM
+            </div>
+            <input
+              className={`input input-sm input-bordered w-full${
+                errors.includes("BPM")
+                  ? " input-error placeholder:text-error"
+                  : ""
+              }`}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                setForm({ ...form, bpm: event.target.value });
+              }}
+              placeholder="Number of 4th Beats per Minute(0.1 - 999)"
+              type="text"
+              value={form.bpm}
+            />
+          </label>
+          <label>
+            <div
+              className={`label text-md font-bold label-text${
+                errors.includes("Delay(ms)") || isIgnoredDelay
+                  ? " text-error"
+                  : ""
+              }`}
+            >
+              Delay(ms)
+            </div>
+            <input
+              className={`input input-sm input-bordered w-full${
+                errors.includes("Delay(ms)") || isIgnoredDelay
+                  ? " input-error placeholder:text-error"
+                  : ""
+              }`}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                setForm({ ...form, delay: event.target.value });
+              }}
+              placeholder={
+                isIgnoredDelay
+                  ? "WARNING: Ignore above value and assume 0 automatically except 1st block"
+                  : "Offset time of Scrolling(-999999 - 999999)"
+              }
+              type="number"
+              value={form.delay}
+            />
+          </label>
+          <label>
+            <div
+              className={`label text-md font-bold label-text${
+                errors.includes("Split") ? " text-error" : ""
+              }`}
+            >
+              Split
+            </div>
+            <input
+              className={`input input-sm input-bordered w-full${
+                errors.includes("Split")
+                  ? " input-error placeholder:text-error"
+                  : ""
+              }`}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                setForm({ ...form, split: event.target.value });
+              }}
+              placeholder="Number of UCS File's Rows per 4th Beat(1 - 128)"
+              type="number"
+              value={form.split}
+            />
+          </label>
+          <label>
+            <div
+              className={`label text-md font-bold label-text${
+                errors.includes("Beat") ? " text-error" : ""
+              }`}
+            >
+              Beat
+            </div>
+            <input
+              className={`input input-sm input-bordered w-full${
+                errors.includes("Beat")
+                  ? " input-error placeholder:text-error"
+                  : ""
+              }`}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                setForm({ ...form, beat: event.target.value });
+              }}
+              placeholder="Number of 4th Beats per Measure(1 - 64)"
+              type="number"
+              value={form.beat}
+            />
+          </label>
+          <label>
+            <div
+              className={`label text-md font-bold label-text${
+                errors.includes("Rows") ? " text-error" : ""
+              }`}
+            >
+              Rows
+            </div>
+            <input
+              className={`input input-sm input-bordered w-full${
+                errors.includes("Rows")
+                  ? " input-error placeholder:text-error"
+                  : ""
+              }`}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                setForm({ ...form, rows: event.target.value });
+              }}
+              placeholder="Number of UCS File's Rows(Over 1)"
+              type="number"
+              value={form.rows}
+            />
+          </label>
+        </div>
+        <form method="dialog" className="modal-action">
+          <button className="btn btn-primary" onClick={onUpdate}>
+            UPDATE
+          </button>
+        </form>
+      </div>
+      <form method="dialog" className="modal-backdrop" onClick={onClose}>
+        <button />
+      </form>
+    </dialog>
   );
 }
 

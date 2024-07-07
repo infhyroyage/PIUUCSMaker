@@ -97,14 +97,6 @@ export const isOpenedAdjustBlockDialogState = atom<boolean>({
 });
 
 /**
- * true if EditBlockDialog is visible, otherwise false
- */
-export const isOpenedEditBlockDialogState = atom<boolean>({
-  key: "isOpenedEditBlockDialog",
-  default: false,
-});
-
-/**
  * true if Drawer is expanded, otherwise false
  */
 export const isOpenedDrawerState = atom<boolean>({

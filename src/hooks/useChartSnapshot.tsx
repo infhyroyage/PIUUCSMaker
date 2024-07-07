@@ -1,11 +1,10 @@
 import { useCallback } from "react";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import {
   blockControllerMenuPositionState,
   blocksState,
   chartIndicatorMenuPositionState,
   indicatorState,
-  isOpenedEditBlockDialogState,
   isProtectedState,
   notesState,
   redoSnapshotsState,
@@ -18,6 +17,7 @@ import {
   ChartIndicatorMenuPosition,
 } from "../types/menu";
 import { Block, ChartSnapshot, Note } from "../types/ucs";
+import useEditBlockDialog from "./useEditBlockDialog";
 import useNewUcsDialog from "./useNewUcsDialog";
 
 function useChartSnapshot() {
@@ -27,9 +27,6 @@ function useChartSnapshot() {
     useRecoilState<ChartSnapshot[]>(redoSnapshotsState);
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
-  const isOpenedEditBlockDialog = useRecoilValue<boolean>(
-    isOpenedEditBlockDialogState
-  );
   const setBlockControllerMenuPosition =
     useSetRecoilState<BlockControllerMenuPosition>(
       blockControllerMenuPositionState
@@ -43,6 +40,7 @@ function useChartSnapshot() {
   const setSelector = useSetRecoilState<Selector>(selectorState);
 
   const { isOpenedNewUCSDialog } = useNewUcsDialog();
+  const { isOpenedEditBlockDialog } = useEditBlockDialog();
 
   const handleRedo = useCallback(() => {
     // やり直すスナップショットが存在しない/ダイアログが開いている場合はNOP
