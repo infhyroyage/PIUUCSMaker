@@ -1,7 +1,8 @@
 import { useEffect, useMemo } from "react";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import useChartSnapshot from "../../hooks/useChartSnapshot";
 import useDownloadingUCS from "../../hooks/useDownloadingUCS";
+import useNewUcsDialog from "../../hooks/useNewUcsDialog";
 import usePlaying from "../../hooks/usePlaying";
 import useUploadingUCS from "../../hooks/useUploadingUCS";
 import { ZOOM_VALUES } from "../../services/assets";
@@ -10,7 +11,6 @@ import {
   isMuteBeatsState,
   isOpenedAggregateDialogState,
   isOpenedDrawerState,
-  isOpenedNewUCSDialogState,
   isPlayingState,
   redoSnapshotsState,
   ucsNameState,
@@ -40,12 +40,10 @@ function Drawer() {
   const redoSnapshots = useRecoilValue<ChartSnapshot[]>(redoSnapshotsState);
   const ucsName = useRecoilValue<string | null>(ucsNameState);
   const undoSnapshots = useRecoilValue<ChartSnapshot[]>(undoSnapshotsState);
-  const setIsOpenedNewUCSDialog = useSetRecoilState<boolean>(
-    isOpenedNewUCSDialogState
-  );
 
-  const { isDownloadingUCS, downloadUCS } = useDownloadingUCS();
   const { handleRedo, handleUndo } = useChartSnapshot();
+  const { isDownloadingUCS, downloadUCS } = useDownloadingUCS();
+  const { openNewUcsDialog } = useNewUcsDialog();
   const { isUploadingMP3, onUploadMP3, start, stop } = usePlaying();
   const { isUploadingUCS, onUploadUCS } = useUploadingUCS();
 
@@ -127,7 +125,7 @@ function Drawer() {
               </svg>
             }
             label="New UCS"
-            onClick={() => setIsOpenedNewUCSDialog(true)}
+            onClick={openNewUcsDialog}
           />
           <DrawerUploadListItem
             disabled={isPlaying || isUploadingUCS || isDownloadingUCS}

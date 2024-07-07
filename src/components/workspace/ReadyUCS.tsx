@@ -1,13 +1,9 @@
-import { useSetRecoilState } from "recoil";
+import useNewUcsDialog from "../../hooks/useNewUcsDialog";
 import useUploadingUCS from "../../hooks/useUploadingUCS";
-import { isOpenedNewUCSDialogState } from "../../services/atoms";
 import { NAVIGATION_BAR_HEIGHT } from "../../services/styles";
 
 function ReadyUCS() {
-  const setIsOpenedNewUCSDialog = useSetRecoilState<boolean>(
-    isOpenedNewUCSDialogState
-  );
-
+  const { openNewUcsDialog } = useNewUcsDialog();
   const { isUploadingUCS, onUploadUCS } = useUploadingUCS();
 
   return (
@@ -22,7 +18,7 @@ function ReadyUCS() {
       <button
         className="btn btn-primary"
         disabled={isUploadingUCS}
-        onClick={() => setIsOpenedNewUCSDialog(true)}
+        onClick={openNewUcsDialog}
       >
         New UCS
       </button>

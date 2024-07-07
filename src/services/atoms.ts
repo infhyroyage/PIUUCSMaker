@@ -113,14 +113,6 @@ export const isOpenedDrawerState = atom<boolean>({
 });
 
 /**
- * true if NewUCSDialog is visible, otherwise false
- */
-export const isOpenedNewUCSDialogState = atom<boolean>({
-  key: "isOpenedNewUCSDialog",
-  default: false,
-});
-
-/**
  * true if AggregateDialog is visible, otherwise false
  */
 export const isOpenedAggregateDialogState = atom<boolean>({
