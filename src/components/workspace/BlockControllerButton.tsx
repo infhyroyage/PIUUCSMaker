@@ -51,7 +51,7 @@ function BlockControllerButton({
         <div className="text-xs text-left overflow-hidden text-ellipsis">
           <p>{`${bpm} BPM, 1/${split}`}</p>
           <p
-            className={isIgnoredDelay ? "text-error" : undefined}
+            className={isIgnoredDelay ? "text-warning" : undefined}
           >{`Delay: ${delay} (ms)${isIgnoredDelay ? " ⚠" : ""}`}</p>
         </div>
       </button>

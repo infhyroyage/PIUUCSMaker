@@ -264,8 +264,10 @@ function EditBlockDialog() {
           <label>
             <div
               className={`label text-md font-bold label-text${
-                errors.includes("Delay(ms)") || isIgnoredDelay
+                errors.includes("Delay(ms)")
                   ? " text-error"
+                  : isIgnoredDelay
+                  ? " text-warning"
                   : ""
               }`}
             >
@@ -273,21 +275,24 @@ function EditBlockDialog() {
             </div>
             <input
               className={`input input-sm input-bordered w-full${
-                errors.includes("Delay(ms)") || isIgnoredDelay
+                errors.includes("Delay(ms)")
                   ? " input-error placeholder:text-error"
+                  : isIgnoredDelay
+                  ? " input-warning placeholder:text-warning"
                   : ""
               }`}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                 setForm({ ...form, delay: event.target.value });
               }}
-              placeholder={
-                isIgnoredDelay
-                  ? "WARNING: Ignore above value and assume 0 automatically except 1st block"
-                  : "Offset time of Scrolling(-999999 - 999999)"
-              }
+              placeholder="Offset time of Scrolling(-999999 - 999999)"
               type="number"
               value={form.delay}
             />
+            {isIgnoredDelay && (
+              <div className="label text-md label-text text-warning">
+                ⚠Ignore above value and assume 0 automatically except 1st block⚠
+              </div>
+            )}
           </label>
           <label>
             <div
