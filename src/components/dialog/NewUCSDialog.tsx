@@ -96,6 +96,14 @@ function NewUCSDialog() {
       data-testid="new-ucs-dialog"
     >
       <div className="modal-box">
+        <form method="dialog">
+          <button
+            className="btn btn-sm btn-circle btn-ghost absolute right-6 top-6"
+            disabled={isPending}
+          >
+            ✕
+          </button>
+        </form>
         <h3 className="font-bold text-lg">New UCS</h3>
         <div className="flex flex-col gap-4 mt-4">
           <label className="form-control w-full">
@@ -254,9 +262,6 @@ function NewUCSDialog() {
           </label>
         </div>
         <form method="dialog" className="modal-action">
-          <button className="btn btn-outline" disabled={isPending}>
-            CANCEL
-          </button>
           <button
             className="btn btn-primary"
             disabled={isPending}
@@ -266,6 +271,9 @@ function NewUCSDialog() {
           </button>
         </form>
       </div>
+      <form method="dialog" className="modal-backdrop">
+        <button disabled={isPending} />
+      </form>
     </dialog>
   );
 }
