@@ -9,7 +9,6 @@ import { ZOOM_VALUES } from "../../services/assets";
 import {
   isDarkModeState,
   isMuteBeatsState,
-  isOpenedAggregateDialogState,
   isOpenedDrawerState,
   isPlayingState,
   redoSnapshotsState,
@@ -31,8 +30,6 @@ function Drawer() {
   const [isDarkMode, setIsDarkMode] = useRecoilState<boolean>(isDarkModeState);
   const [isMuteBeats, setIsMuteBeats] =
     useRecoilState<boolean>(isMuteBeatsState);
-  const [isOpenedAggregateDialog, setIsOpenedAggregateDialog] =
-    useRecoilState<boolean>(isOpenedAggregateDialogState);
   const [isOpenedDrawer, setIsOpenedDrawer] =
     useRecoilState<boolean>(isOpenedDrawerState);
   const [zoom, setZoom] = useRecoilState<Zoom>(zoomState);
@@ -381,7 +378,13 @@ function Drawer() {
               </svg>
             }
             label="Aggregate"
-            onClick={() => setIsOpenedAggregateDialog(!isOpenedAggregateDialog)}
+            onClick={() => {
+              const aggregateDialog =
+                document.getElementById("aggregate-dialog");
+              if (aggregateDialog) {
+                (aggregateDialog as HTMLDialogElement).showModal();
+              }
+            }}
           />
           <DrawerListItem
             icon={

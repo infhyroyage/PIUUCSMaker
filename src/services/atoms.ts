@@ -105,14 +105,6 @@ export const isOpenedDrawerState = atom<boolean>({
 });
 
 /**
- * true if AggregateDialog is visible, otherwise false
- */
-export const isOpenedAggregateDialogState = atom<boolean>({
-  key: "isOpenedAggregateDialog",
-  default: false,
-});
-
-/**
  * true if chart is single performance or double performance,
  * false if chart is single or double
  */
