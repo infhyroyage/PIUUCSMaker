@@ -33,6 +33,7 @@ function UserErrorSnackbar() {
             className="size-6"
             onClick={onClose}
             style={{ cursor: "pointer" }}
+            data-testid="user-error-snackbar-close"
           >
             <path
               strokeLinecap="round"

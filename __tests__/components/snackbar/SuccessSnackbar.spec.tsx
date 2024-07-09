@@ -1,10 +1,10 @@
 import "@testing-library/jest-dom/vitest";
-import { afterEach, describe, expect, it } from "vitest";
 import { cleanup, render, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { RecoilRoot } from "recoil";
+import { afterEach, describe, expect, it } from "vitest";
 import SuccessSnackbar from "../../../src/components/snackbar/SuccessSnackbar";
 import { successMessageState } from "../../../src/services/atoms";
-import userEvent from "@testing-library/user-event";
 
 describe("SuccessSnackbar", () => {
   // https://github.com/vitest-dev/vitest/issues/1430
@@ -37,7 +37,7 @@ describe("SuccessSnackbar", () => {
   });
 
   it("Rerender invisibly if close button is clicked", async () => {
-    const { findByTitle, queryByText } = render(
+    const { findByTestId, queryByText } = render(
       <RecoilRoot
         initializeState={({ set }) => {
           set(successMessageState, "SuccessMessage");
@@ -47,7 +47,7 @@ describe("SuccessSnackbar", () => {
       </RecoilRoot>
     );
 
-    await userEvent.click(await findByTitle("Close"));
+    await userEvent.click(await findByTestId("success-snackbar-close"));
 
     await waitFor(() =>
       expect(queryByText("SuccessMessage")).not.toBeInTheDocument()

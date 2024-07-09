@@ -39,6 +39,7 @@ function SuccessSnackbar() {
             className="size-6"
             onClick={onClose}
             style={{ cursor: "pointer" }}
+            data-testid="success-snackbar-close"
           >
             <path
               strokeLinecap="round"

@@ -27,7 +27,7 @@ describe("MenuItem", () => {
       <MenuItem disabled={true} label="TestLabel" onClick={() => {}} />
     );
 
-    expect(getByRole("menuitem")).toHaveStyle({ "pointer-events": "none" });
+    expect(getByRole("button")).toBeDisabled();
   });
 
   it("Trigger onClick if disabled is not provided", async () => {
