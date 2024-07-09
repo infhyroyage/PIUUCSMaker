@@ -89,14 +89,6 @@ export const isMuteBeatsState = atom<boolean>({
 });
 
 /**
- * true if AdjustBlockDialog is visible, otherwise false
- */
-export const isOpenedAdjustBlockDialogState = atom<boolean>({
-  key: "isOpenedAdjustBlockDialog",
-  default: false,
-});
-
-/**
  * true if Drawer is expanded, otherwise false
  */
 export const isOpenedDrawerState = atom<boolean>({

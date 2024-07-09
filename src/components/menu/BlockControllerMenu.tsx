@@ -5,7 +5,6 @@ import {
   blockControllerMenuBlockIdxState,
   blockControllerMenuPositionState,
   blocksState,
-  isOpenedAdjustBlockDialogState,
   isProtectedState,
   notesState,
   redoSnapshotsState,
@@ -29,9 +28,6 @@ function BlockControllerMenu() {
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
-  const setIsOpenedAdjustBlockDialog = useSetRecoilState<boolean>(
-    isOpenedAdjustBlockDialogState
-  );
   const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
   const setRedoSnapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
@@ -53,9 +49,12 @@ function BlockControllerMenu() {
   }, [menuBlockIdx, openEditBlockDialog, setMenuPosition]);
 
   const onClickAdjust = useCallback(() => {
-    setIsOpenedAdjustBlockDialog(true);
     setMenuPosition(undefined);
-  }, [setIsOpenedAdjustBlockDialog, setMenuPosition]);
+    const adjustBlockDialog = document.getElementById("adjust-block-dialog");
+    if (adjustBlockDialog) {
+      (adjustBlockDialog as HTMLDialogElement).showModal();
+    }
+  }, [setMenuPosition]);
 
   const onClickAdd = useCallback(() => {
     if (menuBlockIdx !== null) {
