@@ -1,15 +1,15 @@
 import { memo, useMemo } from "react";
-import { ChartVerticalNoteImagesProps } from "../../types/props";
 import { useRecoilValue } from "recoil";
-import { noteSizeState, zoomState } from "../../services/atoms";
+import useVerticalBorderSize from "../../hooks/useVerticalBorderSize";
 import {
   HOLD_BINARIES,
   NOTE_BINARIES,
   ZOOM_VALUES,
 } from "../../services/assets";
-import { Zoom } from "../../types/menu";
+import { noteSizeState, zoomState } from "../../services/atoms";
 import { IDENTIFIER_WIDTH } from "../../services/styles";
-import useVerticalBorderSize from "../../hooks/useVerticalBorderSize";
+import { Zoom } from "../../types/menu";
+import { ChartVerticalNoteImagesProps } from "../../types/props";
 
 function ChartVerticalNoteImages({
   accumulatedRows,
@@ -44,14 +44,13 @@ function ChartVerticalNoteImages({
         <img
           src={NOTE_BINARIES[column % 5]}
           alt={`note${column % 5}`}
-          width={`${noteSize}px`}
-          height={`${noteSize}px`}
           style={{
+            width: noteSize,
+            height: noteSize,
             position: "absolute",
-            top: `${top}px`,
-            left: `${
-              IDENTIFIER_WIDTH + verticalBorderSize * 0.5 + noteSize * column
-            }px`,
+            top,
+            left:
+              IDENTIFIER_WIDTH + verticalBorderSize * 0.5 + noteSize * column,
             userSelect: "none",
             zIndex: (rowIdx + 1) * 10,
           }}
@@ -66,14 +65,13 @@ function ChartVerticalNoteImages({
           <img
             src={NOTE_BINARIES[column % 5]}
             alt={`note${column % 5}`}
-            width={`${noteSize}px`}
-            height={`${noteSize}px`}
             style={{
+              width: noteSize,
+              height: noteSize,
               position: "absolute",
-              top: `${top}px`,
-              left: `${
-                IDENTIFIER_WIDTH + verticalBorderSize * 0.5 + noteSize * column
-              }px`,
+              top,
+              left:
+                IDENTIFIER_WIDTH + verticalBorderSize * 0.5 + noteSize * column,
               userSelect: "none",
               zIndex: (rowIdx + 1) * 10,
             }}
@@ -84,14 +82,13 @@ function ChartVerticalNoteImages({
           <img
             src={HOLD_BINARIES[column % 5]}
             alt={`hold${column % 5}`}
-            width={`${noteSize}px`}
-            height={`${unitRowHeight - noteSize * 0.5}px`}
             style={{
+              width: noteSize,
+              height: unitRowHeight - noteSize * 0.5,
               position: "absolute",
-              top: `${top + noteSize * 0.5}px`,
-              left: `${
-                IDENTIFIER_WIDTH + verticalBorderSize * 0.5 + noteSize * column
-              }px`,
+              top: top + noteSize * 0.5,
+              left:
+                IDENTIFIER_WIDTH + verticalBorderSize * 0.5 + noteSize * column,
               userSelect: "none",
               zIndex: (rowIdx + 1) * 10 + 1,
             }}
@@ -106,14 +103,13 @@ function ChartVerticalNoteImages({
         <img
           src={HOLD_BINARIES[column % 5]}
           alt={`hold${column % 5}`}
-          width={`${noteSize}px`}
-          height={`${unitRowHeight}px`}
           style={{
+            width: noteSize,
+            height: unitRowHeight,
             position: "absolute",
-            top: `${top}px`,
-            left: `${
-              IDENTIFIER_WIDTH + verticalBorderSize * 0.5 + noteSize * column
-            }px`,
+            top,
+            left:
+              IDENTIFIER_WIDTH + verticalBorderSize * 0.5 + noteSize * column,
             userSelect: "none",
             zIndex: (rowIdx + 1) * 10,
           }}
@@ -128,14 +124,13 @@ function ChartVerticalNoteImages({
           <img
             src={HOLD_BINARIES[column % 5]}
             alt={`hold${column % 5}`}
-            width={`${noteSize}px`}
-            height={`${noteSize * 0.5}px`}
             style={{
+              width: noteSize,
+              height: noteSize * 0.5,
               position: "absolute",
-              top: `${top}px`,
-              left: `${
-                IDENTIFIER_WIDTH + verticalBorderSize * 0.5 + noteSize * column
-              }px`,
+              top,
+              left:
+                IDENTIFIER_WIDTH + verticalBorderSize * 0.5 + noteSize * column,
               userSelect: "none",
               zIndex: (rowIdx + 1) * 10 - 1,
             }}
@@ -146,14 +141,13 @@ function ChartVerticalNoteImages({
           <img
             src={NOTE_BINARIES[column % 5]}
             alt={`note${column % 5}`}
-            width={`${noteSize}px`}
-            height={`${noteSize}px`}
             style={{
+              width: noteSize,
+              height: noteSize,
               position: "absolute",
-              top: `${top}px`,
-              left: `${
-                IDENTIFIER_WIDTH + verticalBorderSize * 0.5 + noteSize * column
-              }px`,
+              top,
+              left:
+                IDENTIFIER_WIDTH + verticalBorderSize * 0.5 + noteSize * column,
               userSelect: "none",
               zIndex: (rowIdx + 1) * 10,
             }}

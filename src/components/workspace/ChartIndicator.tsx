@@ -31,16 +31,15 @@ function ChartIndicator() {
               <img
                 src={NOTE_BINARIES[indicator.column % 5]}
                 alt={`note${indicator.column % 5}`}
-                width={`${noteSize}px`}
-                height={`${noteSize}px`}
                 style={{
+                  width: noteSize,
+                  height: noteSize,
                   position: "absolute",
-                  top: `${Math.min(indicator.top, holdSetter.top)}px`,
-                  left: `${
+                  top: Math.min(indicator.top, holdSetter.top),
+                  left:
                     IDENTIFIER_WIDTH +
                     verticalBorderSize * 0.5 +
-                    noteSize * indicator.column
-                  }px`,
+                    noteSize * indicator.column,
                   opacity: holdSetter.isSettingByMenu ? 0.5 : 1,
                   pointerEvents: "none",
                   userSelect: "none",
@@ -53,18 +52,16 @@ function ChartIndicator() {
                 <img
                   src={HOLD_BINARIES[indicator.column % 5]}
                   alt={`hold${indicator.column % 5}`}
-                  width={`${noteSize}px`}
-                  height={`${Math.abs(indicator.top - holdSetter.top)}px`}
                   style={{
+                    width: noteSize,
+                    height: Math.abs(indicator.top - holdSetter.top),
                     position: "absolute",
-                    top: `${
-                      Math.min(indicator.top, holdSetter.top) + noteSize * 0.5
-                    }px`,
-                    left: `${
+                    top:
+                      Math.min(indicator.top, holdSetter.top) + noteSize * 0.5,
+                    left:
                       IDENTIFIER_WIDTH +
                       verticalBorderSize * 0.5 +
-                      noteSize * indicator.column
-                    }px`,
+                      noteSize * indicator.column,
                     opacity: holdSetter.isSettingByMenu ? 0.5 : 1,
                     pointerEvents: "none",
                     userSelect: "none",
@@ -74,16 +71,15 @@ function ChartIndicator() {
                 <img
                   src={NOTE_BINARIES[indicator.column % 5]}
                   alt={`note${indicator.column % 5}`}
-                  width={`${noteSize}px`}
-                  height={`${noteSize}px`}
                   style={{
+                    width: noteSize,
+                    height: noteSize,
                     position: "absolute",
-                    top: `${Math.max(indicator.top, holdSetter.top)}px`,
-                    left: `${
+                    top: Math.max(indicator.top, holdSetter.top),
+                    left:
                       IDENTIFIER_WIDTH +
                       verticalBorderSize * 0.5 +
-                      noteSize * indicator.column
-                    }px`,
+                      noteSize * indicator.column,
                     opacity: holdSetter.isSettingByMenu ? 0.5 : 1,
                     pointerEvents: "none",
                     userSelect: "none",
@@ -96,15 +92,14 @@ function ChartIndicator() {
         )}
         <span
           style={{
+            width: noteSize,
+            height: noteSize,
             position: "absolute",
-            top: `${indicator.top}px`,
-            left: `${
+            top: indicator.top,
+            left:
               IDENTIFIER_WIDTH +
               verticalBorderSize * 0.5 +
-              noteSize * indicator.column
-            }px`,
-            width: `${noteSize}px`,
-            height: `${noteSize}px`,
+              noteSize * indicator.column,
             backgroundColor:
               holdSetter && holdSetter.isSettingByMenu
                 ? "rgba(255, 170, 170, 0.5)"

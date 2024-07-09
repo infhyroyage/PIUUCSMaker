@@ -50,8 +50,7 @@ export const AggregateDialog = () => {
               <img
                 src={NOTE_BINARIES[column % 5]}
                 alt={`note${column % 5}`}
-                width={`${noteSize}px`}
-                height={`${noteSize}px`}
+                style={{ width: noteSize, height: noteSize }}
               />
               {totalCombo === -1 ? (
                 <span
