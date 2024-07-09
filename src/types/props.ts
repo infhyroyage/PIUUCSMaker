@@ -138,16 +138,6 @@ export type ChartVerticalNoteImagesProps = {
 };
 
 /**
- * Props of DialogBackground
- */
-export type DialogBackgroundProps = {
-  /**
-   * Action when clicking background
-   */
-  onClose: () => void;
-};
-
-/**
  * Props of DrawerListItem
  */
 export type DrawerListItemProps = {

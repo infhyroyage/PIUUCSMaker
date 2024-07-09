@@ -4,11 +4,6 @@
 export const DIALOG_Z_INDEX: number = 1300000;
 
 /**
- * z-index of all DialogBackground
- */
-export const DIALOG_BACKGROUND_Z_INDEX: number = DIALOG_Z_INDEX - 1;
-
-/**
  * Width (px) of opened Drawer
  */
 export const DRAWER_OPENED_WIDTH: number = 180;
