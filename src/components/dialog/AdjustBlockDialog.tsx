@@ -178,6 +178,7 @@ function AdjustBlockDialog() {
         className="modal"
         style={{ zIndex: DIALOG_Z_INDEX }}
         data-testid="adjust-block-dialog"
+        onCancel={onClose}
       >
         <div className="modal-box">
           <form method="dialog">
