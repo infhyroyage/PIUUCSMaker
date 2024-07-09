@@ -51,36 +51,11 @@ export type BorderLineProps = {
 };
 
 /**
- * Props of ChartIndicatorMenuItem
- */
-export type ChartIndicatorMenuItemProps = {
-  /**
-   * true if item is inactive, false if one is active
-   */
-  disabled?: boolean;
-
-  /**
-   * Label
-   */
-  label: string;
-
-  /**
-   * Label of keyboard shortcut
-   */
-  keyLabel?: string;
-
-  /**
-   * Action when clicking a item
-   */
-  onClick?: React.MouseEventHandler<HTMLLIElement>;
-};
-
-/**
  * Props of ChartVertical
  */
 export type ChartVerticalProps = {
   /**
-   * Distances (px) of y-coordinate between MenuBar and each chart block
+   * Distances (px) of y-coordinate between NavigationBar and each chart block
    */
   blockYDists: number[];
 
@@ -132,7 +107,7 @@ export type ChartVerticalNoteImagesProps = {
   accumulatedRows: number;
 
   /**
-   * Distance (px) of y-coordinate between MenuBar and chart block included this single note, starting point of hold, setting point of hold or end point of hold
+   * Distance (px) of y-coordinate between NavigationBar and chart block included this single note, starting point of hold, setting point of hold or end point of hold
    */
   blockYDist: number;
 
@@ -163,9 +138,9 @@ export type ChartVerticalNoteImagesProps = {
 };
 
 /**
- * Props of MenuDrawerListItem
+ * Props of DrawerListItem
  */
-export type MenuDrawerListItemProps = {
+export type DrawerListItemProps = {
   /**
    * true if item is inactive, false if one is active
    */
@@ -184,13 +159,13 @@ export type MenuDrawerListItemProps = {
   /**
    * Action when clicking a item
    */
-  onClick?: React.MouseEventHandler<HTMLDivElement>;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
 };
 
 /**
- * Props of MenuDrawerUploadListItem
+ * Props of DrawerUploadListItem
  */
-export type MenuDrawerUploadListItemProps = {
+export type DrawerUploadListItemProps = {
   /**
    * true if item is inactive, false if one is active
    */
@@ -221,4 +196,39 @@ export type MenuDrawerUploadListItemProps = {
    * Action when clicking a item
    */
   onChange: React.ChangeEventHandler<HTMLInputElement>;
+};
+
+/**
+ * Props of MenuBackground
+ */
+export type MenuBackgroundProps = {
+  /**
+   * Action when clicking background
+   */
+  onClose: () => void;
+};
+
+/**
+ * Props of MenuItem
+ */
+export type MenuItemProps = {
+  /**
+   * true if item is inactive, false if one is active
+   */
+  disabled?: boolean;
+
+  /**
+   * Label of keyboard shortcut
+   */
+  keyLabel?: string;
+
+  /**
+   * Label
+   */
+  label: string;
+
+  /**
+   * Action when clicking a item
+   */
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
 };

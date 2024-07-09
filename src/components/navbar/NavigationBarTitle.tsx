@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { useMemo } from "react";
 import { useRecoilValue } from "recoil";
 import {
   isPerformanceState,
@@ -8,9 +8,8 @@ import {
   ucsNameState,
 } from "../../services/atoms";
 import { Note } from "../../types/ucs";
-import { useMemo } from "react";
 
-function MenuBarTitle() {
+function NavigationBarTitle() {
   const isPerformance = useRecoilValue<boolean>(isPerformanceState);
   const isProtected = useRecoilValue<boolean>(isProtectedState);
   const mp3Name = useRecoilValue<string | null>(mp3NameState);
@@ -19,9 +18,9 @@ function MenuBarTitle() {
 
   const title = useMemo(
     () => (
-      <Typography variant="subtitle1" noWrap component="div">
+      <div className="text-lg truncate">
         {`${isProtected ? "*" : ""}${ucsName || "PIU UCS Maker"}`}
-      </Typography>
+      </div>
     ),
     [isProtected, ucsName]
   );
@@ -29,21 +28,21 @@ function MenuBarTitle() {
   const caption = useMemo(
     () =>
       notes.length > 0 && (
-        <Typography variant="caption" noWrap component="div">
+        <div className="text-xs truncate">
           {`${notes.length === 5 ? "Single" : "Double"} ${
             isPerformance ? "Performance" : ""
           }${mp3Name ? ` (${mp3Name})` : ""}`}
-        </Typography>
+        </div>
       ),
     [isPerformance, mp3Name, notes.length]
   );
 
   return (
-    <Box flexGrow={1}>
+    <div className="flex flex-col">
       {title}
       {caption}
-    </Box>
+    </div>
   );
 }
 
-export default MenuBarTitle;
+export default NavigationBarTitle;

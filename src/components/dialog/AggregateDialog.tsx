@@ -1,117 +1,85 @@
-import { useRecoilState, useRecoilValue } from "recoil";
-import {
-  isOpenedAggregateDialogState,
-  noteSizeState,
-  notesState,
-} from "../../services/atoms";
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Grid,
-  Skeleton,
-  Typography,
-} from "@mui/material";
-import { useCallback, useEffect, useState } from "react";
-import { Note } from "../../types/ucs";
+import { useMemo } from "react";
+import { useRecoilValue } from "recoil";
 import { NOTE_BINARIES } from "../../services/assets";
+import { noteSizeState, notesState } from "../../services/atoms";
+import { DIALOG_Z_INDEX } from "../../services/styles";
+import { Note } from "../../types/ucs";
 
 export const AggregateDialog = () => {
-  const [totalCombo, setTotalCombo] = useState<number>(-1);
-  const [open, setOpen] = useRecoilState<boolean>(isOpenedAggregateDialogState);
   const notes = useRecoilValue<Note[][]>(notesState);
   const noteSize = useRecoilValue<number>(noteSizeState);
 
-  useEffect(() => {
-    if (!open || totalCombo > -1 || notes.length === 0) return;
-
-    // Calculate total combo which defines a number of rows containing "X", "M", "H" or "W" at least
-    const combo = new Set(notes.flat().map((note) => note.rowIdx)).size;
-    setTotalCombo(combo);
-  }, [notes, open, totalCombo, setTotalCombo]);
-
-  const onClose = useCallback(() => {
-    setTotalCombo(-1);
-    setOpen(false);
-  }, [setTotalCombo, setOpen]);
+  const totalCombo = useMemo(
+    () =>
+      notes.length === 0
+        ? -1
+        : new Set(notes.flat().map((note) => note.rowIdx)).size,
+    [notes]
+  );
 
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      PaperProps={{ style: { maxWidth: `min(85vw, 600px)` } }}
+    <dialog
+      id="aggregate-dialog"
+      className="modal"
+      style={{ zIndex: DIALOG_Z_INDEX }}
+      data-testid="aggregate-dialog"
     >
-      <DialogTitle>Aggregate</DialogTitle>
-      <DialogContent>
-        <Grid
-          columns={notes.length}
-          container
-          mt={1}
-          alignItems="center"
-          textAlign="center"
-        >
-          <Grid
-            item
-            xs={notes.length}
-            mb={3}
-            justifyContent="center"
-            display="flex"
-          >
-            <Typography
-              variant="h6"
-              component="div"
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-            >
-              Total Combo:
-              <Box ml={2}>
-                {totalCombo === -1 ? (
-                  <Skeleton width={`${noteSize}px`} />
-                ) : (
-                  totalCombo
-                )}
-              </Box>
-            </Typography>
-          </Grid>
+      <div className="modal-box">
+        <form method="dialog">
+          <button className="btn btn-sm btn-circle btn-ghost absolute right-6 top-6">
+            ✕
+          </button>
+        </form>
+        <h3 className="font-bold text-lg">Aggregate</h3>
+        <h3 className="text-lg text-center justify-center pt-4">
+          Total Combo:
+          <span className="ml-2">
+            {totalCombo === -1 ? (
+              <span
+                className="skeleton h-7"
+                style={{ width: `${noteSize}px` }}
+              />
+            ) : (
+              <span className="font-bold">{totalCombo}</span>
+            )}
+          </span>
+        </h3>
+        <div className="flex justify-center items-center gap-x-2 pt-4">
           {[...Array(notes.length)].map((_, column: number) => (
-            <Grid item xs={1} key={column}>
+            <div key={column}>
               <img
                 src={NOTE_BINARIES[column % 5]}
                 alt={`note${column % 5}`}
                 width={`${noteSize}px`}
                 height={`${noteSize}px`}
               />
-            </Grid>
-          ))}
-          {[...Array(notes.length)].map((_, column: number) => (
-            <Grid item xs={1} key={column}>
               {totalCombo === -1 ? (
-                <Skeleton width={`${noteSize}px`} />
+                <span
+                  className="skeleton h-6"
+                  style={{ width: `${noteSize}px` }}
+                />
               ) : (
-                <Typography>{notes[column].length}</Typography>
+                <p className="text-sm text-center pt-1">
+                  {notes[column].length}
+                </p>
               )}
-            </Grid>
-          ))}
-          {[...Array(notes.length)].map((_, column: number) => (
-            <Grid item xs={1} key={column}>
               {totalCombo === -1 ? (
-                <Skeleton width={`${noteSize}px`} />
+                <span
+                  className="skeleton h-4"
+                  style={{ width: `${noteSize}px` }}
+                />
               ) : (
-                <Typography variant="caption">
+                <p className="text-xs text-center">
                   {Math.round((1000 * notes[column].length) / totalCombo) / 10}%
-                </Typography>
+                </p>
               )}
-            </Grid>
+            </div>
           ))}
-        </Grid>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Close</Button>
-      </DialogActions>
-    </Dialog>
+        </div>
+      </div>
+      <form method="dialog" className="modal-backdrop">
+        <button />
+      </form>
+    </dialog>
   );
 };

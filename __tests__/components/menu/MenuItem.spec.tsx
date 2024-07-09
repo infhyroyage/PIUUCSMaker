@@ -1,12 +1,12 @@
 import "@testing-library/jest-dom/vitest";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { cleanup, render, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import ChartIndicatorMenuItem from "../../../src/components/menu/ChartIndicatorMenuItem";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import MenuItem from "../../../src/components/menu/MenuItem";
 
 const mockOnClick = vi.fn();
 
-describe("ChartIndicatorMenuItem", () => {
+describe("MenuItem", () => {
   beforeEach(() => {
     vi.resetAllMocks();
   });
@@ -16,7 +16,7 @@ describe("ChartIndicatorMenuItem", () => {
 
   it("Render secondary typography if keyLabel is provided", () => {
     const { queryByText } = render(
-      <ChartIndicatorMenuItem label="TestLabel" keyLabel="TestKeyLabel" />
+      <MenuItem label="TestLabel" keyLabel="TestKeyLabel" />
     );
 
     expect(queryByText("TestKeyLabel")).toBeInTheDocument();
@@ -24,19 +24,15 @@ describe("ChartIndicatorMenuItem", () => {
 
   it("Render correctly if disabled", () => {
     const { getByRole } = render(
-      <ChartIndicatorMenuItem
-        disabled={true}
-        label="TestLabel"
-        onClick={() => {}}
-      />
+      <MenuItem disabled={true} label="TestLabel" onClick={() => {}} />
     );
 
-    expect(getByRole("menuitem")).toHaveStyle({ "pointer-events": "none" });
+    expect(getByRole("button")).toBeDisabled();
   });
 
   it("Trigger onClick if disabled is not provided", async () => {
     const { getByText } = render(
-      <ChartIndicatorMenuItem label="TestLabel" onClick={mockOnClick} />
+      <MenuItem label="TestLabel" onClick={mockOnClick} />
     );
 
     await userEvent.click(getByText("TestLabel"));
@@ -46,11 +42,7 @@ describe("ChartIndicatorMenuItem", () => {
 
   it("Trigger onClick if not disabled", async () => {
     const { getByText } = render(
-      <ChartIndicatorMenuItem
-        label="TestLabel"
-        disabled={false}
-        onClick={mockOnClick}
-      />
+      <MenuItem label="TestLabel" disabled={false} onClick={mockOnClick} />
     );
 
     await userEvent.click(getByText("TestLabel"));

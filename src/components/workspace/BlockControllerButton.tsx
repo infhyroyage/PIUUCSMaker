@@ -1,17 +1,10 @@
 import { memo, useMemo } from "react";
 import { useRecoilValue } from "recoil";
-import { noteSizeState, zoomState } from "../../services/atoms";
-import {
-  Card,
-  CardActionArea,
-  CardContent,
-  Stack,
-  Typography,
-} from "@mui/material";
-import BorderLine from "./BorderLine";
-import { BlockControllerButtonProps } from "../../types/props";
 import { ZOOM_VALUES } from "../../services/assets";
+import { noteSizeState, zoomState } from "../../services/atoms";
 import { Zoom } from "../../types/menu";
+import { BlockControllerButtonProps } from "../../types/props";
+import BorderLine from "./BorderLine";
 
 function BlockControllerButton({
   bpm,
@@ -46,34 +39,22 @@ function BlockControllerButton({
 
   return (
     <>
-      <Card raised square sx={{ width: "100%" }}>
-        <CardActionArea onClick={onClick}>
-          <CardContent
-            sx={{
-              height: `${
-                isLastBlock ? blockHeight : blockHeight - horizontalBorderSize
-              }px`,
-              padding: 0,
-            }}
-          >
-            <Stack
-              spacing={0}
-              pt={0}
-              pb={0}
-              pl={{ xs: 0, sm: 1 }}
-              pr={{ xs: 0, sm: 1 }}
-            >
-              <Typography variant="caption">{`${bpm} BPM, 1/${split}`}</Typography>
-              <Typography
-                variant="caption"
-                sx={{ color: isIgnoredDelay ? "red" : undefined }}
-              >{`Delay: ${delay} (ms)${
-                isIgnoredDelay ? " ⚠" : ""
-              }`}</Typography>
-            </Stack>
-          </CardContent>
-        </CardActionArea>
-      </Card>
+      <button
+        className="btn-square btn-ghost bg-base-200 w-full px-0 md:px-2 py-0 flex flex-col overflow-hidden"
+        onClick={onClick}
+        style={{
+          height: `${
+            isLastBlock ? blockHeight : blockHeight - horizontalBorderSize
+          }px`,
+        }}
+      >
+        <div className="text-xs text-left overflow-hidden text-ellipsis">
+          <p>{`${bpm} BPM, 1/${split}`}</p>
+          <p
+            className={isIgnoredDelay ? "text-warning" : undefined}
+          >{`Delay: ${delay} (ms)${isIgnoredDelay ? " ⚠" : ""}`}</p>
+        </div>
+      </button>
       {/* 譜面のブロックごとに分割する枠線 */}
       {!isLastBlock && (
         <BorderLine

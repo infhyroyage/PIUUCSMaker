@@ -1,12 +1,11 @@
 import React from "react";
 import { useRecoilValue } from "recoil";
-import { Block } from "../../types/ucs";
-import { blocksState, noteSizeState, zoomState } from "../../services/atoms";
-import BorderLine from "./BorderLine";
-import { Zoom } from "../../types/menu";
 import { ZOOM_VALUES } from "../../services/assets";
-import { Paper, Typography } from "@mui/material";
+import { blocksState, noteSizeState, zoomState } from "../../services/atoms";
 import { IDENTIFIER_WIDTH } from "../../services/styles";
+import { Zoom } from "../../types/menu";
+import { Block } from "../../types/ucs";
+import BorderLine from "./BorderLine";
 
 function Identifier() {
   const blocks = useRecoilValue<Block[]>(blocksState);
@@ -60,18 +59,14 @@ function Identifier() {
             {rectangleHeights.map(
               (rectangleHeight: number, rectangleIdx: number) => (
                 <React.Fragment key={rectangleIdx}>
-                  <Paper
-                    square
-                    sx={{
-                      height: `${rectangleHeight}px`,
-                      textAlign: "center",
-                      width: "100%",
-                    }}
+                  <span
+                    className="bg-base-200 text-base-content block w-full text-center"
+                    style={{ height: `${rectangleHeight}px` }}
                   >
-                    <Typography p={0} variant="caption">
+                    <p className="p-0 text-xs">
                       {`${blockIdx + 1}: ${rectangleIdx + 1}`}
-                    </Typography>
-                  </Paper>
+                    </p>
+                  </span>
                   {/* 譜面のブロック内の節ごとに分割する枠線 */}
                   {rectangleIdx < rectangleHeights.length - 1 && (
                     <BorderLine

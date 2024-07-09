@@ -1,44 +1,41 @@
-import { Button, Stack, Typography } from "@mui/material";
+import useNewUcsDialog from "../../hooks/useNewUcsDialog";
 import useUploadingUCS from "../../hooks/useUploadingUCS";
-import { useSetRecoilState } from "recoil";
-import { isOpenedNewUCSDialogState } from "../../services/atoms";
-import { MENU_BAR_HEIGHT } from "../../services/styles";
+import { NAVIGATION_BAR_HEIGHT } from "../../services/styles";
 
 function ReadyUCS() {
-  const setIsOpenedNewUCSDialog = useSetRecoilState<boolean>(
-    isOpenedNewUCSDialogState
-  );
-
+  const { openNewUcsDialog } = useNewUcsDialog();
   const { isUploadingUCS, onUploadUCS } = useUploadingUCS();
 
   return (
-    <Stack
-      alignItems="center"
-      display="flex"
-      height={`calc(100vh - ${MENU_BAR_HEIGHT}px)`}
-      justifyContent="center"
-      ml={`${MENU_BAR_HEIGHT}px`}
-      spacing={3}
-      sx={{ flexGrow: 1 }}
+    <div
+      className="flex flex-col items-center justify-center gap-4"
+      style={{
+        height: `calc(100vh - ${NAVIGATION_BAR_HEIGHT}px)`,
+        marginTop: `${NAVIGATION_BAR_HEIGHT}px`,
+        marginLeft: `${NAVIGATION_BAR_HEIGHT}px`,
+      }}
     >
-      <Button
+      <button
+        className="btn btn-primary"
         disabled={isUploadingUCS}
-        onClick={() => setIsOpenedNewUCSDialog(true)}
-        variant="contained"
+        onClick={openNewUcsDialog}
       >
         New UCS
-      </Button>
-      <Typography>or</Typography>
-      <Button disabled={isUploadingUCS} component="label" variant="contained">
+      </button>
+      <p>or</p>
+      <label
+        className={`btn btn-primary ${isUploadingUCS ? "btn-disabled" : ""}`}
+      >
         {isUploadingUCS ? "Ready..." : "Upload UCS"}
         <input
           accept=".ucs"
           onChange={onUploadUCS}
           style={{ display: "none" }}
           type="file"
+          disabled={isUploadingUCS}
         />
-      </Button>
-    </Stack>
+      </label>
+    </div>
   );
 }
 

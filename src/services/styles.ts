@@ -1,29 +1,44 @@
 /**
+ * z-index of all dialogs
+ */
+export const DIALOG_Z_INDEX: number = 1300000;
+
+/**
+ * Width (px) of opened Drawer
+ */
+export const DRAWER_OPENED_WIDTH: number = 180;
+
+/**
+ * z-index of Drawer
+ */
+export const DRAWER_Z_INDEX: number = 1000000;
+
+/**
  * Width (px) of Identifier
  */
 export const IDENTIFIER_WIDTH: number = 36;
 
 /**
- * Height (px) of MenuBar which corresponds to the wiidth (px) of closed MenuDrawer
+ * z-index of BlockControllerMenu and ChartIndicatorMenu
  */
-export const MENU_BAR_HEIGHT: number = 48;
+export const MENU_Z_INDEX: number = 1200000;
 
 /**
- * Width (px) of opened MenuDrawer
+ * z-index of MenuBackground
  */
-export const MENU_DRAWER_OPENED_WIDTH = 180;
+export const MENU_BACKGROUND_Z_INDEX: number = MENU_Z_INDEX - 1;
 
 /**
- * Default z-index scale in MUI
- * @link https://mui.com/material-ui/customization/z-index
+ * Height (px) of NavigationBar which corresponds to the wiidth (px) of closed Drawer
  */
-export const MUI_DEFAULT_Z_INDEX: Record<string, number> = {
-  mobileStepper: 1000,
-  fab: 1050,
-  speedDial: 1050,
-  appBar: 1100,
-  drawer: 1200,
-  modal: 1300,
-  snackbar: 1400,
-  tooltip: 1500,
-};
+export const NAVIGATION_BAR_HEIGHT: number = 48;
+
+/**
+ * z-index of NavigationBar
+ */
+export const NAVIGATION_BAR_Z_INDEX: number = 1100000;
+
+/**
+ * z-index of SuccessSnackbar and UserErrorSnackbar
+ */
+export const SNACKBAR_Z_INDEX: number = 1400000;

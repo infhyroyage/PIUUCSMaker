@@ -1,26 +1,21 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useTransition,
+} from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
+import useEditBlockDialog from "../../hooks/useEditBlockDialog";
 import {
   blockControllerMenuBlockIdxState,
   blocksState,
-  isOpenedEditBlockDialogState,
   isProtectedState,
   notesState,
   redoSnapshotsState,
   undoSnapshotsState,
 } from "../../services/atoms";
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Stack,
-  TextField,
-} from "@mui/material";
-import { EditBlockDialogError, EditBlockDialogForm } from "../../types/dialog";
-import { Block, Note } from "../../types/ucs";
-import { ChartSnapshot } from "../../types/ucs";
+import { DIALOG_Z_INDEX } from "../../services/styles";
 import {
   validateBeat,
   validateBpm,
@@ -28,6 +23,8 @@ import {
   validateRows,
   validateSplit,
 } from "../../services/validations";
+import { EditBlockDialogError, EditBlockDialogForm } from "../../types/dialog";
+import { Block, ChartSnapshot, Note } from "../../types/ucs";
 
 function EditBlockDialog() {
   const [errors, setErrors] = useState<EditBlockDialogError[]>([]);
@@ -43,12 +40,14 @@ function EditBlockDialog() {
     blockControllerMenuBlockIdxState
   );
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
-  const [open, setOpen] = useRecoilState<boolean>(isOpenedEditBlockDialogState);
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
   const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
   const setRedoSnapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
+
+  const { closeEditBlockDialog } = useEditBlockDialog();
+  const [isPending, startTransition] = useTransition();
 
   useEffect(
     () =>
@@ -70,151 +69,157 @@ function EditBlockDialog() {
     return !Number.isNaN(delay) && delay !== 0;
   }, [menuBlockIdx, form.delay]);
 
-  const onUpdate = useCallback(() => {
-    // BlockControllerMenuのメニューを開いていない場合はNOP
-    if (menuBlockIdx === null) return;
+  const onUpdate = useCallback(
+    () =>
+      startTransition(() => {
+        // BlockControllerMenuのメニューを開いていない場合はNOP
+        if (menuBlockIdx === null) return;
 
-    // バリデーションチェック
-    const beat: number | null = validateBeat(form.beat);
-    const bpm: number | null = validateBpm(form.bpm);
-    const delay: number | null = validateDelay(form.delay);
-    const rows: number | null = validateRows(form.rows);
-    const split: number | null = validateSplit(form.split);
-    if (
-      beat !== null &&
-      bpm !== null &&
-      delay !== null &&
-      rows !== null &&
-      split !== null
-    ) {
-      // menuBlockIdx番目の譜面のブロックの行数の差分
-      const deltaRows: number = rows - blocks[menuBlockIdx].rows;
+        // バリデーションチェック
+        const beat: number | null = validateBeat(form.beat);
+        const bpm: number | null = validateBpm(form.bpm);
+        const delay: number | null = validateDelay(form.delay);
+        const rows: number | null = validateRows(form.rows);
+        const split: number | null = validateSplit(form.split);
+        if (
+          beat !== null &&
+          bpm !== null &&
+          delay !== null &&
+          rows !== null &&
+          split !== null
+        ) {
+          // menuBlockIdx番目の譜面のブロックの行数の差分
+          const deltaRows: number = rows - blocks[menuBlockIdx].rows;
 
-      // 元に戻す/やり直すスナップショットの集合を更新
-      setUndoSnapshots([
-        ...undoSnapshots,
-        { blocks, notes: deltaRows === 0 ? null : notes },
-      ]);
-      setRedoSnapshots([]);
+          // 元に戻す/やり直すスナップショットの集合を更新
+          setUndoSnapshots([
+            ...undoSnapshots,
+            { blocks, notes: deltaRows === 0 ? null : notes },
+          ]);
+          setRedoSnapshots([]);
 
-      // menuBlockIdx番目以降の譜面のブロックをすべて更新
-      const updatedBlocks: Block[] = [...Array(blocks.length)].map(
-        (_, blockIdx: number) =>
-          blockIdx === menuBlockIdx
-            ? {
-                accumulatedRows: blocks[menuBlockIdx].accumulatedRows,
-                beat: beat,
-                bpm: bpm,
-                delay: delay,
-                rows: rows,
-                split: split,
-              }
-            : blockIdx > menuBlockIdx
-            ? {
-                ...blocks[blockIdx],
-                accumulatedRows:
-                  blocks[blockIdx - 1].accumulatedRows +
-                  blocks[blockIdx - 1].rows +
-                  deltaRows,
-              }
-            : blocks[blockIdx]
-      );
+          // menuBlockIdx番目以降の譜面のブロックをすべて更新
+          const updatedBlocks: Block[] = [...Array(blocks.length)].map(
+            (_, blockIdx: number) =>
+              blockIdx === menuBlockIdx
+                ? {
+                    accumulatedRows: blocks[menuBlockIdx].accumulatedRows,
+                    beat: beat,
+                    bpm: bpm,
+                    delay: delay,
+                    rows: rows,
+                    split: split,
+                  }
+                : blockIdx > menuBlockIdx
+                ? {
+                    ...blocks[blockIdx],
+                    accumulatedRows:
+                      blocks[blockIdx - 1].accumulatedRows +
+                      blocks[blockIdx - 1].rows +
+                      deltaRows,
+                  }
+                : blocks[blockIdx]
+          );
 
-      // 行数を変更した場合のみ、menuBlockIdx番目以降の譜面のブロックに該当する
-      // 単ノート/ホールドの始点/ホールドの中間/ホールドの終点をすべて更新
-      let updatedNotes: Note[][] = [...notes];
-      if (deltaRows !== 0) {
-        // 以下の譜面のブロックに該当する単ノート/ホールドの始点/ホールドの中間/ホールドの終点をすべて更新
-        // * (menuBlockIdx - 1)番目以前: 更新しない
-        // * menuBlockIdx番目          : 譜面全体の行インデックスをスケーリング(空白 < X < H < M < W)
-        // * (menuBlockIdx + 1)番目以降: 譜面全体の行インデックスを譜面のブロックの行数の差分ズラす
-        updatedNotes = [...notes].map((ns: Note[]) => [
-          // (menuBlockIdx - 1)番目以前の譜面のブロック
-          ...ns.filter(
-            (note: Note) => note.rowIdx < blocks[menuBlockIdx].accumulatedRows
-          ),
-          // menuBlockIdx番目の譜面のブロック
-          ...ns
-            .filter(
-              (note: Note) =>
-                note.rowIdx >= blocks[menuBlockIdx].accumulatedRows &&
-                note.rowIdx <
-                  blocks[menuBlockIdx].accumulatedRows +
-                    blocks[menuBlockIdx].rows
-            )
-            .reduce((prev: Note[], note: Note) => {
-              const scaledRowIdx: number =
-                blocks[menuBlockIdx].accumulatedRows +
-                Math.floor(
-                  ((note.rowIdx - blocks[menuBlockIdx].accumulatedRows) *
-                    rows) /
-                    blocks[menuBlockIdx].rows
-                );
-              const prevScaledNote: Note | undefined = prev.find(
-                (note: Note) => note.rowIdx === scaledRowIdx
-              );
+          // 行数を変更した場合のみ、menuBlockIdx番目以降の譜面のブロックに該当する
+          // 単ノート/ホールドの始点/ホールドの中間/ホールドの終点をすべて更新
+          let updatedNotes: Note[][] = [...notes];
+          if (deltaRows !== 0) {
+            // 以下の譜面のブロックに該当する単ノート/ホールドの始点/ホールドの中間/ホールドの終点をすべて更新
+            // * (menuBlockIdx - 1)番目以前: 更新しない
+            // * menuBlockIdx番目          : 譜面全体の行インデックスをスケーリング(空白 < X < H < M < W)
+            // * (menuBlockIdx + 1)番目以降: 譜面全体の行インデックスを譜面のブロックの行数の差分ズラす
+            updatedNotes = [...notes].map((ns: Note[]) => [
+              // (menuBlockIdx - 1)番目以前の譜面のブロック
+              ...ns.filter(
+                (note: Note) =>
+                  note.rowIdx < blocks[menuBlockIdx].accumulatedRows
+              ),
+              // menuBlockIdx番目の譜面のブロック
+              ...ns
+                .filter(
+                  (note: Note) =>
+                    note.rowIdx >= blocks[menuBlockIdx].accumulatedRows &&
+                    note.rowIdx <
+                      blocks[menuBlockIdx].accumulatedRows +
+                        blocks[menuBlockIdx].rows
+                )
+                .reduce((prev: Note[], note: Note) => {
+                  const scaledRowIdx: number =
+                    blocks[menuBlockIdx].accumulatedRows +
+                    Math.floor(
+                      ((note.rowIdx - blocks[menuBlockIdx].accumulatedRows) *
+                        rows) /
+                        blocks[menuBlockIdx].rows
+                    );
+                  const prevScaledNote: Note | undefined = prev.find(
+                    (note: Note) => note.rowIdx === scaledRowIdx
+                  );
 
-              return prevScaledNote
-                ? [
-                    ...prev.slice(0, prev.length - 1),
-                    {
-                      rowIdx: scaledRowIdx,
-                      type:
-                        prevScaledNote.type === "X" ||
-                        (prevScaledNote.type === "H" &&
-                          ["M", "W"].includes(note.type)) ||
-                        (prevScaledNote.type === "M" && note.type === "W")
-                          ? note.type
-                          : prevScaledNote.type,
-                    },
-                  ]
-                : [...prev, { rowIdx: scaledRowIdx, type: note.type }];
-            }, []),
-          // (menuBlockIdx + 1)番目以降の譜面のブロック
-          ...ns
-            .filter(
-              (note: Note) =>
-                note.rowIdx >=
-                blocks[menuBlockIdx].accumulatedRows + blocks[menuBlockIdx].rows
-            )
-            .map((note: Note) => {
-              return { rowIdx: note.rowIdx + deltaRows, type: note.type };
-            }),
-        ]);
-      }
+                  return prevScaledNote
+                    ? [
+                        ...prev.slice(0, prev.length - 1),
+                        {
+                          rowIdx: scaledRowIdx,
+                          type:
+                            prevScaledNote.type === "X" ||
+                            (prevScaledNote.type === "H" &&
+                              ["M", "W"].includes(note.type)) ||
+                            (prevScaledNote.type === "M" && note.type === "W")
+                              ? note.type
+                              : prevScaledNote.type,
+                        },
+                      ]
+                    : [...prev, { rowIdx: scaledRowIdx, type: note.type }];
+                }, []),
+              // (menuBlockIdx + 1)番目以降の譜面のブロック
+              ...ns
+                .filter(
+                  (note: Note) =>
+                    note.rowIdx >=
+                    blocks[menuBlockIdx].accumulatedRows +
+                      blocks[menuBlockIdx].rows
+                )
+                .map((note: Note) => {
+                  return { rowIdx: note.rowIdx + deltaRows, type: note.type };
+                }),
+            ]);
+          }
 
-      setIsProtected(true);
+          setIsProtected(true);
 
-      setBlocks(updatedBlocks);
-      if (deltaRows !== 0) setNotes(updatedNotes);
+          setBlocks(updatedBlocks);
+          if (deltaRows !== 0) setNotes(updatedNotes);
 
-      setMenuBlockIdx(null);
-      setOpen(false);
-    } else {
-      // バリデーションエラーのテキストフィールドをすべて表示
-      const errors: EditBlockDialogError[] = [];
-      if (beat === null) errors.push("Beat");
-      if (bpm === null) errors.push("BPM");
-      if (delay === null) errors.push("Delay(ms)");
-      if (rows === null) errors.push("Rows");
-      if (split === null) errors.push("Split");
-      setErrors(errors);
-    }
-  }, [
-    blocks,
-    form,
-    menuBlockIdx,
-    notes,
-    setBlocks,
-    setIsProtected,
-    setMenuBlockIdx,
-    setNotes,
-    setOpen,
-    setErrors,
-    setRedoSnapshots,
-    setUndoSnapshots,
-    undoSnapshots,
-  ]);
+          setMenuBlockIdx(null);
+          closeEditBlockDialog();
+        } else {
+          // バリデーションエラーのテキストフィールドをすべて表示
+          const errors: EditBlockDialogError[] = [];
+          if (beat === null) errors.push("Beat");
+          if (bpm === null) errors.push("BPM");
+          if (delay === null) errors.push("Delay(ms)");
+          if (rows === null) errors.push("Rows");
+          if (split === null) errors.push("Split");
+          setErrors(errors);
+        }
+      }),
+    [
+      blocks,
+      closeEditBlockDialog,
+      form,
+      menuBlockIdx,
+      notes,
+      setBlocks,
+      setIsProtected,
+      setMenuBlockIdx,
+      setNotes,
+      setErrors,
+      setRedoSnapshots,
+      setUndoSnapshots,
+      undoSnapshots,
+    ]
+  );
 
   const onClose = useCallback(() => {
     setErrors([]);
@@ -226,105 +231,182 @@ function EditBlockDialog() {
       split: "",
     });
     setMenuBlockIdx(null);
-    setOpen(false);
-  }, [setErrors, setForm, setMenuBlockIdx, setOpen]);
+  }, [setErrors, setForm, setMenuBlockIdx]);
 
   return (
-    <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Edit Block</DialogTitle>
-      <DialogContent>
-        <Stack spacing={3} mt={1}>
-          <TextField
-            error={errors.includes("BPM")}
-            fullWidth
-            helperText="Number of 4th Beats per Minute(0.1 - 999)"
-            label="BPM"
-            margin="dense"
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              setForm({
-                ...form,
-                bpm: event.target.value,
-              });
-            }}
-            size="small"
-            type="number"
-            value={form.bpm}
-          />
-          <TextField
-            error={errors.includes("Delay(ms)") || isIgnoredDelay}
-            fullWidth
-            helperText={
-              isIgnoredDelay
-                ? "WARNING: Ignore above value and assume 0 automatically except 1st block"
-                : "Offset time of Scrolling(-999999 - 999999)"
-            }
-            label="Delay(ms)"
-            margin="dense"
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              setForm({
-                ...form,
-                delay: event.target.value,
-              });
-            }}
-            size="small"
-            type="number"
-            value={form.delay}
-          />
-          <TextField
-            error={errors.includes("Split")}
-            fullWidth
-            helperText="Number of UCS File's Rows per 4th Beat(1 - 128)"
-            label="Split"
-            margin="dense"
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              setForm({
-                ...form,
-                split: event.target.value,
-              });
-            }}
-            size="small"
-            type="number"
-            value={form.split}
-          />
-          <TextField
-            error={errors.includes("Beat")}
-            fullWidth
-            helperText="Number of 4th Beats per Measure(1 - 64)"
-            label="Beat"
-            margin="dense"
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              setForm({
-                ...form,
-                beat: event.target.value,
-              });
-            }}
-            size="small"
-            type="number"
-            value={form.beat}
-          />
-          <TextField
-            error={errors.includes("Rows")}
-            fullWidth
-            helperText="Number of UCS File's Rows(Over 1)"
-            label="Rows"
-            margin="dense"
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              setForm({
-                ...form,
-                rows: event.target.value,
-              });
-            }}
-            size="small"
-            type="number"
-            value={form.rows}
-          />
-        </Stack>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button onClick={onUpdate}>Update</Button>
-      </DialogActions>
-    </Dialog>
+    <dialog
+      id="edit-block-dialog"
+      className="modal"
+      style={{ zIndex: DIALOG_Z_INDEX }}
+      data-testid="edit-block-dialog"
+      onCancel={onClose}
+    >
+      <div className="modal-box">
+        <form method="dialog">
+          <button
+            className="btn btn-sm btn-circle btn-ghost absolute right-6 top-6"
+            onClick={onClose}
+            disabled={isPending}
+          >
+            ✕
+          </button>
+        </form>
+        <h3 className="font-bold text-lg">Edit Block</h3>
+        <div className="flex flex-col gap-4 mt-4">
+          <label>
+            <div
+              className={`label text-md font-bold label-text${
+                errors.includes("BPM") ? " text-error" : ""
+              }`}
+            >
+              BPM
+            </div>
+            <input
+              className={`input input-sm input-bordered w-full${
+                errors.includes("BPM") ? " input-error" : ""
+              }`}
+              disabled={isPending}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                setForm({ ...form, bpm: event.target.value });
+              }}
+              type="number"
+              value={form.bpm}
+            />
+            {errors.includes("BPM") && (
+              <div className="label text-md label-text text-error">
+                Number of 4th Beats per Minute(0.1 - 999)
+              </div>
+            )}
+          </label>
+          <label>
+            <div
+              className={`label text-md font-bold label-text${
+                isIgnoredDelay
+                  ? " text-warning"
+                  : errors.includes("Delay(ms)")
+                  ? " text-error"
+                  : ""
+              }`}
+            >
+              Delay(ms)
+            </div>
+            <input
+              className={`input input-sm input-bordered w-full${
+                isIgnoredDelay
+                  ? " input-warning"
+                  : errors.includes("Delay(ms)")
+                  ? " input-error"
+                  : ""
+              }`}
+              disabled={isPending}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                setForm({ ...form, delay: event.target.value });
+              }}
+              type="number"
+              value={form.delay}
+            />
+            {isIgnoredDelay ? (
+              <div className="label text-md label-text text-warning">
+                ⚠Ignore above value and assume 0 automatically except 1st block⚠
+              </div>
+            ) : (
+              errors.includes("Delay(ms)") && (
+                <div className="label text-md label-text text-error">
+                  Offset time of Scrolling(-999999 - 999999)
+                </div>
+              )
+            )}
+          </label>
+          <label>
+            <div
+              className={`label text-md font-bold label-text${
+                errors.includes("Split") ? " text-error" : ""
+              }`}
+            >
+              Split
+            </div>
+            <input
+              className={`input input-sm input-bordered w-full${
+                errors.includes("Split") ? " input-error" : ""
+              }`}
+              disabled={isPending}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                setForm({ ...form, split: event.target.value });
+              }}
+              type="number"
+              value={form.split}
+            />
+            {errors.includes("Split") && (
+              <div className="label text-md label-text text-error">
+                {"Number of UCS File's Rows per 4th Beat(1 - 128)"}
+              </div>
+            )}
+          </label>
+          <label>
+            <div
+              className={`label text-md font-bold label-text${
+                errors.includes("Beat") ? " text-error" : ""
+              }`}
+            >
+              Beat
+            </div>
+            <input
+              className={`input input-sm input-bordered w-full${
+                errors.includes("Beat") ? " input-error" : ""
+              }`}
+              disabled={isPending}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                setForm({ ...form, beat: event.target.value });
+              }}
+              type="number"
+              value={form.beat}
+            />
+            {errors.includes("Beat") && (
+              <div className="label text-md label-text text-error">
+                Number of 4th Beats per Measure(1 - 64)
+              </div>
+            )}
+          </label>
+          <label>
+            <div
+              className={`label text-md font-bold label-text${
+                errors.includes("Rows") ? " text-error" : ""
+              }`}
+            >
+              Rows
+            </div>
+            <input
+              className={`input input-sm input-bordered w-full${
+                errors.includes("Rows") ? " input-error" : ""
+              }`}
+              disabled={isPending}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                setForm({ ...form, rows: event.target.value });
+              }}
+              type="number"
+              value={form.rows}
+            />
+            {errors.includes("Rows") && (
+              <div className="label text-md label-text text-error">
+                {"Number of UCS File's Rows(Over 1)"}
+              </div>
+            )}
+          </label>
+        </div>
+        <form method="dialog" className="modal-action">
+          <button
+            className="btn btn-primary"
+            disabled={isPending}
+            onClick={onUpdate}
+          >
+            UPDATE
+          </button>
+        </form>
+      </div>
+      <form method="dialog" className="modal-backdrop" onClick={onClose}>
+        <button disabled={isPending} />
+      </form>
+    </dialog>
   );
 }
 

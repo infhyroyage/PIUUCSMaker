@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { Alert, Snackbar } from "@mui/material";
 import { useRecoilValue } from "recoil";
 import { successMessageState } from "../../services/atoms";
+import { SNACKBAR_Z_INDEX } from "../../services/styles";
 
 function SuccessSnackbar() {
   const [isOpened, setIsOpened] = useState<boolean>(false);
@@ -12,24 +12,44 @@ function SuccessSnackbar() {
   useEffect(() => {
     if (successMessage.length > 0) {
       setIsOpened(true);
+
+      // 表示してから5秒後に自動的に非表示にする
+      const timer = setTimeout(() => {
+        setIsOpened(false);
+      }, 5000);
+      return () => clearTimeout(timer);
     }
   }, [successMessage, setIsOpened]);
 
   return (
-    <Snackbar
-      open={isOpened}
-      anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      onClose={onClose}
-    >
-      <Alert
-        variant="filled"
-        severity="success"
-        onClose={onClose}
-        sx={{ width: "100%" }}
+    isOpened && (
+      <div
+        className="toast toast-top toast-center"
+        style={{ zIndex: SNACKBAR_Z_INDEX }}
       >
-        {successMessage}
-      </Alert>
-    </Snackbar>
+        <div className="alert alert-success flex flex-row">
+          {successMessage}
+          {/* heroicons "x-mark" */}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="size-6"
+            onClick={onClose}
+            style={{ cursor: "pointer" }}
+            data-testid="success-snackbar-close"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M6 18 18 6M6 6l12 12"
+            />
+          </svg>
+        </div>
+      </div>
+    )
   );
 }
 

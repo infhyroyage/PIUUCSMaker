@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { Alert, Snackbar } from "@mui/material";
 import { useRecoilValue } from "recoil";
 import { userErrorMessageState } from "../../services/atoms";
+import { SNACKBAR_Z_INDEX } from "../../services/styles";
 
 function UserErrorSnackbar() {
   const [isOpened, setIsOpened] = useState<boolean>(false);
@@ -16,20 +16,34 @@ function UserErrorSnackbar() {
   }, [userErrorMessage, setIsOpened]);
 
   return (
-    <Snackbar
-      open={isOpened}
-      anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      onClose={onClose}
-    >
-      <Alert
-        variant="filled"
-        severity="error"
-        onClose={onClose}
-        sx={{ width: "100%" }}
+    isOpened && (
+      <div
+        className="toast toast-top toast-center"
+        style={{ zIndex: SNACKBAR_Z_INDEX }}
       >
-        {userErrorMessage}
-      </Alert>
-    </Snackbar>
+        <div className="alert alert-error flex flex-row">
+          {userErrorMessage}
+          {/* heroicons "x-mark" */}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="size-6"
+            onClick={onClose}
+            style={{ cursor: "pointer" }}
+            data-testid="user-error-snackbar-close"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M6 18 18 6M6 6l12 12"
+            />
+          </svg>
+        </div>
+      </div>
+    )
   );
 }
 

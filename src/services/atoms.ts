@@ -1,11 +1,11 @@
 import { atom } from "recoil";
-import { Block, Note } from "../types/ucs";
-import { HoldSetter, Selector } from "../types/chart";
-import { ChartSnapshot } from "../types/ucs";
-import { Indicator } from "../types/chart";
-import { ClipBoard } from "../types/ucs";
-import { ChartIndicatorMenuPosition, Zoom } from "../types/menu";
-import { BlockControllerMenuPosition } from "../types/menu";
+import { HoldSetter, Indicator, Selector } from "../types/chart";
+import {
+  BlockControllerMenuPosition,
+  ChartIndicatorMenuPosition,
+  Zoom,
+} from "../types/menu";
+import { Block, ChartSnapshot, ClipBoard, Note } from "../types/ucs";
 
 /**
  * Chart block index opening BlockControllerMenu
@@ -89,42 +89,10 @@ export const isMuteBeatsState = atom<boolean>({
 });
 
 /**
- * true if AdjustBlockDialog is visible, otherwise false
+ * true if Drawer is expanded, otherwise false
  */
-export const isOpenedAdjustBlockDialogState = atom<boolean>({
-  key: "isOpenedAdjustBlockDialog",
-  default: false,
-});
-
-/**
- * true if EditBlockDialog is visible, otherwise false
- */
-export const isOpenedEditBlockDialogState = atom<boolean>({
-  key: "isOpenedEditBlockDialog",
-  default: false,
-});
-
-/**
- * true if MenuDrawer is expanded, otherwise false
- */
-export const isOpenedMenuDrawerState = atom<boolean>({
-  key: "isOpenedMenuDrawer",
-  default: false,
-});
-
-/**
- * true if NewUCSDialog is visible, otherwise false
- */
-export const isOpenedNewUCSDialogState = atom<boolean>({
-  key: "isOpenedNewUCSDialog",
-  default: false,
-});
-
-/**
- * true if AggregateDialog is visible, otherwise false
- */
-export const isOpenedAggregateDialogState = atom<boolean>({
-  key: "isOpenedAggregateDialog",
+export const isOpenedDrawerState = atom<boolean>({
+  key: "isOpenedDrawer",
   default: false,
 });
 

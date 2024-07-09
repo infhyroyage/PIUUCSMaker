@@ -1,19 +1,20 @@
-import { useCallback, useMemo } from "react";
-import { Divider, Menu, MenuItem, MenuList } from "@mui/material";
+import { useCallback, useEffect, useMemo } from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
+import useEditBlockDialog from "../../hooks/useEditBlockDialog";
 import {
-  isOpenedAdjustBlockDialogState,
   blockControllerMenuBlockIdxState,
   blockControllerMenuPositionState,
   blocksState,
-  isOpenedEditBlockDialogState,
   isProtectedState,
+  notesState,
   redoSnapshotsState,
   undoSnapshotsState,
-  notesState,
 } from "../../services/atoms";
+import { MENU_Z_INDEX } from "../../services/styles";
 import { BlockControllerMenuPosition } from "../../types/menu";
 import { Block, ChartSnapshot, Note } from "../../types/ucs";
+import MenuBackground from "./MenuBackground";
+import MenuItem from "./MenuItem";
 
 function BlockControllerMenu() {
   const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
@@ -27,15 +28,11 @@ function BlockControllerMenu() {
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
-  const setIsOpenedAdjustBlockDialog = useSetRecoilState<boolean>(
-    isOpenedAdjustBlockDialogState
-  );
-  const setIsOpenedEditBlockDialog = useSetRecoilState<boolean>(
-    isOpenedEditBlockDialogState
-  );
   const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
   const setRedoSnapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
+
+  const { openEditBlockDialog } = useEditBlockDialog();
 
   const blockNum = useMemo(() => blocks.length, [blocks.length]);
 
@@ -46,15 +43,18 @@ function BlockControllerMenu() {
 
   const onClickEdit = useCallback(() => {
     if (menuBlockIdx !== null) {
-      setIsOpenedEditBlockDialog(true);
+      openEditBlockDialog();
       setMenuPosition(undefined);
     }
-  }, [menuBlockIdx, setIsOpenedEditBlockDialog, setMenuPosition]);
+  }, [menuBlockIdx, openEditBlockDialog, setMenuPosition]);
 
   const onClickAdjust = useCallback(() => {
-    setIsOpenedAdjustBlockDialog(true);
     setMenuPosition(undefined);
-  }, [setIsOpenedAdjustBlockDialog, setMenuPosition]);
+    const adjustBlockDialog = document.getElementById("adjust-block-dialog");
+    if (adjustBlockDialog) {
+      (adjustBlockDialog as HTMLDialogElement).showModal();
+    }
+  }, [setMenuPosition]);
 
   const onClickAdd = useCallback(() => {
     if (menuBlockIdx !== null) {
@@ -246,34 +246,46 @@ function BlockControllerMenu() {
     undoSnapshots,
   ]);
 
+  // 表示中は上下手動スクロールを抑止
+  useEffect(() => {
+    document.body.style.overflowY = menuPosition ? "hidden" : "scroll";
+  }, [menuPosition]);
+
   return (
-    <Menu
-      anchorReference={menuPosition && "anchorPosition"}
-      anchorPosition={menuPosition}
-      disableRestoreFocus
-      onClose={onClose}
-      open={!!menuPosition}
-    >
-      <MenuList dense>
-        <MenuItem onClick={onClickEdit}>Edit</MenuItem>
-        <MenuItem onClick={onClickAdjust}>Adjust Split/Rows/BPM</MenuItem>
-        <Divider />
-        <MenuItem onClick={onClickAdd}>Add at Bottom</MenuItem>
-        <MenuItem onClick={onClickInsert}>Insert into Next</MenuItem>
-        <MenuItem disabled={menuBlockIdx === 0} onClick={onClickMergeAbove}>
-          Merge with Above
-        </MenuItem>
-        <MenuItem
-          disabled={menuBlockIdx === blockNum - 1}
-          onClick={onClickMergeBelow}
+    menuPosition && (
+      <>
+        <MenuBackground onClose={onClose} />
+        <ul
+          className="menu bg-base-200 rounded-box fixed"
+          style={{
+            top: menuPosition.top,
+            left: menuPosition.left,
+            zIndex: MENU_Z_INDEX,
+          }}
         >
-          Merge with Below
-        </MenuItem>
-        <MenuItem disabled={blockNum < 2} onClick={onClickDelete}>
-          Delete
-        </MenuItem>
-      </MenuList>
-    </Menu>
+          <MenuItem label="Edit" onClick={onClickEdit} />
+          <MenuItem label="Adjust Split/Rows/BPM" onClick={onClickAdjust} />
+          <div className="divider my-0" />
+          <MenuItem label="Add at Bottom" onClick={onClickAdd} />
+          <MenuItem label="Insert into Next" onClick={onClickInsert} />
+          <MenuItem
+            disabled={menuBlockIdx === 0}
+            label="Merge with Above"
+            onClick={onClickMergeAbove}
+          />
+          <MenuItem
+            disabled={menuBlockIdx === blockNum - 1}
+            label="Merge with Below"
+            onClick={onClickMergeBelow}
+          />
+          <MenuItem
+            disabled={blockNum < 2}
+            label="Delete"
+            onClick={onClickDelete}
+          />
+        </ul>
+      </>
+    )
   );
 }
 
