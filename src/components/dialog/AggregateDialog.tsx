@@ -17,6 +17,13 @@ export const AggregateDialog = () => {
     [notes]
   );
 
+  const maxWidth = useMemo(() => {
+    return Math.max(
+      notes.length * noteSize + (notes.length - 1) * 2 + 24 * 2,
+      512
+    );
+  }, [notes, noteSize]);
+
   return (
     <dialog
       id="aggregate-dialog"
@@ -24,7 +31,7 @@ export const AggregateDialog = () => {
       style={{ zIndex: DIALOG_Z_INDEX }}
       data-testid="aggregate-dialog"
     >
-      <div className="modal-box">
+      <div className="modal-box" style={{ maxWidth }}>
         <form method="dialog">
           <button className="btn btn-sm btn-circle btn-ghost absolute right-6 top-6">
             ✕
@@ -44,7 +51,7 @@ export const AggregateDialog = () => {
             )}
           </span>
         </h3>
-        <div className="flex justify-center items-center gap-x-2 pt-4">
+        <div className="flex justify-center items-center gap-x-0.5 pt-4">
           {[...Array(notes.length)].map((_, column: number) => (
             <div key={column}>
               <img
@@ -71,8 +78,7 @@ export const AggregateDialog = () => {
                 <p className="text-xs text-center">
                   {totalCombo === 0
                     ? "-"
-                    : Math.round((1000 * notes[column].length) / totalCombo) /
-                      10}
+                    : Math.round((100 * notes[column].length) / totalCombo)}
                   %
                 </p>
               )}
