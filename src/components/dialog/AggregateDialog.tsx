@@ -69,7 +69,11 @@ export const AggregateDialog = () => {
                 />
               ) : (
                 <p className="text-xs text-center">
-                  {Math.round((1000 * notes[column].length) / totalCombo) / 10}%
+                  {totalCombo === 0
+                    ? "-"
+                    : Math.round((1000 * notes[column].length) / totalCombo) /
+                      10}
+                  %
                 </p>
               )}
             </div>
