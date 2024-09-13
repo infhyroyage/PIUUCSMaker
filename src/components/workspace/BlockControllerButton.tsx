@@ -40,7 +40,7 @@ function BlockControllerButton({
   return (
     <>
       <button
-        className="btn-square btn-ghost bg-base-200 w-full px-0 md:px-2 py-0 flex flex-col overflow-hidden"
+        className="btn-square btn-ghost bg-base-200 w-full border-y-0 px-0 md:px-2 py-0 flex flex-col overflow-hidden"
         onClick={onClick}
         style={{
           height: `${
