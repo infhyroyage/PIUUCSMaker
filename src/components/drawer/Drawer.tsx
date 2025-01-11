@@ -4,10 +4,10 @@ import useChartSnapshot from "../../hooks/useChartSnapshot";
 import useDownloadingUCS from "../../hooks/useDownloadingUCS";
 import useNewUcsDialog from "../../hooks/useNewUcsDialog";
 import usePlaying from "../../hooks/usePlaying";
+import { useStore } from "../../hooks/useStore";
 import useUploadingUCS from "../../hooks/useUploadingUCS";
 import { ZOOM_VALUES } from "../../services/assets";
 import {
-  isDarkModeState,
   isMuteBeatsState,
   isOpenedDrawerState,
   isPlayingState,
@@ -27,7 +27,7 @@ import DrawerListItem from "./DrawerListItem";
 import DrawerUploadListItem from "./DrawerUploadListItem";
 
 function Drawer() {
-  const [isDarkMode, setIsDarkMode] = useRecoilState<boolean>(isDarkModeState);
+  const { isDarkMode, setIsDarkMode } = useStore();
   const [isMuteBeats, setIsMuteBeats] =
     useRecoilState<boolean>(isMuteBeatsState);
   const [isOpenedDrawer, setIsOpenedDrawer] =

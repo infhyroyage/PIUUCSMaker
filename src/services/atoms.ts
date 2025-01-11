@@ -73,14 +73,6 @@ export const indicatorState = atom<Indicator>({
 });
 
 /**
- * true for dark mode, false for light mode
- */
-export const isDarkModeState = atom<boolean>({
-  key: "isDarkMode",
-  default: false,
-});
-
-/**
  * true if beat sound is mute, otherwise false
  */
 export const isMuteBeatsState = atom<boolean>({
