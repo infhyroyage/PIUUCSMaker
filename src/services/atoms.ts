@@ -81,14 +81,6 @@ export const isMuteBeatsState = atom<boolean>({
 });
 
 /**
- * true if Drawer is expanded, otherwise false
- */
-export const isOpenedDrawerState = atom<boolean>({
-  key: "isOpenedDrawer",
-  default: false,
-});
-
-/**
  * true if chart is single performance or double performance,
  * false if chart is single or double
  */

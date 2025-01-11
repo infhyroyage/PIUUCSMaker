@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import useChartSnapshot from "../../hooks/useChartSnapshot";
 import useDownloadingUCS from "../../hooks/useDownloadingUCS";
@@ -9,7 +9,6 @@ import useUploadingUCS from "../../hooks/useUploadingUCS";
 import { ZOOM_VALUES } from "../../services/assets";
 import {
   isMuteBeatsState,
-  isOpenedDrawerState,
   isPlayingState,
   redoSnapshotsState,
   ucsNameState,
@@ -30,13 +29,12 @@ function Drawer() {
   const { isDarkMode, setIsDarkMode } = useStore();
   const [isMuteBeats, setIsMuteBeats] =
     useRecoilState<boolean>(isMuteBeatsState);
-  const [isOpenedDrawer, setIsOpenedDrawer] =
-    useRecoilState<boolean>(isOpenedDrawerState);
   const [zoom, setZoom] = useRecoilState<Zoom>(zoomState);
   const isPlaying = useRecoilValue<boolean>(isPlayingState);
   const redoSnapshots = useRecoilValue<ChartSnapshot[]>(redoSnapshotsState);
   const ucsName = useRecoilValue<string | null>(ucsNameState);
   const undoSnapshots = useRecoilValue<ChartSnapshot[]>(undoSnapshotsState);
+  const [isOpened, setIsOpened] = useState<boolean>(false);
 
   const { handleRedo, handleUndo } = useChartSnapshot();
   const { isDownloadingUCS, downloadUCS } = useDownloadingUCS();
@@ -93,9 +91,7 @@ function Drawer() {
     <div
       className="fixed bg-base-200 duration-300 flex flex-col whitespace-nowrap box-border shadow-lg"
       style={{
-        width: `${
-          isOpenedDrawer ? DRAWER_OPENED_WIDTH : NAVIGATION_BAR_HEIGHT
-        }px`,
+        width: `${isOpened ? DRAWER_OPENED_WIDTH : NAVIGATION_BAR_HEIGHT}px`,
         height: `calc(100vh - ${NAVIGATION_BAR_HEIGHT}px)`,
         zIndex: DRAWER_Z_INDEX,
       }}
@@ -431,15 +427,15 @@ function Drawer() {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   d={
-                    isOpenedDrawer
+                    isOpened
                       ? "M15.75 19.5 8.25 12l7.5-7.5"
                       : "m8.25 4.5 7.5 7.5-7.5 7.5"
                   }
                 />
               </svg>
             }
-            label={isOpenedDrawer ? "Fold" : "Expand"}
-            onClick={() => setIsOpenedDrawer(!isOpenedDrawer)}
+            label={isOpened ? "Fold" : "Expand"}
+            onClick={() => setIsOpened(!isOpened)}
           />
         </ul>
       </div>
