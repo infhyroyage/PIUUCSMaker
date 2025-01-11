@@ -1,5 +1,5 @@
 import { atom } from "recoil";
-import { HoldSetter, Indicator, Selector } from "../types/chart";
+import { Indicator, Selector } from "../types/chart";
 import {
   BlockControllerMenuPosition,
   ChartIndicatorMenuPosition,
@@ -55,46 +55,12 @@ export const clipBoardState = atom<ClipBoard>({
 });
 
 /**
- * Display parameter when setting a hold
- * null if not setting a hold
- */
-export const holdSetterState = atom<HoldSetter>({
-  key: "holdSetter",
-  default: null,
-});
-
-/**
  * Display parameter of indicator
  * null if the indicator is not displayed
  */
 export const indicatorState = atom<Indicator>({
   key: "indicator",
   default: null,
-});
-
-/**
- * true if beat sound is mute, otherwise false
- */
-export const isMuteBeatsState = atom<boolean>({
-  key: "isMuteBeats",
-  default: true,
-});
-
-/**
- * true if chart is single performance or double performance,
- * false if chart is single or double
- */
-export const isPerformanceState = atom<boolean>({
-  key: "isPerformance",
-  default: false,
-});
-
-/**
- * true if playing the chart, otherwise false
- */
-export const isPlayingState = atom<boolean>({
-  key: "isPlaying",
-  default: false,
 });
 
 /**
@@ -155,14 +121,6 @@ export const ucsNameState = atom<string | null>({
 export const undoSnapshotsState = atom<ChartSnapshot[]>({
   key: "undoSnapshots",
   default: [],
-});
-
-/**
- * Message displayed UserErrorSnackbar
- */
-export const userErrorMessageState = atom<string>({
-  key: "userErrorMessage",
-  default: "",
 });
 
 /**

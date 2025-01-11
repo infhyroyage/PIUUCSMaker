@@ -3,11 +3,11 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import useClipBoard from "../../hooks/useClipBoard";
 import useSelectedDeleting from "../../hooks/useSelectedDeleting";
 import useSelectedFlipping from "../../hooks/useSelectedFlipping";
+import { useStore } from "../../hooks/useStore";
 import {
   blocksState,
   chartIndicatorMenuPositionState,
   clipBoardState,
-  holdSetterState,
   indicatorState,
   isProtectedState,
   redoSnapshotsState,
@@ -15,16 +15,15 @@ import {
   undoSnapshotsState,
 } from "../../services/atoms";
 import { MENU_Z_INDEX } from "../../services/styles";
-import { HoldSetter, Indicator, Selector } from "../../types/chart";
+import { Indicator, Selector } from "../../types/chart";
 import { ChartIndicatorMenuPosition } from "../../types/menu";
 import { Block, ChartSnapshot, ClipBoard } from "../../types/ucs";
 import MenuBackground from "./MenuBackground";
 import MenuItem from "./MenuItem";
 
 function ChartIndicatorMenu() {
+  const { holdSetter, setHoldSetter } = useStore();
   const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
-  const [holdSetter, setHoldSetter] =
-    useRecoilState<HoldSetter>(holdSetterState);
   const [indicator, setIndicator] = useRecoilState<Indicator>(indicatorState);
   const [menuPosition, setMenuPosition] =
     useRecoilState<ChartIndicatorMenuPosition>(chartIndicatorMenuPositionState);

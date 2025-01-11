@@ -1,13 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilValue } from "recoil";
 import { BEAT_BINARY, ZOOM_VALUES } from "../services/assets";
 import {
   blocksState,
-  isMuteBeatsState,
-  isPlayingState,
   noteSizeState,
   notesState,
-  userErrorMessageState,
   zoomState,
 } from "../services/atoms";
 import { Zoom } from "../types/menu";
@@ -15,15 +12,20 @@ import { Block, Note } from "../types/ucs";
 import { useStore } from "./useStore";
 
 function usePlaying() {
-  const { setSuccessMessage, setMp3Name, volumeValue } = useStore();
+  const {
+    isMuteBeats,
+    isPlaying,
+    setIsPlaying,
+    setMp3Name,
+    setSuccessMessage,
+    setUserErrorMessage,
+    volumeValue,
+  } = useStore();
   const [isUploadingMP3, setIsUploadingMP3] = useState<boolean>(false);
-  const [isPlaying, setIsPlaying] = useRecoilState<boolean>(isPlayingState);
   const blocks = useRecoilValue<Block[]>(blocksState);
-  const isMuteBeats = useRecoilValue<boolean>(isMuteBeatsState);
   const notes = useRecoilValue<Note[][]>(notesState);
   const noteSize = useRecoilValue<number>(noteSizeState);
   const zoom = useRecoilValue<Zoom>(zoomState);
-  const setUserErrorMessage = useSetRecoilState<string>(userErrorMessageState);
 
   const audioContext = useRef<AudioContext | null>(null);
   const beatGainNode = useRef<GainNode | null>(null);

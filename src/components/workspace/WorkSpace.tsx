@@ -1,18 +1,15 @@
 import { useEffect } from "react";
 import { useSetRecoilState } from "recoil";
-import {
-  holdSetterState,
-  noteSizeState,
-  selectorState,
-} from "../../services/atoms";
+import { useStore } from "../../hooks/useStore";
+import { noteSizeState, selectorState } from "../../services/atoms";
 import { NAVIGATION_BAR_HEIGHT } from "../../services/styles";
-import { HoldSetter, Selector } from "../../types/chart";
+import { Selector } from "../../types/chart";
 import BlockController from "./BlockController";
 import Chart from "./Chart";
 import Identifier from "./Identifier";
 
 function WorkSpace() {
-  const setHoldSetter = useSetRecoilState<HoldSetter>(holdSetterState);
+  const { setHoldSetter } = useStore();
   const setNoteSize = useSetRecoilState<number>(noteSizeState);
   const setSelector = useSetRecoilState<Selector>(selectorState);
 

@@ -1,9 +1,9 @@
 import { ChangeEvent, useState, useTransition } from "react";
 import { useSetRecoilState } from "recoil";
 import useNewUcsDialog from "../../hooks/useNewUcsDialog";
+import { useStore } from "../../hooks/useStore";
 import {
   blocksState,
-  isPerformanceState,
   isProtectedState,
   notesState,
   redoSnapshotsState,
@@ -22,6 +22,15 @@ import { NewUCSDialogError, NewUCSDialogForm } from "../../types/dialog";
 import { Block, ChartSnapshot, Note } from "../../types/ucs";
 
 function NewUCSDialog() {
+  const { setIsPerformance } = useStore();
+  const setBlocks = useSetRecoilState<Block[]>(blocksState);
+  const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
+  const setNotes = useSetRecoilState<Note[][]>(notesState);
+  const setRedoSnapshots =
+    useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
+  const setUcsName = useSetRecoilState<string | null>(ucsNameState);
+  const setUndoSnapshots =
+    useSetRecoilState<ChartSnapshot[]>(undoSnapshotsState);
   const [form, setForm] = useState<NewUCSDialogForm>({
     beat: "4",
     bpm: "120",
@@ -32,15 +41,6 @@ function NewUCSDialog() {
     split: "2",
   });
   const [errors, setErrors] = useState<NewUCSDialogError[]>([]);
-  const setBlocks = useSetRecoilState<Block[]>(blocksState);
-  const setIsPerformance = useSetRecoilState<boolean>(isPerformanceState);
-  const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
-  const setNotes = useSetRecoilState<Note[][]>(notesState);
-  const setRedoSnapshots =
-    useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
-  const setUcsName = useSetRecoilState<string | null>(ucsNameState);
-  const setUndoSnapshots =
-    useSetRecoilState<ChartSnapshot[]>(undoSnapshotsState);
 
   const { closeNewUcsDialog } = useNewUcsDialog();
   const [isPending, startTransition] = useTransition();

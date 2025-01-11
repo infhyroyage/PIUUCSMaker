@@ -1,16 +1,60 @@
+import { HoldSetter } from "./chart";
+
 /**
  * Store for zustand
  */
 export type Store = {
+  /**
+   * Display parameter when setting a hold
+   * null if not setting a hold
+   */
+  holdSetter: HoldSetter | null;
+
+  /**
+   * Setter for holdSetter
+   */
+  setHoldSetter: (holdSetter: HoldSetter | null) => void;
+
   /**
    * true for dark mode, false for light mode
    */
   isDarkMode: boolean;
 
   /**
-   * Setter for isDarkMode
+   * Toggle isDarkMode
    */
-  setIsDarkMode: (isDarkMode: boolean) => void;
+  toggleIsDarkMode: () => void;
+
+  /**
+   * true if beat sound is mute, otherwise false
+   */
+  isMuteBeats: boolean;
+
+  /**
+   * Toggle isMuteBeats
+   */
+  toggleIsMuteBeats: () => void;
+
+  /**
+   * true if chart is single performance or double performance,
+   * false if chart is single or double
+   */
+  isPerformance: boolean;
+
+  /**
+   * Setter for isPerformance
+   */
+  setIsPerformance: (isPerformance: boolean) => void;
+
+  /**
+   * true if playing the chart, otherwise false
+   */
+  isPlaying: boolean;
+
+  /**
+   * Setter for isPlaying
+   */
+  setIsPlaying: (isPlaying: boolean) => void;
 
   /**
    * mp3NameState
@@ -31,6 +75,16 @@ export type Store = {
    * Setter for successMessage
    */
   setSuccessMessage: (successMessage: string) => void;
+
+  /**
+   * Message displayed UserErrorSnackbar
+   */
+  userErrorMessage: string;
+
+  /**
+   * Setter for userErrorMessage
+   */
+  setUserErrorMessage: (userErrorMessage: string) => void;
 
   /**
    * Volume value

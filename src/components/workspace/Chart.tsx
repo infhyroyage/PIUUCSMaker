@@ -1,12 +1,13 @@
 import React, { useCallback, useMemo } from "react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useStore } from "../../hooks/useStore";
+import useVerticalBorderSize from "../../hooks/useVerticalBorderSize";
+import { ZOOM_VALUES } from "../../services/assets";
 import {
   blocksState,
   chartIndicatorMenuPositionState,
   indicatorState,
-  isPlayingState,
   isProtectedState,
-  holdSetterState,
   noteSizeState,
   notesState,
   redoSnapshotsState,
@@ -14,24 +15,18 @@ import {
   undoSnapshotsState,
   zoomState,
 } from "../../services/atoms";
-import BorderLine from "./BorderLine";
-import ChartVertical from "./ChartVertical";
-import { Block, Note } from "../../types/ucs";
-import { HoldSetter } from "../../types/chart";
+import { Indicator, Selector } from "../../types/chart";
 import { ChartIndicatorMenuPosition, Zoom } from "../../types/menu";
-import { ChartSnapshot } from "../../types/ucs";
-import { Selector } from "../../types/chart";
-import { Indicator } from "../../types/chart";
-import { ZOOM_VALUES } from "../../services/assets";
-import ChartIndicator from "./ChartIndicator";
+import { Block, ChartSnapshot, Note } from "../../types/ucs";
 import ChartIndicatorMenu from "../menu/ChartIndicatorMenu";
+import BorderLine from "./BorderLine";
+import ChartIndicator from "./ChartIndicator";
 import ChartSelector from "./ChartSelector";
-import useVerticalBorderSize from "../../hooks/useVerticalBorderSize";
+import ChartVertical from "./ChartVertical";
 
 function Chart() {
+  const { isPlaying, holdSetter, setHoldSetter } = useStore();
   const [indicator, setIndicator] = useRecoilState<Indicator>(indicatorState);
-  const [holdSetter, setHoldSetter] =
-    useRecoilState<HoldSetter>(holdSetterState);
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
   const [position, setPosition] = useRecoilState<ChartIndicatorMenuPosition>(
     chartIndicatorMenuPositionState
@@ -40,7 +35,6 @@ function Chart() {
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
   const blocks = useRecoilValue<Block[]>(blocksState);
-  const isPlaying = useRecoilValue<boolean>(isPlayingState);
   const noteSize = useRecoilValue<number>(noteSizeState);
   const zoom = useRecoilValue<Zoom>(zoomState);
   const setIsProtected = useSetRecoilState<boolean>(isProtectedState);

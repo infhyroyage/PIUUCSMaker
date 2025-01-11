@@ -8,8 +8,6 @@ import { useStore } from "../../hooks/useStore";
 import useUploadingUCS from "../../hooks/useUploadingUCS";
 import { ZOOM_VALUES } from "../../services/assets";
 import {
-  isMuteBeatsState,
-  isPlayingState,
   redoSnapshotsState,
   ucsNameState,
   undoSnapshotsState,
@@ -26,11 +24,14 @@ import DrawerListItem from "./DrawerListItem";
 import DrawerUploadListItem from "./DrawerUploadListItem";
 
 function Drawer() {
-  const { isDarkMode, setIsDarkMode } = useStore();
-  const [isMuteBeats, setIsMuteBeats] =
-    useRecoilState<boolean>(isMuteBeatsState);
+  const {
+    isDarkMode,
+    toggleIsDarkMode,
+    isMuteBeats,
+    toggleIsMuteBeats,
+    isPlaying,
+  } = useStore();
   const [zoom, setZoom] = useRecoilState<Zoom>(zoomState);
-  const isPlaying = useRecoilValue<boolean>(isPlayingState);
   const redoSnapshots = useRecoilValue<ChartSnapshot[]>(redoSnapshotsState);
   const ucsName = useRecoilValue<string | null>(ucsNameState);
   const undoSnapshots = useRecoilValue<ChartSnapshot[]>(undoSnapshotsState);
@@ -73,12 +74,6 @@ function Drawer() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleRedo, handleUndo, isMac]);
-
-  useEffect(
-    () =>
-      setIsDarkMode(window.matchMedia("(prefers-color-scheme: dark)").matches),
-    [setIsDarkMode]
-  );
 
   useEffect(() => {
     document.documentElement.setAttribute(
@@ -325,7 +320,7 @@ function Drawer() {
               </svg>
             }
             label={isMuteBeats ? "Mute Beats" : "Unmute Beats"}
-            onClick={() => setIsMuteBeats(!isMuteBeats)}
+            onClick={toggleIsMuteBeats}
           />
           <DrawerListItem
             disabled={ucsName === null || isUploadingMP3}
@@ -405,7 +400,7 @@ function Drawer() {
               </svg>
             }
             label={isDarkMode ? "Dark" : "Light"}
-            onClick={() => setIsDarkMode(!isDarkMode)}
+            onClick={toggleIsDarkMode}
           />
         </ul>
       </div>

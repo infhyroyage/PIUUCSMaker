@@ -2,7 +2,6 @@ import { useMemo } from "react";
 import { useRecoilValue } from "recoil";
 import { useStore } from "../../hooks/useStore";
 import {
-  isPerformanceState,
   isProtectedState,
   notesState,
   ucsNameState,
@@ -10,8 +9,7 @@ import {
 import { Note } from "../../types/ucs";
 
 function NavigationBarTitle() {
-  const { mp3Name } = useStore();
-  const isPerformance = useRecoilValue<boolean>(isPerformanceState);
+  const { isPerformance, mp3Name } = useStore();
   const isProtected = useRecoilValue<boolean>(isProtectedState);
   const notes = useRecoilValue<Note[][]>(notesState);
   const ucsName = useRecoilValue<string | null>(ucsNameState);

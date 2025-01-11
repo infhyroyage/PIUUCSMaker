@@ -2,16 +2,16 @@ import { useCallback, useTransition } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import {
   blocksState,
-  isPerformanceState,
   isProtectedState,
   notesState,
   ucsNameState,
 } from "../services/atoms";
 import { Block, Note } from "../types/ucs";
+import { useStore } from "./useStore";
 
 function useDownloadingUCS() {
+  const { isPerformance } = useStore();
   const blocks = useRecoilValue<Block[]>(blocksState);
-  const isPerformance = useRecoilValue<boolean>(isPerformanceState);
   const notes = useRecoilValue<Note[][]>(notesState);
   const ucsName = useRecoilValue<string | null>(ucsNameState);
   const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
