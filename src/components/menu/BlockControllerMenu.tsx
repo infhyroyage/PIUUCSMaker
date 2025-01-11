@@ -3,7 +3,6 @@ import { useRecoilState, useSetRecoilState } from "recoil";
 import useEditBlockDialog from "../../hooks/useEditBlockDialog";
 import { useStore } from "../../hooks/useStore";
 import {
-  blockControllerMenuPositionState,
   blocksState,
   isProtectedState,
   notesState,
@@ -11,19 +10,18 @@ import {
   undoSnapshotsState,
 } from "../../services/atoms";
 import { MENU_Z_INDEX } from "../../services/styles";
-import { BlockControllerMenuPosition } from "../../types/menu";
 import { Block, ChartSnapshot, Note } from "../../types/ucs";
 import MenuBackground from "./MenuBackground";
 import MenuItem from "./MenuItem";
 
 function BlockControllerMenu() {
-  const { blockControllerMenuBlockIdx, resetBlockControllerMenuBlockIdx } =
-    useStore();
+  const {
+    blockControllerMenuBlockIdx,
+    blockControllerMenuPosition,
+    resetBlockControllerMenuBlockIdx,
+    resetBlockControllerMenuPosition,
+  } = useStore();
   const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
-  const [menuPosition, setMenuPosition] =
-    useRecoilState<BlockControllerMenuPosition>(
-      blockControllerMenuPositionState
-    );
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
@@ -37,23 +35,27 @@ function BlockControllerMenu() {
 
   const onClose = useCallback(() => {
     resetBlockControllerMenuBlockIdx();
-    setMenuPosition(undefined);
-  }, [resetBlockControllerMenuBlockIdx, setMenuPosition]);
+    resetBlockControllerMenuPosition();
+  }, [resetBlockControllerMenuBlockIdx, resetBlockControllerMenuPosition]);
 
   const onClickEdit = useCallback(() => {
     if (blockControllerMenuBlockIdx !== null) {
       openEditBlockDialog();
-      setMenuPosition(undefined);
+      resetBlockControllerMenuPosition();
     }
-  }, [blockControllerMenuBlockIdx, openEditBlockDialog, setMenuPosition]);
+  }, [
+    blockControllerMenuBlockIdx,
+    openEditBlockDialog,
+    resetBlockControllerMenuPosition,
+  ]);
 
   const onClickAdjust = useCallback(() => {
-    setMenuPosition(undefined);
+    resetBlockControllerMenuPosition();
     const adjustBlockDialog = document.getElementById("adjust-block-dialog");
     if (adjustBlockDialog) {
       (adjustBlockDialog as HTMLDialogElement).showModal();
     }
-  }, [setMenuPosition]);
+  }, [resetBlockControllerMenuPosition]);
 
   const onClickAdd = useCallback(() => {
     if (blockControllerMenuBlockIdx !== null) {
@@ -259,18 +261,20 @@ function BlockControllerMenu() {
 
   // 表示中は上下手動スクロールを抑止
   useEffect(() => {
-    document.body.style.overflowY = menuPosition ? "hidden" : "scroll";
-  }, [menuPosition]);
+    document.body.style.overflowY = blockControllerMenuPosition
+      ? "hidden"
+      : "scroll";
+  }, [blockControllerMenuPosition]);
 
   return (
-    menuPosition && (
+    blockControllerMenuPosition && (
       <>
         <MenuBackground onClose={onClose} />
         <ul
           className="menu bg-base-200 rounded-box fixed"
           style={{
-            top: menuPosition.top,
-            left: menuPosition.left,
+            top: blockControllerMenuPosition.top,
+            left: blockControllerMenuPosition.left,
             zIndex: MENU_Z_INDEX,
           }}
         >

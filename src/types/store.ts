@@ -1,4 +1,5 @@
 import { HoldSetter } from "./chart";
+import { BlockControllerMenuPosition } from "./menu";
 
 /**
  * Store for zustand
@@ -21,6 +22,24 @@ export type Store = {
    * Reset blockControllerMenuBlockIdx
    */
   resetBlockControllerMenuBlockIdx: () => void;
+
+  /**
+   * Coordinate of the browser screen opening BlockControllerMenu
+   * undefined if BlockControllerMenu is invisible
+   */
+  blockControllerMenuPosition: BlockControllerMenuPosition | undefined;
+
+  /**
+   * Setter for blockControllerMenuPosition
+   */
+  setBlockControllerMenuPosition: (
+    blockControllerMenuPosition: BlockControllerMenuPosition
+  ) => void;
+
+  /**
+   * Reset blockControllerMenuPosition
+   */
+  resetBlockControllerMenuPosition: () => void;
 
   /**
    * Display parameter when setting a hold

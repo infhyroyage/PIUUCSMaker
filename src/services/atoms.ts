@@ -1,21 +1,7 @@
 import { atom } from "recoil";
 import { Indicator, Selector } from "../types/chart";
-import {
-  BlockControllerMenuPosition,
-  ChartIndicatorMenuPosition,
-  Zoom,
-} from "../types/menu";
+import { ChartIndicatorMenuPosition, Zoom } from "../types/menu";
 import { Block, ChartSnapshot, ClipBoard, Note } from "../types/ucs";
-
-/**
- * Coordinate of the browser screen opening BlockControllerMenu
- * undefined if BlockControllerMenu is invisible
- */
-export const blockControllerMenuPositionState =
-  atom<BlockControllerMenuPosition>({
-    key: "blockControllerMenuPosition",
-    default: undefined,
-  });
 
 /**
  * A set of chart block

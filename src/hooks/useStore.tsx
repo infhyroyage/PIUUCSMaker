@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { HoldSetter } from "../types/chart";
+import { BlockControllerMenuPosition } from "../types/menu";
 import { Store } from "../types/store";
 
 /**
@@ -12,6 +13,12 @@ export const useStore = create<Store>()((set) => ({
   ) => set({ blockControllerMenuBlockIdx }),
   resetBlockControllerMenuBlockIdx: () =>
     set({ blockControllerMenuBlockIdx: null }),
+  blockControllerMenuPosition: undefined,
+  setBlockControllerMenuPosition: (
+    blockControllerMenuPosition: BlockControllerMenuPosition
+  ) => set({ blockControllerMenuPosition }),
+  resetBlockControllerMenuPosition: () =>
+    set({ blockControllerMenuPosition: undefined }),
   holdSetter: null,
   setHoldSetter: (holdSetter: HoldSetter | null) => set({ holdSetter }),
   resetHoldSetter: () => set({ holdSetter: null }),

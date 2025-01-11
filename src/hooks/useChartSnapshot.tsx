@@ -1,7 +1,6 @@
 import { useCallback } from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import {
-  blockControllerMenuPositionState,
   blocksState,
   chartIndicatorMenuPositionState,
   indicatorState,
@@ -12,25 +11,20 @@ import {
   undoSnapshotsState,
 } from "../services/atoms";
 import { Indicator, Selector } from "../types/chart";
-import {
-  BlockControllerMenuPosition,
-  ChartIndicatorMenuPosition,
-} from "../types/menu";
+import { ChartIndicatorMenuPosition } from "../types/menu";
 import { Block, ChartSnapshot, Note } from "../types/ucs";
 import useEditBlockDialog from "./useEditBlockDialog";
 import useNewUcsDialog from "./useNewUcsDialog";
+import { useStore } from "./useStore";
 
 function useChartSnapshot() {
+  const { resetBlockControllerMenuPosition } = useStore();
   const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
   const [redoSnapshots, setRedoSnapshots] =
     useRecoilState<ChartSnapshot[]>(redoSnapshotsState);
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
-  const setBlockControllerMenuPosition =
-    useSetRecoilState<BlockControllerMenuPosition>(
-      blockControllerMenuPositionState
-    );
   const setChartIndicatorMenuPosition =
     useSetRecoilState<ChartIndicatorMenuPosition>(
       chartIndicatorMenuPositionState
@@ -66,7 +60,7 @@ function useChartSnapshot() {
     // インディケーター・選択領域・メニューをすべて非表示
     setIndicator(null);
     setSelector({ completed: null, isSettingByMenu: false, setting: null });
-    setBlockControllerMenuPosition(undefined);
+    resetBlockControllerMenuPosition();
     setChartIndicatorMenuPosition(undefined);
 
     // 譜面のブロック、および、単ノート/ホールドの始点/ホールドの中間/ホールドの終点をやり直す
@@ -79,7 +73,7 @@ function useChartSnapshot() {
     notes,
     redoSnapshots,
     undoSnapshots,
-    setBlockControllerMenuPosition,
+    resetBlockControllerMenuPosition,
     setBlocks,
     setChartIndicatorMenuPosition,
     setIndicator,
@@ -115,7 +109,7 @@ function useChartSnapshot() {
     // インディケーター・選択領域・メニューをすべて非表示
     setIndicator(null);
     setSelector({ completed: null, isSettingByMenu: false, setting: null });
-    setBlockControllerMenuPosition(undefined);
+    resetBlockControllerMenuPosition();
     setChartIndicatorMenuPosition(undefined);
 
     // 譜面のブロック、および、単ノート/ホールドの始点/ホールドの中間/ホールドの終点を元に戻す
@@ -128,7 +122,7 @@ function useChartSnapshot() {
     notes,
     redoSnapshots,
     undoSnapshots,
-    setBlockControllerMenuPosition,
+    resetBlockControllerMenuPosition,
     setBlocks,
     setChartIndicatorMenuPosition,
     setIndicator,
