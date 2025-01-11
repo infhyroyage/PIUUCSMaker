@@ -9,7 +9,7 @@ import Chart from "./Chart";
 import Identifier from "./Identifier";
 
 function WorkSpace() {
-  const { setHoldSetter } = useStore();
+  const { resetHoldSetter } = useStore();
   const setNoteSize = useSetRecoilState<number>(noteSizeState);
   const setSelector = useSetRecoilState<Selector>(selectorState);
 
@@ -27,7 +27,7 @@ function WorkSpace() {
     const handleKeyDown = (event: KeyboardEvent) => {
       // ESCキー押下時に、ホールド設置中・選択領域の表示パラメーターをすべて初期化
       if (event.key === "Escape") {
-        setHoldSetter(null);
+        resetHoldSetter();
         setSelector({ completed: null, isSettingByMenu: false, setting: null });
       }
     };
@@ -42,14 +42,14 @@ function WorkSpace() {
       window.removeEventListener("resize", handleWindowResize);
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [setHoldSetter, setNoteSize, setSelector]);
+  }, [resetHoldSetter, setNoteSize, setSelector]);
 
   return (
     <div
       onMouseUp={(event: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
         // 左クリック時のみ、選択領域・マウス押下した場合の表示パラメーターをすべて初期化
         if (event.button === 0) {
-          setHoldSetter(null);
+          resetHoldSetter();
           setSelector({
             completed: null,
             isSettingByMenu: false,

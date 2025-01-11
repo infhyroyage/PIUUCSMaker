@@ -16,6 +16,11 @@ export type Store = {
   setHoldSetter: (holdSetter: HoldSetter | null) => void;
 
   /**
+   * Reset holdSetter
+   */
+  resetHoldSetter: () => void;
+
+  /**
    * true for dark mode, false for light mode
    */
   isDarkMode: boolean;

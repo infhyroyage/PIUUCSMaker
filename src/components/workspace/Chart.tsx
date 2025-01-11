@@ -25,7 +25,7 @@ import ChartSelector from "./ChartSelector";
 import ChartVertical from "./ChartVertical";
 
 function Chart() {
-  const { isPlaying, holdSetter, setHoldSetter } = useStore();
+  const { isPlaying, holdSetter, setHoldSetter, resetHoldSetter } = useStore();
   const [indicator, setIndicator] = useRecoilState<Indicator>(indicatorState);
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
   const [position, setPosition] = useRecoilState<ChartIndicatorMenuPosition>(
@@ -397,7 +397,7 @@ function Chart() {
 
       // ホールド設置中の表示パラメーターを初期化
       if (holdSetter !== null) {
-        setHoldSetter(null);
+        resetHoldSetter();
       }
 
       if (selector.setting !== null) {
@@ -438,7 +438,7 @@ function Chart() {
       notes,
       position,
       selector.setting,
-      setHoldSetter,
+      resetHoldSetter,
       setIsProtected,
       setNotes,
       setRedoSnapshots,

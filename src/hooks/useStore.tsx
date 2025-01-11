@@ -8,6 +8,7 @@ import { Store } from "../types/store";
 export const useStore = create<Store>()((set) => ({
   holdSetter: null,
   setHoldSetter: (holdSetter: HoldSetter | null) => set({ holdSetter }),
+  resetHoldSetter: () => set({ holdSetter: null }),
   isDarkMode: window.matchMedia("(prefers-color-scheme: dark)").matches,
   toggleIsDarkMode: () => set((state) => ({ isDarkMode: !state.isDarkMode })),
   isMuteBeats: true,
