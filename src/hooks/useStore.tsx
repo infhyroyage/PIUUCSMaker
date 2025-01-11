@@ -6,6 +6,12 @@ import { Store } from "../types/store";
  * Store for zustand with initial values
  */
 export const useStore = create<Store>()((set) => ({
+  blockControllerMenuBlockIdx: null,
+  setBlockControllerMenuBlockIdx: (
+    blockControllerMenuBlockIdx: number | null
+  ) => set({ blockControllerMenuBlockIdx }),
+  resetBlockControllerMenuBlockIdx: () =>
+    set({ blockControllerMenuBlockIdx: null }),
   holdSetter: null,
   setHoldSetter: (holdSetter: HoldSetter | null) => set({ holdSetter }),
   resetHoldSetter: () => set({ holdSetter: null }),
