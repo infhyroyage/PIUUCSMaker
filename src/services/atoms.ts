@@ -114,15 +114,6 @@ export const isProtectedState = atom<boolean>({
 });
 
 /**
- * MP3 file name included a extension
- * numm if nothing is uploaded
- */
-export const mp3NameState = atom<string | null>({
-  key: "mp3Name",
-  default: null,
-});
-
-/**
  * A set of single note, starting point of hold, setting point of hold or end point of hold,
  * whose the first index matches the number of columns (5 if chart is single or single performance, 10 if chart is double or double performance)
  */
@@ -157,14 +148,6 @@ export const selectorState = atom<Selector>({
 });
 
 /**
- * Message displayed SuccessSnackbar
- */
-export const successMessageState = atom<string>({
-  key: "successMessage",
-  default: "",
-});
-
-/**
  * UCS file name included a extension
  * numm if nothing is uploaded
  */
@@ -188,15 +171,6 @@ export const undoSnapshotsState = atom<ChartSnapshot[]>({
 export const userErrorMessageState = atom<string>({
   key: "userErrorMessage",
   default: "",
-});
-
-/**
- * Volume value
- * 0 for mute, 1 for max
- */
-export const volumeValueState = atom<number>({
-  key: "volumeValue",
-  default: 0.5,
 });
 
 /**

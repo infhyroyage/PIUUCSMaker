@@ -1,10 +1,10 @@
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
+import { useStore } from "../../hooks/useStore";
 import { ZOOM_VALUES } from "../../services/assets";
 import {
   isPlayingState,
   isProtectedState,
-  volumeValueState,
   zoomState,
 } from "../../services/atoms";
 import {
@@ -15,9 +15,8 @@ import { Zoom } from "../../types/menu";
 import NavigationBarTitle from "./NavigationBarTitle";
 
 function NavigationBar() {
+  const { volumeValue, setVolumeValue } = useStore();
   const [muteVolBuf, setMuteVolBuf] = useState<number | null>(null);
-  const [volumeValue, setVolumeValue] =
-    useRecoilState<number>(volumeValueState);
   const [zoom, setZoom] = useRecoilState<Zoom>(zoomState);
   const isPlaying = useRecoilValue<boolean>(isPlayingState);
   const isProtected = useRecoilValue<boolean>(isProtectedState);
