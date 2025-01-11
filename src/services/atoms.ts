@@ -8,15 +8,6 @@ import {
 import { Block, ChartSnapshot, ClipBoard, Note } from "../types/ucs";
 
 /**
- * Chart block index opening BlockControllerMenu
- * null if BlockControllerMenu is invisible
- */
-export const blockControllerMenuBlockIdxState = atom<number | null>({
-  key: "blockControllerMenuBlockIdx",
-  default: null,
-});
-
-/**
  * Coordinate of the browser screen opening BlockControllerMenu
  * undefined if BlockControllerMenu is invisible
  */

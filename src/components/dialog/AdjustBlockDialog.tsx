@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
+import { useStore } from "../../hooks/useStore";
 import {
-  blockControllerMenuBlockIdxState,
   blocksState,
   isProtectedState,
   notesState,
@@ -17,6 +17,8 @@ import {
 import { Block, ChartSnapshot, Note } from "../../types/ucs";
 
 function AdjustBlockDialog() {
+  const { blockControllerMenuBlockIdx, resetBlockControllerMenuBlockIdx } =
+    useStore();
   const [fixed, setFixed] = useState<AdjustBlockDialogFormFixed>("bpm");
   const [form, setForm] = useState<AdjustBlockDialogForm>({
     bpm: -1,
@@ -27,34 +29,44 @@ function AdjustBlockDialog() {
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
-  const [menuBlockIdx, setMenuBlockIdx] = useRecoilState<number | null>(
-    blockControllerMenuBlockIdxState
-  );
   const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
   const setRedoSnapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
 
   const menuBlock = useMemo(
-    () => (menuBlockIdx === null ? null : blocks[menuBlockIdx]),
-    [blocks, menuBlockIdx]
+    () =>
+      blockControllerMenuBlockIdx === null
+        ? null
+        : blocks[blockControllerMenuBlockIdx],
+    [blocks, blockControllerMenuBlockIdx]
   );
 
   useEffect(
     () =>
       setForm({
-        bpm: menuBlockIdx === null ? -1 : blocks[menuBlockIdx].bpm,
-        rows: menuBlockIdx === null ? -1 : blocks[menuBlockIdx].rows,
-        split: menuBlockIdx === null ? -1 : blocks[menuBlockIdx].split,
+        bpm:
+          blockControllerMenuBlockIdx === null
+            ? -1
+            : blocks[blockControllerMenuBlockIdx].bpm,
+        rows:
+          blockControllerMenuBlockIdx === null
+            ? -1
+            : blocks[blockControllerMenuBlockIdx].rows,
+        split:
+          blockControllerMenuBlockIdx === null
+            ? -1
+            : blocks[blockControllerMenuBlockIdx].split,
       }),
-    [blocks, menuBlockIdx, setForm]
+    [blocks, blockControllerMenuBlockIdx, setForm]
   );
 
   const onUpdate = useCallback(() => {
     // BlockControllerMenuのメニューを開いていない場合はNOP
-    if (menuBlockIdx === null) return;
+    if (blockControllerMenuBlockIdx === null) return;
 
-    // menuBlockIdx番目の譜面のブロックの行数の差分
-    const deltaRows: number = Number(form.rows) - blocks[menuBlockIdx].rows;
+    // blockControllerMenuBlockIdx番目の譜面のブロックの行数の差分
+    const deltaRows: number =
+      Number(form.rows) - blocks[blockControllerMenuBlockIdx].rows;
 
     // 元に戻す/やり直すスナップショットの集合を更新
     setUndoSnapshots([
@@ -63,19 +75,20 @@ function AdjustBlockDialog() {
     ]);
     setRedoSnapshots([]);
 
-    // menuBlockIdx番目以降の譜面のブロックをすべて更新
+    // blockControllerMenuBlockIdx番目以降の譜面のブロックをすべて更新
     const updatedBlocks: Block[] = [...Array(blocks.length)].map(
       (_, blockIdx: number) =>
-        blockIdx === menuBlockIdx
+        blockIdx === blockControllerMenuBlockIdx
           ? {
-              accumulatedRows: blocks[menuBlockIdx].accumulatedRows,
-              beat: blocks[menuBlockIdx].beat,
+              accumulatedRows:
+                blocks[blockControllerMenuBlockIdx].accumulatedRows,
+              beat: blocks[blockControllerMenuBlockIdx].beat,
               bpm: roundBpm(form.bpm),
-              delay: blocks[menuBlockIdx].delay,
+              delay: blocks[blockControllerMenuBlockIdx].delay,
               rows: form.rows,
               split: form.split,
             }
-          : blockIdx > menuBlockIdx
+          : blockIdx > blockControllerMenuBlockIdx
           ? {
               ...blocks[blockIdx],
               accumulatedRows:
@@ -86,34 +99,38 @@ function AdjustBlockDialog() {
           : blocks[blockIdx]
     );
 
-    // 行数を変更した場合のみ、menuBlockIdx番目以降の譜面のブロックに該当する
+    // 行数を変更した場合のみ、blockControllerMenuBlockIdx番目以降の譜面のブロックに該当する
     // 単ノート/ホールドの始点/ホールドの中間/ホールドの終点をすべて更新
     let updatedNotes: Note[][] = [...notes];
     if (deltaRows !== 0) {
       // 以下の譜面のブロックに該当する単ノート/ホールドの始点/ホールドの中間/ホールドの終点をすべて更新
-      // * (menuBlockIdx - 1)番目以前: 更新しない
-      // * menuBlockIdx番目          : 譜面全体の行インデックスをスケーリング(空白 < X < H < M < W)
-      // * (menuBlockIdx + 1)番目以降: 譜面全体の行インデックスを譜面のブロックの行数の差分ズラす
+      // * (blockControllerMenuBlockIdx - 1)番目以前: 更新しない
+      // * blockControllerMenuBlockIdx番目          : 譜面全体の行インデックスをスケーリング(空白 < X < H < M < W)
+      // * (blockControllerMenuBlockIdx + 1)番目以降: 譜面全体の行インデックスを譜面のブロックの行数の差分ズラす
       updatedNotes = [...notes].map((ns: Note[]) => [
-        // (menuBlockIdx - 1)番目以前の譜面のブロック
+        // (blockControllerMenuBlockIdx - 1)番目以前の譜面のブロック
         ...ns.filter(
-          (note: Note) => note.rowIdx < blocks[menuBlockIdx].accumulatedRows
+          (note: Note) =>
+            note.rowIdx < blocks[blockControllerMenuBlockIdx].accumulatedRows
         ),
-        // menuBlockIdx番目の譜面のブロック
+        // blockControllerMenuBlockIdx番目の譜面のブロック
         ...ns
           .filter(
             (note: Note) =>
-              note.rowIdx >= blocks[menuBlockIdx].accumulatedRows &&
+              note.rowIdx >=
+                blocks[blockControllerMenuBlockIdx].accumulatedRows &&
               note.rowIdx <
-                blocks[menuBlockIdx].accumulatedRows + blocks[menuBlockIdx].rows
+                blocks[blockControllerMenuBlockIdx].accumulatedRows +
+                  blocks[blockControllerMenuBlockIdx].rows
           )
           .reduce((prev: Note[], note: Note) => {
             const scaledRowIdx: number =
-              blocks[menuBlockIdx].accumulatedRows +
+              blocks[blockControllerMenuBlockIdx].accumulatedRows +
               Math.floor(
-                ((note.rowIdx - blocks[menuBlockIdx].accumulatedRows) *
+                ((note.rowIdx -
+                  blocks[blockControllerMenuBlockIdx].accumulatedRows) *
                   Number(form.rows)) /
-                  blocks[menuBlockIdx].rows
+                  blocks[blockControllerMenuBlockIdx].rows
               );
             const prevScaledNote: Note | undefined = prev.find(
               (note: Note) => note.rowIdx === scaledRowIdx
@@ -135,12 +152,13 @@ function AdjustBlockDialog() {
                 ]
               : [...prev, { rowIdx: scaledRowIdx, type: note.type }];
           }, []),
-        // (menuBlockIdx + 1)番目以降の譜面のブロック
+        // (blockControllerMenuBlockIdx + 1)番目以降の譜面のブロック
         ...ns
           .filter(
             (note: Note) =>
               note.rowIdx >=
-              blocks[menuBlockIdx].accumulatedRows + blocks[menuBlockIdx].rows
+              blocks[blockControllerMenuBlockIdx].accumulatedRows +
+                blocks[blockControllerMenuBlockIdx].rows
           )
           .map((note: Note) => {
             return { rowIdx: note.rowIdx + deltaRows, type: note.type };
@@ -153,25 +171,28 @@ function AdjustBlockDialog() {
     setBlocks(updatedBlocks);
     if (deltaRows !== 0) setNotes(updatedNotes);
 
-    setMenuBlockIdx(null);
+    resetBlockControllerMenuBlockIdx();
   }, [
     blocks,
     form,
-    menuBlockIdx,
+    blockControllerMenuBlockIdx,
     notes,
     setBlocks,
     setIsProtected,
-    setMenuBlockIdx,
+    resetBlockControllerMenuBlockIdx,
     setNotes,
     setRedoSnapshots,
     setUndoSnapshots,
     undoSnapshots,
   ]);
 
-  const onClose = useCallback(() => setMenuBlockIdx(null), [setMenuBlockIdx]);
+  const onClose = useCallback(
+    () => resetBlockControllerMenuBlockIdx(),
+    [resetBlockControllerMenuBlockIdx]
+  );
 
   return (
-    menuBlockIdx !== null &&
+    blockControllerMenuBlockIdx !== null &&
     menuBlock !== null && (
       <dialog
         id="adjust-block-dialog"
@@ -215,7 +236,7 @@ function AdjustBlockDialog() {
                 fixed === "split" ? " text-neutral" : ""
               }`}
             >
-              {blocks[menuBlockIdx].split}
+              {blocks[blockControllerMenuBlockIdx].split}
             </p>
             {/* heroicons arrow-right */}
             <svg

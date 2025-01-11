@@ -5,6 +5,24 @@ import { HoldSetter } from "./chart";
  */
 export type Store = {
   /**
+   * Index of the block opening BlockControllerMenu
+   * null if BlockControllerMenu is invisible
+   */
+  blockControllerMenuBlockIdx: number | null;
+
+  /**
+   * Setter for blockControllerMenuBlockIdx
+   */
+  setBlockControllerMenuBlockIdx: (
+    blockControllerMenuBlockIdx: number | null
+  ) => void;
+
+  /**
+   * Reset blockControllerMenuBlockIdx
+   */
+  resetBlockControllerMenuBlockIdx: () => void;
+
+  /**
    * Display parameter when setting a hold
    * null if not setting a hold
    */

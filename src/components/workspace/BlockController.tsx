@@ -1,8 +1,8 @@
 import { MouseEvent, useCallback, useMemo } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useStore } from "../../hooks/useStore";
 import useVerticalBorderSize from "../../hooks/useVerticalBorderSize";
 import {
-  blockControllerMenuBlockIdxState,
   blockControllerMenuPositionState,
   blocksState,
   noteSizeState,
@@ -15,12 +15,10 @@ import BlockControllerMenu from "../menu/BlockControllerMenu";
 import BlockControllerButton from "./BlockControllerButton";
 
 function BlockController() {
+  const { setBlockControllerMenuBlockIdx } = useStore();
   const blocks = useRecoilValue<Block[]>(blocksState);
   const notes = useRecoilValue<Note[][]>(notesState);
   const noteSize = useRecoilValue<number>(noteSizeState);
-  const setMenuBlockIdx = useSetRecoilState<number | null>(
-    blockControllerMenuBlockIdxState
-  );
   const setMenuPosition = useSetRecoilState<BlockControllerMenuPosition>(
     blockControllerMenuPositionState
   );
@@ -44,10 +42,10 @@ function BlockController() {
       event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>,
       blockIdx: number
     ) => {
-      setMenuBlockIdx(blockIdx);
+      setBlockControllerMenuBlockIdx(blockIdx);
       setMenuPosition({ top: event.clientY, left: event.clientX });
     },
-    [setMenuBlockIdx, setMenuPosition]
+    [setBlockControllerMenuBlockIdx, setMenuPosition]
   );
 
   const allBlockControllerButton = useMemo(

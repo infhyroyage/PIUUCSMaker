@@ -7,8 +7,8 @@ import {
 } from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import useEditBlockDialog from "../../hooks/useEditBlockDialog";
+import { useStore } from "../../hooks/useStore";
 import {
-  blockControllerMenuBlockIdxState,
   blocksState,
   isProtectedState,
   notesState,
@@ -27,6 +27,8 @@ import { EditBlockDialogError, EditBlockDialogForm } from "../../types/dialog";
 import { Block, ChartSnapshot, Note } from "../../types/ucs";
 
 function EditBlockDialog() {
+  const { blockControllerMenuBlockIdx, resetBlockControllerMenuBlockIdx } =
+    useStore();
   const [errors, setErrors] = useState<EditBlockDialogError[]>([]);
   const [form, setForm] = useState<EditBlockDialogForm>({
     beat: "",
@@ -36,9 +38,6 @@ function EditBlockDialog() {
     split: "",
   });
   const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
-  const [menuBlockIdx, setMenuBlockIdx] = useRecoilState<number | null>(
-    blockControllerMenuBlockIdxState
-  );
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
@@ -52,28 +51,47 @@ function EditBlockDialog() {
   useEffect(
     () =>
       setForm({
-        beat: menuBlockIdx === null ? "" : `${blocks[menuBlockIdx].beat}`,
-        bpm: menuBlockIdx === null ? "" : `${blocks[menuBlockIdx].bpm}`,
-        delay: menuBlockIdx === null ? "" : `${blocks[menuBlockIdx].delay}`,
-        rows: menuBlockIdx === null ? "" : `${blocks[menuBlockIdx].rows}`,
-        split: menuBlockIdx === null ? "" : `${blocks[menuBlockIdx].split}`,
+        beat:
+          blockControllerMenuBlockIdx === null
+            ? ""
+            : `${blocks[blockControllerMenuBlockIdx].beat}`,
+        bpm:
+          blockControllerMenuBlockIdx === null
+            ? ""
+            : `${blocks[blockControllerMenuBlockIdx].bpm}`,
+        delay:
+          blockControllerMenuBlockIdx === null
+            ? ""
+            : `${blocks[blockControllerMenuBlockIdx].delay}`,
+        rows:
+          blockControllerMenuBlockIdx === null
+            ? ""
+            : `${blocks[blockControllerMenuBlockIdx].rows}`,
+        split:
+          blockControllerMenuBlockIdx === null
+            ? ""
+            : `${blocks[blockControllerMenuBlockIdx].split}`,
       }),
-    [blocks, menuBlockIdx, setForm]
+    [blocks, blockControllerMenuBlockIdx, setForm]
   );
 
   // 最初以外の譜面のブロックの場合は入力したDelay値を無視する警告フラグ
   const isIgnoredDelay = useMemo(() => {
-    if (menuBlockIdx === null || menuBlockIdx === 0) return false;
+    if (
+      blockControllerMenuBlockIdx === null ||
+      blockControllerMenuBlockIdx === 0
+    )
+      return false;
 
     const delay: number = Number(form.delay);
     return !Number.isNaN(delay) && delay !== 0;
-  }, [menuBlockIdx, form.delay]);
+  }, [blockControllerMenuBlockIdx, form.delay]);
 
   const onUpdate = useCallback(
     () =>
       startTransition(() => {
         // BlockControllerMenuのメニューを開いていない場合はNOP
-        if (menuBlockIdx === null) return;
+        if (blockControllerMenuBlockIdx === null) return;
 
         // バリデーションチェック
         const beat: number | null = validateBeat(form.beat);
@@ -88,8 +106,9 @@ function EditBlockDialog() {
           rows !== null &&
           split !== null
         ) {
-          // menuBlockIdx番目の譜面のブロックの行数の差分
-          const deltaRows: number = rows - blocks[menuBlockIdx].rows;
+          // blockControllerMenuBlockIdx番目の譜面のブロックの行数の差分
+          const deltaRows: number =
+            rows - blocks[blockControllerMenuBlockIdx].rows;
 
           // 元に戻す/やり直すスナップショットの集合を更新
           setUndoSnapshots([
@@ -98,19 +117,20 @@ function EditBlockDialog() {
           ]);
           setRedoSnapshots([]);
 
-          // menuBlockIdx番目以降の譜面のブロックをすべて更新
+          // blockControllerMenuBlockIdx番目以降の譜面のブロックをすべて更新
           const updatedBlocks: Block[] = [...Array(blocks.length)].map(
             (_, blockIdx: number) =>
-              blockIdx === menuBlockIdx
+              blockIdx === blockControllerMenuBlockIdx
                 ? {
-                    accumulatedRows: blocks[menuBlockIdx].accumulatedRows,
+                    accumulatedRows:
+                      blocks[blockControllerMenuBlockIdx].accumulatedRows,
                     beat: beat,
                     bpm: bpm,
                     delay: delay,
                     rows: rows,
                     split: split,
                   }
-                : blockIdx > menuBlockIdx
+                : blockIdx > blockControllerMenuBlockIdx
                 ? {
                     ...blocks[blockIdx],
                     accumulatedRows:
@@ -121,36 +141,39 @@ function EditBlockDialog() {
                 : blocks[blockIdx]
           );
 
-          // 行数を変更した場合のみ、menuBlockIdx番目以降の譜面のブロックに該当する
+          // 行数を変更した場合のみ、blockControllerMenuBlockIdx番目以降の譜面のブロックに該当する
           // 単ノート/ホールドの始点/ホールドの中間/ホールドの終点をすべて更新
           let updatedNotes: Note[][] = [...notes];
           if (deltaRows !== 0) {
             // 以下の譜面のブロックに該当する単ノート/ホールドの始点/ホールドの中間/ホールドの終点をすべて更新
-            // * (menuBlockIdx - 1)番目以前: 更新しない
-            // * menuBlockIdx番目          : 譜面全体の行インデックスをスケーリング(空白 < X < H < M < W)
-            // * (menuBlockIdx + 1)番目以降: 譜面全体の行インデックスを譜面のブロックの行数の差分ズラす
+            // * (blockControllerMenuBlockIdx - 1)番目以前: 更新しない
+            // * blockControllerMenuBlockIdx番目          : 譜面全体の行インデックスをスケーリング(空白 < X < H < M < W)
+            // * (blockControllerMenuBlockIdx + 1)番目以降: 譜面全体の行インデックスを譜面のブロックの行数の差分ズラす
             updatedNotes = [...notes].map((ns: Note[]) => [
-              // (menuBlockIdx - 1)番目以前の譜面のブロック
+              // (blockControllerMenuBlockIdx - 1)番目以前の譜面のブロック
               ...ns.filter(
                 (note: Note) =>
-                  note.rowIdx < blocks[menuBlockIdx].accumulatedRows
+                  note.rowIdx <
+                  blocks[blockControllerMenuBlockIdx].accumulatedRows
               ),
-              // menuBlockIdx番目の譜面のブロック
+              // blockControllerMenuBlockIdx番目の譜面のブロック
               ...ns
                 .filter(
                   (note: Note) =>
-                    note.rowIdx >= blocks[menuBlockIdx].accumulatedRows &&
+                    note.rowIdx >=
+                      blocks[blockControllerMenuBlockIdx].accumulatedRows &&
                     note.rowIdx <
-                      blocks[menuBlockIdx].accumulatedRows +
-                        blocks[menuBlockIdx].rows
+                      blocks[blockControllerMenuBlockIdx].accumulatedRows +
+                        blocks[blockControllerMenuBlockIdx].rows
                 )
                 .reduce((prev: Note[], note: Note) => {
                   const scaledRowIdx: number =
-                    blocks[menuBlockIdx].accumulatedRows +
+                    blocks[blockControllerMenuBlockIdx].accumulatedRows +
                     Math.floor(
-                      ((note.rowIdx - blocks[menuBlockIdx].accumulatedRows) *
+                      ((note.rowIdx -
+                        blocks[blockControllerMenuBlockIdx].accumulatedRows) *
                         rows) /
-                        blocks[menuBlockIdx].rows
+                        blocks[blockControllerMenuBlockIdx].rows
                     );
                   const prevScaledNote: Note | undefined = prev.find(
                     (note: Note) => note.rowIdx === scaledRowIdx
@@ -172,13 +195,13 @@ function EditBlockDialog() {
                       ]
                     : [...prev, { rowIdx: scaledRowIdx, type: note.type }];
                 }, []),
-              // (menuBlockIdx + 1)番目以降の譜面のブロック
+              // (blockControllerMenuBlockIdx + 1)番目以降の譜面のブロック
               ...ns
                 .filter(
                   (note: Note) =>
                     note.rowIdx >=
-                    blocks[menuBlockIdx].accumulatedRows +
-                      blocks[menuBlockIdx].rows
+                    blocks[blockControllerMenuBlockIdx].accumulatedRows +
+                      blocks[blockControllerMenuBlockIdx].rows
                 )
                 .map((note: Note) => {
                   return { rowIdx: note.rowIdx + deltaRows, type: note.type };
@@ -191,7 +214,7 @@ function EditBlockDialog() {
           setBlocks(updatedBlocks);
           if (deltaRows !== 0) setNotes(updatedNotes);
 
-          setMenuBlockIdx(null);
+          resetBlockControllerMenuBlockIdx();
           closeEditBlockDialog();
         } else {
           // バリデーションエラーのテキストフィールドをすべて表示
@@ -208,11 +231,11 @@ function EditBlockDialog() {
       blocks,
       closeEditBlockDialog,
       form,
-      menuBlockIdx,
+      blockControllerMenuBlockIdx,
       notes,
       setBlocks,
       setIsProtected,
-      setMenuBlockIdx,
+      resetBlockControllerMenuBlockIdx,
       setNotes,
       setErrors,
       setRedoSnapshots,
@@ -230,8 +253,8 @@ function EditBlockDialog() {
       rows: "",
       split: "",
     });
-    setMenuBlockIdx(null);
-  }, [setErrors, setForm, setMenuBlockIdx]);
+    resetBlockControllerMenuBlockIdx();
+  }, [setErrors, setForm, resetBlockControllerMenuBlockIdx]);
 
   return (
     <dialog
