@@ -9,7 +9,6 @@ import useUploadingUCS from "../../hooks/useUploadingUCS";
 import { ZOOM_VALUES } from "../../services/assets";
 import {
   redoSnapshotsState,
-  ucsNameState,
   undoSnapshotsState,
   zoomState,
 } from "../../services/atoms";
@@ -30,10 +29,10 @@ function Drawer() {
     isMuteBeats,
     toggleIsMuteBeats,
     isPlaying,
+    ucsName,
   } = useStore();
   const [zoom, setZoom] = useRecoilState<Zoom>(zoomState);
   const redoSnapshots = useRecoilValue<ChartSnapshot[]>(redoSnapshotsState);
-  const ucsName = useRecoilValue<string | null>(ucsNameState);
   const undoSnapshots = useRecoilValue<ChartSnapshot[]>(undoSnapshotsState);
   const [isOpened, setIsOpened] = useState<boolean>(false);
 

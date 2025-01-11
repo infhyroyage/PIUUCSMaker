@@ -1,30 +1,24 @@
 import { useCallback, useMemo } from "react";
-import { Block, Note } from "../types/ucs";
-import { SelectorCompletedCords, Selector } from "../types/chart";
-import { ChartSnapshot } from "../types/ucs";
-import { Indicator } from "../types/chart";
-import { ClipBoard } from "../types/ucs";
-import { CopiedNote } from "../types/ucs";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
   blocksState,
-  clipBoardState,
-  indicatorState,
   isProtectedState,
   notesState,
   redoSnapshotsState,
   selectorState,
   undoSnapshotsState,
 } from "../services/atoms";
+import { Selector, SelectorCompletedCords } from "../types/chart";
+import { Block, ChartSnapshot, CopiedNote, Note } from "../types/ucs";
+import { useStore } from "./useStore";
 
 function useClipBoard() {
-  const [clipBoard, setClipBoard] = useRecoilState<ClipBoard>(clipBoardState);
+  const { clipBoard, setClipBoard, indicator } = useStore();
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
   const [selector, setSelector] = useRecoilState<Selector>(selectorState);
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
   const blocks = useRecoilValue<Block[]>(blocksState);
-  const indicator = useRecoilValue<Indicator>(indicatorState);
   const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
   const setRedoSnapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);

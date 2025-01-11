@@ -5,8 +5,6 @@ import useVerticalBorderSize from "../../hooks/useVerticalBorderSize";
 import { ZOOM_VALUES } from "../../services/assets";
 import {
   blocksState,
-  chartIndicatorMenuPositionState,
-  indicatorState,
   isProtectedState,
   noteSizeState,
   notesState,
@@ -15,8 +13,8 @@ import {
   undoSnapshotsState,
   zoomState,
 } from "../../services/atoms";
-import { Indicator, Selector } from "../../types/chart";
-import { ChartIndicatorMenuPosition, Zoom } from "../../types/menu";
+import { Selector } from "../../types/chart";
+import { Zoom } from "../../types/menu";
 import { Block, ChartSnapshot, Note } from "../../types/ucs";
 import ChartIndicatorMenu from "../menu/ChartIndicatorMenu";
 import BorderLine from "./BorderLine";
@@ -25,12 +23,18 @@ import ChartSelector from "./ChartSelector";
 import ChartVertical from "./ChartVertical";
 
 function Chart() {
-  const { isPlaying, holdSetter, setHoldSetter, resetHoldSetter } = useStore();
-  const [indicator, setIndicator] = useRecoilState<Indicator>(indicatorState);
+  const {
+    chartIndicatorMenuPosition,
+    setChartIndicatorMenuPosition,
+    holdSetter,
+    setHoldSetter,
+    resetHoldSetter,
+    indicator,
+    setIndicator,
+    resetIndicator,
+    isPlaying,
+  } = useStore();
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
-  const [position, setPosition] = useRecoilState<ChartIndicatorMenuPosition>(
-    chartIndicatorMenuPositionState
-  );
   const [selector, setSelector] = useRecoilState<Selector>(selectorState);
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
@@ -67,7 +71,7 @@ function Chart() {
   const handleMouseMove = useCallback(
     (event: React.MouseEvent<HTMLSpanElement, MouseEvent>, column: number) => {
       // ChartIndicatorMenu表示中/再生中の場合はNOP
-      if (!!position || isPlaying) return;
+      if (!!chartIndicatorMenuPosition || isPlaying) return;
 
       // マウスホバーしたy座標を取得
       const y: number = Math.floor(
@@ -107,17 +111,17 @@ function Chart() {
           indicator.column !== column ||
           indicator.rowIdx !== rowIdx)
       ) {
-        setIndicator(
-          top !== null && rowIdx !== null
-            ? {
-                blockAccumulatedRows: blocks[blockIdx].accumulatedRows,
-                blockIdx,
-                column,
-                rowIdx,
-                top,
-              }
-            : null
-        );
+        if (top !== null && rowIdx !== null) {
+          setIndicator({
+            blockAccumulatedRows: blocks[blockIdx].accumulatedRows,
+            blockIdx,
+            column,
+            rowIdx,
+            top,
+          });
+        } else {
+          resetIndicator();
+        }
       }
 
       if (
@@ -147,13 +151,14 @@ function Chart() {
     [
       blocks,
       blockYDists,
+      chartIndicatorMenuPosition,
       indicator,
+      setIndicator,
+      resetIndicator,
       isPlaying,
       noteSize,
-      position,
       selector.setting,
       selector.isSettingByMenu,
-      setIndicator,
       setSelector,
       zoom.idx,
     ]
@@ -162,10 +167,10 @@ function Chart() {
   const onMouseLeave = useCallback(
     (event: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
       // ChartIndicatorMenu表示中/再生中/の場合はNOP
-      if (!!position || isPlaying) return;
+      if (!!chartIndicatorMenuPosition || isPlaying) return;
 
       // インディケーターを非表示
-      setIndicator(null);
+      resetIndicator();
 
       // 選択領域入力時の場合は、入力時の選択領域のみパラメーターを更新
       // ただし、Shift未入力、かつ、「Start Selecting」を選択せずに入力時の選択領域を表示している場合は、選択領域を非表示
@@ -188,11 +193,11 @@ function Chart() {
       }
     },
     [
+      chartIndicatorMenuPosition,
       isPlaying,
-      position,
       selector.setting,
       selector.isSettingByMenu,
-      setIndicator,
+      resetIndicator,
       setSelector,
     ]
   );
@@ -200,7 +205,12 @@ function Chart() {
   const onMouseDown = useCallback(
     (event: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
       // 左クリック以外/ChartIndicatorMenu表示中/再生中/押下した瞬間にインディケーターが非表示の場合はNOP
-      if (event.button !== 0 || !!position || isPlaying || indicator === null)
+      if (
+        event.button !== 0 ||
+        !!chartIndicatorMenuPosition ||
+        isPlaying ||
+        indicator === null
+      )
         return;
 
       // Shift未入力の場合のみ、ホールド設置中の表示パラメーターを更新
@@ -235,10 +245,10 @@ function Chart() {
       }
     },
     [
+      chartIndicatorMenuPosition,
       holdSetter,
       indicator,
       isPlaying,
-      position,
       selector,
       setHoldSetter,
       setSelector,
@@ -248,7 +258,8 @@ function Chart() {
   const onMouseUp = useCallback(
     (event: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
       // 左クリック以外/ChartIndicatorMenu表示中/再生中/別々の列を跨いだマウス操作の場合はNOP
-      if (event.button !== 0 || !!position || isPlaying) return;
+      if (event.button !== 0 || !!chartIndicatorMenuPosition || isPlaying)
+        return;
 
       // 親コンポーネントのWorkspaceに設定したonMouseUpへ伝搬しない
       event.stopPropagation();
@@ -432,11 +443,11 @@ function Chart() {
       }
     },
     [
+      chartIndicatorMenuPosition,
       holdSetter,
       indicator,
       isPlaying,
       notes,
-      position,
       selector.setting,
       resetHoldSetter,
       setIsProtected,
@@ -463,7 +474,7 @@ function Chart() {
             ) => {
               event.preventDefault();
               if (!isPlaying) {
-                setPosition({
+                setChartIndicatorMenuPosition({
                   top: event.clientY,
                   left: event.clientX,
                 });

@@ -1,7 +1,7 @@
 import { atom } from "recoil";
-import { Indicator, Selector } from "../types/chart";
-import { ChartIndicatorMenuPosition, Zoom } from "../types/menu";
-import { Block, ChartSnapshot, ClipBoard, Note } from "../types/ucs";
+import { Selector } from "../types/chart";
+import { Zoom } from "../types/menu";
+import { Block, ChartSnapshot, Note } from "../types/ucs";
 
 /**
  * A set of chart block
@@ -9,35 +9,6 @@ import { Block, ChartSnapshot, ClipBoard, Note } from "../types/ucs";
 export const blocksState = atom<Block[]>({
   key: "blocks",
   default: [],
-});
-
-/**
- * Coordinate of the browser screen opening ChartIndicatorMenu
- * undefined if ChartIndicatorMenu is invisible
- */
-export const chartIndicatorMenuPositionState = atom<ChartIndicatorMenuPosition>(
-  {
-    key: "chartIndicatorMenuPosition",
-    default: undefined,
-  }
-);
-
-/**
- * Clipboard to copy and paste a set of single note, starting point of hold, setting point of hold or end point of hold included in the selection area
- * null if nothing has ever been copied
- */
-export const clipBoardState = atom<ClipBoard>({
-  key: "clipBoard",
-  default: null,
-});
-
-/**
- * Display parameter of indicator
- * null if the indicator is not displayed
- */
-export const indicatorState = atom<Indicator>({
-  key: "indicator",
-  default: null,
 });
 
 /**
@@ -80,15 +51,6 @@ export const redoSnapshotsState = atom<ChartSnapshot[]>({
 export const selectorState = atom<Selector>({
   key: "selector",
   default: { completed: null, isSettingByMenu: false, setting: null },
-});
-
-/**
- * UCS file name included a extension
- * numm if nothing is uploaded
- */
-export const ucsNameState = atom<string | null>({
-  key: "ucsName",
-  default: null,
 });
 
 /**

@@ -7,7 +7,6 @@ import {
   isProtectedState,
   notesState,
   redoSnapshotsState,
-  ucsNameState,
   undoSnapshotsState,
 } from "../../services/atoms";
 import { DIALOG_Z_INDEX } from "../../services/styles";
@@ -22,13 +21,12 @@ import { NewUCSDialogError, NewUCSDialogForm } from "../../types/dialog";
 import { Block, ChartSnapshot, Note } from "../../types/ucs";
 
 function NewUCSDialog() {
-  const { setIsPerformance } = useStore();
+  const { setIsPerformance, setUcsName } = useStore();
   const setBlocks = useSetRecoilState<Block[]>(blocksState);
   const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
   const setNotes = useSetRecoilState<Note[][]>(notesState);
   const setRedoSnapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
-  const setUcsName = useSetRecoilState<string | null>(ucsNameState);
   const setUndoSnapshots =
     useSetRecoilState<ChartSnapshot[]>(undoSnapshotsState);
   const [form, setForm] = useState<NewUCSDialogForm>({

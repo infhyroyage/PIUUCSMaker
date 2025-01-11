@@ -1,5 +1,11 @@
+import { Indicator } from "./chart";
+
 import { HoldSetter } from "./chart";
-import { BlockControllerMenuPosition } from "./menu";
+import {
+  BlockControllerMenuPosition,
+  ChartIndicatorMenuPosition,
+} from "./menu";
+import { ClipBoard } from "./ucs";
 
 /**
  * Store for zustand
@@ -42,6 +48,35 @@ export type Store = {
   resetBlockControllerMenuPosition: () => void;
 
   /**
+   * Coordinate of the browser screen opening ChartIndicatorMenu
+   * undefined if ChartIndicatorMenu is invisible
+   */
+  chartIndicatorMenuPosition: ChartIndicatorMenuPosition | undefined;
+
+  /**
+   * Setter for chartIndicatorMenuPosition
+   */
+  setChartIndicatorMenuPosition: (
+    chartIndicatorMenuPosition: ChartIndicatorMenuPosition
+  ) => void;
+
+  /**
+   * Reset chartIndicatorMenuPosition
+   */
+  resetChartIndicatorMenuPosition: () => void;
+
+  /**
+   * Clipboard to copy and paste a set of single note, starting point of hold, setting point of hold or end point of hold included in the selection area
+   * null if nothing has ever been copied
+   */
+  clipBoard: ClipBoard | null;
+
+  /**
+   * Setter for clipBoard
+   */
+  setClipBoard: (clipBoard: ClipBoard | null) => void;
+
+  /**
    * Display parameter when setting a hold
    * null if not setting a hold
    */
@@ -56,6 +91,22 @@ export type Store = {
    * Reset holdSetter
    */
   resetHoldSetter: () => void;
+
+  /**
+   * Display parameter of indicator
+   * null if the indicator is not displayed
+   */
+  indicator: Indicator;
+
+  /**
+   * Setter for indicator
+   */
+  setIndicator: (indicator: Indicator) => void;
+
+  /**
+   * Reset indicator
+   */
+  resetIndicator: () => void;
 
   /**
    * true for dark mode, false for light mode
@@ -117,6 +168,17 @@ export type Store = {
    * Setter for successMessage
    */
   setSuccessMessage: (successMessage: string) => void;
+
+  /**
+   * UCS file name included a extension
+   * numm if nothing is uploaded
+   */
+  ucsName: string | null;
+
+  /**
+   * Setter for ucsName
+   */
+  setUcsName: (ucsName: string | null) => void;
 
   /**
    * Message displayed UserErrorSnackbar

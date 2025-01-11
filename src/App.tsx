@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import ReactGA from "react-ga4";
-import { useRecoilValue } from "recoil";
 import AdjustBlockDialog from "./components/dialog/AdjustBlockDialog";
 import { AggregateDialog } from "./components/dialog/AggregateDialog";
 import EditBlockDialog from "./components/dialog/EditBlockDialog";
@@ -11,10 +10,10 @@ import SuccessSnackbar from "./components/snackbar/SuccessSnackbar";
 import UserErrorSnackbar from "./components/snackbar/UserErrorSnackbar";
 import ReadyUCS from "./components/workspace/ReadyUCS";
 import WorkSpace from "./components/workspace/WorkSpace";
-import { ucsNameState } from "./services/atoms";
+import { useStore } from "./hooks/useStore";
 
 function App() {
-  const ucsName = useRecoilValue<string | null>(ucsNameState);
+  const { ucsName } = useStore();
 
   // Activate Google Analytics only in production mode
   useEffect(() => {

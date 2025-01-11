@@ -1,7 +1,11 @@
 import { create } from "zustand";
-import { HoldSetter } from "../types/chart";
-import { BlockControllerMenuPosition } from "../types/menu";
+import { HoldSetter, Indicator } from "../types/chart";
+import {
+  BlockControllerMenuPosition,
+  ChartIndicatorMenuPosition,
+} from "../types/menu";
 import { Store } from "../types/store";
+import { ClipBoard } from "../types/ucs";
 
 /**
  * Store for zustand with initial values
@@ -19,9 +23,21 @@ export const useStore = create<Store>()((set) => ({
   ) => set({ blockControllerMenuPosition }),
   resetBlockControllerMenuPosition: () =>
     set({ blockControllerMenuPosition: undefined }),
+  chartIndicatorMenuPosition: undefined,
+  setChartIndicatorMenuPosition: (
+    chartIndicatorMenuPosition: ChartIndicatorMenuPosition
+  ) => set({ chartIndicatorMenuPosition }),
+  resetChartIndicatorMenuPosition: () =>
+    set({ chartIndicatorMenuPosition: undefined }),
+  clipBoard: null,
+  setClipBoard: (clipBoard: ClipBoard | null) => set({ clipBoard }),
+  resetClipBoard: () => set({ clipBoard: null }),
   holdSetter: null,
   setHoldSetter: (holdSetter: HoldSetter | null) => set({ holdSetter }),
   resetHoldSetter: () => set({ holdSetter: null }),
+  indicator: null,
+  setIndicator: (indicator: Indicator) => set({ indicator }),
+  resetIndicator: () => set({ indicator: null }),
   isDarkMode: window.matchMedia("(prefers-color-scheme: dark)").matches,
   toggleIsDarkMode: () => set((state) => ({ isDarkMode: !state.isDarkMode })),
   isMuteBeats: true,
@@ -35,6 +51,8 @@ export const useStore = create<Store>()((set) => ({
   setMp3Name: (mp3Name: string | null) => set({ mp3Name }),
   successMessage: "",
   setSuccessMessage: (successMessage: string) => set({ successMessage }),
+  ucsName: null,
+  setUcsName: (ucsName: string | null) => set({ ucsName }),
   userErrorMessage: "",
   setUserErrorMessage: (userErrorMessage: string) => set({ userErrorMessage }),
   volumeValue: 0.5,
