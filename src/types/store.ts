@@ -1,9 +1,12 @@
+import { Selector } from "./chart";
+
 import { Indicator } from "./chart";
 
 import { HoldSetter } from "./chart";
 import {
   BlockControllerMenuPosition,
   ChartIndicatorMenuPosition,
+  Zoom,
 } from "./menu";
 import { ClipBoard } from "./ucs";
 
@@ -160,6 +163,21 @@ export type Store = {
   setMp3Name: (mp3Name: string | null) => void;
 
   /**
+   * Display parameter of the selection area
+   */
+  selector: Selector;
+
+  /**
+   * Setter for selector
+   */
+  setSelector: (selector: Selector) => void;
+
+  /**
+   * Hide selection area
+   */
+  hideSelector: () => void;
+
+  /**
    * Success message
    */
   successMessage: string;
@@ -200,4 +218,14 @@ export type Store = {
    * Setter for volumeValue
    */
   setVolumeValue: (volumeValue: number) => void;
+
+  /**
+   * Display parameter for zooming in or out
+   */
+  zoom: Zoom;
+
+  /**
+   * Setter for zoom
+   */
+  setZoom: (zoom: Zoom) => void;
 };

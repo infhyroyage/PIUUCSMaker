@@ -1,6 +1,4 @@
 import { atom } from "recoil";
-import { Selector } from "../types/chart";
-import { Zoom } from "../types/menu";
 import { Block, ChartSnapshot, Note } from "../types/ucs";
 
 /**
@@ -46,26 +44,10 @@ export const redoSnapshotsState = atom<ChartSnapshot[]>({
 });
 
 /**
- * Display parameter of the selection area
- */
-export const selectorState = atom<Selector>({
-  key: "selector",
-  default: { completed: null, isSettingByMenu: false, setting: null },
-});
-
-/**
  * A set of ChartSnapshot for undoing
  * Become recent editing as increasing the index
  */
 export const undoSnapshotsState = atom<ChartSnapshot[]>({
   key: "undoSnapshots",
   default: [],
-});
-
-/**
- * Display parameter for zoooming in or out
- */
-export const zoomState = atom<Zoom>({
-  key: "zoom",
-  default: { idx: 0, top: null },
 });

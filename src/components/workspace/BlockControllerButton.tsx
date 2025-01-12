@@ -1,8 +1,8 @@
 import { memo, useMemo } from "react";
 import { useRecoilValue } from "recoil";
+import { useStore } from "../../hooks/useStore";
 import { ZOOM_VALUES } from "../../services/assets";
-import { noteSizeState, zoomState } from "../../services/atoms";
-import { Zoom } from "../../types/menu";
+import { noteSizeState } from "../../services/atoms";
 import { BlockControllerButtonProps } from "../../types/props";
 import BorderLine from "./BorderLine";
 
@@ -15,8 +15,8 @@ function BlockControllerButton({
   rows,
   split,
 }: BlockControllerButtonProps) {
+  const { zoom } = useStore();
   const noteSize = useRecoilValue<number>(noteSizeState);
-  const zoom = useRecoilValue<Zoom>(zoomState);
 
   // 最初以外の譜面のブロックの場合はDelay値を無視する警告フラグ
   const isIgnoredDelay: boolean = useMemo(

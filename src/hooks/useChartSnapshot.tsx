@@ -5,10 +5,8 @@ import {
   isProtectedState,
   notesState,
   redoSnapshotsState,
-  selectorState,
   undoSnapshotsState,
 } from "../services/atoms";
-import { Selector } from "../types/chart";
 import { Block, ChartSnapshot, Note } from "../types/ucs";
 import useEditBlockDialog from "./useEditBlockDialog";
 import useNewUcsDialog from "./useNewUcsDialog";
@@ -19,6 +17,7 @@ function useChartSnapshot() {
     resetBlockControllerMenuPosition,
     resetChartIndicatorMenuPosition,
     resetIndicator,
+    hideSelector,
   } = useStore();
   const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
@@ -27,7 +26,6 @@ function useChartSnapshot() {
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
   const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
-  const setSelector = useSetRecoilState<Selector>(selectorState);
 
   const { isOpenedNewUCSDialog } = useNewUcsDialog();
   const { isOpenedEditBlockDialog } = useEditBlockDialog();
@@ -55,7 +53,7 @@ function useChartSnapshot() {
 
     // インディケーター・選択領域・メニューをすべて非表示
     resetIndicator();
-    setSelector({ completed: null, isSettingByMenu: false, setting: null });
+    hideSelector();
     resetBlockControllerMenuPosition();
     resetChartIndicatorMenuPosition();
 
@@ -75,7 +73,7 @@ function useChartSnapshot() {
     setBlocks,
     setIsProtected,
     setNotes,
-    setSelector,
+    hideSelector,
     setRedoSnapshots,
     setUndoSnapshots,
   ]);
@@ -104,7 +102,7 @@ function useChartSnapshot() {
 
     // インディケーター・選択領域・メニューをすべて非表示
     resetIndicator();
-    setSelector({ completed: null, isSettingByMenu: false, setting: null });
+    hideSelector();
     resetBlockControllerMenuPosition();
     resetChartIndicatorMenuPosition();
 
@@ -124,7 +122,7 @@ function useChartSnapshot() {
     setBlocks,
     setIsProtected,
     setNotes,
-    setSelector,
+    hideSelector,
     setRedoSnapshots,
     setUndoSnapshots,
   ]);

@@ -5,17 +5,16 @@ import {
   isProtectedState,
   notesState,
   redoSnapshotsState,
-  selectorState,
   undoSnapshotsState,
 } from "../services/atoms";
-import { Selector, SelectorCompletedCords } from "../types/chart";
+import { SelectorCompletedCords } from "../types/chart";
 import { Block, ChartSnapshot, CopiedNote, Note } from "../types/ucs";
 import { useStore } from "./useStore";
 
 function useClipBoard() {
-  const { clipBoard, setClipBoard, indicator } = useStore();
+  const { clipBoard, setClipBoard, indicator, selector, setSelector } =
+    useStore();
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
-  const [selector, setSelector] = useRecoilState<Selector>(selectorState);
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
   const blocks = useRecoilValue<Block[]>(blocksState);

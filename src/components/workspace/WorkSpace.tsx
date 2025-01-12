@@ -1,17 +1,15 @@
 import { useEffect } from "react";
 import { useSetRecoilState } from "recoil";
 import { useStore } from "../../hooks/useStore";
-import { noteSizeState, selectorState } from "../../services/atoms";
+import { noteSizeState } from "../../services/atoms";
 import { NAVIGATION_BAR_HEIGHT } from "../../services/styles";
-import { Selector } from "../../types/chart";
 import BlockController from "./BlockController";
 import Chart from "./Chart";
 import Identifier from "./Identifier";
 
 function WorkSpace() {
-  const { resetHoldSetter } = useStore();
+  const { resetHoldSetter, hideSelector } = useStore();
   const setNoteSize = useSetRecoilState<number>(noteSizeState);
-  const setSelector = useSetRecoilState<Selector>(selectorState);
 
   useEffect(() => {
     // ウィンドウサイズから、正方形である単ノートの1辺のサイズ(noteSize)を以下で計算
@@ -28,7 +26,7 @@ function WorkSpace() {
       // ESCキー押下時に、ホールド設置中・選択領域の表示パラメーターをすべて初期化
       if (event.key === "Escape") {
         resetHoldSetter();
-        setSelector({ completed: null, isSettingByMenu: false, setting: null });
+        hideSelector();
       }
     };
 
@@ -42,7 +40,7 @@ function WorkSpace() {
       window.removeEventListener("resize", handleWindowResize);
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [resetHoldSetter, setNoteSize, setSelector]);
+  }, [resetHoldSetter, setNoteSize, hideSelector]);
 
   return (
     <div
@@ -50,11 +48,7 @@ function WorkSpace() {
         // 左クリック時のみ、選択領域・マウス押下した場合の表示パラメーターをすべて初期化
         if (event.button === 0) {
           resetHoldSetter();
-          setSelector({
-            completed: null,
-            isSettingByMenu: false,
-            setting: null,
-          });
+          hideSelector();
         }
       }}
       style={{

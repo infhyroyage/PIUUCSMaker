@@ -9,12 +9,8 @@ import {
   noteSizeState,
   notesState,
   redoSnapshotsState,
-  selectorState,
   undoSnapshotsState,
-  zoomState,
 } from "../../services/atoms";
-import { Selector } from "../../types/chart";
-import { Zoom } from "../../types/menu";
 import { Block, ChartSnapshot, Note } from "../../types/ucs";
 import ChartIndicatorMenu from "../menu/ChartIndicatorMenu";
 import BorderLine from "./BorderLine";
@@ -33,14 +29,16 @@ function Chart() {
     setIndicator,
     resetIndicator,
     isPlaying,
+    selector,
+    setSelector,
+    hideSelector,
+    zoom,
   } = useStore();
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
-  const [selector, setSelector] = useRecoilState<Selector>(selectorState);
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
   const blocks = useRecoilValue<Block[]>(blocksState);
   const noteSize = useRecoilValue<number>(noteSizeState);
-  const zoom = useRecoilValue<Zoom>(zoomState);
   const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
   const setRedoSnapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
@@ -145,7 +143,7 @@ function Chart() {
         !selector.isSettingByMenu
       ) {
         // Shift未入力、かつ、「Start Selecting」を選択せずに入力時の選択領域を表示している場合は、選択領域を非表示
-        setSelector({ setting: null, completed: null, isSettingByMenu: false });
+        hideSelector();
       }
     },
     [
@@ -160,6 +158,7 @@ function Chart() {
       selector.setting,
       selector.isSettingByMenu,
       setSelector,
+      hideSelector,
       zoom.idx,
     ]
   );
@@ -241,7 +240,7 @@ function Chart() {
           selector.completed !== null)
       ) {
         // Shift未入力、かつ、「Start Selecting」を選択せずに選択領域を表示している場合は、選択領域を非表示
-        setSelector({ completed: null, isSettingByMenu: false, setting: null });
+        hideSelector();
       }
     },
     [
@@ -252,6 +251,7 @@ function Chart() {
       selector,
       setHoldSetter,
       setSelector,
+      hideSelector,
     ]
   );
 
@@ -414,32 +414,35 @@ function Chart() {
       if (selector.setting !== null) {
         // 選択領域入力時の場合は選択領域を入力時→入力後に更新
         // ただし、選択領域の入力時にマウスの座標が譜面から外れた場合はnullに更新
-        setSelector({
-          completed:
-            selector.setting.mouseUpColumn !== null &&
-            selector.setting.mouseUpRowIdx !== null
-              ? {
-                  goalColumn: Math.max(
-                    selector.setting.mouseDownColumn,
-                    selector.setting.mouseUpColumn
-                  ),
-                  goalRowIdx: Math.max(
-                    selector.setting.mouseDownRowIdx,
-                    selector.setting.mouseUpRowIdx
-                  ),
-                  startColumn: Math.min(
-                    selector.setting.mouseDownColumn,
-                    selector.setting.mouseUpColumn
-                  ),
-                  startRowIdx: Math.min(
-                    selector.setting.mouseDownRowIdx,
-                    selector.setting.mouseUpRowIdx
-                  ),
-                }
-              : null,
-          isSettingByMenu: false,
-          setting: null,
-        });
+        if (
+          selector.setting.mouseUpColumn !== null &&
+          selector.setting.mouseUpRowIdx !== null
+        ) {
+          setSelector({
+            completed: {
+              goalColumn: Math.max(
+                selector.setting.mouseDownColumn,
+                selector.setting.mouseUpColumn
+              ),
+              goalRowIdx: Math.max(
+                selector.setting.mouseDownRowIdx,
+                selector.setting.mouseUpRowIdx
+              ),
+              startColumn: Math.min(
+                selector.setting.mouseDownColumn,
+                selector.setting.mouseUpColumn
+              ),
+              startRowIdx: Math.min(
+                selector.setting.mouseDownRowIdx,
+                selector.setting.mouseUpRowIdx
+              ),
+            },
+            isSettingByMenu: false,
+            setting: null,
+          });
+        } else {
+          hideSelector();
+        }
       }
     },
     [
@@ -454,6 +457,7 @@ function Chart() {
       setNotes,
       setRedoSnapshots,
       setSelector,
+      hideSelector,
       setUndoSnapshots,
       undoSnapshots,
     ]

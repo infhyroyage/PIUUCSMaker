@@ -1,14 +1,14 @@
 import { memo, useMemo } from "react";
 import { useRecoilValue } from "recoil";
+import { useStore } from "../../hooks/useStore";
 import useVerticalBorderSize from "../../hooks/useVerticalBorderSize";
 import {
   HOLD_BINARIES,
   NOTE_BINARIES,
   ZOOM_VALUES,
 } from "../../services/assets";
-import { noteSizeState, zoomState } from "../../services/atoms";
+import { noteSizeState } from "../../services/atoms";
 import { IDENTIFIER_WIDTH } from "../../services/styles";
-import { Zoom } from "../../types/menu";
 import { ChartVerticalNoteImagesProps } from "../../types/props";
 
 function ChartVerticalNoteImages({
@@ -19,8 +19,8 @@ function ChartVerticalNoteImages({
   split,
   type,
 }: ChartVerticalNoteImagesProps) {
+  const { zoom } = useStore();
   const noteSize = useRecoilValue<number>(noteSizeState);
-  const zoom = useRecoilValue<Zoom>(zoomState);
 
   const verticalBorderSize = useVerticalBorderSize();
 

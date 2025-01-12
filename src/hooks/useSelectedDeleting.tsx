@@ -1,21 +1,20 @@
 import { useCallback } from "react";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import {
   isProtectedState,
   notesState,
   redoSnapshotsState,
-  selectorState,
   undoSnapshotsState,
 } from "../services/atoms";
-import { Note } from "../types/ucs";
-import { ChartSnapshot } from "../types/ucs";
-import { Selector, SelectorCompletedCords } from "../types/chart";
+import { SelectorCompletedCords } from "../types/chart";
+import { ChartSnapshot, Note } from "../types/ucs";
+import { useStore } from "./useStore";
 
 function useSelectedDeleting() {
+  const { selector } = useStore();
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
-  const selector = useRecoilValue<Selector>(selectorState);
   const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
   const setRedoSnapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);

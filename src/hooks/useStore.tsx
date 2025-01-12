@@ -1,8 +1,9 @@
 import { create } from "zustand";
-import { HoldSetter, Indicator } from "../types/chart";
+import { HoldSetter, Indicator, Selector } from "../types/chart";
 import {
   BlockControllerMenuPosition,
   ChartIndicatorMenuPosition,
+  Zoom,
 } from "../types/menu";
 import { Store } from "../types/store";
 import { ClipBoard } from "../types/ucs";
@@ -49,6 +50,12 @@ export const useStore = create<Store>()((set) => ({
   setIsPlaying: (isPlaying: boolean) => set({ isPlaying }),
   mp3Name: null,
   setMp3Name: (mp3Name: string | null) => set({ mp3Name }),
+  selector: { completed: null, isSettingByMenu: false, setting: null },
+  setSelector: (selector: Selector) => set({ selector }),
+  hideSelector: () =>
+    set({
+      selector: { completed: null, isSettingByMenu: false, setting: null },
+    }),
   successMessage: "",
   setSuccessMessage: (successMessage: string) => set({ successMessage }),
   ucsName: null,
@@ -57,4 +64,6 @@ export const useStore = create<Store>()((set) => ({
   setUserErrorMessage: (userErrorMessage: string) => set({ userErrorMessage }),
   volumeValue: 0.5,
   setVolumeValue: (volumeValue: number) => set({ volumeValue }),
+  zoom: { idx: 0, top: null },
+  setZoom: (zoom: Zoom) => set({ zoom }),
 }));

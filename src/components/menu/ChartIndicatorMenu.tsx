@@ -8,11 +8,9 @@ import {
   blocksState,
   isProtectedState,
   redoSnapshotsState,
-  selectorState,
   undoSnapshotsState,
 } from "../../services/atoms";
 import { MENU_Z_INDEX } from "../../services/styles";
-import { Selector } from "../../types/chart";
 import { Block, ChartSnapshot } from "../../types/ucs";
 import MenuBackground from "./MenuBackground";
 import MenuItem from "./MenuItem";
@@ -26,9 +24,10 @@ function ChartIndicatorMenu() {
     setHoldSetter,
     indicator,
     setIndicator,
+    selector,
+    setSelector,
   } = useStore();
   const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
-  const [selector, setSelector] = useRecoilState<Selector>(selectorState);
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
   const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
