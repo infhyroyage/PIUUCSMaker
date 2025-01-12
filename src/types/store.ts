@@ -173,6 +173,18 @@ export type Store = {
   setMp3Name: (mp3Name: string | null) => void;
 
   /**
+   * Width or height (px) of single note
+   */
+  noteSize: number;
+
+  /**
+   * Resize noteSize as follows with window size update
+   * noteSize := min(window width, window height) / 15
+   * However, noteSize is rounded down to the nearest integer, with a minimum value of 20
+   */
+  resizeNoteSizeWithWindow: () => void;
+
+  /**
    * Display parameter of the selection area
    */
   selector: Selector;

@@ -19,14 +19,6 @@ export const notesState = atom<Note[][]>({
 });
 
 /**
- * Width or height (px) of single note
- */
-export const noteSizeState = atom<number>({
-  key: "noteSize",
-  default: 0,
-});
-
-/**
  * A set of ChartSnapshot for redoing
  * Become past editing as increasing the index
  */

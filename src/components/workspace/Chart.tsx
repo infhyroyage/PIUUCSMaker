@@ -5,7 +5,6 @@ import useVerticalBorderSize from "../../hooks/useVerticalBorderSize";
 import { ZOOM_VALUES } from "../../services/assets";
 import {
   blocksState,
-  noteSizeState,
   notesState,
   redoSnapshotsState,
   undoSnapshotsState,
@@ -29,6 +28,7 @@ function Chart() {
     resetIndicator,
     isPlaying,
     setIsProtected,
+    noteSize,
     selector,
     setSelector,
     hideSelector,
@@ -38,7 +38,6 @@ function Chart() {
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
   const blocks = useRecoilValue<Block[]>(blocksState);
-  const noteSize = useRecoilValue<number>(noteSizeState);
   const setRedoSnapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
 

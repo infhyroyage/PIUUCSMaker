@@ -1,13 +1,14 @@
 import { useMemo } from "react";
 import { useRecoilValue } from "recoil";
+import { useStore } from "../../hooks/useStore";
 import { NOTE_BINARIES } from "../../services/assets";
-import { noteSizeState, notesState } from "../../services/atoms";
+import { notesState } from "../../services/atoms";
 import { DIALOG_Z_INDEX } from "../../services/styles";
 import { Note } from "../../types/ucs";
 
 export const AggregateDialog = () => {
+  const { noteSize } = useStore();
   const notes = useRecoilValue<Note[][]>(notesState);
-  const noteSize = useRecoilValue<number>(noteSizeState);
 
   const totalCombo = useMemo(
     () =>

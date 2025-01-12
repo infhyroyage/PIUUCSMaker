@@ -1,27 +1,19 @@
 import { useEffect } from "react";
-import { useSetRecoilState } from "recoil";
 import { useStore } from "../../hooks/useStore";
-import { noteSizeState } from "../../services/atoms";
 import { NAVIGATION_BAR_HEIGHT } from "../../services/styles";
 import BlockController from "./BlockController";
 import Chart from "./Chart";
 import Identifier from "./Identifier";
 
 function WorkSpace() {
-  const { resetHoldSetter, hideSelector } = useStore();
-  const setNoteSize = useSetRecoilState<number>(noteSizeState);
+  const { resetHoldSetter, resizeNoteSizeWithWindow, hideSelector } =
+    useStore();
 
   useEffect(() => {
     // ウィンドウサイズから、正方形である単ノートの1辺のサイズ(noteSize)を以下で計算
     // noteSize := min(ウィンドウサイズの横幅, ウィンドウサイズの高さ) / 15
     // ただし、noteSizeは小数点以下を切り捨てとし、最小値が20とする
-    const handleWindowResize = () =>
-      setNoteSize(
-        Math.max(
-          Math.floor(Math.min(window.innerWidth, window.innerHeight) / 15),
-          20
-        )
-      );
+    const handleWindowResize = () => resizeNoteSizeWithWindow();
     const handleKeyDown = (event: KeyboardEvent) => {
       // ESCキー押下時に、ホールド設置中・選択領域の表示パラメーターをすべて初期化
       if (event.key === "Escape") {
@@ -40,7 +32,7 @@ function WorkSpace() {
       window.removeEventListener("resize", handleWindowResize);
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [resetHoldSetter, setNoteSize, hideSelector]);
+  }, [resetHoldSetter, resizeNoteSizeWithWindow, hideSelector]);
 
   return (
     <div

@@ -1,16 +1,13 @@
-import { useRecoilValue } from "recoil";
 import { useStore } from "../../hooks/useStore";
 import useVerticalBorderSize from "../../hooks/useVerticalBorderSize";
 import { HOLD_BINARIES, NOTE_BINARIES } from "../../services/assets";
-import { noteSizeState } from "../../services/atoms";
 import {
   IDENTIFIER_WIDTH,
   NAVIGATION_BAR_Z_INDEX,
 } from "../../services/styles";
 
 function ChartIndicator() {
-  const { holdSetter, indicator, selector } = useStore();
-  const noteSize = useRecoilValue<number>(noteSizeState);
+  const { holdSetter, indicator, noteSize, selector } = useStore();
 
   const verticalBorderSize = useVerticalBorderSize();
 

@@ -52,6 +52,14 @@ export const useStore = create<Store>()((set) => ({
   setIsProtected: (isProtected: boolean) => set({ isProtected }),
   mp3Name: null,
   setMp3Name: (mp3Name: string | null) => set({ mp3Name }),
+  noteSize: 0,
+  resizeNoteSizeWithWindow: () =>
+    set({
+      noteSize: Math.max(
+        Math.floor(Math.min(window.innerWidth, window.innerHeight) / 15),
+        20
+      ),
+    }),
   selector: { completed: null, isSettingByMenu: false, setting: null },
   setSelector: (selector: Selector) => set({ selector }),
   hideSelector: () =>
