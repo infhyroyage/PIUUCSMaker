@@ -10,14 +10,6 @@ export const blocksState = atom<Block[]>({
 });
 
 /**
- * true to prevent exit during editing, otherwise false
- */
-export const isProtectedState = atom<boolean>({
-  key: "isProtected",
-  default: false,
-});
-
-/**
  * A set of single note, starting point of hold, setting point of hold or end point of hold,
  * whose the first index matches the number of columns (5 if chart is single or single performance, 10 if chart is double or double performance)
  */

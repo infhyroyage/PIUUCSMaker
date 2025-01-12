@@ -2,7 +2,6 @@ import { useCallback, useMemo } from "react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
   blocksState,
-  isProtectedState,
   notesState,
   redoSnapshotsState,
   undoSnapshotsState,
@@ -12,13 +11,18 @@ import { Block, ChartSnapshot, CopiedNote, Note } from "../types/ucs";
 import { useStore } from "./useStore";
 
 function useClipBoard() {
-  const { clipBoard, setClipBoard, indicator, selector, setSelector } =
-    useStore();
+  const {
+    clipBoard,
+    setClipBoard,
+    indicator,
+    setIsProtected,
+    selector,
+    setSelector,
+  } = useStore();
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
   const blocks = useRecoilValue<Block[]>(blocksState);
-  const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
   const setRedoSnapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
 

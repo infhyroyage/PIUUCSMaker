@@ -2,7 +2,6 @@ import { useCallback, useState } from "react";
 import { useSetRecoilState } from "recoil";
 import {
   blocksState,
-  isProtectedState,
   notesState,
   redoSnapshotsState,
   undoSnapshotsState,
@@ -320,10 +319,10 @@ const validate = (content: string): UploadingUCSValidation => {
 };
 
 function useUploadingUCS() {
-  const { setIsPerformance, setUcsName, setUserErrorMessage } = useStore();
+  const { setIsPerformance, setIsProtected, setUcsName, setUserErrorMessage } =
+    useStore();
   const [isUploadingUCS, setIsUploadingUCS] = useState<boolean>(false);
   const setBlocks = useSetRecoilState<Block[]>(blocksState);
-  const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
   const setNotes = useSetRecoilState<Note[][]>(notesState);
   const setRedoSnapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);

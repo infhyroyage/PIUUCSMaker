@@ -10,7 +10,6 @@ import useEditBlockDialog from "../../hooks/useEditBlockDialog";
 import { useStore } from "../../hooks/useStore";
 import {
   blocksState,
-  isProtectedState,
   notesState,
   redoSnapshotsState,
   undoSnapshotsState,
@@ -27,8 +26,11 @@ import { EditBlockDialogError, EditBlockDialogForm } from "../../types/dialog";
 import { Block, ChartSnapshot, Note } from "../../types/ucs";
 
 function EditBlockDialog() {
-  const { blockControllerMenuBlockIdx, resetBlockControllerMenuBlockIdx } =
-    useStore();
+  const {
+    blockControllerMenuBlockIdx,
+    resetBlockControllerMenuBlockIdx,
+    setIsProtected,
+  } = useStore();
   const [errors, setErrors] = useState<EditBlockDialogError[]>([]);
   const [form, setForm] = useState<EditBlockDialogForm>({
     beat: "",
@@ -41,7 +43,6 @@ function EditBlockDialog() {
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
-  const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
   const setRedoSnapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
 

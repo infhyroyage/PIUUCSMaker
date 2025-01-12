@@ -153,6 +153,16 @@ export type Store = {
   setIsPlaying: (isPlaying: boolean) => void;
 
   /**
+   * true to prevent exit during editing, otherwise false
+   */
+  isProtected: boolean;
+
+  /**
+   * Setter for isProtected
+   */
+  setIsProtected: (isProtected: boolean) => void;
+
+  /**
    * mp3NameState
    */
   mp3Name: string | null;

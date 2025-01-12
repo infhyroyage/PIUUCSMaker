@@ -6,7 +6,6 @@ import useSelectedFlipping from "../../hooks/useSelectedFlipping";
 import { useStore } from "../../hooks/useStore";
 import {
   blocksState,
-  isProtectedState,
   redoSnapshotsState,
   undoSnapshotsState,
 } from "../../services/atoms";
@@ -24,13 +23,13 @@ function ChartIndicatorMenu() {
     setHoldSetter,
     indicator,
     setIndicator,
+    setIsProtected,
     selector,
     setSelector,
   } = useStore();
   const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
-  const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
   const setRedoSnapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
 

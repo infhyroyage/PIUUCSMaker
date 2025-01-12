@@ -1,7 +1,6 @@
 import { useCallback } from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import {
-  isProtectedState,
   notesState,
   redoSnapshotsState,
   undoSnapshotsState,
@@ -11,11 +10,10 @@ import { ChartSnapshot, Note } from "../types/ucs";
 import { useStore } from "./useStore";
 
 function useSelectedFlipping() {
-  const { selector } = useStore();
+  const { setIsProtected, selector } = useStore();
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
-  const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
   const setRedoSnapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
 

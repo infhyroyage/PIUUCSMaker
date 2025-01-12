@@ -1,8 +1,7 @@
 import { useCallback } from "react";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilState } from "recoil";
 import {
   blocksState,
-  isProtectedState,
   notesState,
   redoSnapshotsState,
   undoSnapshotsState,
@@ -17,6 +16,7 @@ function useChartSnapshot() {
     resetBlockControllerMenuPosition,
     resetChartIndicatorMenuPosition,
     resetIndicator,
+    setIsProtected,
     hideSelector,
   } = useStore();
   const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
@@ -25,7 +25,6 @@ function useChartSnapshot() {
     useRecoilState<ChartSnapshot[]>(redoSnapshotsState);
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
-  const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
 
   const { isOpenedNewUCSDialog } = useNewUcsDialog();
   const { isOpenedEditBlockDialog } = useEditBlockDialog();

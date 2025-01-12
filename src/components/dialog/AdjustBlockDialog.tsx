@@ -3,7 +3,6 @@ import { useRecoilState, useSetRecoilState } from "recoil";
 import { useStore } from "../../hooks/useStore";
 import {
   blocksState,
-  isProtectedState,
   notesState,
   redoSnapshotsState,
   undoSnapshotsState,
@@ -17,8 +16,11 @@ import {
 import { Block, ChartSnapshot, Note } from "../../types/ucs";
 
 function AdjustBlockDialog() {
-  const { blockControllerMenuBlockIdx, resetBlockControllerMenuBlockIdx } =
-    useStore();
+  const {
+    blockControllerMenuBlockIdx,
+    resetBlockControllerMenuBlockIdx,
+    setIsProtected,
+  } = useStore();
   const [fixed, setFixed] = useState<AdjustBlockDialogFormFixed>("bpm");
   const [form, setForm] = useState<AdjustBlockDialogForm>({
     bpm: -1,
@@ -29,7 +31,6 @@ function AdjustBlockDialog() {
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
-  const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
   const setRedoSnapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
 

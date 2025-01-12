@@ -4,7 +4,6 @@ import useEditBlockDialog from "../../hooks/useEditBlockDialog";
 import { useStore } from "../../hooks/useStore";
 import {
   blocksState,
-  isProtectedState,
   notesState,
   redoSnapshotsState,
   undoSnapshotsState,
@@ -17,15 +16,15 @@ import MenuItem from "./MenuItem";
 function BlockControllerMenu() {
   const {
     blockControllerMenuBlockIdx,
-    blockControllerMenuPosition,
     resetBlockControllerMenuBlockIdx,
+    blockControllerMenuPosition,
     resetBlockControllerMenuPosition,
+    setIsProtected,
   } = useStore();
   const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
   const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
-  const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
   const setRedoSnapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
 

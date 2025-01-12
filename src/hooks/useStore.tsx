@@ -48,6 +48,8 @@ export const useStore = create<Store>()((set) => ({
   setIsPerformance: (isPerformance: boolean) => set({ isPerformance }),
   isPlaying: false,
   setIsPlaying: (isPlaying: boolean) => set({ isPlaying }),
+  isProtected: false,
+  setIsProtected: (isProtected: boolean) => set({ isProtected }),
   mp3Name: null,
   setMp3Name: (mp3Name: string | null) => set({ mp3Name }),
   selector: { completed: null, isSettingByMenu: false, setting: null },
