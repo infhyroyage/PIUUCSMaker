@@ -26,7 +26,7 @@ function Drawer() {
     isPlaying,
     ucsName,
     zoom,
-    setZoom,
+    updateZoomFromIdx,
   } = useStore();
   const redoSnapshots = useRecoilValue<ChartSnapshot[]>(redoSnapshotsState);
   const undoSnapshots = useRecoilValue<ChartSnapshot[]>(undoSnapshotsState);
@@ -227,15 +227,7 @@ function Drawer() {
               </svg>
             }
             label="Zoom In"
-            onClick={() =>
-              setZoom({
-                idx: zoom.idx + 1,
-                top:
-                  (document.documentElement.scrollTop *
-                    ZOOM_VALUES[zoom.idx + 1]) /
-                  ZOOM_VALUES[zoom.idx],
-              })
-            }
+            onClick={() => updateZoomFromIdx(zoom.idx + 1)}
           />
           <DrawerListItem
             disabled={zoom.idx === 0 || isPlaying}
@@ -257,15 +249,7 @@ function Drawer() {
               </svg>
             }
             label="Zoom Out"
-            onClick={() =>
-              setZoom({
-                idx: zoom.idx - 1,
-                top:
-                  (document.documentElement.scrollTop *
-                    ZOOM_VALUES[zoom.idx - 1]) /
-                  ZOOM_VALUES[zoom.idx],
-              })
-            }
+            onClick={() => updateZoomFromIdx(zoom.idx - 1)}
           />
           <div className="divider my-0" />
           <DrawerUploadListItem

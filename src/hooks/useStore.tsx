@@ -1,9 +1,9 @@
 import { create } from "zustand";
+import { ZOOM_VALUES } from "../services/assets";
 import { HoldSetter, Indicator, Selector } from "../types/chart";
 import {
   BlockControllerMenuPosition,
   ChartIndicatorMenuPosition,
-  Zoom,
 } from "../types/menu";
 import { Store } from "../types/store";
 import { ClipBoard } from "../types/ucs";
@@ -75,5 +75,13 @@ export const useStore = create<Store>()((set) => ({
   volumeValue: 0.5,
   setVolumeValue: (volumeValue: number) => set({ volumeValue }),
   zoom: { idx: 0, top: null },
-  setZoom: (zoom: Zoom) => set({ zoom }),
+  updateZoomFromIdx: (updatedIdx: number) =>
+    set((state) => ({
+      zoom: {
+        idx: updatedIdx,
+        top:
+          (document.documentElement.scrollTop * ZOOM_VALUES[updatedIdx]) /
+          ZOOM_VALUES[state.zoom.idx],
+      },
+    })),
 }));

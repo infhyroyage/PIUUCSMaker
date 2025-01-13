@@ -8,8 +8,14 @@ import {
 import NavigationBarTitle from "./NavigationBarTitle";
 
 function NavigationBar() {
-  const { isPlaying, isProtected, volumeValue, setVolumeValue, zoom, setZoom } =
-    useStore();
+  const {
+    isPlaying,
+    isProtected,
+    volumeValue,
+    setVolumeValue,
+    zoom,
+    updateZoomFromIdx,
+  } = useStore();
   const [muteVolBuf, setMuteVolBuf] = useState<number | null>(null);
 
   const onChangeSelect = useCallback(
@@ -17,15 +23,9 @@ function NavigationBar() {
       // formを送信せず、ページ遷移を行わないようにする
       event.preventDefault();
 
-      setZoom({
-        idx: Number(event.target.value),
-        top:
-          (document.documentElement.scrollTop *
-            ZOOM_VALUES[Number(event.target.value)]) /
-          ZOOM_VALUES[zoom.idx],
-      });
+      updateZoomFromIdx(Number(event.target.value));
     },
-    [setZoom, zoom]
+    [updateZoomFromIdx]
   );
 
   const onClickVolumeButton = useCallback(

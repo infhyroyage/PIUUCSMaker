@@ -247,7 +247,7 @@ export type Store = {
   zoom: Zoom;
 
   /**
-   * Setter for zoom
+   * Update zoom from idx
    */
-  setZoom: (zoom: Zoom) => void;
+  updateZoomFromIdx: (updatedIdx: number) => void;
 };
