@@ -2,7 +2,7 @@ import { ChangeEvent, useState, useTransition } from "react";
 import { useSetRecoilState } from "recoil";
 import useNewUcsDialog from "../../hooks/useNewUcsDialog";
 import { useStore } from "../../hooks/useStore";
-import { redoSnapshotsState, undoSnapshotsState } from "../../services/atoms";
+import { undoSnapshotsState } from "../../services/atoms";
 import { DIALOG_Z_INDEX } from "../../services/styles";
 import {
   validateBeat,
@@ -15,10 +15,14 @@ import { NewUCSDialogError, NewUCSDialogForm } from "../../types/dialog";
 import { ChartSnapshot, Note } from "../../types/ucs";
 
 function NewUCSDialog() {
-  const { setBlocks, setIsPerformance, setIsProtected, setNotes, setUcsName } =
-    useStore();
-  const setRedoSnapshots =
-    useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
+  const {
+    setBlocks,
+    setIsPerformance,
+    setIsProtected,
+    setNotes,
+    resetRedoSnapshots,
+    setUcsName,
+  } = useStore();
   const setUndoSnapshots =
     useSetRecoilState<ChartSnapshot[]>(undoSnapshotsState);
   const [form, setForm] = useState<NewUCSDialogForm>({
@@ -61,7 +65,7 @@ function NewUCSDialog() {
             .fill(null)
             .map<Note[]>(() => [])
         );
-        setRedoSnapshots([]);
+        resetRedoSnapshots();
         setUcsName(`${form.ucsName}.ucs`);
         setUndoSnapshots([]);
         closeNewUcsDialog();

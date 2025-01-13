@@ -1,4 +1,4 @@
-import { Block, Note } from "./ucs";
+import { Block, ChartSnapshot, Note } from "./ucs";
 
 import { Selector } from "./chart";
 
@@ -206,6 +206,27 @@ export type Store = {
    * However, noteSize is rounded down to the nearest integer, with a minimum value of 20
    */
   resizeNoteSizeWithWindow: () => void;
+
+  /**
+   * A set of ChartSnapshot for redoing
+   * Become past editing as increasing the index
+   */
+  redoSnapshots: ChartSnapshot[];
+
+  /**
+   * Push new redoSnapshot
+   */
+  pushRedoSnapshot: (redoSnapshot: ChartSnapshot) => void;
+
+  /**
+   * Pop last redoSnapshot
+   */
+  popRedoSnapshot: () => ChartSnapshot;
+
+  /**
+   * Reset redoSnapshots
+   */
+  resetRedoSnapshots: () => void;
 
   /**
    * Display parameter of the selection area

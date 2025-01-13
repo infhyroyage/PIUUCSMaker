@@ -1,16 +1,15 @@
 import { useCallback } from "react";
-import { useRecoilState, useSetRecoilState } from "recoil";
-import { redoSnapshotsState, undoSnapshotsState } from "../services/atoms";
+import { useSetRecoilState } from "recoil";
+import { undoSnapshotsState } from "../services/atoms";
 import { SelectorCompletedCords } from "../types/chart";
 import { ChartSnapshot, Note } from "../types/ucs";
 import { useStore } from "./useStore";
 
 function useSelectedFlipping() {
-  const { setIsProtected, notes, setNotes, selector } = useStore();
-  const [undoSnapshots, setUndoSnapshots] =
-    useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
-  const setRedoSnapshots =
-    useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
+  const { setIsProtected, notes, setNotes, resetRedoSnapshots, selector } =
+    useStore();
+  const setUndoSnapshots =
+    useSetRecoilState<ChartSnapshot[]>(undoSnapshotsState);
 
   /**
    * 選択領域入力済に該当する単ノート/ホールドの始点/ホールドの中間/ホールドの終点を、すべて左右反転/上下反転する
@@ -24,8 +23,11 @@ function useSelectedFlipping() {
       if (selector.completed === null) return;
 
       // 元に戻す/やり直すスナップショットの集合を更新
-      setUndoSnapshots([...undoSnapshots, { blocks: null, notes }]);
-      setRedoSnapshots([]);
+      setUndoSnapshots((prev: ChartSnapshot[]) => [
+        ...prev,
+        { blocks: null, notes },
+      ]);
+      resetRedoSnapshots();
 
       setIsProtected(true);
 
@@ -97,9 +99,8 @@ function useSelectedFlipping() {
       selector.completed,
       setIsProtected,
       setNotes,
-      setRedoSnapshots,
+      resetRedoSnapshots,
       setUndoSnapshots,
-      undoSnapshots,
     ]
   );
 

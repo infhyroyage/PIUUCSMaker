@@ -5,10 +5,10 @@ import {
   useState,
   useTransition,
 } from "react";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useSetRecoilState } from "recoil";
 import useEditBlockDialog from "../../hooks/useEditBlockDialog";
 import { useStore } from "../../hooks/useStore";
-import { redoSnapshotsState, undoSnapshotsState } from "../../services/atoms";
+import { undoSnapshotsState } from "../../services/atoms";
 import { DIALOG_Z_INDEX } from "../../services/styles";
 import {
   validateBeat,
@@ -29,6 +29,7 @@ function EditBlockDialog() {
     setIsProtected,
     notes,
     setNotes,
+    resetRedoSnapshots,
   } = useStore();
   const [errors, setErrors] = useState<EditBlockDialogError[]>([]);
   const [form, setForm] = useState<EditBlockDialogForm>({
@@ -38,10 +39,8 @@ function EditBlockDialog() {
     rows: "",
     split: "",
   });
-  const [undoSnapshots, setUndoSnapshots] =
-    useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
-  const setRedoSnapshots =
-    useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
+  const setUndoSnapshots =
+    useSetRecoilState<ChartSnapshot[]>(undoSnapshotsState);
 
   const { closeEditBlockDialog } = useEditBlockDialog();
   const [isPending, startTransition] = useTransition();
@@ -109,11 +108,11 @@ function EditBlockDialog() {
             rows - blocks[blockControllerMenuBlockIdx].rows;
 
           // 元に戻す/やり直すスナップショットの集合を更新
-          setUndoSnapshots([
-            ...undoSnapshots,
+          setUndoSnapshots((prev: ChartSnapshot[]) => [
+            ...prev,
             { blocks, notes: deltaRows === 0 ? null : notes },
           ]);
-          setRedoSnapshots([]);
+          resetRedoSnapshots();
 
           // blockControllerMenuBlockIdx番目以降の譜面のブロックをすべて更新
           const updatedBlocks: Block[] = [...Array(blocks.length)].map(
@@ -236,9 +235,8 @@ function EditBlockDialog() {
       resetBlockControllerMenuBlockIdx,
       setNotes,
       setErrors,
-      setRedoSnapshots,
+      resetRedoSnapshots,
       setUndoSnapshots,
-      undoSnapshots,
     ]
   );
 

@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from "react";
-import { useRecoilState, useSetRecoilState } from "recoil";
-import { redoSnapshotsState, undoSnapshotsState } from "../services/atoms";
+import { useSetRecoilState } from "recoil";
+import { undoSnapshotsState } from "../services/atoms";
 import { SelectorCompletedCords } from "../types/chart";
 import { ChartSnapshot, CopiedNote, Note } from "../types/ucs";
 import { useStore } from "./useStore";
@@ -14,13 +14,12 @@ function useClipBoard() {
     setIsProtected,
     notes,
     setNotes,
+    resetRedoSnapshots,
     selector,
     setSelector,
   } = useStore();
-  const [undoSnapshots, setUndoSnapshots] =
-    useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
-  const setRedoSnapshots =
-    useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
+  const setUndoSnapshots =
+    useSetRecoilState<ChartSnapshot[]>(undoSnapshotsState);
 
   // 全譜面のブロックの行数の総和を計算
   const totalRows = useMemo(
@@ -67,8 +66,11 @@ function useClipBoard() {
     handleCopy();
 
     // 元に戻す/やり直すスナップショットの集合を更新
-    setUndoSnapshots([...undoSnapshots, { blocks: null, notes }]);
-    setRedoSnapshots([]);
+    setUndoSnapshots((prev: ChartSnapshot[]) => [
+      ...prev,
+      { blocks: null, notes },
+    ]);
+    resetRedoSnapshots();
 
     setIsProtected(true);
 
@@ -94,9 +96,8 @@ function useClipBoard() {
     selector.completed,
     setIsProtected,
     setNotes,
-    setRedoSnapshots,
+    resetRedoSnapshots,
     setUndoSnapshots,
-    undoSnapshots,
   ]);
 
   const handlePaste = useCallback(() => {
@@ -104,8 +105,11 @@ function useClipBoard() {
     if (indicator === null || clipBoard === null) return;
 
     // 元に戻す/やり直すスナップショットの集合を更新
-    setUndoSnapshots([...undoSnapshots, { blocks: null, notes }]);
-    setRedoSnapshots([]);
+    setUndoSnapshots((prev: ChartSnapshot[]) => [
+      ...prev,
+      { blocks: null, notes },
+    ]);
+    resetRedoSnapshots();
 
     setIsProtected(true);
 
@@ -158,11 +162,10 @@ function useClipBoard() {
     notes,
     setIsProtected,
     setNotes,
-    setRedoSnapshots,
+    resetRedoSnapshots,
     setSelector,
     setUndoSnapshots,
     totalRows,
-    undoSnapshots,
   ]);
 
   return { handleCut, handleCopy, handlePaste };

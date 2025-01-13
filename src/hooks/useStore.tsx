@@ -6,7 +6,7 @@ import {
   ChartIndicatorMenuPosition,
 } from "../types/menu";
 import { Store } from "../types/store";
-import { Block, ClipBoard, Note } from "../types/ucs";
+import { Block, ChartSnapshot, ClipBoard, Note } from "../types/ucs";
 
 /**
  * Zustand store with initial values
@@ -64,6 +64,22 @@ export const useStore = create<Store>()((set) => ({
         20
       ),
     }),
+  redoSnapshots: [],
+  pushRedoSnapshot: (redoSnapshot: ChartSnapshot) =>
+    set((state) => ({
+      redoSnapshots: [...state.redoSnapshots, redoSnapshot],
+    })),
+  popRedoSnapshot: () => {
+    const lastSnapshot: ChartSnapshot =
+      useStore.getState().redoSnapshots[
+        useStore.getState().redoSnapshots.length - 1
+      ];
+    set((state) => ({
+      redoSnapshots: state.redoSnapshots.slice(0, -1),
+    }));
+    return lastSnapshot;
+  },
+  resetRedoSnapshots: () => set({ redoSnapshots: [] }),
   selector: { completed: null, isSettingByMenu: false, setting: null },
   setSelector: (selector: Selector) => set({ selector }),
   hideSelector: () =>

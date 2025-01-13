@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo } from "react";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useSetRecoilState } from "recoil";
 import useEditBlockDialog from "../../hooks/useEditBlockDialog";
 import { useStore } from "../../hooks/useStore";
-import { redoSnapshotsState, undoSnapshotsState } from "../../services/atoms";
+import { undoSnapshotsState } from "../../services/atoms";
 import { MENU_Z_INDEX } from "../../services/styles";
 import { Block, ChartSnapshot, Note } from "../../types/ucs";
 import MenuBackground from "./MenuBackground";
@@ -19,11 +19,10 @@ function BlockControllerMenu() {
     setIsProtected,
     notes,
     setNotes,
+    resetRedoSnapshots,
   } = useStore();
-  const [undoSnapshots, setUndoSnapshots] =
-    useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
-  const setRedoSnapshots =
-    useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
+  const setUndoSnapshots =
+    useSetRecoilState<ChartSnapshot[]>(undoSnapshotsState);
 
   const { openEditBlockDialog } = useEditBlockDialog();
 
@@ -56,8 +55,11 @@ function BlockControllerMenu() {
   const onClickAdd = useCallback(() => {
     if (blockControllerMenuBlockIdx !== null) {
       // 元に戻す/やり直すスナップショットの集合を更新
-      setUndoSnapshots([...undoSnapshots, { blocks, notes: null }]);
-      setRedoSnapshots([]);
+      setUndoSnapshots((prev: ChartSnapshot[]) => [
+        ...prev,
+        { blocks, notes: null },
+      ]);
+      resetRedoSnapshots();
 
       setIsProtected(true);
 
@@ -81,16 +83,15 @@ function BlockControllerMenu() {
     onClose,
     setBlocks,
     setIsProtected,
-    setRedoSnapshots,
+    resetRedoSnapshots,
     setUndoSnapshots,
-    undoSnapshots,
   ]);
 
   const onClickInsert = useCallback(() => {
     if (blockControllerMenuBlockIdx !== null) {
       // 元に戻す/やり直すスナップショットの集合を更新
-      setUndoSnapshots([...undoSnapshots, { blocks, notes }]);
-      setRedoSnapshots([]);
+      setUndoSnapshots((prev: ChartSnapshot[]) => [...prev, { blocks, notes }]);
+      resetRedoSnapshots();
 
       setIsProtected(true);
 
@@ -140,16 +141,18 @@ function BlockControllerMenu() {
     setBlocks,
     setIsProtected,
     setNotes,
-    setRedoSnapshots,
+    resetRedoSnapshots,
     setUndoSnapshots,
-    undoSnapshots,
   ]);
 
   const onClickMergeAbove = useCallback(() => {
     if (blockControllerMenuBlockIdx !== null) {
       // 元に戻す/やり直すスナップショットの集合を更新
-      setUndoSnapshots([...undoSnapshots, { blocks, notes: null }]);
-      setRedoSnapshots([]);
+      setUndoSnapshots((prev: ChartSnapshot[]) => [
+        ...prev,
+        { blocks, notes: null },
+      ]);
+      resetRedoSnapshots();
 
       setIsProtected(true);
 
@@ -175,16 +178,18 @@ function BlockControllerMenu() {
     onClose,
     setBlocks,
     setIsProtected,
-    setRedoSnapshots,
+    resetRedoSnapshots,
     setUndoSnapshots,
-    undoSnapshots,
   ]);
 
   const onClickMergeBelow = useCallback(() => {
     if (blockControllerMenuBlockIdx !== null) {
       // 元に戻す/やり直すスナップショットの集合を更新
-      setUndoSnapshots([...undoSnapshots, { blocks, notes: null }]);
-      setRedoSnapshots([]);
+      setUndoSnapshots((prev: ChartSnapshot[]) => [
+        ...prev,
+        { blocks, notes: null },
+      ]);
+      resetRedoSnapshots();
 
       setIsProtected(true);
 
@@ -208,16 +213,15 @@ function BlockControllerMenu() {
     onClose,
     setBlocks,
     setIsProtected,
-    setRedoSnapshots,
+    resetRedoSnapshots,
     setUndoSnapshots,
-    undoSnapshots,
   ]);
 
   const onClickDelete = useCallback(() => {
     if (blockControllerMenuBlockIdx !== null) {
       // 元に戻す/やり直すスナップショットの集合を更新
-      setUndoSnapshots([...undoSnapshots, { blocks, notes }]);
-      setRedoSnapshots([]);
+      setUndoSnapshots((prev: ChartSnapshot[]) => [...prev, { blocks, notes }]);
+      resetRedoSnapshots();
 
       setIsProtected(true);
 
@@ -250,9 +254,8 @@ function BlockControllerMenu() {
     setBlocks,
     setIsProtected,
     setNotes,
-    setRedoSnapshots,
+    resetRedoSnapshots,
     setUndoSnapshots,
-    undoSnapshots,
   ]);
 
   // 表示中は上下手動スクロールを抑止

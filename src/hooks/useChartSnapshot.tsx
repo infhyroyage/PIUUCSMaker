@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useRecoilState } from "recoil";
-import { redoSnapshotsState, undoSnapshotsState } from "../services/atoms";
+import { undoSnapshotsState } from "../services/atoms";
 import { ChartSnapshot } from "../types/ucs";
 import useEditBlockDialog from "./useEditBlockDialog";
 import useNewUcsDialog from "./useNewUcsDialog";
@@ -16,10 +16,11 @@ function useChartSnapshot() {
     setIsProtected,
     notes,
     setNotes,
+    redoSnapshots,
+    pushRedoSnapshot,
+    popRedoSnapshot,
     hideSelector,
   } = useStore();
-  const [redoSnapshots, setRedoSnapshots] =
-    useRecoilState<ChartSnapshot[]>(redoSnapshotsState);
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
 
@@ -35,17 +36,14 @@ function useChartSnapshot() {
     )
       return;
 
-    // やり直すスナップショットを抽出
-    const snapshot: ChartSnapshot = redoSnapshots[redoSnapshots.length - 1];
-
     setIsProtected(true);
 
     // 元に戻す/やり直すスナップショットの集合を更新
-    setUndoSnapshots([
-      ...undoSnapshots,
+    const snapshot: ChartSnapshot = popRedoSnapshot();
+    setUndoSnapshots((prev: ChartSnapshot[]) => [
+      ...prev,
       { blocks: snapshot.blocks && blocks, notes: snapshot.notes && notes },
     ]);
-    setRedoSnapshots(redoSnapshots.slice(0, redoSnapshots.length - 1));
 
     // インディケーター・選択領域・メニューをすべて非表示
     resetIndicator();
@@ -62,7 +60,6 @@ function useChartSnapshot() {
     isOpenedNewUCSDialog,
     notes,
     redoSnapshots,
-    undoSnapshots,
     resetBlockControllerMenuPosition,
     resetChartIndicatorMenuPosition,
     resetIndicator,
@@ -70,7 +67,7 @@ function useChartSnapshot() {
     setIsProtected,
     setNotes,
     hideSelector,
-    setRedoSnapshots,
+    popRedoSnapshot,
     setUndoSnapshots,
   ]);
 
@@ -90,11 +87,11 @@ function useChartSnapshot() {
     setIsProtected(undoSnapshots.length !== 1);
 
     // やり直すスナップショットの集合、元に戻すスナップショットの集合を更新
-    setRedoSnapshots([
-      ...redoSnapshots,
-      { blocks: snapshot.blocks && blocks, notes: snapshot.notes && notes },
-    ]);
-    setUndoSnapshots(undoSnapshots.slice(0, undoSnapshots.length - 1));
+    pushRedoSnapshot({
+      blocks: snapshot.blocks && blocks,
+      notes: snapshot.notes && notes,
+    });
+    setUndoSnapshots((prev: ChartSnapshot[]) => prev.slice(0, prev.length - 1));
 
     // インディケーター・選択領域・メニューをすべて非表示
     resetIndicator();
@@ -110,7 +107,6 @@ function useChartSnapshot() {
     isOpenedEditBlockDialog,
     isOpenedNewUCSDialog,
     notes,
-    redoSnapshots,
     undoSnapshots,
     resetBlockControllerMenuPosition,
     resetChartIndicatorMenuPosition,
@@ -119,7 +115,7 @@ function useChartSnapshot() {
     setIsProtected,
     setNotes,
     hideSelector,
-    setRedoSnapshots,
+    pushRedoSnapshot,
     setUndoSnapshots,
   ]);
 
