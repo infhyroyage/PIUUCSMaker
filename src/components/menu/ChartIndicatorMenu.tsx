@@ -1,12 +1,9 @@
 import { useCallback, useEffect, useMemo } from "react";
-import { useSetRecoilState } from "recoil";
 import useClipBoard from "../../hooks/useClipBoard";
 import useSelectedDeleting from "../../hooks/useSelectedDeleting";
 import useSelectedFlipping from "../../hooks/useSelectedFlipping";
 import { useStore } from "../../hooks/useStore";
-import { undoSnapshotsState } from "../../services/atoms";
 import { MENU_Z_INDEX } from "../../services/styles";
-import { ChartSnapshot } from "../../types/ucs";
 import MenuBackground from "./MenuBackground";
 import MenuItem from "./MenuItem";
 
@@ -25,9 +22,8 @@ function ChartIndicatorMenu() {
     resetRedoSnapshots,
     selector,
     setSelector,
+    pushUndoSnapshot,
   } = useStore();
-  const setUndoSnapshots =
-    useSetRecoilState<ChartSnapshot[]>(undoSnapshotsState);
 
   const { handleCut, handleCopy, handlePaste } = useClipBoard();
   const { handleFlip } = useSelectedFlipping();
@@ -88,10 +84,7 @@ function ChartIndicatorMenu() {
       return;
 
     // 元に戻す/やり直すスナップショットの集合を更新
-    setUndoSnapshots((prev: ChartSnapshot[]) => [
-      ...prev,
-      { blocks, notes: null },
-    ]);
+    pushUndoSnapshot({ blocks, notes: null });
     resetRedoSnapshots();
 
     setIsProtected(true);
@@ -128,7 +121,7 @@ function ChartIndicatorMenu() {
     setIndicator,
     setIsProtected,
     resetRedoSnapshots,
-    setUndoSnapshots,
+    pushUndoSnapshot,
   ]);
 
   const onClickCut = useCallback(() => {

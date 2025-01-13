@@ -208,18 +208,18 @@ export type Store = {
   resizeNoteSizeWithWindow: () => void;
 
   /**
-   * A set of ChartSnapshot for redoing
+   * A stack of ChartSnapshot for redoing
    * Become past editing as increasing the index
    */
   redoSnapshots: ChartSnapshot[];
 
   /**
-   * Push new redoSnapshot
+   * Push new ChartSnapshot for redoing
    */
   pushRedoSnapshot: (redoSnapshot: ChartSnapshot) => void;
 
   /**
-   * Pop last redoSnapshot
+   * Pop last ChartSnapshot for redoing
    */
   popRedoSnapshot: () => ChartSnapshot;
 
@@ -263,6 +263,27 @@ export type Store = {
    * Setter for ucsName
    */
   setUcsName: (ucsName: string | null) => void;
+
+  /**
+   * A stack of ChartSnapshot for undoing
+   * Become recent editing as increasing the index
+   */
+  undoSnapshots: ChartSnapshot[];
+
+  /**
+   * Push new ChartSnapshot for undoing
+   */
+  pushUndoSnapshot: (undoSnapshot: ChartSnapshot) => void;
+
+  /**
+   * Pop last ChartSnapshot for undoing
+   */
+  popUndoSnapshot: () => ChartSnapshot;
+
+  /**
+   * Reset undoSnapshots
+   */
+  resetUndoSnapshots: () => void;
 
   /**
    * Message displayed UserErrorSnackbar

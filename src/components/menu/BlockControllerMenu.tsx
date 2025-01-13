@@ -1,10 +1,8 @@
 import { useCallback, useEffect, useMemo } from "react";
-import { useSetRecoilState } from "recoil";
 import useEditBlockDialog from "../../hooks/useEditBlockDialog";
 import { useStore } from "../../hooks/useStore";
-import { undoSnapshotsState } from "../../services/atoms";
 import { MENU_Z_INDEX } from "../../services/styles";
-import { Block, ChartSnapshot, Note } from "../../types/ucs";
+import { Block, Note } from "../../types/ucs";
 import MenuBackground from "./MenuBackground";
 import MenuItem from "./MenuItem";
 
@@ -20,9 +18,8 @@ function BlockControllerMenu() {
     notes,
     setNotes,
     resetRedoSnapshots,
+    pushUndoSnapshot,
   } = useStore();
-  const setUndoSnapshots =
-    useSetRecoilState<ChartSnapshot[]>(undoSnapshotsState);
 
   const { openEditBlockDialog } = useEditBlockDialog();
 
@@ -55,10 +52,7 @@ function BlockControllerMenu() {
   const onClickAdd = useCallback(() => {
     if (blockControllerMenuBlockIdx !== null) {
       // 元に戻す/やり直すスナップショットの集合を更新
-      setUndoSnapshots((prev: ChartSnapshot[]) => [
-        ...prev,
-        { blocks, notes: null },
-      ]);
+      pushUndoSnapshot({ blocks, notes: null });
       resetRedoSnapshots();
 
       setIsProtected(true);
@@ -84,13 +78,13 @@ function BlockControllerMenu() {
     setBlocks,
     setIsProtected,
     resetRedoSnapshots,
-    setUndoSnapshots,
+    pushUndoSnapshot,
   ]);
 
   const onClickInsert = useCallback(() => {
     if (blockControllerMenuBlockIdx !== null) {
       // 元に戻す/やり直すスナップショットの集合を更新
-      setUndoSnapshots((prev: ChartSnapshot[]) => [...prev, { blocks, notes }]);
+      pushUndoSnapshot({ blocks, notes });
       resetRedoSnapshots();
 
       setIsProtected(true);
@@ -142,16 +136,13 @@ function BlockControllerMenu() {
     setIsProtected,
     setNotes,
     resetRedoSnapshots,
-    setUndoSnapshots,
+    pushUndoSnapshot,
   ]);
 
   const onClickMergeAbove = useCallback(() => {
     if (blockControllerMenuBlockIdx !== null) {
       // 元に戻す/やり直すスナップショットの集合を更新
-      setUndoSnapshots((prev: ChartSnapshot[]) => [
-        ...prev,
-        { blocks, notes: null },
-      ]);
+      pushUndoSnapshot({ blocks, notes: null });
       resetRedoSnapshots();
 
       setIsProtected(true);
@@ -179,16 +170,13 @@ function BlockControllerMenu() {
     setBlocks,
     setIsProtected,
     resetRedoSnapshots,
-    setUndoSnapshots,
+    pushUndoSnapshot,
   ]);
 
   const onClickMergeBelow = useCallback(() => {
     if (blockControllerMenuBlockIdx !== null) {
       // 元に戻す/やり直すスナップショットの集合を更新
-      setUndoSnapshots((prev: ChartSnapshot[]) => [
-        ...prev,
-        { blocks, notes: null },
-      ]);
+      pushUndoSnapshot({ blocks, notes: null });
       resetRedoSnapshots();
 
       setIsProtected(true);
@@ -214,13 +202,13 @@ function BlockControllerMenu() {
     setBlocks,
     setIsProtected,
     resetRedoSnapshots,
-    setUndoSnapshots,
+    pushUndoSnapshot,
   ]);
 
   const onClickDelete = useCallback(() => {
     if (blockControllerMenuBlockIdx !== null) {
       // 元に戻す/やり直すスナップショットの集合を更新
-      setUndoSnapshots((prev: ChartSnapshot[]) => [...prev, { blocks, notes }]);
+      pushUndoSnapshot({ blocks, notes });
       resetRedoSnapshots();
 
       setIsProtected(true);
@@ -255,7 +243,7 @@ function BlockControllerMenu() {
     setIsProtected,
     setNotes,
     resetRedoSnapshots,
-    setUndoSnapshots,
+    pushUndoSnapshot,
   ]);
 
   // 表示中は上下手動スクロールを抑止

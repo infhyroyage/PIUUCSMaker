@@ -1,6 +1,4 @@
 import { useCallback } from "react";
-import { useRecoilState } from "recoil";
-import { undoSnapshotsState } from "../services/atoms";
 import { ChartSnapshot } from "../types/ucs";
 import useEditBlockDialog from "./useEditBlockDialog";
 import useNewUcsDialog from "./useNewUcsDialog";
@@ -20,9 +18,10 @@ function useChartSnapshot() {
     pushRedoSnapshot,
     popRedoSnapshot,
     hideSelector,
+    undoSnapshots,
+    pushUndoSnapshot,
+    popUndoSnapshot,
   } = useStore();
-  const [undoSnapshots, setUndoSnapshots] =
-    useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
 
   const { isOpenedNewUCSDialog } = useNewUcsDialog();
   const { isOpenedEditBlockDialog } = useEditBlockDialog();
@@ -40,10 +39,10 @@ function useChartSnapshot() {
 
     // 元に戻す/やり直すスナップショットの集合を更新
     const snapshot: ChartSnapshot = popRedoSnapshot();
-    setUndoSnapshots((prev: ChartSnapshot[]) => [
-      ...prev,
-      { blocks: snapshot.blocks && blocks, notes: snapshot.notes && notes },
-    ]);
+    pushUndoSnapshot({
+      blocks: snapshot.blocks && blocks,
+      notes: snapshot.notes && notes,
+    });
 
     // インディケーター・選択領域・メニューをすべて非表示
     resetIndicator();
@@ -66,9 +65,9 @@ function useChartSnapshot() {
     setBlocks,
     setIsProtected,
     setNotes,
-    hideSelector,
     popRedoSnapshot,
-    setUndoSnapshots,
+    hideSelector,
+    pushUndoSnapshot,
   ]);
 
   const handleUndo = useCallback(() => {
@@ -80,18 +79,15 @@ function useChartSnapshot() {
     )
       return;
 
-    // 元に戻すSnapshotを抽出
-    const snapshot: ChartSnapshot = undoSnapshots[undoSnapshots.length - 1];
-
     // これ以上元に戻せられなくなる場合のみ編集中の離脱を抑止しない
     setIsProtected(undoSnapshots.length !== 1);
 
     // やり直すスナップショットの集合、元に戻すスナップショットの集合を更新
+    const snapshot: ChartSnapshot = popUndoSnapshot();
     pushRedoSnapshot({
       blocks: snapshot.blocks && blocks,
       notes: snapshot.notes && notes,
     });
-    setUndoSnapshots((prev: ChartSnapshot[]) => prev.slice(0, prev.length - 1));
 
     // インディケーター・選択領域・メニューをすべて非表示
     resetIndicator();
@@ -114,9 +110,9 @@ function useChartSnapshot() {
     setBlocks,
     setIsProtected,
     setNotes,
-    hideSelector,
     pushRedoSnapshot,
-    setUndoSnapshots,
+    hideSelector,
+    popUndoSnapshot,
   ]);
 
   return { handleRedo, handleUndo };

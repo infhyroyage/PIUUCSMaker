@@ -1,10 +1,8 @@
 import React, { useCallback, useMemo } from "react";
-import { useSetRecoilState } from "recoil";
 import { useStore } from "../../hooks/useStore";
 import useVerticalBorderSize from "../../hooks/useVerticalBorderSize";
 import { ZOOM_VALUES } from "../../services/assets";
-import { undoSnapshotsState } from "../../services/atoms";
-import { Block, ChartSnapshot, Note } from "../../types/ucs";
+import { Block, Note } from "../../types/ucs";
 import ChartIndicatorMenu from "../menu/ChartIndicatorMenu";
 import BorderLine from "./BorderLine";
 import ChartIndicator from "./ChartIndicator";
@@ -31,10 +29,9 @@ function Chart() {
     selector,
     setSelector,
     hideSelector,
+    pushUndoSnapshot,
     zoom,
   } = useStore();
-  const setUndoSnapshots =
-    useSetRecoilState<ChartSnapshot[]>(undoSnapshotsState);
 
   const verticalBorderSize = useVerticalBorderSize();
 
@@ -386,10 +383,7 @@ function Chart() {
         }
 
         // 元に戻す/やり直すスナップショットの集合を更新
-        setUndoSnapshots((prev: ChartSnapshot[]) => [
-          ...prev,
-          { blocks: null, notes },
-        ]);
+        pushUndoSnapshot({ blocks: null, notes });
         resetRedoSnapshots();
 
         setIsProtected(true);
@@ -454,7 +448,7 @@ function Chart() {
       resetRedoSnapshots,
       setSelector,
       hideSelector,
-      setUndoSnapshots,
+      pushUndoSnapshot,
     ]
   );
 

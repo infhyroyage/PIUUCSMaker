@@ -1,8 +1,6 @@
 import { useCallback, useState } from "react";
-import { useSetRecoilState } from "recoil";
-import { undoSnapshotsState } from "../services/atoms";
 import { UploadingUCSValidation } from "../types/dialog";
-import { Block, ChartSnapshot, Note } from "../types/ucs";
+import { Block, Note } from "../types/ucs";
 import { useStore } from "./useStore";
 
 const validate = (content: string): UploadingUCSValidation => {
@@ -321,11 +319,10 @@ function useUploadingUCS() {
     setNotes,
     resetRedoSnapshots,
     setUcsName,
+    resetUndoSnapshots,
     setUserErrorMessage,
   } = useStore();
   const [isUploadingUCS, setIsUploadingUCS] = useState<boolean>(false);
-  const setUndoSnapshots =
-    useSetRecoilState<ChartSnapshot[]>(undoSnapshotsState);
 
   const onUploadUCS = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -351,7 +348,7 @@ function useUploadingUCS() {
             setNotes(result.notes);
             resetRedoSnapshots();
             setUcsName(fileList[0].name);
-            setUndoSnapshots([]);
+            resetUndoSnapshots();
           } else {
             setUserErrorMessage(result.errMsg);
           }
@@ -370,7 +367,7 @@ function useUploadingUCS() {
       setNotes,
       resetRedoSnapshots,
       setUcsName,
-      setUndoSnapshots,
+      resetUndoSnapshots,
     ]
   );
 

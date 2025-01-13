@@ -5,10 +5,8 @@ import {
   useState,
   useTransition,
 } from "react";
-import { useSetRecoilState } from "recoil";
 import useEditBlockDialog from "../../hooks/useEditBlockDialog";
 import { useStore } from "../../hooks/useStore";
-import { undoSnapshotsState } from "../../services/atoms";
 import { DIALOG_Z_INDEX } from "../../services/styles";
 import {
   validateBeat,
@@ -18,7 +16,7 @@ import {
   validateSplit,
 } from "../../services/validations";
 import { EditBlockDialogError, EditBlockDialogForm } from "../../types/dialog";
-import { Block, ChartSnapshot, Note } from "../../types/ucs";
+import { Block, Note } from "../../types/ucs";
 
 function EditBlockDialog() {
   const {
@@ -30,6 +28,7 @@ function EditBlockDialog() {
     notes,
     setNotes,
     resetRedoSnapshots,
+    pushUndoSnapshot,
   } = useStore();
   const [errors, setErrors] = useState<EditBlockDialogError[]>([]);
   const [form, setForm] = useState<EditBlockDialogForm>({
@@ -39,8 +38,6 @@ function EditBlockDialog() {
     rows: "",
     split: "",
   });
-  const setUndoSnapshots =
-    useSetRecoilState<ChartSnapshot[]>(undoSnapshotsState);
 
   const { closeEditBlockDialog } = useEditBlockDialog();
   const [isPending, startTransition] = useTransition();
@@ -108,10 +105,7 @@ function EditBlockDialog() {
             rows - blocks[blockControllerMenuBlockIdx].rows;
 
           // 元に戻す/やり直すスナップショットの集合を更新
-          setUndoSnapshots((prev: ChartSnapshot[]) => [
-            ...prev,
-            { blocks, notes: deltaRows === 0 ? null : notes },
-          ]);
+          pushUndoSnapshot({ blocks, notes: deltaRows === 0 ? null : notes });
           resetRedoSnapshots();
 
           // blockControllerMenuBlockIdx番目以降の譜面のブロックをすべて更新
@@ -236,7 +230,7 @@ function EditBlockDialog() {
       setNotes,
       setErrors,
       resetRedoSnapshots,
-      setUndoSnapshots,
+      pushUndoSnapshot,
     ]
   );
 

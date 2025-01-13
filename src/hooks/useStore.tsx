@@ -92,6 +92,22 @@ export const useStore = create<Store>()((set) => ({
   setUcsName: (ucsName: string | null) => set({ ucsName }),
   userErrorMessage: "",
   setUserErrorMessage: (userErrorMessage: string) => set({ userErrorMessage }),
+  undoSnapshots: [],
+  pushUndoSnapshot: (undoSnapshot: ChartSnapshot) =>
+    set((state) => ({
+      undoSnapshots: [...state.undoSnapshots, undoSnapshot],
+    })),
+  popUndoSnapshot: () => {
+    const lastSnapshot: ChartSnapshot =
+      useStore.getState().undoSnapshots[
+        useStore.getState().undoSnapshots.length - 1
+      ];
+    set((state) => ({
+      undoSnapshots: state.undoSnapshots.slice(0, -1),
+    }));
+    return lastSnapshot;
+  },
+  resetUndoSnapshots: () => set({ undoSnapshots: [] }),
   volumeValue: 0.5,
   setVolumeValue: (volumeValue: number) => set({ volumeValue }),
   zoom: { idx: 0, top: null },

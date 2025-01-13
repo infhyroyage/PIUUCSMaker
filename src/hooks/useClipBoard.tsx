@@ -1,8 +1,6 @@
 import { useCallback, useMemo } from "react";
-import { useSetRecoilState } from "recoil";
-import { undoSnapshotsState } from "../services/atoms";
 import { SelectorCompletedCords } from "../types/chart";
-import { ChartSnapshot, CopiedNote, Note } from "../types/ucs";
+import { CopiedNote, Note } from "../types/ucs";
 import { useStore } from "./useStore";
 
 function useClipBoard() {
@@ -17,9 +15,8 @@ function useClipBoard() {
     resetRedoSnapshots,
     selector,
     setSelector,
+    pushUndoSnapshot,
   } = useStore();
-  const setUndoSnapshots =
-    useSetRecoilState<ChartSnapshot[]>(undoSnapshotsState);
 
   // 全譜面のブロックの行数の総和を計算
   const totalRows = useMemo(
@@ -66,10 +63,7 @@ function useClipBoard() {
     handleCopy();
 
     // 元に戻す/やり直すスナップショットの集合を更新
-    setUndoSnapshots((prev: ChartSnapshot[]) => [
-      ...prev,
-      { blocks: null, notes },
-    ]);
+    pushUndoSnapshot({ blocks: null, notes });
     resetRedoSnapshots();
 
     setIsProtected(true);
@@ -97,7 +91,7 @@ function useClipBoard() {
     setIsProtected,
     setNotes,
     resetRedoSnapshots,
-    setUndoSnapshots,
+    pushUndoSnapshot,
   ]);
 
   const handlePaste = useCallback(() => {
@@ -105,10 +99,7 @@ function useClipBoard() {
     if (indicator === null || clipBoard === null) return;
 
     // 元に戻す/やり直すスナップショットの集合を更新
-    setUndoSnapshots((prev: ChartSnapshot[]) => [
-      ...prev,
-      { blocks: null, notes },
-    ]);
+    pushUndoSnapshot({ blocks: null, notes });
     resetRedoSnapshots();
 
     setIsProtected(true);
@@ -164,7 +155,7 @@ function useClipBoard() {
     setNotes,
     resetRedoSnapshots,
     setSelector,
-    setUndoSnapshots,
+    pushUndoSnapshot,
     totalRows,
   ]);
 

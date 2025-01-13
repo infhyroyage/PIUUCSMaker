@@ -1,14 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useSetRecoilState } from "recoil";
 import { useStore } from "../../hooks/useStore";
-import { undoSnapshotsState } from "../../services/atoms";
 import { DIALOG_Z_INDEX } from "../../services/styles";
 import { roundBpm } from "../../services/validations";
 import {
   AdjustBlockDialogForm,
   AdjustBlockDialogFormFixed,
 } from "../../types/dialog";
-import { Block, ChartSnapshot, Note } from "../../types/ucs";
+import { Block, Note } from "../../types/ucs";
 
 function AdjustBlockDialog() {
   const {
@@ -20,6 +18,7 @@ function AdjustBlockDialog() {
     notes,
     setNotes,
     resetRedoSnapshots,
+    pushUndoSnapshot,
   } = useStore();
   const [fixed, setFixed] = useState<AdjustBlockDialogFormFixed>("bpm");
   const [form, setForm] = useState<AdjustBlockDialogForm>({
@@ -27,7 +26,6 @@ function AdjustBlockDialog() {
     rows: -1,
     split: -1,
   });
-  const setUndoSnapshots = useSetRecoilState(undoSnapshotsState);
 
   const menuBlock = useMemo(
     () =>
@@ -65,10 +63,7 @@ function AdjustBlockDialog() {
       Number(form.rows) - blocks[blockControllerMenuBlockIdx].rows;
 
     // 元に戻す/やり直すスナップショットの集合を更新
-    setUndoSnapshots((prev: ChartSnapshot[]) => [
-      ...prev,
-      { blocks, notes: deltaRows === 0 ? null : notes },
-    ]);
+    pushUndoSnapshot({ blocks, notes: deltaRows === 0 ? null : notes });
     resetRedoSnapshots();
 
     // blockControllerMenuBlockIdx番目以降の譜面のブロックをすべて更新
@@ -178,7 +173,7 @@ function AdjustBlockDialog() {
     resetBlockControllerMenuBlockIdx,
     setNotes,
     resetRedoSnapshots,
-    setUndoSnapshots,
+    pushUndoSnapshot,
   ]);
 
   const onClose = useCallback(

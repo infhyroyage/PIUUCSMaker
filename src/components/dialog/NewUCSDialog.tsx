@@ -1,8 +1,6 @@
 import { ChangeEvent, useState, useTransition } from "react";
-import { useSetRecoilState } from "recoil";
 import useNewUcsDialog from "../../hooks/useNewUcsDialog";
 import { useStore } from "../../hooks/useStore";
-import { undoSnapshotsState } from "../../services/atoms";
 import { DIALOG_Z_INDEX } from "../../services/styles";
 import {
   validateBeat,
@@ -12,7 +10,7 @@ import {
   validateSplit,
 } from "../../services/validations";
 import { NewUCSDialogError, NewUCSDialogForm } from "../../types/dialog";
-import { ChartSnapshot, Note } from "../../types/ucs";
+import { Note } from "../../types/ucs";
 
 function NewUCSDialog() {
   const {
@@ -22,9 +20,8 @@ function NewUCSDialog() {
     setNotes,
     resetRedoSnapshots,
     setUcsName,
+    resetUndoSnapshots,
   } = useStore();
-  const setUndoSnapshots =
-    useSetRecoilState<ChartSnapshot[]>(undoSnapshotsState);
   const [form, setForm] = useState<NewUCSDialogForm>({
     beat: "4",
     bpm: "120",
@@ -67,7 +64,7 @@ function NewUCSDialog() {
         );
         resetRedoSnapshots();
         setUcsName(`${form.ucsName}.ucs`);
-        setUndoSnapshots([]);
+        resetUndoSnapshots();
         closeNewUcsDialog();
       } else {
         // バリデーションエラーのテキストフィールドをすべて表示

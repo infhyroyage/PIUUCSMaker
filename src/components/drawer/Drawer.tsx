@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import { useRecoilValue } from "recoil";
 import useChartSnapshot from "../../hooks/useChartSnapshot";
 import useDownloadingUCS from "../../hooks/useDownloadingUCS";
 import useNewUcsDialog from "../../hooks/useNewUcsDialog";
@@ -7,13 +6,11 @@ import usePlaying from "../../hooks/usePlaying";
 import { useStore } from "../../hooks/useStore";
 import useUploadingUCS from "../../hooks/useUploadingUCS";
 import { ZOOM_VALUES } from "../../services/assets";
-import { undoSnapshotsState } from "../../services/atoms";
 import {
   DRAWER_OPENED_WIDTH,
   DRAWER_Z_INDEX,
   NAVIGATION_BAR_HEIGHT,
 } from "../../services/styles";
-import { ChartSnapshot } from "../../types/ucs";
 import DrawerListItem from "./DrawerListItem";
 import DrawerUploadListItem from "./DrawerUploadListItem";
 
@@ -26,10 +23,10 @@ function Drawer() {
     isPlaying,
     redoSnapshots,
     ucsName,
+    undoSnapshots,
     zoom,
     updateZoomFromIdx,
   } = useStore();
-  const undoSnapshots = useRecoilValue<ChartSnapshot[]>(undoSnapshotsState);
   const [isOpened, setIsOpened] = useState<boolean>(false);
 
   const { handleRedo, handleUndo } = useChartSnapshot();
