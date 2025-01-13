@@ -6,10 +6,10 @@ import {
   ChartIndicatorMenuPosition,
 } from "../types/menu";
 import { Store } from "../types/store";
-import { ClipBoard } from "../types/ucs";
+import { ClipBoard, Note } from "../types/ucs";
 
 /**
- * Store for zustand with initial values
+ * Zustand store with initial values
  */
 export const useStore = create<Store>()((set) => ({
   blockControllerMenuBlockIdx: null,
@@ -52,6 +52,8 @@ export const useStore = create<Store>()((set) => ({
   setIsProtected: (isProtected: boolean) => set({ isProtected }),
   mp3Name: null,
   setMp3Name: (mp3Name: string | null) => set({ mp3Name }),
+  notes: [],
+  setNotes: (notes: Note[][]) => set({ notes }),
   noteSize: 0,
   resizeNoteSizeWithWindow: () =>
     set({

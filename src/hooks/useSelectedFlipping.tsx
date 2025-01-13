@@ -1,17 +1,12 @@
 import { useCallback } from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
-import {
-  notesState,
-  redoSnapshotsState,
-  undoSnapshotsState,
-} from "../services/atoms";
+import { redoSnapshotsState, undoSnapshotsState } from "../services/atoms";
 import { SelectorCompletedCords } from "../types/chart";
 import { ChartSnapshot, Note } from "../types/ucs";
 import { useStore } from "./useStore";
 
 function useSelectedFlipping() {
-  const { setIsProtected, selector } = useStore();
-  const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
+  const { setIsProtected, notes, setNotes, selector } = useStore();
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
   const setRedoSnapshots =

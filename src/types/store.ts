@@ -1,3 +1,5 @@
+import { Note } from "./ucs";
+
 import { Selector } from "./chart";
 
 import { Indicator } from "./chart";
@@ -11,7 +13,7 @@ import {
 import { ClipBoard } from "./ucs";
 
 /**
- * Store for zustand
+ * Zustand store
  */
 export type Store = {
   /**
@@ -171,6 +173,17 @@ export type Store = {
    * Setter for mp3Name
    */
   setMp3Name: (mp3Name: string | null) => void;
+
+  /**
+   * A set of single note, starting point of hold, setting point of hold or end point of hold,
+   * whose the first index matches the number of columns (5 if chart is single or single performance, 10 if chart is double or double performance)
+   */
+  notes: Note[][];
+
+  /**
+   * Setter for notes
+   */
+  setNotes: (notes: Note[][]) => void;
 
   /**
    * Width or height (px) of single note

@@ -2,7 +2,6 @@ import { useCallback, useMemo } from "react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
   blocksState,
-  notesState,
   redoSnapshotsState,
   undoSnapshotsState,
 } from "../services/atoms";
@@ -16,10 +15,11 @@ function useClipBoard() {
     setClipBoard,
     indicator,
     setIsProtected,
+    notes,
+    setNotes,
     selector,
     setSelector,
   } = useStore();
-  const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
   const blocks = useRecoilValue<Block[]>(blocksState);

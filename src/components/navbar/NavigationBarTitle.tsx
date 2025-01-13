@@ -1,12 +1,8 @@
 import { useMemo } from "react";
-import { useRecoilValue } from "recoil";
 import { useStore } from "../../hooks/useStore";
-import { notesState } from "../../services/atoms";
-import { Note } from "../../types/ucs";
 
 function NavigationBarTitle() {
-  const { isPerformance, isProtected, mp3Name, ucsName } = useStore();
-  const notes = useRecoilValue<Note[][]>(notesState);
+  const { isPerformance, isProtected, mp3Name, notes, ucsName } = useStore();
 
   const title = useMemo(
     () => (

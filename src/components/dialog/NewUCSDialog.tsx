@@ -4,7 +4,6 @@ import useNewUcsDialog from "../../hooks/useNewUcsDialog";
 import { useStore } from "../../hooks/useStore";
 import {
   blocksState,
-  notesState,
   redoSnapshotsState,
   undoSnapshotsState,
 } from "../../services/atoms";
@@ -20,9 +19,8 @@ import { NewUCSDialogError, NewUCSDialogForm } from "../../types/dialog";
 import { Block, ChartSnapshot, Note } from "../../types/ucs";
 
 function NewUCSDialog() {
-  const { setIsPerformance, setIsProtected, setUcsName } = useStore();
+  const { setIsPerformance, setIsProtected, setNotes, setUcsName } = useStore();
   const setBlocks = useSetRecoilState<Block[]>(blocksState);
-  const setNotes = useSetRecoilState<Note[][]>(notesState);
   const setRedoSnapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
   const setUndoSnapshots =

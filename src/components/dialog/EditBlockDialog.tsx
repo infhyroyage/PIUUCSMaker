@@ -10,7 +10,6 @@ import useEditBlockDialog from "../../hooks/useEditBlockDialog";
 import { useStore } from "../../hooks/useStore";
 import {
   blocksState,
-  notesState,
   redoSnapshotsState,
   undoSnapshotsState,
 } from "../../services/atoms";
@@ -30,6 +29,8 @@ function EditBlockDialog() {
     blockControllerMenuBlockIdx,
     resetBlockControllerMenuBlockIdx,
     setIsProtected,
+    notes,
+    setNotes,
   } = useStore();
   const [errors, setErrors] = useState<EditBlockDialogError[]>([]);
   const [form, setForm] = useState<EditBlockDialogForm>({
@@ -40,7 +41,6 @@ function EditBlockDialog() {
     split: "",
   });
   const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
-  const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
   const setRedoSnapshots =

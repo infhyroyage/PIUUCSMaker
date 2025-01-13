@@ -1,20 +1,11 @@
 import { atom } from "recoil";
-import { Block, ChartSnapshot, Note } from "../types/ucs";
+import { Block, ChartSnapshot } from "../types/ucs";
 
 /**
  * A set of chart block
  */
 export const blocksState = atom<Block[]>({
   key: "blocks",
-  default: [],
-});
-
-/**
- * A set of single note, starting point of hold, setting point of hold or end point of hold,
- * whose the first index matches the number of columns (5 if chart is single or single performance, 10 if chart is double or double performance)
- */
-export const notesState = atom<Note[][]>({
-  key: "notes",
   default: [],
 });
 

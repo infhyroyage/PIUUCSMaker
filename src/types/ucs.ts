@@ -46,7 +46,7 @@ export type ChartSnapshot = {
   blocks: Block[] | null;
 
   /**
-   * State managed by notesState just before editing
+   * State managed by zustand store "notes" just before editing
    * null if there is no difference between before and after editing
    */
   notes: Note[][] | null;
