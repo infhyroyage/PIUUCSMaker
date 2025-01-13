@@ -1,9 +1,7 @@
 import { useMemo } from "react";
-import { useRecoilValue } from "recoil";
 import { useStore } from "../../hooks/useStore";
 import useVerticalBorderSize from "../../hooks/useVerticalBorderSize";
 import { ZOOM_VALUES } from "../../services/assets";
-import { blocksState } from "../../services/atoms";
 import {
   IDENTIFIER_WIDTH,
   NAVIGATION_BAR_Z_INDEX,
@@ -11,8 +9,7 @@ import {
 import { Block } from "../../types/ucs";
 
 function ChartSelector() {
-  const { noteSize, selector, zoom } = useStore();
-  const blocks = useRecoilValue<Block[]>(blocksState);
+  const { blocks, noteSize, selector, zoom } = useStore();
 
   const verticalBorderSize = useVerticalBorderSize();
 

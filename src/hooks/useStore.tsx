@@ -6,7 +6,7 @@ import {
   ChartIndicatorMenuPosition,
 } from "../types/menu";
 import { Store } from "../types/store";
-import { ClipBoard, Note } from "../types/ucs";
+import { Block, ClipBoard, Note } from "../types/ucs";
 
 /**
  * Zustand store with initial values
@@ -24,6 +24,8 @@ export const useStore = create<Store>()((set) => ({
   ) => set({ blockControllerMenuPosition }),
   resetBlockControllerMenuPosition: () =>
     set({ blockControllerMenuPosition: undefined }),
+  blocks: [],
+  setBlocks: (blocks: Block[]) => set({ blocks }),
   chartIndicatorMenuPosition: undefined,
   setChartIndicatorMenuPosition: (
     chartIndicatorMenuPosition: ChartIndicatorMenuPosition

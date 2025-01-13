@@ -2,11 +2,7 @@ import { ChangeEvent, useState, useTransition } from "react";
 import { useSetRecoilState } from "recoil";
 import useNewUcsDialog from "../../hooks/useNewUcsDialog";
 import { useStore } from "../../hooks/useStore";
-import {
-  blocksState,
-  redoSnapshotsState,
-  undoSnapshotsState,
-} from "../../services/atoms";
+import { redoSnapshotsState, undoSnapshotsState } from "../../services/atoms";
 import { DIALOG_Z_INDEX } from "../../services/styles";
 import {
   validateBeat,
@@ -16,11 +12,11 @@ import {
   validateSplit,
 } from "../../services/validations";
 import { NewUCSDialogError, NewUCSDialogForm } from "../../types/dialog";
-import { Block, ChartSnapshot, Note } from "../../types/ucs";
+import { ChartSnapshot, Note } from "../../types/ucs";
 
 function NewUCSDialog() {
-  const { setIsPerformance, setIsProtected, setNotes, setUcsName } = useStore();
-  const setBlocks = useSetRecoilState<Block[]>(blocksState);
+  const { setBlocks, setIsPerformance, setIsProtected, setNotes, setUcsName } =
+    useStore();
   const setRedoSnapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
   const setUndoSnapshots =

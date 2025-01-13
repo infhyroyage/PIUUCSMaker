@@ -1,11 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import { useStore } from "../../hooks/useStore";
-import {
-  blocksState,
-  redoSnapshotsState,
-  undoSnapshotsState,
-} from "../../services/atoms";
+import { redoSnapshotsState, undoSnapshotsState } from "../../services/atoms";
 import { DIALOG_Z_INDEX } from "../../services/styles";
 import { roundBpm } from "../../services/validations";
 import {
@@ -18,6 +14,8 @@ function AdjustBlockDialog() {
   const {
     blockControllerMenuBlockIdx,
     resetBlockControllerMenuBlockIdx,
+    blocks,
+    setBlocks,
     setIsProtected,
     notes,
     setNotes,
@@ -28,7 +26,6 @@ function AdjustBlockDialog() {
     rows: -1,
     split: -1,
   });
-  const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
   const setRedoSnapshots =

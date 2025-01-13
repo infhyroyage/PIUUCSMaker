@@ -1,11 +1,7 @@
 import { useCallback } from "react";
 import { useRecoilState } from "recoil";
-import {
-  blocksState,
-  redoSnapshotsState,
-  undoSnapshotsState,
-} from "../services/atoms";
-import { Block, ChartSnapshot } from "../types/ucs";
+import { redoSnapshotsState, undoSnapshotsState } from "../services/atoms";
+import { ChartSnapshot } from "../types/ucs";
 import useEditBlockDialog from "./useEditBlockDialog";
 import useNewUcsDialog from "./useNewUcsDialog";
 import { useStore } from "./useStore";
@@ -13,6 +9,8 @@ import { useStore } from "./useStore";
 function useChartSnapshot() {
   const {
     resetBlockControllerMenuPosition,
+    blocks,
+    setBlocks,
     resetChartIndicatorMenuPosition,
     resetIndicator,
     setIsProtected,
@@ -20,7 +18,6 @@ function useChartSnapshot() {
     setNotes,
     hideSelector,
   } = useStore();
-  const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
   const [redoSnapshots, setRedoSnapshots] =
     useRecoilState<ChartSnapshot[]>(redoSnapshotsState);
   const [undoSnapshots, setUndoSnapshots] =

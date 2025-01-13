@@ -1,12 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useRecoilValue } from "recoil";
 import { BEAT_BINARY, ZOOM_VALUES } from "../services/assets";
-import { blocksState } from "../services/atoms";
 import { Block, Note } from "../types/ucs";
 import { useStore } from "./useStore";
 
 function usePlaying() {
   const {
+    blocks,
     isMuteBeats,
     isPlaying,
     setIsPlaying,
@@ -19,7 +18,6 @@ function usePlaying() {
     zoom,
   } = useStore();
   const [isUploadingMP3, setIsUploadingMP3] = useState<boolean>(false);
-  const blocks = useRecoilValue<Block[]>(blocksState);
 
   const audioContext = useRef<AudioContext | null>(null);
   const beatGainNode = useRef<GainNode | null>(null);

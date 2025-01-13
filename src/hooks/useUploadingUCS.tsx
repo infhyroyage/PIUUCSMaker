@@ -1,10 +1,6 @@
 import { useCallback, useState } from "react";
 import { useSetRecoilState } from "recoil";
-import {
-  blocksState,
-  redoSnapshotsState,
-  undoSnapshotsState,
-} from "../services/atoms";
+import { redoSnapshotsState, undoSnapshotsState } from "../services/atoms";
 import { UploadingUCSValidation } from "../types/dialog";
 import { Block, ChartSnapshot, Note } from "../types/ucs";
 import { useStore } from "./useStore";
@@ -319,6 +315,7 @@ const validate = (content: string): UploadingUCSValidation => {
 
 function useUploadingUCS() {
   const {
+    setBlocks,
     setIsPerformance,
     setIsProtected,
     setNotes,
@@ -326,7 +323,6 @@ function useUploadingUCS() {
     setUserErrorMessage,
   } = useStore();
   const [isUploadingUCS, setIsUploadingUCS] = useState<boolean>(false);
-  const setBlocks = useSetRecoilState<Block[]>(blocksState);
   const setRedoSnapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
   const setUndoSnapshots =

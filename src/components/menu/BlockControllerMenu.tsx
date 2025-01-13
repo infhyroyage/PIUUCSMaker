@@ -2,11 +2,7 @@ import { useCallback, useEffect, useMemo } from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import useEditBlockDialog from "../../hooks/useEditBlockDialog";
 import { useStore } from "../../hooks/useStore";
-import {
-  blocksState,
-  redoSnapshotsState,
-  undoSnapshotsState,
-} from "../../services/atoms";
+import { redoSnapshotsState, undoSnapshotsState } from "../../services/atoms";
 import { MENU_Z_INDEX } from "../../services/styles";
 import { Block, ChartSnapshot, Note } from "../../types/ucs";
 import MenuBackground from "./MenuBackground";
@@ -18,11 +14,12 @@ function BlockControllerMenu() {
     resetBlockControllerMenuBlockIdx,
     blockControllerMenuPosition,
     resetBlockControllerMenuPosition,
+    blocks,
+    setBlocks,
     setIsProtected,
     notes,
     setNotes,
   } = useStore();
-  const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
   const setRedoSnapshots =

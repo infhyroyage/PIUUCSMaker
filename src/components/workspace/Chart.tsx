@@ -1,13 +1,9 @@
 import React, { useCallback, useMemo } from "react";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import { useStore } from "../../hooks/useStore";
 import useVerticalBorderSize from "../../hooks/useVerticalBorderSize";
 import { ZOOM_VALUES } from "../../services/assets";
-import {
-  blocksState,
-  redoSnapshotsState,
-  undoSnapshotsState,
-} from "../../services/atoms";
+import { redoSnapshotsState, undoSnapshotsState } from "../../services/atoms";
 import { Block, ChartSnapshot, Note } from "../../types/ucs";
 import ChartIndicatorMenu from "../menu/ChartIndicatorMenu";
 import BorderLine from "./BorderLine";
@@ -17,6 +13,7 @@ import ChartVertical from "./ChartVertical";
 
 function Chart() {
   const {
+    blocks,
     chartIndicatorMenuPosition,
     setChartIndicatorMenuPosition,
     holdSetter,
@@ -37,7 +34,6 @@ function Chart() {
   } = useStore();
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
-  const blocks = useRecoilValue<Block[]>(blocksState);
   const setRedoSnapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
 

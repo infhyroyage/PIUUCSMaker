@@ -8,11 +8,7 @@ import {
 import { useRecoilState, useSetRecoilState } from "recoil";
 import useEditBlockDialog from "../../hooks/useEditBlockDialog";
 import { useStore } from "../../hooks/useStore";
-import {
-  blocksState,
-  redoSnapshotsState,
-  undoSnapshotsState,
-} from "../../services/atoms";
+import { redoSnapshotsState, undoSnapshotsState } from "../../services/atoms";
 import { DIALOG_Z_INDEX } from "../../services/styles";
 import {
   validateBeat,
@@ -28,6 +24,8 @@ function EditBlockDialog() {
   const {
     blockControllerMenuBlockIdx,
     resetBlockControllerMenuBlockIdx,
+    blocks,
+    setBlocks,
     setIsProtected,
     notes,
     setNotes,
@@ -40,7 +38,6 @@ function EditBlockDialog() {
     rows: "",
     split: "",
   });
-  const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
   const setRedoSnapshots =

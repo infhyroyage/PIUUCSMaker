@@ -1,16 +1,13 @@
 import { useCallback, useMemo } from "react";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import {
-  blocksState,
-  redoSnapshotsState,
-  undoSnapshotsState,
-} from "../services/atoms";
+import { useRecoilState, useSetRecoilState } from "recoil";
+import { redoSnapshotsState, undoSnapshotsState } from "../services/atoms";
 import { SelectorCompletedCords } from "../types/chart";
-import { Block, ChartSnapshot, CopiedNote, Note } from "../types/ucs";
+import { ChartSnapshot, CopiedNote, Note } from "../types/ucs";
 import { useStore } from "./useStore";
 
 function useClipBoard() {
   const {
+    blocks,
     clipBoard,
     setClipBoard,
     indicator,
@@ -22,7 +19,6 @@ function useClipBoard() {
   } = useStore();
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
-  const blocks = useRecoilValue<Block[]>(blocksState);
   const setRedoSnapshots =
     useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
 

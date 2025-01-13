@@ -1,13 +1,5 @@
 import { atom } from "recoil";
-import { Block, ChartSnapshot } from "../types/ucs";
-
-/**
- * A set of chart block
- */
-export const blocksState = atom<Block[]>({
-  key: "blocks",
-  default: [],
-});
+import { ChartSnapshot } from "../types/ucs";
 
 /**
  * A set of ChartSnapshot for redoing

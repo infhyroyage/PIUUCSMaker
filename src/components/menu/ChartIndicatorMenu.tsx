@@ -4,18 +4,16 @@ import useClipBoard from "../../hooks/useClipBoard";
 import useSelectedDeleting from "../../hooks/useSelectedDeleting";
 import useSelectedFlipping from "../../hooks/useSelectedFlipping";
 import { useStore } from "../../hooks/useStore";
-import {
-  blocksState,
-  redoSnapshotsState,
-  undoSnapshotsState,
-} from "../../services/atoms";
+import { redoSnapshotsState, undoSnapshotsState } from "../../services/atoms";
 import { MENU_Z_INDEX } from "../../services/styles";
-import { Block, ChartSnapshot } from "../../types/ucs";
+import { ChartSnapshot } from "../../types/ucs";
 import MenuBackground from "./MenuBackground";
 import MenuItem from "./MenuItem";
 
 function ChartIndicatorMenu() {
   const {
+    blocks,
+    setBlocks,
     chartIndicatorMenuPosition,
     resetChartIndicatorMenuPosition,
     clipBoard,
@@ -27,7 +25,6 @@ function ChartIndicatorMenu() {
     selector,
     setSelector,
   } = useStore();
-  const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
   const [undoSnapshots, setUndoSnapshots] =
     useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
   const setRedoSnapshots =

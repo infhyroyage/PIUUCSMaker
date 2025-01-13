@@ -1,4 +1,4 @@
-import { Note } from "./ucs";
+import { Block, Note } from "./ucs";
 
 import { Selector } from "./chart";
 
@@ -51,6 +51,16 @@ export type Store = {
    * Reset blockControllerMenuPosition
    */
   resetBlockControllerMenuPosition: () => void;
+
+  /**
+   * A set of chart block
+   */
+  blocks: Block[];
+
+  /**
+   * Setter for blocks
+   */
+  setBlocks: (blocks: Block[]) => void;
 
   /**
    * Coordinate of the browser screen opening ChartIndicatorMenu

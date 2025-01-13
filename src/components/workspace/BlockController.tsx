@@ -1,8 +1,6 @@
 import { MouseEvent, useCallback, useMemo } from "react";
-import { useRecoilValue } from "recoil";
 import { useStore } from "../../hooks/useStore";
 import useVerticalBorderSize from "../../hooks/useVerticalBorderSize";
-import { blocksState } from "../../services/atoms";
 import { IDENTIFIER_WIDTH, NAVIGATION_BAR_HEIGHT } from "../../services/styles";
 import { Block } from "../../types/ucs";
 import BlockControllerMenu from "../menu/BlockControllerMenu";
@@ -12,10 +10,10 @@ function BlockController() {
   const {
     setBlockControllerMenuBlockIdx,
     setBlockControllerMenuPosition,
+    blocks,
     notes,
     noteSize,
   } = useStore();
-  const blocks = useRecoilValue<Block[]>(blocksState);
 
   const verticalBorderSize = useVerticalBorderSize();
 

@@ -1,15 +1,12 @@
 import React from "react";
-import { useRecoilValue } from "recoil";
 import { useStore } from "../../hooks/useStore";
 import { ZOOM_VALUES } from "../../services/assets";
-import { blocksState } from "../../services/atoms";
 import { IDENTIFIER_WIDTH } from "../../services/styles";
 import { Block } from "../../types/ucs";
 import BorderLine from "./BorderLine";
 
 function Identifier() {
-  const { noteSize, zoom } = useStore();
-  const blocks = useRecoilValue<Block[]>(blocksState);
+  const { blocks, noteSize, zoom } = useStore();
 
   return (
     <div style={{ userSelect: "none", width: `${IDENTIFIER_WIDTH}px` }}>
