@@ -1,67 +1,59 @@
 import { act, renderHook } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, Mock, vi } from "vitest";
 import useSelectedDeleting from "../../src/hooks/useSelectedDeleting";
+import { useStore } from "../../src/hooks/useStore";
 
 const mockSetNotes = vi.fn();
-const mockSetUndoSnapshots = vi.fn();
 const mockSetIsProtected = vi.fn();
-const mockSetRedoSnapshots = vi.fn();
+const mockResetRedoSnapshots = vi.fn();
+const mockPushUndoSnapshot = vi.fn();
+vi.mock("../../src/hooks/useStore", () => ({
+  useStore: vi.fn(),
+}));
 
-describe.skip("useSelectedDeleting", () => {
+describe("useSelectedDeleting", () => {
   beforeEach(() => {
     vi.resetAllMocks();
   });
 
   it("Do nothing if selector.completed is null", () => {
-    // (useRecoilState as Mock).mockReturnValueOnce([[], mockSetNotes]);
-    // (useRecoilState as Mock).mockReturnValueOnce([[], mockSetUndoSnapshots]);
-    // (useRecoilValue as Mock).mockReturnValueOnce({ completed: null });
-    // (useSetRecoilState as Mock).mockReturnValueOnce(mockSetIsProtected);
-    // (useSetRecoilState as Mock).mockReturnValueOnce(mockSetRedoSnapshots);
+    (useStore as unknown as Mock).mockReturnValue({
+      notes: [],
+      setNotes: mockSetNotes,
+      setIsProtected: mockSetIsProtected,
+      resetRedoSnapshots: mockResetRedoSnapshots,
+      selector: { completed: null },
+      pushUndoSnapshot: mockPushUndoSnapshot,
+    });
 
     const { result } = renderHook(useSelectedDeleting);
     const { handleDelete } = result.current;
     act(() => handleDelete());
 
-    expect(mockSetIsProtected).not.toHaveBeenCalled();
     expect(mockSetNotes).not.toHaveBeenCalled();
-    expect(mockSetUndoSnapshots).not.toHaveBeenCalled();
-    expect(mockSetRedoSnapshots).not.toHaveBeenCalled();
+    expect(mockSetIsProtected).not.toHaveBeenCalled();
+    expect(mockResetRedoSnapshots).not.toHaveBeenCalled();
+    expect(mockPushUndoSnapshot).not.toHaveBeenCalled();
   });
 
   it("Delete notes only with selected area", () => {
-    // (useRecoilState as Mock).mockReturnValueOnce([
-    //   Array(5).fill([...Array(4)].map((_, i) => ({ rowIdx: i, type: "X" }))),
-    //   mockSetNotes,
-    // ]);
-    // (useRecoilState as Mock).mockReturnValueOnce([
-    //   [
-    //     {
-    //       blocks: [
-    //         {
-    //           accumulatedRows: 0,
-    //           beat: 4,
-    //           bpm: 120,
-    //           delay: 0,
-    //           rows: 50,
-    //           split: 2,
-    //         },
-    //       ],
-    //       notes: null,
-    //     },
-    //   ],
-    //   mockSetUndoSnapshots,
-    // ]);
-    // (useRecoilValue as Mock).mockReturnValueOnce({
-    //   completed: {
-    //     goalColumn: 3,
-    //     goalRowIdx: 2,
-    //     startColumn: 1,
-    //     startRowIdx: 1,
-    //   },
-    // });
-    // (useSetRecoilState as Mock).mockReturnValueOnce(mockSetIsProtected);
-    // (useSetRecoilState as Mock).mockReturnValueOnce(mockSetRedoSnapshots);
+    (useStore as unknown as Mock).mockReturnValue({
+      notes: Array(5).fill(
+        [...Array(4)].map((_, i) => ({ rowIdx: i, type: "X" }))
+      ),
+      setNotes: mockSetNotes,
+      setIsProtected: mockSetIsProtected,
+      resetRedoSnapshots: mockResetRedoSnapshots,
+      selector: {
+        completed: {
+          goalColumn: 3,
+          goalRowIdx: 2,
+          startColumn: 1,
+          startRowIdx: 1,
+        },
+      },
+      pushUndoSnapshot: mockPushUndoSnapshot,
+    });
 
     const { result } = renderHook(useSelectedDeleting);
     const { handleDelete } = result.current;
@@ -69,7 +61,6 @@ describe.skip("useSelectedDeleting", () => {
       handleDelete();
     });
 
-    expect(mockSetIsProtected).toHaveBeenCalledWith(true);
     expect(mockSetNotes).toHaveBeenCalledWith([
       [...Array(4)].map((_, i) => ({ rowIdx: i, type: "X" })),
       [
@@ -86,27 +77,13 @@ describe.skip("useSelectedDeleting", () => {
       ],
       [...Array(4)].map((_, i) => ({ rowIdx: i, type: "X" })),
     ]);
-    expect(mockSetUndoSnapshots).toHaveBeenCalledWith([
-      {
-        blocks: [
-          {
-            accumulatedRows: 0,
-            beat: 4,
-            bpm: 120,
-            delay: 0,
-            rows: 50,
-            split: 2,
-          },
-        ],
-        notes: null,
-      },
-      {
-        blocks: null,
-        notes: Array(5).fill(
-          [...Array(4)].map((_, i) => ({ rowIdx: i, type: "X" }))
-        ),
-      },
-    ]);
-    expect(mockSetRedoSnapshots).toHaveBeenCalledWith([]);
+    expect(mockSetIsProtected).toHaveBeenCalledWith(true);
+    expect(mockResetRedoSnapshots).toHaveBeenCalled();
+    expect(mockPushUndoSnapshot).toHaveBeenCalledWith({
+      blocks: null,
+      notes: Array(5).fill(
+        [...Array(4)].map((_, i) => ({ rowIdx: i, type: "X" }))
+      ),
+    });
   });
 });
