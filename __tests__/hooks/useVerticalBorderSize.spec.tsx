@@ -1,11 +1,10 @@
-import { Mock, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderHook } from "@testing-library/react";
-import { useRecoilValue } from "recoil";
+import { beforeEach, describe, expect, it, Mock, vi } from "vitest";
+import { useStore } from "../../src/hooks/useStore";
 import useVerticalBorderSize from "../../src/hooks/useVerticalBorderSize";
 
-vi.mock("recoil", async () => ({
-  ...(await vi.importActual("recoil")),
-  useRecoilValue: vi.fn(),
+vi.mock("../../src/hooks/useStore", () => ({
+  useStore: vi.fn(),
 }));
 
 describe("useVerticalBorderSize", () => {
@@ -14,24 +13,21 @@ describe("useVerticalBorderSize", () => {
   });
 
   it("Return 2 if noteSize is less than 80", () => {
-    (useRecoilValue as Mock).mockReturnValueOnce(79);
-
+    (useStore as unknown as Mock).mockReturnValue({ noteSize: 79 });
     const { result } = renderHook(useVerticalBorderSize);
 
     expect(result.current).toEqual(2);
   });
 
   it("Return 4 if noteSize is equal to 80", () => {
-    (useRecoilValue as Mock).mockReturnValueOnce(80);
-
+    (useStore as unknown as Mock).mockReturnValue({ noteSize: 80 });
     const { result } = renderHook(useVerticalBorderSize);
 
     expect(result.current).toEqual(4);
   });
 
   it("Return more than 2 if noteSize is more than 81", () => {
-    (useRecoilValue as Mock).mockReturnValueOnce(81);
-
+    (useStore as unknown as Mock).mockReturnValue({ noteSize: 81 });
     const { result } = renderHook(useVerticalBorderSize);
 
     expect(result.current).toBeGreaterThan(2);
