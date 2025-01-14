@@ -1,15 +1,6 @@
 import { ChangeEvent, useState, useTransition } from "react";
-import { useSetRecoilState } from "recoil";
 import useNewUcsDialog from "../../hooks/useNewUcsDialog";
-import {
-  blocksState,
-  isPerformanceState,
-  isProtectedState,
-  notesState,
-  redoSnapshotsState,
-  ucsNameState,
-  undoSnapshotsState,
-} from "../../services/atoms";
+import { useStore } from "../../hooks/useStore";
 import { DIALOG_Z_INDEX } from "../../services/styles";
 import {
   validateBeat,
@@ -19,9 +10,18 @@ import {
   validateSplit,
 } from "../../services/validations";
 import { NewUCSDialogError, NewUCSDialogForm } from "../../types/dialog";
-import { Block, ChartSnapshot, Note } from "../../types/ucs";
+import { Note } from "../../types/ucs";
 
 function NewUCSDialog() {
+  const {
+    setBlocks,
+    setIsPerformance,
+    setIsProtected,
+    setNotes,
+    resetRedoSnapshots,
+    setUcsName,
+    resetUndoSnapshots,
+  } = useStore();
   const [form, setForm] = useState<NewUCSDialogForm>({
     beat: "4",
     bpm: "120",
@@ -32,15 +32,6 @@ function NewUCSDialog() {
     split: "2",
   });
   const [errors, setErrors] = useState<NewUCSDialogError[]>([]);
-  const setBlocks = useSetRecoilState<Block[]>(blocksState);
-  const setIsPerformance = useSetRecoilState<boolean>(isPerformanceState);
-  const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
-  const setNotes = useSetRecoilState<Note[][]>(notesState);
-  const setRedoSnapshots =
-    useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
-  const setUcsName = useSetRecoilState<string | null>(ucsNameState);
-  const setUndoSnapshots =
-    useSetRecoilState<ChartSnapshot[]>(undoSnapshotsState);
 
   const { closeNewUcsDialog } = useNewUcsDialog();
   const [isPending, startTransition] = useTransition();
@@ -71,9 +62,9 @@ function NewUCSDialog() {
             .fill(null)
             .map<Note[]>(() => [])
         );
-        setRedoSnapshots([]);
+        resetRedoSnapshots();
         setUcsName(`${form.ucsName}.ucs`);
-        setUndoSnapshots([]);
+        resetUndoSnapshots();
         closeNewUcsDialog();
       } else {
         // バリデーションエラーのテキストフィールドをすべて表示

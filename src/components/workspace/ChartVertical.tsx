@@ -1,13 +1,12 @@
 import { memo, useMemo } from "react";
+import { useStore } from "../../hooks/useStore";
 import { ChartVerticalProps } from "../../types/props";
 import { Block, Note } from "../../types/ucs";
-import { useRecoilValue } from "recoil";
-import { blocksState } from "../../services/atoms";
 import ChartVerticalNoteImages from "./ChartVerticalNoteImages";
 import ChartVerticalRectangles from "./ChartVerticalRectangles";
 
 function ChartVertical({ blockYDists, column, notes }: ChartVerticalProps) {
-  const blocks = useRecoilValue<Block[]>(blocksState);
+  const { blocks } = useStore();
 
   const allChartVerticalRectangles = useMemo(
     () =>

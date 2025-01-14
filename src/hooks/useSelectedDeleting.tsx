@@ -1,24 +1,17 @@
 import { useCallback } from "react";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import {
-  isProtectedState,
-  notesState,
-  redoSnapshotsState,
-  selectorState,
-  undoSnapshotsState,
-} from "../services/atoms";
+import { SelectorCompletedCords } from "../types/chart";
 import { Note } from "../types/ucs";
-import { ChartSnapshot } from "../types/ucs";
-import { Selector, SelectorCompletedCords } from "../types/chart";
+import { useStore } from "./useStore";
 
 function useSelectedDeleting() {
-  const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
-  const [undoSnapshots, setUndoSnapshots] =
-    useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
-  const selector = useRecoilValue<Selector>(selectorState);
-  const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
-  const setRedoSnapshots =
-    useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
+  const {
+    notes,
+    setNotes,
+    setIsProtected,
+    resetRedoSnapshots,
+    selector,
+    pushUndoSnapshot,
+  } = useStore();
 
   /**
    * 選択領域入力済に該当する単ノート/ホールドの始点/ホールドの中間/ホールドの終点をすべて削除する
@@ -29,8 +22,8 @@ function useSelectedDeleting() {
     if (selector.completed === null) return;
 
     // 元に戻す/やり直すスナップショットの集合を更新
-    setUndoSnapshots([...undoSnapshots, { blocks: null, notes }]);
-    setRedoSnapshots([]);
+    pushUndoSnapshot({ blocks: null, notes });
+    resetRedoSnapshots();
 
     setIsProtected(true);
 
@@ -57,9 +50,8 @@ function useSelectedDeleting() {
     selector.completed,
     setIsProtected,
     setNotes,
-    setRedoSnapshots,
-    setUndoSnapshots,
-    undoSnapshots,
+    resetRedoSnapshots,
+    pushUndoSnapshot,
   ]);
 
   return { handleDelete };

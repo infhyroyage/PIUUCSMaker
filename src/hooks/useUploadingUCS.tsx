@@ -1,18 +1,7 @@
 import { useCallback, useState } from "react";
-import { useSetRecoilState } from "recoil";
-import { Block, Note } from "../types/ucs";
-import {
-  blocksState,
-  isPerformanceState,
-  isProtectedState,
-  notesState,
-  redoSnapshotsState,
-  ucsNameState,
-  undoSnapshotsState,
-  userErrorMessageState,
-} from "../services/atoms";
 import { UploadingUCSValidation } from "../types/dialog";
-import { ChartSnapshot } from "../types/ucs";
+import { Block, Note } from "../types/ucs";
+import { useStore } from "./useStore";
 
 const validate = (content: string): UploadingUCSValidation => {
   const blocks: Block[] = [];
@@ -323,17 +312,17 @@ const validate = (content: string): UploadingUCSValidation => {
 };
 
 function useUploadingUCS() {
+  const {
+    setBlocks,
+    setIsPerformance,
+    setIsProtected,
+    setNotes,
+    resetRedoSnapshots,
+    setUcsName,
+    resetUndoSnapshots,
+    setUserErrorMessage,
+  } = useStore();
   const [isUploadingUCS, setIsUploadingUCS] = useState<boolean>(false);
-  const setBlocks = useSetRecoilState<Block[]>(blocksState);
-  const setIsPerformance = useSetRecoilState<boolean>(isPerformanceState);
-  const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
-  const setNotes = useSetRecoilState<Note[][]>(notesState);
-  const setRedoSnapshots =
-    useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
-  const setUcsName = useSetRecoilState<string | null>(ucsNameState);
-  const setUndoSnapshots =
-    useSetRecoilState<ChartSnapshot[]>(undoSnapshotsState);
-  const setUserErrorMessage = useSetRecoilState<string>(userErrorMessageState);
 
   const onUploadUCS = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -357,9 +346,9 @@ function useUploadingUCS() {
             setIsPerformance(result.isPerformance);
             setIsProtected(false);
             setNotes(result.notes);
-            setRedoSnapshots([]);
+            resetRedoSnapshots();
             setUcsName(fileList[0].name);
-            setUndoSnapshots([]);
+            resetUndoSnapshots();
           } else {
             setUserErrorMessage(result.errMsg);
           }
@@ -376,9 +365,9 @@ function useUploadingUCS() {
       setIsPerformance,
       setIsProtected,
       setNotes,
-      setRedoSnapshots,
+      resetRedoSnapshots,
       setUcsName,
-      setUndoSnapshots,
+      resetUndoSnapshots,
     ]
   );
 

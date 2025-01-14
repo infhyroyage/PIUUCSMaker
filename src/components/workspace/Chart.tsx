@@ -1,51 +1,37 @@
 import React, { useCallback, useMemo } from "react";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import {
-  blocksState,
-  chartIndicatorMenuPositionState,
-  indicatorState,
-  isPlayingState,
-  isProtectedState,
-  holdSetterState,
-  noteSizeState,
-  notesState,
-  redoSnapshotsState,
-  selectorState,
-  undoSnapshotsState,
-  zoomState,
-} from "../../services/atoms";
-import BorderLine from "./BorderLine";
-import ChartVertical from "./ChartVertical";
-import { Block, Note } from "../../types/ucs";
-import { HoldSetter } from "../../types/chart";
-import { ChartIndicatorMenuPosition, Zoom } from "../../types/menu";
-import { ChartSnapshot } from "../../types/ucs";
-import { Selector } from "../../types/chart";
-import { Indicator } from "../../types/chart";
-import { ZOOM_VALUES } from "../../services/assets";
-import ChartIndicator from "./ChartIndicator";
-import ChartIndicatorMenu from "../menu/ChartIndicatorMenu";
-import ChartSelector from "./ChartSelector";
+import { useStore } from "../../hooks/useStore";
 import useVerticalBorderSize from "../../hooks/useVerticalBorderSize";
+import { ZOOM_VALUES } from "../../services/assets";
+import { Block, Note } from "../../types/ucs";
+import ChartIndicatorMenu from "../menu/ChartIndicatorMenu";
+import BorderLine from "./BorderLine";
+import ChartIndicator from "./ChartIndicator";
+import ChartSelector from "./ChartSelector";
+import ChartVertical from "./ChartVertical";
 
 function Chart() {
-  const [indicator, setIndicator] = useRecoilState<Indicator>(indicatorState);
-  const [holdSetter, setHoldSetter] =
-    useRecoilState<HoldSetter>(holdSetterState);
-  const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
-  const [position, setPosition] = useRecoilState<ChartIndicatorMenuPosition>(
-    chartIndicatorMenuPositionState
-  );
-  const [selector, setSelector] = useRecoilState<Selector>(selectorState);
-  const [undoSnapshots, setUndoSnapshots] =
-    useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
-  const blocks = useRecoilValue<Block[]>(blocksState);
-  const isPlaying = useRecoilValue<boolean>(isPlayingState);
-  const noteSize = useRecoilValue<number>(noteSizeState);
-  const zoom = useRecoilValue<Zoom>(zoomState);
-  const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
-  const setRedoSnapshots =
-    useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
+  const {
+    blocks,
+    chartIndicatorMenuPosition,
+    setChartIndicatorMenuPosition,
+    holdSetter,
+    setHoldSetter,
+    resetHoldSetter,
+    indicator,
+    setIndicator,
+    resetIndicator,
+    isPlaying,
+    setIsProtected,
+    notes,
+    setNotes,
+    noteSize,
+    resetRedoSnapshots,
+    selector,
+    setSelector,
+    hideSelector,
+    pushUndoSnapshot,
+    zoom,
+  } = useStore();
 
   const verticalBorderSize = useVerticalBorderSize();
 
@@ -73,7 +59,7 @@ function Chart() {
   const handleMouseMove = useCallback(
     (event: React.MouseEvent<HTMLSpanElement, MouseEvent>, column: number) => {
       // ChartIndicatorMenu表示中/再生中の場合はNOP
-      if (!!position || isPlaying) return;
+      if (!!chartIndicatorMenuPosition || isPlaying) return;
 
       // マウスホバーしたy座標を取得
       const y: number = Math.floor(
@@ -113,17 +99,17 @@ function Chart() {
           indicator.column !== column ||
           indicator.rowIdx !== rowIdx)
       ) {
-        setIndicator(
-          top !== null && rowIdx !== null
-            ? {
-                blockAccumulatedRows: blocks[blockIdx].accumulatedRows,
-                blockIdx,
-                column,
-                rowIdx,
-                top,
-              }
-            : null
-        );
+        if (top !== null && rowIdx !== null) {
+          setIndicator({
+            blockAccumulatedRows: blocks[blockIdx].accumulatedRows,
+            blockIdx,
+            column,
+            rowIdx,
+            top,
+          });
+        } else {
+          resetIndicator();
+        }
       }
 
       if (
@@ -147,20 +133,22 @@ function Chart() {
         !selector.isSettingByMenu
       ) {
         // Shift未入力、かつ、「Start Selecting」を選択せずに入力時の選択領域を表示している場合は、選択領域を非表示
-        setSelector({ setting: null, completed: null, isSettingByMenu: false });
+        hideSelector();
       }
     },
     [
       blocks,
       blockYDists,
+      chartIndicatorMenuPosition,
       indicator,
+      setIndicator,
+      resetIndicator,
       isPlaying,
       noteSize,
-      position,
       selector.setting,
       selector.isSettingByMenu,
-      setIndicator,
       setSelector,
+      hideSelector,
       zoom.idx,
     ]
   );
@@ -168,10 +156,10 @@ function Chart() {
   const onMouseLeave = useCallback(
     (event: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
       // ChartIndicatorMenu表示中/再生中/の場合はNOP
-      if (!!position || isPlaying) return;
+      if (!!chartIndicatorMenuPosition || isPlaying) return;
 
       // インディケーターを非表示
-      setIndicator(null);
+      resetIndicator();
 
       // 選択領域入力時の場合は、入力時の選択領域のみパラメーターを更新
       // ただし、Shift未入力、かつ、「Start Selecting」を選択せずに入力時の選択領域を表示している場合は、選択領域を非表示
@@ -194,11 +182,11 @@ function Chart() {
       }
     },
     [
+      chartIndicatorMenuPosition,
       isPlaying,
-      position,
       selector.setting,
       selector.isSettingByMenu,
-      setIndicator,
+      resetIndicator,
       setSelector,
     ]
   );
@@ -206,7 +194,12 @@ function Chart() {
   const onMouseDown = useCallback(
     (event: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
       // 左クリック以外/ChartIndicatorMenu表示中/再生中/押下した瞬間にインディケーターが非表示の場合はNOP
-      if (event.button !== 0 || !!position || isPlaying || indicator === null)
+      if (
+        event.button !== 0 ||
+        !!chartIndicatorMenuPosition ||
+        isPlaying ||
+        indicator === null
+      )
         return;
 
       // Shift未入力の場合のみ、ホールド設置中の表示パラメーターを更新
@@ -237,24 +230,26 @@ function Chart() {
           selector.completed !== null)
       ) {
         // Shift未入力、かつ、「Start Selecting」を選択せずに選択領域を表示している場合は、選択領域を非表示
-        setSelector({ completed: null, isSettingByMenu: false, setting: null });
+        hideSelector();
       }
     },
     [
+      chartIndicatorMenuPosition,
       holdSetter,
       indicator,
       isPlaying,
-      position,
       selector,
       setHoldSetter,
       setSelector,
+      hideSelector,
     ]
   );
 
   const onMouseUp = useCallback(
     (event: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
       // 左クリック以外/ChartIndicatorMenu表示中/再生中/別々の列を跨いだマウス操作の場合はNOP
-      if (event.button !== 0 || !!position || isPlaying) return;
+      if (event.button !== 0 || !!chartIndicatorMenuPosition || isPlaying)
+        return;
 
       // 親コンポーネントのWorkspaceに設定したonMouseUpへ伝搬しない
       event.stopPropagation();
@@ -388,8 +383,8 @@ function Chart() {
         }
 
         // 元に戻す/やり直すスナップショットの集合を更新
-        setUndoSnapshots([...undoSnapshots, { blocks: null, notes }]);
-        setRedoSnapshots([]);
+        pushUndoSnapshot({ blocks: null, notes });
+        resetRedoSnapshots();
 
         setIsProtected(true);
 
@@ -403,54 +398,57 @@ function Chart() {
 
       // ホールド設置中の表示パラメーターを初期化
       if (holdSetter !== null) {
-        setHoldSetter(null);
+        resetHoldSetter();
       }
 
       if (selector.setting !== null) {
         // 選択領域入力時の場合は選択領域を入力時→入力後に更新
         // ただし、選択領域の入力時にマウスの座標が譜面から外れた場合はnullに更新
-        setSelector({
-          completed:
-            selector.setting.mouseUpColumn !== null &&
-            selector.setting.mouseUpRowIdx !== null
-              ? {
-                  goalColumn: Math.max(
-                    selector.setting.mouseDownColumn,
-                    selector.setting.mouseUpColumn
-                  ),
-                  goalRowIdx: Math.max(
-                    selector.setting.mouseDownRowIdx,
-                    selector.setting.mouseUpRowIdx
-                  ),
-                  startColumn: Math.min(
-                    selector.setting.mouseDownColumn,
-                    selector.setting.mouseUpColumn
-                  ),
-                  startRowIdx: Math.min(
-                    selector.setting.mouseDownRowIdx,
-                    selector.setting.mouseUpRowIdx
-                  ),
-                }
-              : null,
-          isSettingByMenu: false,
-          setting: null,
-        });
+        if (
+          selector.setting.mouseUpColumn !== null &&
+          selector.setting.mouseUpRowIdx !== null
+        ) {
+          setSelector({
+            completed: {
+              goalColumn: Math.max(
+                selector.setting.mouseDownColumn,
+                selector.setting.mouseUpColumn
+              ),
+              goalRowIdx: Math.max(
+                selector.setting.mouseDownRowIdx,
+                selector.setting.mouseUpRowIdx
+              ),
+              startColumn: Math.min(
+                selector.setting.mouseDownColumn,
+                selector.setting.mouseUpColumn
+              ),
+              startRowIdx: Math.min(
+                selector.setting.mouseDownRowIdx,
+                selector.setting.mouseUpRowIdx
+              ),
+            },
+            isSettingByMenu: false,
+            setting: null,
+          });
+        } else {
+          hideSelector();
+        }
       }
     },
     [
+      chartIndicatorMenuPosition,
       holdSetter,
       indicator,
       isPlaying,
       notes,
-      position,
       selector.setting,
-      setHoldSetter,
+      resetHoldSetter,
       setIsProtected,
       setNotes,
-      setRedoSnapshots,
+      resetRedoSnapshots,
       setSelector,
-      setUndoSnapshots,
-      undoSnapshots,
+      hideSelector,
+      pushUndoSnapshot,
     ]
   );
 
@@ -469,7 +467,7 @@ function Chart() {
             ) => {
               event.preventDefault();
               if (!isPlaying) {
-                setPosition({
+                setChartIndicatorMenuPosition({
                   top: event.clientY,
                   left: event.clientX,
                 });

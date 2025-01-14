@@ -1,41 +1,31 @@
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useStore } from "../../hooks/useStore";
 import { ZOOM_VALUES } from "../../services/assets";
-import {
-  isPlayingState,
-  isProtectedState,
-  volumeValueState,
-  zoomState,
-} from "../../services/atoms";
 import {
   NAVIGATION_BAR_HEIGHT,
   NAVIGATION_BAR_Z_INDEX,
 } from "../../services/styles";
-import { Zoom } from "../../types/menu";
 import NavigationBarTitle from "./NavigationBarTitle";
 
 function NavigationBar() {
+  const {
+    isPlaying,
+    isProtected,
+    volumeValue,
+    setVolumeValue,
+    zoom,
+    updateZoomFromIdx,
+  } = useStore();
   const [muteVolBuf, setMuteVolBuf] = useState<number | null>(null);
-  const [volumeValue, setVolumeValue] =
-    useRecoilState<number>(volumeValueState);
-  const [zoom, setZoom] = useRecoilState<Zoom>(zoomState);
-  const isPlaying = useRecoilValue<boolean>(isPlayingState);
-  const isProtected = useRecoilValue<boolean>(isProtectedState);
 
   const onChangeSelect = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
       // formを送信せず、ページ遷移を行わないようにする
       event.preventDefault();
 
-      setZoom({
-        idx: Number(event.target.value),
-        top:
-          (document.documentElement.scrollTop *
-            ZOOM_VALUES[Number(event.target.value)]) /
-          ZOOM_VALUES[zoom.idx],
-      });
+      updateZoomFromIdx(Number(event.target.value));
     },
-    [setZoom, zoom]
+    [updateZoomFromIdx]
   );
 
   const onClickVolumeButton = useCallback(

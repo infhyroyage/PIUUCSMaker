@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
-import { useRecoilValue } from "recoil";
-import { successMessageState } from "../../services/atoms";
+import { useStore } from "../../hooks/useStore";
 import { SNACKBAR_Z_INDEX } from "../../services/styles";
 
 function SuccessSnackbar() {
+  const { successMessage } = useStore();
   const [isOpened, setIsOpened] = useState<boolean>(false);
-  const successMessage = useRecoilValue<string>(successMessageState);
 
   const onClose = () => setIsOpened(false);
 

@@ -1,35 +1,34 @@
 import "@testing-library/jest-dom/vitest";
 import { cleanup, render, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { RecoilRoot } from "recoil";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, Mock, vi } from "vitest";
 import UserErrorSnackbar from "../../../src/components/snackbar/UserErrorSnackbar";
-import { userErrorMessageState } from "../../../src/services/atoms";
+import { useStore } from "../../../src/hooks/useStore";
+
+vi.mock("../../../src/hooks/useStore", () => ({
+  useStore: vi.fn(),
+}));
 
 describe("UserErrorSnackbar", () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+  });
+
   // https://github.com/vitest-dev/vitest/issues/1430
   afterEach(() => cleanup());
 
   it("Render invisibly if userErrorMessageState is empty", () => {
-    const { queryByRole } = render(
-      <RecoilRoot>
-        <UserErrorSnackbar />
-      </RecoilRoot>
-    );
+    (useStore as unknown as Mock).mockReturnValue({ userErrorMessage: "" });
+    const { queryByRole } = render(<UserErrorSnackbar />);
 
     expect(queryByRole("presentation")).not.toBeInTheDocument();
   });
 
   it("Rerender visibly if userErrorMessageState is not empty", async () => {
-    const { getByText } = render(
-      <RecoilRoot
-        initializeState={({ set }) => {
-          set(userErrorMessageState, "UserErrorMessage");
-        }}
-      >
-        <UserErrorSnackbar />
-      </RecoilRoot>
-    );
+    (useStore as unknown as Mock).mockReturnValue({
+      userErrorMessage: "UserErrorMessage",
+    });
+    const { getByText } = render(<UserErrorSnackbar />);
 
     await waitFor(() =>
       expect(getByText("UserErrorMessage")).toBeInTheDocument()
@@ -37,15 +36,10 @@ describe("UserErrorSnackbar", () => {
   });
 
   it("Rerender invisibly if close button is clicked", async () => {
-    const { findByTestId, queryByText } = render(
-      <RecoilRoot
-        initializeState={({ set }) => {
-          set(userErrorMessageState, "UserErrorMessage");
-        }}
-      >
-        <UserErrorSnackbar />
-      </RecoilRoot>
-    );
+    (useStore as unknown as Mock).mockReturnValue({
+      userErrorMessage: "UserErrorMessage",
+    });
+    const { findByTestId, queryByText } = render(<UserErrorSnackbar />);
 
     await userEvent.click(await findByTestId("user-error-snackbar-close"));
 

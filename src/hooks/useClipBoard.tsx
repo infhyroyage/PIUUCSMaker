@@ -1,33 +1,22 @@
 import { useCallback, useMemo } from "react";
-import { Block, Note } from "../types/ucs";
-import { SelectorCompletedCords, Selector } from "../types/chart";
-import { ChartSnapshot } from "../types/ucs";
-import { Indicator } from "../types/chart";
-import { ClipBoard } from "../types/ucs";
-import { CopiedNote } from "../types/ucs";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import {
-  blocksState,
-  clipBoardState,
-  indicatorState,
-  isProtectedState,
-  notesState,
-  redoSnapshotsState,
-  selectorState,
-  undoSnapshotsState,
-} from "../services/atoms";
+import { SelectorCompletedCords } from "../types/chart";
+import { CopiedNote, Note } from "../types/ucs";
+import { useStore } from "./useStore";
 
 function useClipBoard() {
-  const [clipBoard, setClipBoard] = useRecoilState<ClipBoard>(clipBoardState);
-  const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
-  const [selector, setSelector] = useRecoilState<Selector>(selectorState);
-  const [undoSnapshots, setUndoSnapshots] =
-    useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
-  const blocks = useRecoilValue<Block[]>(blocksState);
-  const indicator = useRecoilValue<Indicator>(indicatorState);
-  const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
-  const setRedoSnapshots =
-    useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
+  const {
+    blocks,
+    clipBoard,
+    setClipBoard,
+    indicator,
+    setIsProtected,
+    notes,
+    setNotes,
+    resetRedoSnapshots,
+    selector,
+    setSelector,
+    pushUndoSnapshot,
+  } = useStore();
 
   // 全譜面のブロックの行数の総和を計算
   const totalRows = useMemo(
@@ -74,8 +63,8 @@ function useClipBoard() {
     handleCopy();
 
     // 元に戻す/やり直すスナップショットの集合を更新
-    setUndoSnapshots([...undoSnapshots, { blocks: null, notes }]);
-    setRedoSnapshots([]);
+    pushUndoSnapshot({ blocks: null, notes });
+    resetRedoSnapshots();
 
     setIsProtected(true);
 
@@ -101,9 +90,8 @@ function useClipBoard() {
     selector.completed,
     setIsProtected,
     setNotes,
-    setRedoSnapshots,
-    setUndoSnapshots,
-    undoSnapshots,
+    resetRedoSnapshots,
+    pushUndoSnapshot,
   ]);
 
   const handlePaste = useCallback(() => {
@@ -111,8 +99,8 @@ function useClipBoard() {
     if (indicator === null || clipBoard === null) return;
 
     // 元に戻す/やり直すスナップショットの集合を更新
-    setUndoSnapshots([...undoSnapshots, { blocks: null, notes }]);
-    setRedoSnapshots([]);
+    pushUndoSnapshot({ blocks: null, notes });
+    resetRedoSnapshots();
 
     setIsProtected(true);
 
@@ -165,11 +153,10 @@ function useClipBoard() {
     notes,
     setIsProtected,
     setNotes,
-    setRedoSnapshots,
+    resetRedoSnapshots,
     setSelector,
-    setUndoSnapshots,
+    pushUndoSnapshot,
     totalRows,
-    undoSnapshots,
   ]);
 
   return { handleCut, handleCopy, handlePaste };

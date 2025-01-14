@@ -1,66 +1,59 @@
 import { useCallback, useEffect, useMemo } from "react";
-import { useRecoilState, useSetRecoilState } from "recoil";
 import useEditBlockDialog from "../../hooks/useEditBlockDialog";
-import {
-  blockControllerMenuBlockIdxState,
-  blockControllerMenuPositionState,
-  blocksState,
-  isProtectedState,
-  notesState,
-  redoSnapshotsState,
-  undoSnapshotsState,
-} from "../../services/atoms";
+import { useStore } from "../../hooks/useStore";
 import { MENU_Z_INDEX } from "../../services/styles";
-import { BlockControllerMenuPosition } from "../../types/menu";
-import { Block, ChartSnapshot, Note } from "../../types/ucs";
+import { Block, Note } from "../../types/ucs";
 import MenuBackground from "./MenuBackground";
 import MenuItem from "./MenuItem";
 
 function BlockControllerMenu() {
-  const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
-  const [menuBlockIdx, setMenuBlockIdx] = useRecoilState<number | null>(
-    blockControllerMenuBlockIdxState
-  );
-  const [menuPosition, setMenuPosition] =
-    useRecoilState<BlockControllerMenuPosition>(
-      blockControllerMenuPositionState
-    );
-  const [notes, setNotes] = useRecoilState<Note[][]>(notesState);
-  const [undoSnapshots, setUndoSnapshots] =
-    useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
-  const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
-  const setRedoSnapshots =
-    useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
+  const {
+    blockControllerMenuBlockIdx,
+    resetBlockControllerMenuBlockIdx,
+    blockControllerMenuPosition,
+    resetBlockControllerMenuPosition,
+    blocks,
+    setBlocks,
+    setIsProtected,
+    notes,
+    setNotes,
+    resetRedoSnapshots,
+    pushUndoSnapshot,
+  } = useStore();
 
   const { openEditBlockDialog } = useEditBlockDialog();
 
   const blockNum = useMemo(() => blocks.length, [blocks.length]);
 
   const onClose = useCallback(() => {
-    setMenuBlockIdx(null);
-    setMenuPosition(undefined);
-  }, [setMenuBlockIdx, setMenuPosition]);
+    resetBlockControllerMenuBlockIdx();
+    resetBlockControllerMenuPosition();
+  }, [resetBlockControllerMenuBlockIdx, resetBlockControllerMenuPosition]);
 
   const onClickEdit = useCallback(() => {
-    if (menuBlockIdx !== null) {
+    if (blockControllerMenuBlockIdx !== null) {
       openEditBlockDialog();
-      setMenuPosition(undefined);
+      resetBlockControllerMenuPosition();
     }
-  }, [menuBlockIdx, openEditBlockDialog, setMenuPosition]);
+  }, [
+    blockControllerMenuBlockIdx,
+    openEditBlockDialog,
+    resetBlockControllerMenuPosition,
+  ]);
 
   const onClickAdjust = useCallback(() => {
-    setMenuPosition(undefined);
+    resetBlockControllerMenuPosition();
     const adjustBlockDialog = document.getElementById("adjust-block-dialog");
     if (adjustBlockDialog) {
       (adjustBlockDialog as HTMLDialogElement).showModal();
     }
-  }, [setMenuPosition]);
+  }, [resetBlockControllerMenuPosition]);
 
   const onClickAdd = useCallback(() => {
-    if (menuBlockIdx !== null) {
+    if (blockControllerMenuBlockIdx !== null) {
       // 元に戻す/やり直すスナップショットの集合を更新
-      setUndoSnapshots([...undoSnapshots, { blocks, notes: null }]);
-      setRedoSnapshots([]);
+      pushUndoSnapshot({ blocks, notes: null });
+      resetRedoSnapshots();
 
       setIsProtected(true);
 
@@ -68,7 +61,7 @@ function BlockControllerMenu() {
       setBlocks([
         ...blocks,
         {
-          ...blocks[menuBlockIdx],
+          ...blocks[blockControllerMenuBlockIdx],
           accumulatedRows:
             blocks[blocks.length - 1].accumulatedRows +
             blocks[blocks.length - 1].rows,
@@ -80,37 +73,37 @@ function BlockControllerMenu() {
     }
   }, [
     blocks,
-    menuBlockIdx,
+    blockControllerMenuBlockIdx,
     onClose,
     setBlocks,
     setIsProtected,
-    setRedoSnapshots,
-    setUndoSnapshots,
-    undoSnapshots,
+    resetRedoSnapshots,
+    pushUndoSnapshot,
   ]);
 
   const onClickInsert = useCallback(() => {
-    if (menuBlockIdx !== null) {
+    if (blockControllerMenuBlockIdx !== null) {
       // 元に戻す/やり直すスナップショットの集合を更新
-      setUndoSnapshots([...undoSnapshots, { blocks, notes }]);
-      setRedoSnapshots([]);
+      pushUndoSnapshot({ blocks, notes });
+      resetRedoSnapshots();
 
       setIsProtected(true);
 
-      // 押下したmenuBlockIdx番目の譜面のブロックのコピーを(menuBlockIdx + 1)番目に挿入
+      // 押下したblockControllerMenuBlockIdx番目の譜面のブロックのコピーを(blockControllerMenuBlockIdx + 1)番目に挿入
       setBlocks([
-        ...blocks.slice(0, menuBlockIdx + 1),
+        ...blocks.slice(0, blockControllerMenuBlockIdx + 1),
         {
-          ...blocks[menuBlockIdx],
+          ...blocks[blockControllerMenuBlockIdx],
           accumulatedRows:
-            blocks[menuBlockIdx].accumulatedRows + blocks[menuBlockIdx].rows,
+            blocks[blockControllerMenuBlockIdx].accumulatedRows +
+            blocks[blockControllerMenuBlockIdx].rows,
           delay: 0,
         },
-        ...blocks.slice(menuBlockIdx + 1).map((block: Block) => {
+        ...blocks.slice(blockControllerMenuBlockIdx + 1).map((block: Block) => {
           return {
             ...block,
             accumulatedLength:
-              block.accumulatedRows + blocks[menuBlockIdx].rows,
+              block.accumulatedRows + blocks[blockControllerMenuBlockIdx].rows,
           };
         }),
       ]);
@@ -120,9 +113,11 @@ function BlockControllerMenu() {
         notes.map((ns: Note[]) =>
           ns.map((note: Note) =>
             note.rowIdx >=
-            blocks[menuBlockIdx].accumulatedRows + blocks[menuBlockIdx].rows
+            blocks[blockControllerMenuBlockIdx].accumulatedRows +
+              blocks[blockControllerMenuBlockIdx].rows
               ? {
-                  rowIdx: note.rowIdx + blocks[menuBlockIdx].rows,
+                  rowIdx:
+                    note.rowIdx + blocks[blockControllerMenuBlockIdx].rows,
                   type: note.type,
                 }
               : note
@@ -134,85 +129,87 @@ function BlockControllerMenu() {
     }
   }, [
     blocks,
-    menuBlockIdx,
+    blockControllerMenuBlockIdx,
     notes,
     onClose,
     setBlocks,
     setIsProtected,
     setNotes,
-    setRedoSnapshots,
-    setUndoSnapshots,
-    undoSnapshots,
+    resetRedoSnapshots,
+    pushUndoSnapshot,
   ]);
 
   const onClickMergeAbove = useCallback(() => {
-    if (menuBlockIdx !== null) {
+    if (blockControllerMenuBlockIdx !== null) {
       // 元に戻す/やり直すスナップショットの集合を更新
-      setUndoSnapshots([...undoSnapshots, { blocks, notes: null }]);
-      setRedoSnapshots([]);
+      pushUndoSnapshot({ blocks, notes: null });
+      resetRedoSnapshots();
 
       setIsProtected(true);
 
       // 1つ前の譜面のブロックの行数を吸収
       setBlocks([
-        ...blocks.slice(0, menuBlockIdx - 1),
+        ...blocks.slice(0, blockControllerMenuBlockIdx - 1),
         {
-          ...blocks[menuBlockIdx],
-          accumulatedRows: blocks[menuBlockIdx - 1].accumulatedRows,
-          rows: blocks[menuBlockIdx - 1].rows + blocks[menuBlockIdx].rows,
+          ...blocks[blockControllerMenuBlockIdx],
+          accumulatedRows:
+            blocks[blockControllerMenuBlockIdx - 1].accumulatedRows,
+          rows:
+            blocks[blockControllerMenuBlockIdx - 1].rows +
+            blocks[blockControllerMenuBlockIdx].rows,
         },
-        ...blocks.slice(menuBlockIdx + 1),
+        ...blocks.slice(blockControllerMenuBlockIdx + 1),
       ]);
 
       onClose();
     }
   }, [
     blocks,
-    menuBlockIdx,
+    blockControllerMenuBlockIdx,
     onClose,
     setBlocks,
     setIsProtected,
-    setRedoSnapshots,
-    setUndoSnapshots,
-    undoSnapshots,
+    resetRedoSnapshots,
+    pushUndoSnapshot,
   ]);
 
   const onClickMergeBelow = useCallback(() => {
-    if (menuBlockIdx !== null) {
+    if (blockControllerMenuBlockIdx !== null) {
       // 元に戻す/やり直すスナップショットの集合を更新
-      setUndoSnapshots([...undoSnapshots, { blocks, notes: null }]);
-      setRedoSnapshots([]);
+      pushUndoSnapshot({ blocks, notes: null });
+      resetRedoSnapshots();
 
       setIsProtected(true);
 
       // 1つ後の譜面のブロックの行数を吸収
       setBlocks([
-        ...blocks.slice(0, menuBlockIdx),
+        ...blocks.slice(0, blockControllerMenuBlockIdx),
         {
-          ...blocks[menuBlockIdx],
-          rows: blocks[menuBlockIdx].rows + blocks[menuBlockIdx + 1].rows,
+          ...blocks[blockControllerMenuBlockIdx],
+          rows:
+            blocks[blockControllerMenuBlockIdx].rows +
+            blocks[blockControllerMenuBlockIdx + 1].rows,
         },
-        ...blocks.slice(menuBlockIdx + 2),
+        ...blocks.slice(blockControllerMenuBlockIdx + 2),
       ]);
 
       onClose();
     }
   }, [
     blocks,
-    menuBlockIdx,
+    blockControllerMenuBlockIdx,
     onClose,
     setBlocks,
     setIsProtected,
-    setRedoSnapshots,
-    setUndoSnapshots,
-    undoSnapshots,
+    resetRedoSnapshots,
+    pushUndoSnapshot,
   ]);
 
   const onClickDelete = useCallback(() => {
-    if (menuBlockIdx !== null) {
+    if (blockControllerMenuBlockIdx !== null) {
       // 元に戻す/やり直すスナップショットの集合を更新
-      setUndoSnapshots([...undoSnapshots, { blocks, notes }]);
-      setRedoSnapshots([]);
+      pushUndoSnapshot({ blocks, notes });
+      resetRedoSnapshots();
 
       setIsProtected(true);
 
@@ -221,45 +218,50 @@ function BlockControllerMenu() {
         notes.map((ns: Note[]) =>
           ns.filter(
             (note: Note) =>
-              note.rowIdx < blocks[menuBlockIdx].accumulatedRows ||
+              note.rowIdx <
+                blocks[blockControllerMenuBlockIdx].accumulatedRows ||
               note.rowIdx >=
-                blocks[menuBlockIdx].accumulatedRows + blocks[menuBlockIdx].rows
+                blocks[blockControllerMenuBlockIdx].accumulatedRows +
+                  blocks[blockControllerMenuBlockIdx].rows
           )
         )
       );
 
       // 譜面のブロックの削除
-      setBlocks(blocks.filter((_, idx: number) => idx !== menuBlockIdx));
+      setBlocks(
+        blocks.filter((_, idx: number) => idx !== blockControllerMenuBlockIdx)
+      );
 
       onClose();
     }
   }, [
     blocks,
-    menuBlockIdx,
+    blockControllerMenuBlockIdx,
     notes,
     onClose,
     setBlocks,
     setIsProtected,
     setNotes,
-    setRedoSnapshots,
-    setUndoSnapshots,
-    undoSnapshots,
+    resetRedoSnapshots,
+    pushUndoSnapshot,
   ]);
 
   // 表示中は上下手動スクロールを抑止
   useEffect(() => {
-    document.body.style.overflowY = menuPosition ? "hidden" : "scroll";
-  }, [menuPosition]);
+    document.body.style.overflowY = blockControllerMenuPosition
+      ? "hidden"
+      : "scroll";
+  }, [blockControllerMenuPosition]);
 
   return (
-    menuPosition && (
+    blockControllerMenuPosition && (
       <>
         <MenuBackground onClose={onClose} />
         <ul
           className="menu bg-base-200 rounded-box fixed"
           style={{
-            top: menuPosition.top,
-            left: menuPosition.left,
+            top: blockControllerMenuPosition.top,
+            left: blockControllerMenuPosition.left,
             zIndex: MENU_Z_INDEX,
           }}
         >
@@ -269,12 +271,12 @@ function BlockControllerMenu() {
           <MenuItem label="Add at Bottom" onClick={onClickAdd} />
           <MenuItem label="Insert into Next" onClick={onClickInsert} />
           <MenuItem
-            disabled={menuBlockIdx === 0}
+            disabled={blockControllerMenuBlockIdx === 0}
             label="Merge with Above"
             onClick={onClickMergeAbove}
           />
           <MenuItem
-            disabled={menuBlockIdx === blockNum - 1}
+            disabled={blockControllerMenuBlockIdx === blockNum - 1}
             label="Merge with Below"
             onClick={onClickMergeBelow}
           />

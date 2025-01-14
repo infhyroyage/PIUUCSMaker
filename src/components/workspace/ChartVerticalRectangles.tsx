@@ -1,10 +1,8 @@
 import { memo, useMemo } from "react";
-import { useRecoilValue } from "recoil";
-import { noteSizeState, zoomState } from "../../services/atoms";
+import { useStore } from "../../hooks/useStore";
+import { ZOOM_VALUES } from "../../services/assets";
 import { ChartVerticalRectanglesProps } from "../../types/props";
 import BorderLine from "./BorderLine";
-import { Zoom } from "../../types/menu";
-import { ZOOM_VALUES } from "../../services/assets";
 
 function ChartVerticalRectangles({
   isEven,
@@ -12,8 +10,7 @@ function ChartVerticalRectangles({
   rows,
   split,
 }: ChartVerticalRectanglesProps) {
-  const noteSize = useRecoilValue<number>(noteSizeState);
-  const zoom = useRecoilValue<Zoom>(zoomState);
+  const { noteSize, zoom } = useStore();
 
   // 譜面のブロックの1行あたりの高さ(px)を計算
   const unitRowHeight = useMemo(

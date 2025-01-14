@@ -1,48 +1,37 @@
 import { useCallback, useEffect, useMemo } from "react";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import useClipBoard from "../../hooks/useClipBoard";
 import useSelectedDeleting from "../../hooks/useSelectedDeleting";
 import useSelectedFlipping from "../../hooks/useSelectedFlipping";
-import {
-  blocksState,
-  chartIndicatorMenuPositionState,
-  clipBoardState,
-  holdSetterState,
-  indicatorState,
-  isProtectedState,
-  redoSnapshotsState,
-  selectorState,
-  undoSnapshotsState,
-} from "../../services/atoms";
+import { useStore } from "../../hooks/useStore";
 import { MENU_Z_INDEX } from "../../services/styles";
-import { HoldSetter, Indicator, Selector } from "../../types/chart";
-import { ChartIndicatorMenuPosition } from "../../types/menu";
-import { Block, ChartSnapshot, ClipBoard } from "../../types/ucs";
 import MenuBackground from "./MenuBackground";
 import MenuItem from "./MenuItem";
 
 function ChartIndicatorMenu() {
-  const [blocks, setBlocks] = useRecoilState<Block[]>(blocksState);
-  const [holdSetter, setHoldSetter] =
-    useRecoilState<HoldSetter>(holdSetterState);
-  const [indicator, setIndicator] = useRecoilState<Indicator>(indicatorState);
-  const [menuPosition, setMenuPosition] =
-    useRecoilState<ChartIndicatorMenuPosition>(chartIndicatorMenuPositionState);
-  const [selector, setSelector] = useRecoilState<Selector>(selectorState);
-  const [undoSnapshots, setUndoSnapshots] =
-    useRecoilState<ChartSnapshot[]>(undoSnapshotsState);
-  const clipBoard = useRecoilValue<ClipBoard>(clipBoardState);
-  const setIsProtected = useSetRecoilState<boolean>(isProtectedState);
-  const setRedoSnapshots =
-    useSetRecoilState<ChartSnapshot[]>(redoSnapshotsState);
+  const {
+    blocks,
+    setBlocks,
+    chartIndicatorMenuPosition,
+    resetChartIndicatorMenuPosition,
+    clipBoard,
+    holdSetter,
+    setHoldSetter,
+    indicator,
+    setIndicator,
+    setIsProtected,
+    resetRedoSnapshots,
+    selector,
+    setSelector,
+    pushUndoSnapshot,
+  } = useStore();
 
   const { handleCut, handleCopy, handlePaste } = useClipBoard();
   const { handleFlip } = useSelectedFlipping();
   const { handleDelete } = useSelectedDeleting();
 
   const onClose = useCallback(
-    () => setMenuPosition(undefined),
-    [setMenuPosition]
+    () => resetChartIndicatorMenuPosition(),
+    [resetChartIndicatorMenuPosition]
   );
 
   const onClickStartSettingHold = useCallback(() => {
@@ -95,8 +84,8 @@ function ChartIndicatorMenu() {
       return;
 
     // 元に戻す/やり直すスナップショットの集合を更新
-    setUndoSnapshots([...undoSnapshots, { blocks, notes: null }]);
-    setRedoSnapshots([]);
+    pushUndoSnapshot({ blocks, notes: null });
+    resetRedoSnapshots();
 
     setIsProtected(true);
 
@@ -131,9 +120,8 @@ function ChartIndicatorMenu() {
     setBlocks,
     setIndicator,
     setIsProtected,
-    setRedoSnapshots,
-    setUndoSnapshots,
-    undoSnapshots,
+    resetRedoSnapshots,
+    pushUndoSnapshot,
   ]);
 
   const onClickCut = useCallback(() => {
@@ -222,18 +210,20 @@ function ChartIndicatorMenu() {
 
   // 表示中は上下手動スクロールを抑止
   useEffect(() => {
-    document.body.style.overflowY = menuPosition ? "hidden" : "scroll";
-  }, [menuPosition]);
+    document.body.style.overflowY = chartIndicatorMenuPosition
+      ? "hidden"
+      : "scroll";
+  }, [chartIndicatorMenuPosition]);
 
   return (
-    menuPosition && (
+    chartIndicatorMenuPosition && (
       <>
         <MenuBackground onClose={onClose} />
         <ul
           className="menu bg-base-200 rounded-box fixed"
           style={{
-            top: menuPosition.top,
-            left: menuPosition.left,
+            top: chartIndicatorMenuPosition.top,
+            left: chartIndicatorMenuPosition.left,
             zIndex: MENU_Z_INDEX,
           }}
           onMouseUp={(event: React.MouseEvent<HTMLUListElement, MouseEvent>) =>
