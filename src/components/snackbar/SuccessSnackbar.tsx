@@ -3,8 +3,8 @@ import { useStore } from "../../hooks/useStore";
 import { SNACKBAR_Z_INDEX } from "../../services/styles";
 
 function SuccessSnackbar() {
-  const [isOpened, setIsOpened] = useState<boolean>(false);
   const { successMessage } = useStore();
+  const [isOpened, setIsOpened] = useState<boolean>(false);
 
   const onClose = () => setIsOpened(false);
 
