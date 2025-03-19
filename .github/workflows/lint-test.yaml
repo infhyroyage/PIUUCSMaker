@@ -36,7 +36,7 @@ jobs:
       - name: Lint
         uses: reviewdog/action-eslint@v1
         with:
-          fail_on_error: true
+          fail_level: error
           filter_mode: file
           level: warning
           reporter: github-pr-review
