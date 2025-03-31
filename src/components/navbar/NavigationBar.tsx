@@ -71,7 +71,7 @@ function NavigationBar() {
       </div>
       <form className="flex items-center gap-0 md:gap-1">
         <select
-          className="select select-sm select-bordered bg-base-300"
+          className="select select-sm bg-base-300"
           disabled={isPlaying}
           onChange={onChangeSelect}
           value={`${zoom.idx}`}

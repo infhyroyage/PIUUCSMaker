@@ -9,9 +9,9 @@ function DrawerListItem({
   onClick,
 }: DrawerListItemProps) {
   return (
-    <li className={disabled ? "disabled" : undefined}>
+    <li className={disabled ? "menu-disabled" : undefined}>
       <button
-        className="flex flex-col items-start btn btn-ghost rounded-none px-3"
+        className="flex items-center justify-start btn btn-ghost rounded-none px-3"
         disabled={disabled}
         onClick={onClick}
         style={{ height: `${NAVIGATION_BAR_HEIGHT}px` }}

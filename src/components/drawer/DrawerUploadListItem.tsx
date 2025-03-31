@@ -11,9 +11,9 @@ function DrawerUploadListItem({
   onChange,
 }: DrawerUploadListItemProps) {
   return (
-    <li className={disabled ? "disabled" : undefined}>
+    <li className={disabled ? "menu-disabled" : undefined}>
       <label
-        className="flex flex-col items-start btn btn-ghost rounded-none px-3"
+        className="flex items-center justify-start btn btn-ghost rounded-none px-3"
         htmlFor={id}
         style={{ height: `${NAVIGATION_BAR_HEIGHT}px` }}
       >
