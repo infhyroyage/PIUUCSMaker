@@ -1,12 +1,15 @@
 // @ts-check
 
 import eslint from "@eslint/js";
-import tseslint from "typescript-eslint";
 import react from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
 import vitest from "eslint-plugin-vitest";
+import tseslint from "typescript-eslint";
 
 export default [
+  {
+    ignores: ["postcss.config.cjs"],
+  },
   ...tseslint.config(
     eslint.configs.recommended,
     ...tseslint.configs.recommended

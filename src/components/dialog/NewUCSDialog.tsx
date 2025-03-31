@@ -106,7 +106,7 @@ function NewUCSDialog() {
               UCS File Name
             </div>
             <input
-              className={`input input-sm input-bordered w-full${
+              className={`input input-sm w-full${
                 errors.includes("UCS File Name") ? " input-error" : ""
               }`}
               disabled={isPending}
@@ -125,7 +125,7 @@ function NewUCSDialog() {
           <label>
             <div className="label text-md font-bold label-text">Mode</div>
             <select
-              className="select select-bordered select-sm w-full"
+              className="select select-sm w-full"
               disabled={isPending}
               onChange={(event: ChangeEvent<HTMLSelectElement>) => {
                 setForm({ ...form, mode: event.target.value });
@@ -147,7 +147,7 @@ function NewUCSDialog() {
               BPM
             </div>
             <input
-              className={`input input-sm input-bordered w-full${
+              className={`input input-sm w-full${
                 errors.includes("BPM") ? " input-error" : ""
               }`}
               disabled={isPending}
@@ -172,7 +172,7 @@ function NewUCSDialog() {
               Delay(ms)
             </div>
             <input
-              className={`input input-sm input-bordered w-full${
+              className={`input input-sm w-full${
                 errors.includes("Delay(ms)") ? " input-error" : ""
               }`}
               disabled={isPending}
@@ -197,7 +197,7 @@ function NewUCSDialog() {
               Split
             </div>
             <input
-              className={`input input-sm input-bordered w-full${
+              className={`input input-sm w-full${
                 errors.includes("Split") ? " input-error" : ""
               }`}
               disabled={isPending}
@@ -222,7 +222,7 @@ function NewUCSDialog() {
               Beat
             </div>
             <input
-              className={`input input-sm input-bordered w-full${
+              className={`input input-sm w-full${
                 errors.includes("Beat") ? " input-error" : ""
               }`}
               disabled={isPending}
@@ -247,7 +247,7 @@ function NewUCSDialog() {
               Rows
             </div>
             <input
-              className={`input input-sm input-bordered w-full${
+              className={`input input-sm w-full${
                 errors.includes("Rows") ? " input-error" : ""
               }`}
               disabled={isPending}

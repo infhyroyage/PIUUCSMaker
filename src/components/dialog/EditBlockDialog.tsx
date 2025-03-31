@@ -275,7 +275,7 @@ function EditBlockDialog() {
               BPM
             </div>
             <input
-              className={`input input-sm input-bordered w-full${
+              className={`input input-sm w-full${
                 errors.includes("BPM") ? " input-error" : ""
               }`}
               disabled={isPending}
@@ -304,7 +304,7 @@ function EditBlockDialog() {
               Delay(ms)
             </div>
             <input
-              className={`input input-sm input-bordered w-full${
+              className={`input input-sm w-full${
                 isIgnoredDelay
                   ? " input-warning"
                   : errors.includes("Delay(ms)")
@@ -339,7 +339,7 @@ function EditBlockDialog() {
               Split
             </div>
             <input
-              className={`input input-sm input-bordered w-full${
+              className={`input input-sm w-full${
                 errors.includes("Split") ? " input-error" : ""
               }`}
               disabled={isPending}
@@ -364,7 +364,7 @@ function EditBlockDialog() {
               Beat
             </div>
             <input
-              className={`input input-sm input-bordered w-full${
+              className={`input input-sm w-full${
                 errors.includes("Beat") ? " input-error" : ""
               }`}
               disabled={isPending}
@@ -389,7 +389,7 @@ function EditBlockDialog() {
               Rows
             </div>
             <input
-              className={`input input-sm input-bordered w-full${
+              className={`input input-sm w-full${
                 errors.includes("Rows") ? " input-error" : ""
               }`}
               disabled={isPending}
