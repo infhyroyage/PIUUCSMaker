@@ -30,7 +30,7 @@
     "@vitejs/plugin-react": "^4.3.2",
     "@vitest/coverage-v8": "^3.0.6",
     "daisyui": "^5.0.9",
-    "eslint": "^9.15.0",
+    "eslint": "^9.24.0",
     "eslint-plugin-react": "^7.37.4",
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-vitest": "^0.5.4",
