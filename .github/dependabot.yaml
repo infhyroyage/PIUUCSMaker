@@ -22,8 +22,6 @@ updates:
       - dependency-name: "react-dom"
       - dependency-name: "typescript"
     labels: []
-    reviewers:
-      - "infhyroyage"
 
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -35,5 +33,3 @@ updates:
     assignees:
       - "infhyroyage"
     labels: []
-    reviewers:
-      - "infhyroyage"
