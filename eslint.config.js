@@ -8,7 +8,7 @@ import tseslint from "typescript-eslint";
 
 export default [
   {
-    ignores: ["postcss.config.cjs"],
+    ignores: ["dist/**"],
   },
   ...tseslint.config(
     eslint.configs.recommended,
