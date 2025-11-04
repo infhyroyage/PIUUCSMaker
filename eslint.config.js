@@ -7,13 +7,11 @@ import vitest from "eslint-plugin-vitest";
 import tseslint from "typescript-eslint";
 
 export default [
+  eslint.configs.recommended,
+  ...tseslint.configs.recommended,
   {
     ignores: ["dist/**"],
   },
-  ...tseslint.config(
-    eslint.configs.recommended,
-    ...tseslint.configs.recommended
-  ),
   {
     plugins: {
       react,
