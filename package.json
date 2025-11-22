@@ -33,7 +33,7 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-vitest": "^0.5.4",
-    "jsdom": "^27.0.0",
+    "jsdom": "^27.2.0",
     "tailwindcss": "^4.1.16",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
