@@ -1,9 +1,9 @@
 // @ts-check
 
 import eslint from "@eslint/js";
+import vitest from "@vitest/eslint-plugin";
 import react from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
-import vitest from "eslint-plugin-vitest";
 import tseslint from "typescript-eslint";
 
 export default [
