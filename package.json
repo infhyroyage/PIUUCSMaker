@@ -28,7 +28,7 @@
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^5.1.2",
     "@vitest/coverage-v8": "^4.0.16",
-    "@vitest/eslint-plugin": "^1.6.4",
+    "@vitest/eslint-plugin": "^1.6.5",
     "daisyui": "^5.5.14",
     "eslint": "^9.39.2",
     "eslint-plugin-react": "^7.37.5",
