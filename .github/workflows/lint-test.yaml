@@ -6,7 +6,7 @@ on:
       - main
 
 env:
-  NODE_VERSION: "22.17.1"
+  NODE_VERSION: "24.13.0"
 
 permissions:
   checks: write

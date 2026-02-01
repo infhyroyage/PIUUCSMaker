@@ -4,7 +4,7 @@
 
 | Name       | Ver.    |
 | ---------- | ------- |
-| Node.js    | 22.17.1 |
+| Node.js    | 24.13.0 |
 | React      | 18.3.1  |
 | Typescript | 5.9.3   |
 
