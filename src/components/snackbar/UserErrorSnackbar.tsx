@@ -1,21 +1,17 @@
-import { useEffect, useState } from "react";
+import { useCallback } from "react";
 import { useStore } from "../../hooks/useStore";
 import { SNACKBAR_Z_INDEX } from "../../services/styles";
 
 function UserErrorSnackbar() {
-  const { userErrorMessage } = useStore();
-  const [isOpened, setIsOpened] = useState<boolean>(false);
+  const { userErrorMessage, setUserErrorMessage } = useStore();
 
-  const onClose = () => setIsOpened(false);
-
-  useEffect(() => {
-    if (userErrorMessage.length > 0) {
-      setIsOpened(true);
-    }
-  }, [userErrorMessage, setIsOpened]);
+  const onClose = useCallback(
+    () => setUserErrorMessage(""),
+    [setUserErrorMessage],
+  );
 
   return (
-    isOpened && (
+    userErrorMessage.length > 0 && (
       <div
         className="toast toast-top toast-center"
         style={{ zIndex: SNACKBAR_Z_INDEX }}

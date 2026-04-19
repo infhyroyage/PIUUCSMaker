@@ -1,10 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-  useTransition,
-} from "react";
+import { useCallback, useMemo, useState, useTransition } from "react";
 import useEditBlockDialog from "../../hooks/useEditBlockDialog";
 import { useStore } from "../../hooks/useStore";
 import { DIALOG_Z_INDEX } from "../../services/styles";
@@ -32,42 +26,30 @@ function EditBlockDialog() {
   } = useStore();
   const [errors, setErrors] = useState<EditBlockDialogError[]>([]);
   const [form, setForm] = useState<EditBlockDialogForm>({
-    beat: "",
-    bpm: "",
-    delay: "",
-    rows: "",
-    split: "",
+    beat:
+      blockControllerMenuBlockIdx === null
+        ? ""
+        : `${blocks[blockControllerMenuBlockIdx].beat}`,
+    bpm:
+      blockControllerMenuBlockIdx === null
+        ? ""
+        : `${blocks[blockControllerMenuBlockIdx].bpm}`,
+    delay:
+      blockControllerMenuBlockIdx === null
+        ? ""
+        : `${blocks[blockControllerMenuBlockIdx].delay}`,
+    rows:
+      blockControllerMenuBlockIdx === null
+        ? ""
+        : `${blocks[blockControllerMenuBlockIdx].rows}`,
+    split:
+      blockControllerMenuBlockIdx === null
+        ? ""
+        : `${blocks[blockControllerMenuBlockIdx].split}`,
   });
 
   const { closeEditBlockDialog } = useEditBlockDialog();
   const [isPending, startTransition] = useTransition();
-
-  useEffect(
-    () =>
-      setForm({
-        beat:
-          blockControllerMenuBlockIdx === null
-            ? ""
-            : `${blocks[blockControllerMenuBlockIdx].beat}`,
-        bpm:
-          blockControllerMenuBlockIdx === null
-            ? ""
-            : `${blocks[blockControllerMenuBlockIdx].bpm}`,
-        delay:
-          blockControllerMenuBlockIdx === null
-            ? ""
-            : `${blocks[blockControllerMenuBlockIdx].delay}`,
-        rows:
-          blockControllerMenuBlockIdx === null
-            ? ""
-            : `${blocks[blockControllerMenuBlockIdx].rows}`,
-        split:
-          blockControllerMenuBlockIdx === null
-            ? ""
-            : `${blocks[blockControllerMenuBlockIdx].split}`,
-      }),
-    [blocks, blockControllerMenuBlockIdx, setForm]
-  );
 
   // 最初以外の譜面のブロックの場合は入力したDelay値を無視する警告フラグ
   const isIgnoredDelay = useMemo(() => {
@@ -122,14 +104,14 @@ function EditBlockDialog() {
                     split: split,
                   }
                 : blockIdx > blockControllerMenuBlockIdx
-                ? {
-                    ...blocks[blockIdx],
-                    accumulatedRows:
-                      blocks[blockIdx - 1].accumulatedRows +
-                      blocks[blockIdx - 1].rows +
-                      deltaRows,
-                  }
-                : blocks[blockIdx]
+                  ? {
+                      ...blocks[blockIdx],
+                      accumulatedRows:
+                        blocks[blockIdx - 1].accumulatedRows +
+                        blocks[blockIdx - 1].rows +
+                        deltaRows,
+                    }
+                  : blocks[blockIdx],
           );
 
           // 行数を変更した場合のみ、blockControllerMenuBlockIdx番目以降の譜面のブロックに該当する
@@ -145,7 +127,7 @@ function EditBlockDialog() {
               ...ns.filter(
                 (note: Note) =>
                   note.rowIdx <
-                  blocks[blockControllerMenuBlockIdx].accumulatedRows
+                  blocks[blockControllerMenuBlockIdx].accumulatedRows,
               ),
               // blockControllerMenuBlockIdx番目の譜面のブロック
               ...ns
@@ -155,7 +137,7 @@ function EditBlockDialog() {
                       blocks[blockControllerMenuBlockIdx].accumulatedRows &&
                     note.rowIdx <
                       blocks[blockControllerMenuBlockIdx].accumulatedRows +
-                        blocks[blockControllerMenuBlockIdx].rows
+                        blocks[blockControllerMenuBlockIdx].rows,
                 )
                 .reduce((prev: Note[], note: Note) => {
                   const scaledRowIdx: number =
@@ -164,10 +146,10 @@ function EditBlockDialog() {
                       ((note.rowIdx -
                         blocks[blockControllerMenuBlockIdx].accumulatedRows) *
                         rows) /
-                        blocks[blockControllerMenuBlockIdx].rows
+                        blocks[blockControllerMenuBlockIdx].rows,
                     );
                   const prevScaledNote: Note | undefined = prev.find(
-                    (note: Note) => note.rowIdx === scaledRowIdx
+                    (note: Note) => note.rowIdx === scaledRowIdx,
                   );
 
                   return prevScaledNote
@@ -192,7 +174,7 @@ function EditBlockDialog() {
                   (note: Note) =>
                     note.rowIdx >=
                     blocks[blockControllerMenuBlockIdx].accumulatedRows +
-                      blocks[blockControllerMenuBlockIdx].rows
+                      blocks[blockControllerMenuBlockIdx].rows,
                 )
                 .map((note: Note) => {
                   return { rowIdx: note.rowIdx + deltaRows, type: note.type };
@@ -231,7 +213,7 @@ function EditBlockDialog() {
       setErrors,
       resetRedoSnapshots,
       pushUndoSnapshot,
-    ]
+    ],
   );
 
   const onClose = useCallback(() => {
@@ -297,8 +279,8 @@ function EditBlockDialog() {
                 isIgnoredDelay
                   ? " text-warning"
                   : errors.includes("Delay(ms)")
-                  ? " text-error"
-                  : ""
+                    ? " text-error"
+                    : ""
               }`}
             >
               Delay(ms)
@@ -308,8 +290,8 @@ function EditBlockDialog() {
                 isIgnoredDelay
                   ? " input-warning"
                   : errors.includes("Delay(ms)")
-                  ? " input-error"
-                  : ""
+                    ? " input-error"
+                    : ""
               }`}
               disabled={isPending}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {

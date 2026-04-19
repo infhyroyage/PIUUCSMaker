@@ -18,7 +18,7 @@ const validate = (content: string): UploadingUCSValidation => {
 
   const lines: string[] = content.split("\r\n");
   let fileLinesNum: number = 0;
-  let line: string | undefined = "";
+  let line: string | undefined;
 
   // 1行目のチェック
   fileLinesNum++;
@@ -368,7 +368,7 @@ function useUploadingUCS() {
       resetRedoSnapshots,
       setUcsName,
       resetUndoSnapshots,
-    ]
+    ],
   );
 
   return { isUploadingUCS, onUploadUCS };

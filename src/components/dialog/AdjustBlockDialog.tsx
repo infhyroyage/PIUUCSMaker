@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useStore } from "../../hooks/useStore";
 import { DIALOG_Z_INDEX } from "../../services/styles";
 import { roundBpm } from "../../services/validations";
@@ -22,9 +22,18 @@ function AdjustBlockDialog() {
   } = useStore();
   const [fixed, setFixed] = useState<AdjustBlockDialogFormFixed>("bpm");
   const [form, setForm] = useState<AdjustBlockDialogForm>({
-    bpm: -1,
-    rows: -1,
-    split: -1,
+    bpm:
+      blockControllerMenuBlockIdx === null
+        ? -1
+        : blocks[blockControllerMenuBlockIdx].bpm,
+    rows:
+      blockControllerMenuBlockIdx === null
+        ? -1
+        : blocks[blockControllerMenuBlockIdx].rows,
+    split:
+      blockControllerMenuBlockIdx === null
+        ? -1
+        : blocks[blockControllerMenuBlockIdx].split,
   });
 
   const menuBlock = useMemo(
@@ -32,26 +41,7 @@ function AdjustBlockDialog() {
       blockControllerMenuBlockIdx === null
         ? null
         : blocks[blockControllerMenuBlockIdx],
-    [blocks, blockControllerMenuBlockIdx]
-  );
-
-  useEffect(
-    () =>
-      setForm({
-        bpm:
-          blockControllerMenuBlockIdx === null
-            ? -1
-            : blocks[blockControllerMenuBlockIdx].bpm,
-        rows:
-          blockControllerMenuBlockIdx === null
-            ? -1
-            : blocks[blockControllerMenuBlockIdx].rows,
-        split:
-          blockControllerMenuBlockIdx === null
-            ? -1
-            : blocks[blockControllerMenuBlockIdx].split,
-      }),
-    [blocks, blockControllerMenuBlockIdx, setForm]
+    [blocks, blockControllerMenuBlockIdx],
   );
 
   const onUpdate = useCallback(() => {
@@ -80,14 +70,14 @@ function AdjustBlockDialog() {
               split: form.split,
             }
           : blockIdx > blockControllerMenuBlockIdx
-          ? {
-              ...blocks[blockIdx],
-              accumulatedRows:
-                blocks[blockIdx - 1].accumulatedRows +
-                blocks[blockIdx - 1].rows +
-                deltaRows,
-            }
-          : blocks[blockIdx]
+            ? {
+                ...blocks[blockIdx],
+                accumulatedRows:
+                  blocks[blockIdx - 1].accumulatedRows +
+                  blocks[blockIdx - 1].rows +
+                  deltaRows,
+              }
+            : blocks[blockIdx],
     );
 
     // 行数を変更した場合のみ、blockControllerMenuBlockIdx番目以降の譜面のブロックに該当する
@@ -102,7 +92,7 @@ function AdjustBlockDialog() {
         // (blockControllerMenuBlockIdx - 1)番目以前の譜面のブロック
         ...ns.filter(
           (note: Note) =>
-            note.rowIdx < blocks[blockControllerMenuBlockIdx].accumulatedRows
+            note.rowIdx < blocks[blockControllerMenuBlockIdx].accumulatedRows,
         ),
         // blockControllerMenuBlockIdx番目の譜面のブロック
         ...ns
@@ -112,7 +102,7 @@ function AdjustBlockDialog() {
                 blocks[blockControllerMenuBlockIdx].accumulatedRows &&
               note.rowIdx <
                 blocks[blockControllerMenuBlockIdx].accumulatedRows +
-                  blocks[blockControllerMenuBlockIdx].rows
+                  blocks[blockControllerMenuBlockIdx].rows,
           )
           .reduce((prev: Note[], note: Note) => {
             const scaledRowIdx: number =
@@ -121,10 +111,10 @@ function AdjustBlockDialog() {
                 ((note.rowIdx -
                   blocks[blockControllerMenuBlockIdx].accumulatedRows) *
                   Number(form.rows)) /
-                  blocks[blockControllerMenuBlockIdx].rows
+                  blocks[blockControllerMenuBlockIdx].rows,
               );
             const prevScaledNote: Note | undefined = prev.find(
-              (note: Note) => note.rowIdx === scaledRowIdx
+              (note: Note) => note.rowIdx === scaledRowIdx,
             );
 
             return prevScaledNote
@@ -149,7 +139,7 @@ function AdjustBlockDialog() {
             (note: Note) =>
               note.rowIdx >=
               blocks[blockControllerMenuBlockIdx].accumulatedRows +
-                blocks[blockControllerMenuBlockIdx].rows
+                blocks[blockControllerMenuBlockIdx].rows,
           )
           .map((note: Note) => {
             return { rowIdx: note.rowIdx + deltaRows, type: note.type };
@@ -178,7 +168,7 @@ function AdjustBlockDialog() {
 
   const onClose = useCallback(
     () => resetBlockControllerMenuBlockIdx(),
-    [resetBlockControllerMenuBlockIdx]
+    [resetBlockControllerMenuBlockIdx],
   );
 
   return (
