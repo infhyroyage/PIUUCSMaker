@@ -36,12 +36,23 @@ describe("UserErrorSnackbar", () => {
   });
 
   it("Rerender invisibly if close button is clicked", async () => {
-    (useStore as unknown as Mock).mockReturnValue({
-      userErrorMessage: "UserErrorMessage",
+    // Given: Snackbar is visible with a user error message
+    let userErrorMessage = "UserErrorMessage";
+    const setUserErrorMessage = vi.fn((value: string) => {
+      userErrorMessage = value;
     });
-    const { findByTestId, queryByText } = render(<UserErrorSnackbar />);
+    (useStore as unknown as Mock).mockImplementation(() => ({
+      userErrorMessage,
+      setUserErrorMessage,
+    }));
+    const { findByTestId, queryByText, rerender } = render(<UserErrorSnackbar />);
 
+    // When: User clicks the close control
     await userEvent.click(await findByTestId("user-error-snackbar-close"));
+
+    // Then: Store clear is requested and the message is hidden after re-render (as zustand would)
+    expect(setUserErrorMessage).toHaveBeenCalledWith("");
+    rerender(<UserErrorSnackbar />);
 
     await waitFor(() =>
       expect(queryByText("UserErrorMessage")).not.toBeInTheDocument()

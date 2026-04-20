@@ -36,12 +36,23 @@ describe("SuccessSnackbar", () => {
   });
 
   it("Rerender invisibly if close button is clicked", async () => {
-    (useStore as unknown as Mock).mockReturnValue({
-      successMessage: "SuccessMessage",
+    // Given: Snackbar is visible with a success message
+    let successMessage = "SuccessMessage";
+    const setSuccessMessage = vi.fn((value: string) => {
+      successMessage = value;
     });
-    const { findByTestId, queryByText } = render(<SuccessSnackbar />);
+    (useStore as unknown as Mock).mockImplementation(() => ({
+      successMessage,
+      setSuccessMessage,
+    }));
+    const { findByTestId, queryByText, rerender } = render(<SuccessSnackbar />);
 
+    // When: User clicks the close control
     await userEvent.click(await findByTestId("success-snackbar-close"));
+
+    // Then: Store clear is requested and the message is hidden after re-render (as zustand would)
+    expect(setSuccessMessage).toHaveBeenCalledWith("");
+    rerender(<SuccessSnackbar />);
 
     await waitFor(() =>
       expect(queryByText("SuccessMessage")).not.toBeInTheDocument()
