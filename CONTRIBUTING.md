@@ -5,8 +5,8 @@
 | Name       | Ver.    |
 | ---------- | ------- |
 | Node.js    | 24.13.0 |
-| React      | 18.3.1  |
-| Typescript | 5.9.3   |
+| React      | 19.2.5  |
+| Typescript | 6.0.3   |
 
 > [!NOTE]
 > All npm packages except above are maintained by dependabot in every Webnesday at 1:00(UTC).
