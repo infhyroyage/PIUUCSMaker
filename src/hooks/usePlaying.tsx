@@ -50,7 +50,7 @@ function usePlaying() {
         })
         .then(
           (decodedAudio: AudioBuffer) =>
-            (beatAudioBuffer.current = decodedAudio)
+            (beatAudioBuffer.current = decodedAudio),
         );
     }
 
@@ -112,7 +112,7 @@ function usePlaying() {
       setSuccessMessage,
       setUserErrorMessage,
       volumeValue,
-    ]
+    ],
   );
 
   // MP3ファイルの音楽用の音量を0(ミュート)から1(MAX)まで動的に設定
@@ -137,13 +137,13 @@ function usePlaying() {
       document.documentElement.scrollTop > 0
         ? document.documentElement.scrollTop
         : blocks[0].delay > 0
-        ? (-2.0 *
-            blocks[0].delay *
-            noteSize *
-            ZOOM_VALUES[zoom.idx] *
-            blocks[0].bpm) /
-          60000
-        : 0;
+          ? (-2.0 *
+              blocks[0].delay *
+              noteSize *
+              ZOOM_VALUES[zoom.idx] *
+              blocks[0].bpm) /
+            60000
+          : 0;
 
     // ビート音を再生するタイミング・下へスクロールする速度(px/ms)が変化するタイミングでのブラウザの画面のy座標、
     // および、現在のブラウザの画面のy座標に応じた自動スクロール経過時間(秒)を計算
@@ -167,9 +167,9 @@ function usePlaying() {
               (note: Note) =>
                 ["X", "M"].includes(note.type) &&
                 note.rowIdx >= block.accumulatedRows &&
-                note.rowIdx < block.accumulatedRows + block.rows
+                note.rowIdx < block.accumulatedRows + block.rows,
             )
-            .map((note: Note) => note.rowIdx)
+            .map((note: Note) => note.rowIdx),
         );
         // ビート音を再生するタイミングでのブラウザの画面のy座標をまとめて追加
         const tops: number[] = [
@@ -178,7 +178,7 @@ function usePlaying() {
           .sort((a: number, b: number) => a - b) // 譜面全体での行のインデックスを昇順にソート
           .map(
             (rowIdx: number) =>
-              border + unitRowHeight * (rowIdx - block.accumulatedRows)
+              border + unitRowHeight * (rowIdx - block.accumulatedRows),
           );
         prev.beatTops = prev.beatTops.concat(tops);
 
@@ -216,20 +216,20 @@ function usePlaying() {
 
         return prev;
       },
-      { elapsedMusicTime: 0, beatTops: [], verocities: [] }
+      { elapsedMusicTime: 0, beatTops: [], verocities: [] },
     );
 
     // ビート音を再生するタイミング・下へスクロールする速度(px/ms)が変化するタイミングでの
     // 自動スクロール開始時のインデックスを計算
     let beatTopIdx: number = scrollParam.beatTops.findIndex(
-      (value: number) => value > document.documentElement.scrollTop
+      (value: number) => value > document.documentElement.scrollTop,
     );
     if (beatTopIdx === -1) {
       beatTopIdx = scrollParam.beatTops.length;
     }
     let verocityIdx: number = scrollParam.verocities.findIndex(
       (value: { verocity: number; border: number }) =>
-        value.border > document.documentElement.scrollTop
+        value.border > document.documentElement.scrollTop,
     );
     if (verocityIdx === -1) {
       verocityIdx = scrollParam.verocities.length;
@@ -252,14 +252,14 @@ function usePlaying() {
         scrollParam.elapsedMusicTime > 0 &&
           blocks[0].delay / 1000 + scrollParam.elapsedMusicTime > 0
           ? blocks[0].delay / 1000 + scrollParam.elapsedMusicTime
-          : 0
+          : 0,
       );
     }
 
     // 60fpsで自動スクロールを開始
     const FPS: number = 60;
     previousScrollTime.current = Date.now();
-    const scrollIntervalId: NodeJS.Timeout = setInterval(() => {
+    const scrollIntervalId: ReturnType<typeof setInterval> = setInterval(() => {
       if (verocityIdx === scrollParam.verocities.length) {
         // 最後の譜面のブロックをスクロールし終えたら停止
         stop();

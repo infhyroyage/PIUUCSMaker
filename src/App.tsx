@@ -17,7 +17,7 @@ function App() {
 
   // Activate Google Analytics only in production mode
   useEffect(() => {
-    if (process.env.NODE_ENV === "production") {
+    if (import.meta.env.PROD) {
       ReactGA.initialize("G-XLZYQZ4979");
     }
   }, []);
