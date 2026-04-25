@@ -1,17 +1,17 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useStore } from "../../hooks/useStore";
 import { DIALOG_Z_INDEX } from "../../services/styles";
 import { roundBpm } from "../../services/validations";
-import {
-  AdjustBlockDialogForm,
-  AdjustBlockDialogFormFixed,
-} from "../../types/dialog";
+import { AdjustBlockDialogFormFixed } from "../../types/dialog";
 import { Block, Note } from "../../types/ucs";
 
 function AdjustBlockDialog() {
   const {
     blockControllerMenuBlockIdx,
     resetBlockControllerMenuBlockIdx,
+    adjustBlockDialogForm,
+    setAdjustBlockDialogForm,
+    resetAdjustBlockDialogForm,
     blocks,
     setBlocks,
     setIsProtected,
@@ -21,20 +21,6 @@ function AdjustBlockDialog() {
     pushUndoSnapshot,
   } = useStore();
   const [fixed, setFixed] = useState<AdjustBlockDialogFormFixed>("bpm");
-  const [form, setForm] = useState<AdjustBlockDialogForm>({
-    bpm:
-      blockControllerMenuBlockIdx === null
-        ? -1
-        : blocks[blockControllerMenuBlockIdx].bpm,
-    rows:
-      blockControllerMenuBlockIdx === null
-        ? -1
-        : blocks[blockControllerMenuBlockIdx].rows,
-    split:
-      blockControllerMenuBlockIdx === null
-        ? -1
-        : blocks[blockControllerMenuBlockIdx].split,
-  });
 
   const menuBlock = useMemo(
     () =>
@@ -44,13 +30,33 @@ function AdjustBlockDialog() {
     [blocks, blockControllerMenuBlockIdx],
   );
 
+  useEffect(
+    () =>
+      setAdjustBlockDialogForm({
+        bpm:
+          blockControllerMenuBlockIdx === null
+            ? -1
+            : blocks[blockControllerMenuBlockIdx].bpm,
+        rows:
+          blockControllerMenuBlockIdx === null
+            ? -1
+            : blocks[blockControllerMenuBlockIdx].rows,
+        split:
+          blockControllerMenuBlockIdx === null
+            ? -1
+            : blocks[blockControllerMenuBlockIdx].split,
+      }),
+    [blocks, blockControllerMenuBlockIdx, setAdjustBlockDialogForm],
+  );
+
   const onUpdate = useCallback(() => {
     // BlockControllerMenuのメニューを開いていない場合はNOP
     if (blockControllerMenuBlockIdx === null) return;
 
     // blockControllerMenuBlockIdx番目の譜面のブロックの行数の差分
     const deltaRows: number =
-      Number(form.rows) - blocks[blockControllerMenuBlockIdx].rows;
+      Number(adjustBlockDialogForm.rows) -
+      blocks[blockControllerMenuBlockIdx].rows;
 
     // 元に戻す/やり直すスナップショットの集合を更新
     pushUndoSnapshot({ blocks, notes: deltaRows === 0 ? null : notes });
@@ -64,10 +70,10 @@ function AdjustBlockDialog() {
               accumulatedRows:
                 blocks[blockControllerMenuBlockIdx].accumulatedRows,
               beat: blocks[blockControllerMenuBlockIdx].beat,
-              bpm: roundBpm(form.bpm),
+              bpm: roundBpm(adjustBlockDialogForm.bpm),
               delay: blocks[blockControllerMenuBlockIdx].delay,
-              rows: form.rows,
-              split: form.split,
+              rows: adjustBlockDialogForm.rows,
+              split: adjustBlockDialogForm.split,
             }
           : blockIdx > blockControllerMenuBlockIdx
             ? {
@@ -110,7 +116,7 @@ function AdjustBlockDialog() {
               Math.floor(
                 ((note.rowIdx -
                   blocks[blockControllerMenuBlockIdx].accumulatedRows) *
-                  Number(form.rows)) /
+                  Number(adjustBlockDialogForm.rows)) /
                   blocks[blockControllerMenuBlockIdx].rows,
               );
             const prevScaledNote: Note | undefined = prev.find(
@@ -153,9 +159,10 @@ function AdjustBlockDialog() {
     if (deltaRows !== 0) setNotes(updatedNotes);
 
     resetBlockControllerMenuBlockIdx();
+    resetAdjustBlockDialogForm();
   }, [
     blocks,
-    form,
+    adjustBlockDialogForm,
     blockControllerMenuBlockIdx,
     notes,
     setBlocks,
@@ -164,12 +171,13 @@ function AdjustBlockDialog() {
     setNotes,
     resetRedoSnapshots,
     pushUndoSnapshot,
+    resetAdjustBlockDialogForm,
   ]);
 
-  const onClose = useCallback(
-    () => resetBlockControllerMenuBlockIdx(),
-    [resetBlockControllerMenuBlockIdx],
-  );
+  const onClose = useCallback(() => {
+    resetBlockControllerMenuBlockIdx();
+    resetAdjustBlockDialogForm();
+  }, [resetBlockControllerMenuBlockIdx, resetAdjustBlockDialogForm]);
 
   return (
     blockControllerMenuBlockIdx !== null &&
@@ -238,7 +246,7 @@ function AdjustBlockDialog() {
                 fixed === "split" ? " text-neutral" : ""
               }`}
             >
-              {form.split}
+              {adjustBlockDialogForm.split}
             </p>
           </div>
           <div className="flex gap-x-4 mt-2">
@@ -248,14 +256,25 @@ function AdjustBlockDialog() {
               className="btn btn-primary btn-sm px-0 min-w-14"
               disabled={
                 fixed === "split" ||
-                (fixed === "bpm" && form.rows % form.split !== 0) ||
-                (fixed === "bpm" && form.rows < form.split) ||
-                (fixed === "rows" && form.bpm * form.split > 999)
+                (fixed === "bpm" &&
+                  adjustBlockDialogForm.rows % adjustBlockDialogForm.split !==
+                    0) ||
+                (fixed === "bpm" &&
+                  adjustBlockDialogForm.rows < adjustBlockDialogForm.split) ||
+                (fixed === "rows" &&
+                  adjustBlockDialogForm.bpm * adjustBlockDialogForm.split > 999)
               }
               onClick={() =>
-                setForm({
-                  bpm: fixed === "bpm" ? form.bpm : form.bpm * form.split,
-                  rows: fixed === "rows" ? form.rows : form.rows / form.split,
+                setAdjustBlockDialogForm({
+                  bpm:
+                    fixed === "bpm"
+                      ? adjustBlockDialogForm.bpm
+                      : adjustBlockDialogForm.bpm * adjustBlockDialogForm.split,
+                  rows:
+                    fixed === "rows"
+                      ? adjustBlockDialogForm.rows
+                      : adjustBlockDialogForm.rows /
+                        adjustBlockDialogForm.split,
                   split: 1,
                 })
               }
@@ -266,17 +285,23 @@ function AdjustBlockDialog() {
               className="btn btn-primary btn-sm px-0 min-w-11"
               disabled={
                 fixed === "split" ||
-                form.split % 2 !== 0 ||
-                form.split < 2 ||
-                (fixed === "bpm" && form.rows % 2 !== 0) ||
-                (fixed === "bpm" && form.rows < 2) ||
-                (fixed === "rows" && form.bpm > 499.5)
+                adjustBlockDialogForm.split % 2 !== 0 ||
+                adjustBlockDialogForm.split < 2 ||
+                (fixed === "bpm" && adjustBlockDialogForm.rows % 2 !== 0) ||
+                (fixed === "bpm" && adjustBlockDialogForm.rows < 2) ||
+                (fixed === "rows" && adjustBlockDialogForm.bpm > 499.5)
               }
               onClick={() =>
-                setForm({
-                  bpm: fixed === "bpm" ? form.bpm : form.bpm * 2,
-                  rows: fixed === "rows" ? form.rows : form.rows / 2,
-                  split: form.split / 2,
+                setAdjustBlockDialogForm({
+                  bpm:
+                    fixed === "bpm"
+                      ? adjustBlockDialogForm.bpm
+                      : adjustBlockDialogForm.bpm * 2,
+                  rows:
+                    fixed === "rows"
+                      ? adjustBlockDialogForm.rows
+                      : adjustBlockDialogForm.rows / 2,
+                  split: adjustBlockDialogForm.split / 2,
                 })
               }
             >
@@ -286,25 +311,35 @@ function AdjustBlockDialog() {
               className="btn btn-primary btn-sm px-0 min-w-11"
               disabled={
                 fixed === "split" ||
-                form.split < 2 ||
+                adjustBlockDialogForm.split < 2 ||
                 (fixed === "bpm" &&
-                  (form.rows * (form.split - 1)) % form.split !== 0) ||
+                  (adjustBlockDialogForm.rows *
+                    (adjustBlockDialogForm.split - 1)) %
+                    adjustBlockDialogForm.split !==
+                    0) ||
                 (fixed === "bpm" &&
-                  form.rows * (form.split - 1) < form.split) ||
+                  adjustBlockDialogForm.rows *
+                    (adjustBlockDialogForm.split - 1) <
+                    adjustBlockDialogForm.split) ||
                 (fixed === "rows" &&
-                  form.bpm * form.split > 999 * (form.split - 1))
+                  adjustBlockDialogForm.bpm * adjustBlockDialogForm.split >
+                    999 * (adjustBlockDialogForm.split - 1))
               }
               onClick={() =>
-                setForm({
+                setAdjustBlockDialogForm({
                   bpm:
                     fixed === "bpm"
-                      ? form.bpm
-                      : (form.bpm * form.split) / (form.split - 1),
+                      ? adjustBlockDialogForm.bpm
+                      : (adjustBlockDialogForm.bpm *
+                          adjustBlockDialogForm.split) /
+                        (adjustBlockDialogForm.split - 1),
                   rows:
                     fixed === "rows"
-                      ? form.rows
-                      : (form.rows * (form.split - 1)) / form.split,
-                  split: form.split - 1,
+                      ? adjustBlockDialogForm.rows
+                      : (adjustBlockDialogForm.rows *
+                          (adjustBlockDialogForm.split - 1)) /
+                        adjustBlockDialogForm.split,
+                  split: adjustBlockDialogForm.split - 1,
                 })
               }
             >
@@ -314,23 +349,31 @@ function AdjustBlockDialog() {
               className="btn btn-primary btn-sm px-0 min-w-11"
               disabled={
                 fixed === "split" ||
-                form.split > 127 ||
+                adjustBlockDialogForm.split > 127 ||
                 (fixed === "bpm" &&
-                  (form.rows * (form.split + 1)) % form.split !== 0) ||
+                  (adjustBlockDialogForm.rows *
+                    (adjustBlockDialogForm.split + 1)) %
+                    adjustBlockDialogForm.split !==
+                    0) ||
                 (fixed === "rows" &&
-                  form.bpm * form.split * 10 < form.split + 1)
+                  adjustBlockDialogForm.bpm * adjustBlockDialogForm.split * 10 <
+                    adjustBlockDialogForm.split + 1)
               }
               onClick={() =>
-                setForm({
+                setAdjustBlockDialogForm({
                   bpm:
                     fixed === "bpm"
-                      ? form.bpm
-                      : (form.bpm * form.split) / (form.split + 1),
+                      ? adjustBlockDialogForm.bpm
+                      : (adjustBlockDialogForm.bpm *
+                          adjustBlockDialogForm.split) /
+                        (adjustBlockDialogForm.split + 1),
                   rows:
                     fixed === "rows"
-                      ? form.rows
-                      : (form.rows * (form.split + 1)) / form.split,
-                  split: form.split + 1,
+                      ? adjustBlockDialogForm.rows
+                      : (adjustBlockDialogForm.rows *
+                          (adjustBlockDialogForm.split + 1)) /
+                        adjustBlockDialogForm.split,
+                  split: adjustBlockDialogForm.split + 1,
                 })
               }
             >
@@ -340,14 +383,20 @@ function AdjustBlockDialog() {
               className="btn btn-primary btn-sm px-0 min-w-11"
               disabled={
                 fixed === "split" ||
-                form.split > 64 ||
-                (fixed === "rows" && form.bpm < 0.2)
+                adjustBlockDialogForm.split > 64 ||
+                (fixed === "rows" && adjustBlockDialogForm.bpm < 0.2)
               }
               onClick={() =>
-                setForm({
-                  bpm: fixed === "bpm" ? form.bpm : form.bpm / 2,
-                  rows: fixed === "rows" ? form.rows : form.rows * 2,
-                  split: form.split * 2,
+                setAdjustBlockDialogForm({
+                  bpm:
+                    fixed === "bpm"
+                      ? adjustBlockDialogForm.bpm
+                      : adjustBlockDialogForm.bpm / 2,
+                  rows:
+                    fixed === "rows"
+                      ? adjustBlockDialogForm.rows
+                      : adjustBlockDialogForm.rows * 2,
+                  split: adjustBlockDialogForm.split * 2,
                 })
               }
             >
@@ -357,17 +406,27 @@ function AdjustBlockDialog() {
               className="btn btn-primary btn-sm px-0 min-w-14"
               disabled={
                 fixed === "split" ||
-                (fixed === "bpm" && (form.rows * 128) % form.split !== 0) ||
-                (fixed === "rows" && form.bpm * form.split < 12.8)
+                (fixed === "bpm" &&
+                  (adjustBlockDialogForm.rows * 128) %
+                    adjustBlockDialogForm.split !==
+                    0) ||
+                (fixed === "rows" &&
+                  adjustBlockDialogForm.bpm * adjustBlockDialogForm.split <
+                    12.8)
               }
               onClick={() =>
-                setForm({
+                setAdjustBlockDialogForm({
                   bpm:
-                    fixed === "bpm" ? form.bpm : (form.bpm * form.split) / 128,
+                    fixed === "bpm"
+                      ? adjustBlockDialogForm.bpm
+                      : (adjustBlockDialogForm.bpm *
+                          adjustBlockDialogForm.split) /
+                        128,
                   rows:
                     fixed === "rows"
-                      ? form.rows
-                      : (form.rows * 128) / form.split,
+                      ? adjustBlockDialogForm.rows
+                      : (adjustBlockDialogForm.rows * 128) /
+                        adjustBlockDialogForm.split,
                   split: 128,
                 })
               }
@@ -416,7 +475,7 @@ function AdjustBlockDialog() {
                 fixed === "rows" ? " text-neutral" : ""
               }`}
             >
-              {form.rows}
+              {adjustBlockDialogForm.rows}
             </p>
           </div>
           <div className="flex gap-x-4 mt-2">
@@ -427,17 +486,23 @@ function AdjustBlockDialog() {
               className="btn btn-primary btn-sm px-0 min-w-11"
               disabled={
                 fixed === "rows" ||
-                form.rows % 2 !== 0 ||
-                form.rows < 2 ||
-                (fixed === "bpm" && form.split % 2 !== 0) ||
-                (fixed === "bpm" && form.split < 2) ||
-                (fixed === "split" && form.bpm < 0.2)
+                adjustBlockDialogForm.rows % 2 !== 0 ||
+                adjustBlockDialogForm.rows < 2 ||
+                (fixed === "bpm" && adjustBlockDialogForm.split % 2 !== 0) ||
+                (fixed === "bpm" && adjustBlockDialogForm.split < 2) ||
+                (fixed === "split" && adjustBlockDialogForm.bpm < 0.2)
               }
               onClick={() =>
-                setForm({
-                  bpm: fixed === "bpm" ? form.bpm : form.bpm / 2,
-                  rows: form.rows / 2,
-                  split: fixed === "split" ? form.split : form.split / 2,
+                setAdjustBlockDialogForm({
+                  bpm:
+                    fixed === "bpm"
+                      ? adjustBlockDialogForm.bpm
+                      : adjustBlockDialogForm.bpm / 2,
+                  rows: adjustBlockDialogForm.rows / 2,
+                  split:
+                    fixed === "split"
+                      ? adjustBlockDialogForm.split
+                      : adjustBlockDialogForm.split / 2,
                 })
               }
             >
@@ -449,14 +514,20 @@ function AdjustBlockDialog() {
               className="btn btn-primary btn-sm px-0 min-w-11"
               disabled={
                 fixed === "rows" ||
-                (fixed === "bpm" && form.split > 64) ||
-                (fixed === "split" && form.bpm > 499.5)
+                (fixed === "bpm" && adjustBlockDialogForm.split > 64) ||
+                (fixed === "split" && adjustBlockDialogForm.bpm > 499.5)
               }
               onClick={() =>
-                setForm({
-                  bpm: fixed === "bpm" ? form.bpm : form.bpm * 2,
-                  rows: form.rows * 2,
-                  split: fixed === "split" ? form.split : form.split * 2,
+                setAdjustBlockDialogForm({
+                  bpm:
+                    fixed === "bpm"
+                      ? adjustBlockDialogForm.bpm
+                      : adjustBlockDialogForm.bpm * 2,
+                  rows: adjustBlockDialogForm.rows * 2,
+                  split:
+                    fixed === "split"
+                      ? adjustBlockDialogForm.split
+                      : adjustBlockDialogForm.split * 2,
                 })
               }
             >
@@ -504,7 +575,7 @@ function AdjustBlockDialog() {
                 fixed === "bpm" ? " text-neutral" : ""
               }`}
             >
-              {roundBpm(form.bpm)}
+              {roundBpm(adjustBlockDialogForm.bpm)}
             </p>
           </div>
           <div className="flex gap-x-4 mt-2">
@@ -515,16 +586,22 @@ function AdjustBlockDialog() {
               className="btn btn-primary btn-sm px-0 min-w-11"
               disabled={
                 fixed === "bpm" ||
-                form.bpm < 0.2 ||
-                (fixed === "rows" && form.split > 64) ||
-                (fixed === "split" && form.rows % 2 !== 0) ||
-                (fixed === "split" && form.rows < 2)
+                adjustBlockDialogForm.bpm < 0.2 ||
+                (fixed === "rows" && adjustBlockDialogForm.split > 64) ||
+                (fixed === "split" && adjustBlockDialogForm.rows % 2 !== 0) ||
+                (fixed === "split" && adjustBlockDialogForm.rows < 2)
               }
               onClick={() =>
-                setForm({
-                  bpm: form.bpm / 2,
-                  rows: fixed === "rows" ? form.rows : form.rows / 2,
-                  split: fixed === "split" ? form.split : form.split * 2,
+                setAdjustBlockDialogForm({
+                  bpm: adjustBlockDialogForm.bpm / 2,
+                  rows:
+                    fixed === "rows"
+                      ? adjustBlockDialogForm.rows
+                      : adjustBlockDialogForm.rows / 2,
+                  split:
+                    fixed === "split"
+                      ? adjustBlockDialogForm.split
+                      : adjustBlockDialogForm.split * 2,
                 })
               }
             >
@@ -536,15 +613,21 @@ function AdjustBlockDialog() {
               className="btn btn-primary btn-sm px-0 min-w-11"
               disabled={
                 fixed === "bpm" ||
-                form.bpm > 499.5 ||
-                (fixed === "rows" && form.split % 2 !== 0) ||
-                (fixed === "rows" && form.split < 2)
+                adjustBlockDialogForm.bpm > 499.5 ||
+                (fixed === "rows" && adjustBlockDialogForm.split % 2 !== 0) ||
+                (fixed === "rows" && adjustBlockDialogForm.split < 2)
               }
               onClick={() =>
-                setForm({
-                  bpm: form.bpm * 2,
-                  rows: fixed === "rows" ? form.rows : form.rows * 2,
-                  split: fixed === "split" ? form.split : form.split / 2,
+                setAdjustBlockDialogForm({
+                  bpm: adjustBlockDialogForm.bpm * 2,
+                  rows:
+                    fixed === "rows"
+                      ? adjustBlockDialogForm.rows
+                      : adjustBlockDialogForm.rows * 2,
+                  split:
+                    fixed === "split"
+                      ? adjustBlockDialogForm.split
+                      : adjustBlockDialogForm.split / 2,
                 })
               }
             >

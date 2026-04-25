@@ -1,4 +1,10 @@
-import { useCallback, useMemo, useState, useTransition } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useTransition,
+} from "react";
 import useEditBlockDialog from "../../hooks/useEditBlockDialog";
 import { useStore } from "../../hooks/useStore";
 import { DIALOG_Z_INDEX } from "../../services/styles";
@@ -9,7 +15,7 @@ import {
   validateRows,
   validateSplit,
 } from "../../services/validations";
-import { EditBlockDialogError, EditBlockDialogForm } from "../../types/dialog";
+import { EditBlockDialogError } from "../../types/dialog";
 import { Block, Note } from "../../types/ucs";
 
 function EditBlockDialog() {
@@ -19,37 +25,45 @@ function EditBlockDialog() {
     blocks,
     setBlocks,
     setIsProtected,
+    editBlockDialogForm,
+    setEditBlockDialogForm,
+    resetEditBlockDialogForm,
     notes,
     setNotes,
     resetRedoSnapshots,
     pushUndoSnapshot,
   } = useStore();
   const [errors, setErrors] = useState<EditBlockDialogError[]>([]);
-  const [form, setForm] = useState<EditBlockDialogForm>({
-    beat:
-      blockControllerMenuBlockIdx === null
-        ? ""
-        : `${blocks[blockControllerMenuBlockIdx].beat}`,
-    bpm:
-      blockControllerMenuBlockIdx === null
-        ? ""
-        : `${blocks[blockControllerMenuBlockIdx].bpm}`,
-    delay:
-      blockControllerMenuBlockIdx === null
-        ? ""
-        : `${blocks[blockControllerMenuBlockIdx].delay}`,
-    rows:
-      blockControllerMenuBlockIdx === null
-        ? ""
-        : `${blocks[blockControllerMenuBlockIdx].rows}`,
-    split:
-      blockControllerMenuBlockIdx === null
-        ? ""
-        : `${blocks[blockControllerMenuBlockIdx].split}`,
-  });
 
   const { closeEditBlockDialog } = useEditBlockDialog();
   const [isPending, startTransition] = useTransition();
+
+  useEffect(
+    () =>
+      setEditBlockDialogForm({
+        beat:
+          blockControllerMenuBlockIdx === null
+            ? ""
+            : `${blocks[blockControllerMenuBlockIdx].beat}`,
+        bpm:
+          blockControllerMenuBlockIdx === null
+            ? ""
+            : `${blocks[blockControllerMenuBlockIdx].bpm}`,
+        delay:
+          blockControllerMenuBlockIdx === null
+            ? ""
+            : `${blocks[blockControllerMenuBlockIdx].delay}`,
+        rows:
+          blockControllerMenuBlockIdx === null
+            ? ""
+            : `${blocks[blockControllerMenuBlockIdx].rows}`,
+        split:
+          blockControllerMenuBlockIdx === null
+            ? ""
+            : `${blocks[blockControllerMenuBlockIdx].split}`,
+      }),
+    [blocks, blockControllerMenuBlockIdx, setEditBlockDialogForm],
+  );
 
   // 最初以外の譜面のブロックの場合は入力したDelay値を無視する警告フラグ
   const isIgnoredDelay = useMemo(() => {
@@ -59,9 +73,9 @@ function EditBlockDialog() {
     )
       return false;
 
-    const delay: number = Number(form.delay);
+    const delay: number = Number(editBlockDialogForm.delay);
     return !Number.isNaN(delay) && delay !== 0;
-  }, [blockControllerMenuBlockIdx, form.delay]);
+  }, [blockControllerMenuBlockIdx, editBlockDialogForm.delay]);
 
   const onUpdate = useCallback(
     () =>
@@ -70,11 +84,11 @@ function EditBlockDialog() {
         if (blockControllerMenuBlockIdx === null) return;
 
         // バリデーションチェック
-        const beat: number | null = validateBeat(form.beat);
-        const bpm: number | null = validateBpm(form.bpm);
-        const delay: number | null = validateDelay(form.delay);
-        const rows: number | null = validateRows(form.rows);
-        const split: number | null = validateSplit(form.split);
+        const beat: number | null = validateBeat(editBlockDialogForm.beat);
+        const bpm: number | null = validateBpm(editBlockDialogForm.bpm);
+        const delay: number | null = validateDelay(editBlockDialogForm.delay);
+        const rows: number | null = validateRows(editBlockDialogForm.rows);
+        const split: number | null = validateSplit(editBlockDialogForm.split);
         if (
           beat !== null &&
           bpm !== null &&
@@ -203,7 +217,7 @@ function EditBlockDialog() {
     [
       blocks,
       closeEditBlockDialog,
-      form,
+      editBlockDialogForm,
       blockControllerMenuBlockIdx,
       notes,
       setBlocks,
@@ -218,15 +232,9 @@ function EditBlockDialog() {
 
   const onClose = useCallback(() => {
     setErrors([]);
-    setForm({
-      beat: "",
-      bpm: "",
-      delay: "",
-      rows: "",
-      split: "",
-    });
+    resetEditBlockDialogForm();
     resetBlockControllerMenuBlockIdx();
-  }, [setErrors, setForm, resetBlockControllerMenuBlockIdx]);
+  }, [setErrors, resetEditBlockDialogForm, resetBlockControllerMenuBlockIdx]);
 
   return (
     <dialog
@@ -262,10 +270,13 @@ function EditBlockDialog() {
               }`}
               disabled={isPending}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                setForm({ ...form, bpm: event.target.value });
+                setEditBlockDialogForm({
+                  ...editBlockDialogForm,
+                  bpm: event.target.value,
+                });
               }}
               type="number"
-              value={form.bpm}
+              value={editBlockDialogForm.bpm}
             />
             {errors.includes("BPM") && (
               <div className="label text-md label-text text-error">
@@ -295,10 +306,13 @@ function EditBlockDialog() {
               }`}
               disabled={isPending}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                setForm({ ...form, delay: event.target.value });
+                setEditBlockDialogForm({
+                  ...editBlockDialogForm,
+                  delay: event.target.value,
+                });
               }}
               type="number"
-              value={form.delay}
+              value={editBlockDialogForm.delay}
             />
             {isIgnoredDelay ? (
               <div className="label text-md label-text text-warning">
@@ -326,10 +340,13 @@ function EditBlockDialog() {
               }`}
               disabled={isPending}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                setForm({ ...form, split: event.target.value });
+                setEditBlockDialogForm({
+                  ...editBlockDialogForm,
+                  split: event.target.value,
+                });
               }}
               type="number"
-              value={form.split}
+              value={editBlockDialogForm.split}
             />
             {errors.includes("Split") && (
               <div className="label text-md label-text text-error">
@@ -351,10 +368,13 @@ function EditBlockDialog() {
               }`}
               disabled={isPending}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                setForm({ ...form, beat: event.target.value });
+                setEditBlockDialogForm({
+                  ...editBlockDialogForm,
+                  beat: event.target.value,
+                });
               }}
               type="number"
-              value={form.beat}
+              value={editBlockDialogForm.beat}
             />
             {errors.includes("Beat") && (
               <div className="label text-md label-text text-error">
@@ -376,10 +396,13 @@ function EditBlockDialog() {
               }`}
               disabled={isPending}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                setForm({ ...form, rows: event.target.value });
+                setEditBlockDialogForm({
+                  ...editBlockDialogForm,
+                  rows: event.target.value,
+                });
               }}
               type="number"
-              value={form.rows}
+              value={editBlockDialogForm.rows}
             />
             {errors.includes("Rows") && (
               <div className="label text-md label-text text-error">

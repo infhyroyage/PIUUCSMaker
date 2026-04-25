@@ -5,6 +5,7 @@ import { Selector } from "./chart";
 import { Indicator } from "./chart";
 
 import { HoldSetter } from "./chart";
+import { AdjustBlockDialogForm, EditBlockDialogForm } from "./dialog";
 import {
   BlockControllerMenuPosition,
   ChartIndicatorMenuPosition,
@@ -17,6 +18,23 @@ import { ClipBoard } from "./ucs";
  */
 export type Store = {
   /**
+   * Form of AdjustBlockDialog
+   */
+  adjustBlockDialogForm: AdjustBlockDialogForm;
+
+  /**
+   * Setter for adjustBlockDialogForm
+   */
+  setAdjustBlockDialogForm: (
+    adjustBlockDialogForm: AdjustBlockDialogForm,
+  ) => void;
+
+  /**
+   * Reset adjustBlockDialogForm
+   */
+  resetAdjustBlockDialogForm: () => void;
+
+  /**
    * Index of the block opening BlockControllerMenu
    * null if BlockControllerMenu is invisible
    */
@@ -26,7 +44,7 @@ export type Store = {
    * Setter for blockControllerMenuBlockIdx
    */
   setBlockControllerMenuBlockIdx: (
-    blockControllerMenuBlockIdx: number | null
+    blockControllerMenuBlockIdx: number | null,
   ) => void;
 
   /**
@@ -44,7 +62,7 @@ export type Store = {
    * Setter for blockControllerMenuPosition
    */
   setBlockControllerMenuPosition: (
-    blockControllerMenuPosition: BlockControllerMenuPosition
+    blockControllerMenuPosition: BlockControllerMenuPosition,
   ) => void;
 
   /**
@@ -72,7 +90,7 @@ export type Store = {
    * Setter for chartIndicatorMenuPosition
    */
   setChartIndicatorMenuPosition: (
-    chartIndicatorMenuPosition: ChartIndicatorMenuPosition
+    chartIndicatorMenuPosition: ChartIndicatorMenuPosition,
   ) => void;
 
   /**
@@ -90,6 +108,21 @@ export type Store = {
    * Setter for clipBoard
    */
   setClipBoard: (clipBoard: ClipBoard | null) => void;
+
+  /**
+   * Form of EditBlockDialog
+   */
+  editBlockDialogForm: EditBlockDialogForm;
+
+  /**
+   * Setter for editBlockDialogForm
+   */
+  setEditBlockDialogForm: (editBlockDialogForm: EditBlockDialogForm) => void;
+
+  /**
+   * Reset editBlockDialogForm
+   */
+  resetEditBlockDialogForm: () => void;
 
   /**
    * Display parameter when setting a hold

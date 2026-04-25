@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { ZOOM_VALUES } from "../services/assets";
 import { HoldSetter, Indicator, Selector } from "../types/chart";
+import { AdjustBlockDialogForm, EditBlockDialogForm } from "../types/dialog";
 import {
   BlockControllerMenuPosition,
   ChartIndicatorMenuPosition,
@@ -12,15 +13,30 @@ import { Block, ChartSnapshot, ClipBoard, Note } from "../types/ucs";
  * Zustand store with initial values
  */
 export const useStore = create<Store>()((set) => ({
+  adjustBlockDialogForm: {
+    bpm: -1,
+    rows: -1,
+    split: -1,
+  },
+  setAdjustBlockDialogForm: (adjustBlockDialogForm: AdjustBlockDialogForm) =>
+    set({ adjustBlockDialogForm }),
+  resetAdjustBlockDialogForm: () =>
+    set({
+      adjustBlockDialogForm: {
+        bpm: -1,
+        rows: -1,
+        split: -1,
+      },
+    }),
   blockControllerMenuBlockIdx: null,
   setBlockControllerMenuBlockIdx: (
-    blockControllerMenuBlockIdx: number | null
+    blockControllerMenuBlockIdx: number | null,
   ) => set({ blockControllerMenuBlockIdx }),
   resetBlockControllerMenuBlockIdx: () =>
     set({ blockControllerMenuBlockIdx: null }),
   blockControllerMenuPosition: undefined,
   setBlockControllerMenuPosition: (
-    blockControllerMenuPosition: BlockControllerMenuPosition
+    blockControllerMenuPosition: BlockControllerMenuPosition,
   ) => set({ blockControllerMenuPosition }),
   resetBlockControllerMenuPosition: () =>
     set({ blockControllerMenuPosition: undefined }),
@@ -28,13 +44,32 @@ export const useStore = create<Store>()((set) => ({
   setBlocks: (blocks: Block[]) => set({ blocks }),
   chartIndicatorMenuPosition: undefined,
   setChartIndicatorMenuPosition: (
-    chartIndicatorMenuPosition: ChartIndicatorMenuPosition
+    chartIndicatorMenuPosition: ChartIndicatorMenuPosition,
   ) => set({ chartIndicatorMenuPosition }),
   resetChartIndicatorMenuPosition: () =>
     set({ chartIndicatorMenuPosition: undefined }),
   clipBoard: null,
   setClipBoard: (clipBoard: ClipBoard | null) => set({ clipBoard }),
   resetClipBoard: () => set({ clipBoard: null }),
+  editBlockDialogForm: {
+    beat: "",
+    bpm: "",
+    delay: "",
+    rows: "",
+    split: "",
+  },
+  setEditBlockDialogForm: (editBlockDialogForm: EditBlockDialogForm) =>
+    set({ editBlockDialogForm }),
+  resetEditBlockDialogForm: () =>
+    set({
+      editBlockDialogForm: {
+        beat: "",
+        bpm: "",
+        delay: "",
+        rows: "",
+        split: "",
+      },
+    }),
   holdSetter: null,
   setHoldSetter: (holdSetter: HoldSetter | null) => set({ holdSetter }),
   resetHoldSetter: () => set({ holdSetter: null }),
@@ -61,7 +96,7 @@ export const useStore = create<Store>()((set) => ({
     set({
       noteSize: Math.max(
         Math.floor(Math.min(window.innerWidth, window.innerHeight) / 15),
-        20
+        20,
       ),
     }),
   redoSnapshots: [],
