@@ -35,6 +35,24 @@ describe("SuccessSnackbar", () => {
     );
   });
 
+  it("auto-dismisses after five seconds", async () => {
+    // Given: visible success message and fake timers
+    vi.useFakeTimers();
+    const setSuccessMessage = vi.fn();
+    (useStore as unknown as Mock).mockReturnValue({
+      successMessage: "Auto close",
+      setSuccessMessage,
+    });
+    render(<SuccessSnackbar />);
+
+    // When: five seconds elapse
+    await vi.advanceTimersByTimeAsync(5000);
+
+    // Then: message clear is requested
+    expect(setSuccessMessage).toHaveBeenCalledWith("");
+    vi.useRealTimers();
+  });
+
   it("Rerender invisibly if close button is clicked", async () => {
     // Given: Snackbar is visible with a success message
     let successMessage = "SuccessMessage";
