@@ -8,6 +8,7 @@ import { useStore } from "../../../src/hooks/useStore";
 const mockSetBlocks = vi.fn();
 const mockSetNotes = vi.fn();
 const mockSetUcsName = vi.fn();
+const mockSetIsPerformance = vi.fn();
 const mockCloseNewUcsDialog = vi.fn();
 
 vi.mock("../../../src/hooks/useStore", () => ({
@@ -18,12 +19,18 @@ vi.mock("../../../src/hooks/useNewUcsDialog", () => ({
   default: () => ({ closeNewUcsDialog: mockCloseNewUcsDialog }),
 }));
 
+function renderOpenDialog() {
+  const view = render(<NewUCSDialog />);
+  view.getByTestId("new-ucs-dialog").showModal();
+  return view;
+}
+
 describe("NewUCSDialog", () => {
   beforeEach(() => {
     vi.resetAllMocks();
     (useStore as unknown as Mock).mockReturnValue({
       setBlocks: mockSetBlocks,
-      setIsPerformance: vi.fn(),
+      setIsPerformance: mockSetIsPerformance,
       setIsProtected: vi.fn(),
       setNotes: mockSetNotes,
       resetRedoSnapshots: vi.fn(),
@@ -34,13 +41,8 @@ describe("NewUCSDialog", () => {
   afterEach(() => cleanup());
 
   it("creates a new single chart with valid defaults", async () => {
-    // Given: dialog with default form values
-    const { getByText } = render(<NewUCSDialog />);
-
-    // When: CREATE is clicked
+    const { getByText } = renderOpenDialog();
     await userEvent.click(getByText("CREATE"));
-
-    // Then: chart state is initialized
     expect(mockSetBlocks).toHaveBeenCalled();
     expect(mockSetNotes).toHaveBeenCalled();
     expect(mockSetUcsName).toHaveBeenCalledWith("CS001.ucs");
@@ -48,38 +50,45 @@ describe("NewUCSDialog", () => {
   });
 
   it("creates double performance chart when mode is selected", async () => {
-    // Given: dialog rendered
-    const mockSetIsPerformance = vi.fn();
-    (useStore as unknown as Mock).mockReturnValue({
-      setBlocks: mockSetBlocks,
-      setIsPerformance: mockSetIsPerformance,
-      setIsProtected: vi.fn(),
-      setNotes: mockSetNotes,
-      resetRedoSnapshots: vi.fn(),
-      setUcsName: mockSetUcsName,
-      resetUndoSnapshots: vi.fn(),
-    });
-    const { getByText, getByLabelText } = render(<NewUCSDialog />);
-
-    // When: mode switched to double performance and created
-    await userEvent.selectOptions(getByLabelText("Mode"), "DoublePerformance");
+    const { getByText, getByDisplayValue } = renderOpenDialog();
+    await userEvent.selectOptions(
+      getByDisplayValue("Single"),
+      "DoublePerformance"
+    );
     await userEvent.click(getByText("CREATE"));
-
-    // Then: performance flag is enabled for double chart
     expect(mockSetIsPerformance).toHaveBeenCalledWith(true);
     expect(mockSetNotes).toHaveBeenCalled();
   });
 
-  it("shows validation errors for invalid form", async () => {
-    // Given: dialog with invalid BPM
-    const { getByText, getByDisplayValue } = render(<NewUCSDialog />);
-    await userEvent.clear(getByDisplayValue("120"));
-    await userEvent.type(getByDisplayValue(""), "abc");
-
-    // When: CREATE is clicked
+  it("creates single performance chart with five columns", async () => {
+    const { getByText, getByDisplayValue } = renderOpenDialog();
+    await userEvent.selectOptions(
+      getByDisplayValue("Single"),
+      "SinglePerformance"
+    );
     await userEvent.click(getByText("CREATE"));
+    expect(mockSetIsPerformance).toHaveBeenCalledWith(true);
+    expect(mockSetNotes).toHaveBeenCalled();
+  });
 
-    // Then: BPM validation message appears
-    expect(getByText(/BPM/)).toBeInTheDocument();
+  it("updates numeric fields through inputs", async () => {
+    const { getByDisplayValue } = renderOpenDialog();
+    const bpmInput = getByDisplayValue("120");
+    await userEvent.clear(bpmInput);
+    await userEvent.type(bpmInput, "140");
+    expect(bpmInput).toHaveValue(140);
+  });
+
+  it("shows validation errors for invalid form", async () => {
+    const { getByText, getByLabelText, getByDisplayValue } = renderOpenDialog();
+    await userEvent.clear(getByLabelText("UCS File Name"));
+    const bpmInput = getByDisplayValue("120");
+    await userEvent.clear(bpmInput);
+    await userEvent.type(bpmInput, "abc");
+    await userEvent.click(getByText("CREATE"));
+    expect(
+      getByText("Number of 4th Beats per Minute(0.1 - 999)")
+    ).toBeInTheDocument();
+    expect(getByText("Not Set Extension(.ucs)")).toBeInTheDocument();
   });
 });

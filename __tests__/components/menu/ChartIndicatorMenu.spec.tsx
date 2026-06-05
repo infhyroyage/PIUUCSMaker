@@ -217,6 +217,104 @@ describe("ChartIndicatorMenu", () => {
     expect(mockHandleDelete).toHaveBeenCalled();
   });
 
+  it("does not start hold when selector is active", async () => {
+    // Given: completed selection blocks hold setup
+    (useStore as unknown as Mock).mockReturnValue({
+      blocks: [
+        { accumulatedRows: 0, beat: 4, bpm: 120, delay: 0, rows: 4, split: 2 },
+      ],
+      setBlocks: mockSetBlocks,
+      chartIndicatorMenuPosition: { top: 1, left: 2 },
+      resetChartIndicatorMenuPosition: mockResetChartIndicatorMenuPosition,
+      clipBoard: null,
+      holdSetter: null,
+      setHoldSetter: mockSetHoldSetter,
+      indicator: {
+        column: 0,
+        rowIdx: 1,
+        top: 10,
+        blockIdx: 0,
+        blockAccumulatedRows: 0,
+      },
+      setIndicator: mockSetIndicator,
+      setIsProtected: vi.fn(),
+      resetRedoSnapshots: vi.fn(),
+      selector: {
+        completed: {
+          startColumn: 0,
+          goalColumn: 0,
+          startRowIdx: 0,
+          goalRowIdx: 1,
+        },
+        setting: null,
+        isSettingByMenu: false,
+      },
+      setSelector: mockSetSelector,
+      pushUndoSnapshot: vi.fn(),
+    });
+    const { getByText } = render(<ChartIndicatorMenu />);
+    await userEvent.click(getByText("Start Setting Hold"));
+    expect(mockSetHoldSetter).not.toHaveBeenCalled();
+  });
+
+  it("closes menu from background click", async () => {
+    const { getByTestId } = render(<ChartIndicatorMenu />);
+    await userEvent.click(getByTestId("menu-background"));
+    expect(mockResetChartIndicatorMenuPosition).toHaveBeenCalled();
+  });
+
+  it("handles mac keyboard shortcuts", () => {
+    Object.defineProperty(window.navigator, "userAgent", {
+      value: "Macintosh",
+      configurable: true,
+    });
+    (useStore as unknown as Mock).mockReturnValue({
+      blocks: [
+        { accumulatedRows: 0, beat: 4, bpm: 120, delay: 0, rows: 4, split: 2 },
+      ],
+      setBlocks: mockSetBlocks,
+      chartIndicatorMenuPosition: { top: 1, left: 2 },
+      resetChartIndicatorMenuPosition: mockResetChartIndicatorMenuPosition,
+      clipBoard: { columnLength: 1, rowLength: 1, copiedNotes: [] },
+      holdSetter: null,
+      setHoldSetter: mockSetHoldSetter,
+      indicator: {
+        column: 0,
+        rowIdx: 1,
+        top: 10,
+        blockIdx: 0,
+        blockAccumulatedRows: 0,
+      },
+      setIndicator: mockSetIndicator,
+      setIsProtected: vi.fn(),
+      resetRedoSnapshots: vi.fn(),
+      selector: {
+        completed: {
+          startColumn: 0,
+          goalColumn: 0,
+          startRowIdx: 0,
+          goalRowIdx: 1,
+        },
+        setting: null,
+        isSettingByMenu: false,
+      },
+      setSelector: mockSetSelector,
+      pushUndoSnapshot: vi.fn(),
+    });
+    render(<ChartIndicatorMenu />);
+    fireEvent.keyDown(window, { key: "c", metaKey: true });
+    fireEvent.keyDown(window, { key: "v", metaKey: true });
+    fireEvent.keyDown(window, { key: "x", metaKey: true });
+    fireEvent.keyDown(window, { key: "backspace" });
+    fireEvent.keyDown(window, { key: "y" });
+    fireEvent.keyDown(window, { key: "m" });
+    expect(mockHandleCopy).toHaveBeenCalled();
+    expect(mockHandlePaste).toHaveBeenCalled();
+    expect(mockHandleCut).toHaveBeenCalled();
+    expect(mockHandleDelete).toHaveBeenCalled();
+    expect(mockHandleFlip).toHaveBeenCalled();
+  });
+
   it("handles keyboard shortcut for copy on Windows", () => {
     // Given: menu mounted on non-Mac UA
     Object.defineProperty(window.navigator, "userAgent", {

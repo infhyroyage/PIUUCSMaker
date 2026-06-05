@@ -126,6 +126,74 @@ describe("Drawer", () => {
     expect(mockDownloadUCS).toHaveBeenCalled();
   });
 
+  it("triggers drawer actions for ucs, undo, redo, zoom, theme, and beats", async () => {
+    // Given: expanded drawer
+    document.body.innerHTML = '<dialog id="aggregate-dialog"></dialog>';
+    const showModal = vi.fn();
+    (
+      document.getElementById("aggregate-dialog") as HTMLDialogElement
+    ).showModal = showModal;
+    window.scrollTo = vi.fn();
+    const { getByText } = render(<Drawer />);
+    await userEvent.click(getByText("Expand"));
+
+    // When: drawer commands are used
+    await userEvent.click(getByText("New UCS"));
+    await userEvent.click(getByText("Undo"));
+    await userEvent.click(getByText("Redo"));
+    await userEvent.click(getByText("Zoom In"));
+    await userEvent.click(getByText("Mute Beats"));
+    await userEvent.click(getByText("Aggregate"));
+    await userEvent.click(getByText("Light"));
+
+    // Then: handlers run
+    expect(mockOpenNewUcsDialog).toHaveBeenCalled();
+    expect(mockHandleUndo).toHaveBeenCalled();
+    expect(mockHandleRedo).toHaveBeenCalled();
+    expect(mockUpdateZoomFromIdx).toHaveBeenCalledWith(1);
+    expect(mockToggleIsMuteBeats).toHaveBeenCalled();
+    expect(showModal).toHaveBeenCalled();
+    expect(mockToggleIsDarkMode).toHaveBeenCalled();
+  });
+
+  it("stops playback when already playing", async () => {
+    // Given: playing chart
+    (useStore as unknown as Mock).mockReturnValue({
+      isDarkMode: false,
+      toggleIsDarkMode: mockToggleIsDarkMode,
+      isMuteBeats: true,
+      toggleIsMuteBeats: mockToggleIsMuteBeats,
+      isPlaying: true,
+      redoSnapshots: [{}],
+      ucsName: "test.ucs",
+      undoSnapshots: [{}],
+      zoom: { idx: 1, top: 100 },
+      updateZoomFromIdx: mockUpdateZoomFromIdx,
+    });
+    const { getByText } = render(<Drawer />);
+
+    // When: Stop is clicked
+    await userEvent.click(getByText("Stop"));
+
+    // Then: stop handler runs
+    expect(mockStop).toHaveBeenCalled();
+  });
+
+  it("handles mac redo shortcut", () => {
+    // Given: Mac environment
+    Object.defineProperty(window.navigator, "userAgent", {
+      value: "Macintosh",
+      configurable: true,
+    });
+    render(<Drawer />);
+
+    // When: shift+meta+z is pressed
+    fireEvent.keyDown(window, { key: "z", shiftKey: true, metaKey: true });
+
+    // Then: redo handler runs
+    expect(mockHandleRedo).toHaveBeenCalled();
+  });
+
   it("starts playback from play action", async () => {
     // Given: chart loaded
     const { getByText } = render(<Drawer />);

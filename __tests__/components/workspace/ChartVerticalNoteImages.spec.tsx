@@ -63,7 +63,74 @@ describe("ChartVerticalNoteImages", () => {
     expect(getAllByRole("img")).toHaveLength(2);
   });
 
-  it("prevents drag start on note images", () => {
+  it("renders hold middle image for type H on another column", () => {
+    const { getByAltText } = render(
+      <ChartVerticalNoteImages {...baseProps} column={6} type="H" />
+    );
+    expect(getByAltText("hold1")).toBeInTheDocument();
+  });
+
+  it("prevents drag start on type X note image", () => {
+    const { getByAltText } = render(
+      <ChartVerticalNoteImages {...baseProps} type="X" />
+    );
+    const note = getByAltText("note0");
+    const dragEvent = new Event("dragstart", {
+      bubbles: true,
+      cancelable: true,
+    });
+    const preventDefault = vi.spyOn(dragEvent, "preventDefault");
+    note.dispatchEvent(dragEvent);
+    expect(preventDefault).toHaveBeenCalled();
+  });
+
+  it("prevents drag start on M hold and note images", () => {
+    const { getAllByRole } = render(
+      <ChartVerticalNoteImages {...baseProps} type="M" />
+    );
+    const images = getAllByRole("img");
+    for (const image of images) {
+      const dragEvent = new Event("dragstart", {
+        bubbles: true,
+        cancelable: true,
+      });
+      const preventDefault = vi.spyOn(dragEvent, "preventDefault");
+      image.dispatchEvent(dragEvent);
+      expect(preventDefault).toHaveBeenCalled();
+    }
+  });
+
+  it("prevents drag start on type W hold and note images", () => {
+    const { getAllByRole } = render(
+      <ChartVerticalNoteImages {...baseProps} type="W" />
+    );
+    const images = getAllByRole("img");
+    for (const image of images) {
+      const dragEvent = new Event("dragstart", {
+        bubbles: true,
+        cancelable: true,
+      });
+      const preventDefault = vi.spyOn(dragEvent, "preventDefault");
+      image.dispatchEvent(dragEvent);
+      expect(preventDefault).toHaveBeenCalled();
+    }
+  });
+
+  it("prevents drag start on type H hold image via react event", () => {
+    const { getByAltText } = render(
+      <ChartVerticalNoteImages {...baseProps} type="H" />
+    );
+    const hold = getByAltText("hold0");
+    const dragEvent = new Event("dragstart", {
+      bubbles: true,
+      cancelable: true,
+    });
+    const preventDefault = vi.spyOn(dragEvent, "preventDefault");
+    hold.dispatchEvent(dragEvent);
+    expect(preventDefault).toHaveBeenCalled();
+  });
+
+  it("prevents drag start on note images via native event", () => {
     // Given: rendered note
     const { getByAltText } = render(
       <ChartVerticalNoteImages {...baseProps} type="H" />

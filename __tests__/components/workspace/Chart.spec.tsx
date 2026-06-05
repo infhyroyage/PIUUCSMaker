@@ -328,6 +328,74 @@ describe("Chart", () => {
     );
   });
 
+  it("updates selector while dragging selection area", () => {
+    (useStore as unknown as Mock).mockReturnValue(
+      createStoreMock({
+        indicator: null,
+        selector: {
+          completed: null,
+          isSettingByMenu: false,
+          setting: {
+            mouseDownColumn: 0,
+            mouseDownRowIdx: 0,
+            mouseUpColumn: 0,
+            mouseUpRowIdx: 0,
+          },
+        },
+      })
+    );
+    const { container } = render(<Chart />);
+    const target = getChartInteractionTarget(container);
+    target.getBoundingClientRect = () =>
+      ({ top: 0, left: 0, width: 100, height: 200 }) as DOMRect;
+    fireEvent.mouseMove(target, { clientY: 80 });
+    expect(mockSetSelector).toHaveBeenCalled();
+  });
+
+  it("hides selector when mouse up leaves chart with incomplete selection", () => {
+    (useStore as unknown as Mock).mockReturnValue(
+      createStoreMock({
+        indicator: { column: 0, rowIdx: 0, top: 0, blockIdx: 0, blockAccumulatedRows: 0 },
+        selector: {
+          completed: null,
+          isSettingByMenu: false,
+          setting: {
+            mouseDownColumn: 0,
+            mouseDownRowIdx: 0,
+            mouseUpColumn: null,
+            mouseUpRowIdx: null,
+          },
+        },
+      })
+    );
+    const { container } = render(<Chart />);
+    fireEvent.mouseUp(getChartInteractionTarget(container), { button: 0 });
+    expect(mockHideSelector).toHaveBeenCalled();
+  });
+
+  it("replaces hold range when notes already exist between start and goal", () => {
+    (useStore as unknown as Mock).mockReturnValue(
+      createStoreMock({
+        holdSetter: { column: 0, rowIdx: 0, top: 0, isSettingByMenu: false },
+        indicator: { column: 0, rowIdx: 2, top: 80, blockIdx: 0, blockAccumulatedRows: 0 },
+        notes: [
+          [
+            { rowIdx: 0, type: "X" },
+            { rowIdx: 1, type: "H" },
+            { rowIdx: 2, type: "X" },
+          ],
+          [],
+          [],
+          [],
+          [],
+        ],
+      })
+    );
+    const { container } = render(<Chart />);
+    fireEvent.mouseUp(getChartInteractionTarget(container), { button: 0 });
+    expect(mockSetNotes).toHaveBeenCalled();
+  });
+
   it("skips mouse move while playing", () => {
     // Given: playing chart
     (useStore as unknown as Mock).mockReturnValue(
