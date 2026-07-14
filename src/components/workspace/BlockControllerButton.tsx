@@ -15,20 +15,20 @@ function BlockControllerButton({
 }: BlockControllerButtonProps) {
   const { noteSize, zoom } = useStore();
 
-  // 最初以外の譜面のブロックの場合はDelay値を無視する警告フラグ
+  // true if Delay is ignored except the first chart block, otherwise false
   const isIgnoredDelay: boolean = useMemo(
     () => !isFirstBlock && delay !== 0,
     [delay, isFirstBlock]
   );
 
-  // 譜面のブロックの高さ(px)
+  // Height (px) of chart block
   const blockHeight: number = useMemo(
     () => (2.0 * noteSize * ZOOM_VALUES[zoom.idx] * rows) / split,
     [noteSize, rows, split, zoom.idx]
   );
 
-  // 横の枠線のサイズ(px)をnoteSizeの0.05倍(偶数に丸めるように切り捨て、最小値は2)として計算
-  // ただし、譜面のブロックの高さが横の枠線のサイズより小さい場合、例外的に譜面のブロックの高さと同一とする
+  // Calculate horizontal border size (px) as 0.05 times noteSize, rounded down to even number, with a minimum value of 2
+  // However, if chart block height is smaller than horizontal border size, use chart block height
   const horizontalBorderSize = useMemo(
     () => Math.min(Math.max(Math.floor(noteSize * 0.025) * 2, 2), blockHeight),
     [blockHeight, noteSize]
@@ -52,7 +52,7 @@ function BlockControllerButton({
           >{`Delay: ${delay} (ms)${isIgnoredDelay ? " ⚠" : ""}`}</p>
         </div>
       </button>
-      {/* 譜面のブロックごとに分割する枠線 */}
+      {/* Border to split each chart block */}
       {!isLastBlock && (
         <BorderLine
           style={{ height: `${horizontalBorderSize}px`, width: "100%" }}

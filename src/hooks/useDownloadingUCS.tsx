@@ -8,11 +8,11 @@ function useDownloadingUCS() {
   const [isPending, startTransition] = useTransition();
 
   const downloadUCS = useCallback(() => {
-    // ucsファイル名未設定の場合はNOP(通常は発生し得ない)
+    // NOP if the UCS file name is not set (normally cannot happen)
     if (ucsName === null) return;
 
     startTransition(() => {
-      // UCSファイルを生成
+      // Generate a UCS file
       let content: string = ":Format=1\r\n";
       if (notes.length === 5) {
         if (isPerformance) {
@@ -28,8 +28,8 @@ function useDownloadingUCS() {
         }
       }
 
-      // 単ノート/ホールドの始点/ホールドの中間/ホールドの終点のいずれかが各列に存在する
-      // 譜面全体の行のインデックスを取得(重複なし)
+      // Get row indexes in the entire chart where a single note, starting point of hold,
+      // setting point of hold or end point of hold exists in each column (without duplicates)
       const existedRowIdxes: number[] = [
         ...new Set<number>(
           notes.map((ns: Note[]) => ns.map((note: Note) => note.rowIdx)).flat()
@@ -37,19 +37,19 @@ function useDownloadingUCS() {
       ];
 
       blocks.forEach((block: Block) => {
-        // 譜面のブロックの情報を追記
+        // Append chart block information
         content += `:BPM=${block.bpm}\r\n`;
         content += `:Delay=${block.delay}\r\n`;
         content += `:Beat=${block.beat}\r\n`;
         content += `:Split=${block.split}\r\n`;
 
-        // 単ノート/ホールドの始点/ホールドの中間/ホールドの終点の情報を列数分追記
+        // Append single note, starting point of hold, setting point of hold or end point of hold information for the number of columns
         [...Array(block.rows)].forEach((_, i: number) => {
           const rowIdx: number = block.accumulatedRows + i;
           if (existedRowIdxes.includes(rowIdx)) {
-            // ダウンロード処理時間の短縮のため、譜面全体の行のインデックスrowIdxに
-            // 単ノート/ホールドの始点/ホールドの中間/ホールドの終点の情報が存在する場合のみ
-            // find関数を実行して、「X」/「M」/「H」/「W」/「.」を追記
+            // To reduce download processing time, run find only when single note,
+            // starting point of hold, setting point of hold or end point of hold information
+            // exists at row index in the entire chart rowIdx, then append "X"/"M"/"H"/"W"/"."
             [...Array(notes.length)].forEach((_, column: number) => {
               const foundNote: Note | undefined = notes[column].find(
                 (note: Note) => note.rowIdx === rowIdx
@@ -57,15 +57,16 @@ function useDownloadingUCS() {
               content += foundNote ? foundNote.type : ".";
             });
           } else {
-            // 譜面全体の行のインデックスrowIdxに単ノート/ホールドの始点/ホールドの中間/ホールドの終点
-            // の情報が存在しない場合は「.」を追記
+            // Append "." if no single note, starting point of hold,
+            // setting point of hold or end point of hold information exists
+            // at row index in the entire chart rowIdx
             content += [...Array(notes.length)].map(() => ".").join("");
           }
           content += "\r\n";
         });
       });
 
-      // UCSファイル名を設定してダウンロード
+      // Set the UCS file name and download
       const element = document.createElement("a");
       element.href = URL.createObjectURL(
         new Blob([content], {
@@ -76,7 +77,7 @@ function useDownloadingUCS() {
       document.body.appendChild(element);
       element.click();
 
-      // 編集中の離脱の抑止を解除
+      // Release prevent exit during editing
       setIsProtected(false);
     });
   }, [blocks, isPerformance, notes, setIsProtected, startTransition, ucsName]);

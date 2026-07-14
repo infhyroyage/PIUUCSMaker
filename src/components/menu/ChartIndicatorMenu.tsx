@@ -35,7 +35,7 @@ function ChartIndicatorMenu() {
   );
 
   const onClickStartSettingHold = useCallback(() => {
-    // インディケーターが非表示/選択領域が表示中の場合はNOP
+    // NOP if the indicator is not displayed or the selection area is displayed
     if (
       indicator === null ||
       selector.setting !== null ||
@@ -43,8 +43,7 @@ function ChartIndicatorMenu() {
     )
       return;
 
-    // 「Start Setting Hold」を選択したインディケーターの表示パラメーターを用いて、
-    // ホールド設置中の表示パラメーターを保持
+    // Keep the display parameter when setting a hold from the indicator selected by "Start Setting Hold"
     setHoldSetter({
       column: indicator.column,
       isSettingByMenu: true,
@@ -56,10 +55,10 @@ function ChartIndicatorMenu() {
   }, [indicator, onClose, selector.completed, selector.setting, setHoldSetter]);
 
   const onClickStartSelecting = useCallback(() => {
-    // インディケーターが非表示/ホールド設置中の場合はNOP
+    // NOP if the indicator is not displayed or setting a hold
     if (indicator === null || holdSetter !== null) return;
 
-    // 「Start Selecting」を選択したインディケーターの表示パラメーターを用いて、選択領域を表示
+    // Display the selection area from the indicator selected by "Start Selecting"
     setSelector({
       completed: null,
       isSettingByMenu: true,
@@ -75,7 +74,7 @@ function ChartIndicatorMenu() {
   }, [holdSetter, indicator, onClose, setSelector]);
 
   const onClickSplitBlock = useCallback(() => {
-    // インディケーターが非表示/譜面のブロックの先頭の行にインディケーターが存在する場合はNOP
+    // NOP if the indicator is not displayed or indicates the first row of the chart block
     if (
       indicator === null ||
       (indicator !== null &&
@@ -83,13 +82,13 @@ function ChartIndicatorMenu() {
     )
       return;
 
-    // 元に戻す/やり直すスナップショットの集合を更新
+    // Update undo/redo snapshots
     pushUndoSnapshot({ blocks, notes: null });
     resetRedoSnapshots();
 
     setIsProtected(true);
 
-    // blockIdx番目の譜面のブロックを、(rowIdx- 1)番目以前とrowIdx番目とで分割
+    // Split the chart block at blockIdx into before rowIdx and from rowIdx
     setBlocks([
       ...blocks.slice(0, indicator.blockIdx),
       {
@@ -159,7 +158,7 @@ function ChartIndicatorMenu() {
     onClose();
   }, [handleDelete, onClose]);
 
-  // キー入力のイベントリスナーを登録し、アンマウント時に解除
+  // Set keyboard shortcuts and unregister on unmount
   const isMac: boolean = useMemo(
     () => window.navigator.userAgent.indexOf("Mac") !== -1,
     []
@@ -208,7 +207,7 @@ function ChartIndicatorMenu() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleCopy, handleCut, handleDelete, handleFlip, handlePaste, isMac]);
 
-  // 表示中は上下手動スクロールを抑止
+  // Prevent manual vertical scrolling while displayed
   useEffect(() => {
     document.body.style.overflowY = chartIndicatorMenuPosition
       ? "hidden"

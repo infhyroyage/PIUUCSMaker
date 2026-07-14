@@ -30,17 +30,17 @@ function usePlaying() {
   const currentScrollTime = useRef<number>(0);
 
   const start = () => {
-    // beat.wavをデコードして読み込んでいない場合は読み込んでおく
+    // Decode and load beat.wav if it has not been decoded and loaded
     if (beatAudioBuffer.current === null) {
       fetch(BEAT_BINARY)
         .then((response) => response.arrayBuffer())
         .then((arrayBuffer) => {
-          // AudioContextを初期化していない場合は初期化しておく
+          // Initialize AudioContext if it has not been initialized
           if (audioContext.current === null) {
             audioContext.current = new AudioContext();
           }
 
-          // ビート音用のGainNodeを初期化していない場合は初期化しておく
+          // Initialize GainNode for beat sound if it has not been initialized
           if (beatGainNode.current === null) {
             beatGainNode.current = audioContext.current.createGain();
             beatGainNode.current.gain.value = isMuteBeats ? 0 : volumeValue;
@@ -59,7 +59,7 @@ function usePlaying() {
 
   const stop = useCallback(() => setIsPlaying(false), [setIsPlaying]);
 
-  // ビート音用の音量を0(ミュート)から1(MAX)まで動的に設定
+  // Dynamically set the volume for beat sound from 0 (mute) to 1 (MAX)
   useEffect(() => {
     if (beatGainNode.current !== null) {
       beatGainNode.current.gain.value = isMuteBeats ? 0 : volumeValue;
@@ -68,27 +68,27 @@ function usePlaying() {
 
   const onUploadMP3 = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      // MP3ファイルを何もアップロードしなかった場合はNOP
+      // NOP if no MP3 file was uploaded
       const fileList: FileList | null = event.target.files;
       if (!fileList || fileList.length === 0) return;
 
-      // 拡張子チェック
+      // Check the extension
       if (fileList[0].name.split(".").pop() !== "mp3") {
         setUserErrorMessage("Extension is not mp3");
         return;
       }
 
-      // アップロードしたMP3ファイルをデコードして読み込み
+      // Decode and load the uploaded MP3 file
       setIsUploadingMP3(true);
       fileList[0]
         .arrayBuffer()
         .then((arrayBuffer: ArrayBuffer) => {
-          // AudioContextを初期化していない場合は初期化しておく
+          // Initialize AudioContext if it has not been initialized
           if (audioContext.current === null) {
             audioContext.current = new AudioContext();
           }
 
-          // MP3ファイルの音楽用のGainNodeを初期化していない場合は初期化しておく
+          // Initialize GainNode for MP3 file music if it has not been initialized
           if (musicGainNode.current === null) {
             musicGainNode.current = audioContext.current.createGain();
             musicGainNode.current.gain.value = volumeValue;
@@ -101,7 +101,7 @@ function usePlaying() {
           setMp3Name(fileList[0].name);
           setSuccessMessage(`${fileList[0].name} was successfully uploaded`);
 
-          // 同じMP3ファイルを再アップロードできるように初期化
+          // Initialize to allow the same MP3 file to be uploaded again
           event.target.value = "";
         })
         .finally(() => setIsUploadingMP3(false));
@@ -115,14 +115,14 @@ function usePlaying() {
     ],
   );
 
-  // MP3ファイルの音楽用の音量を0(ミュート)から1(MAX)まで動的に設定
+  // Dynamically set the volume for MP3 file music from 0 (mute) to 1 (MAX)
   useEffect(() => {
     if (musicGainNode.current !== null) {
       musicGainNode.current.gain.value = volumeValue;
     }
   }, [volumeValue]);
 
-  // 再生中は上下手動スクロールを抑止
+  // Prevent manual vertical scrolling during playback
   useEffect(() => {
     document.body.style.overflowY = isPlaying ? "hidden" : "scroll";
   }, [isPlaying]);
@@ -130,9 +130,9 @@ function usePlaying() {
   useEffect(() => {
     if (!isPlaying) return;
 
-    // 自動スクロールスタート地点でのブラウザの画面のy座標を初期化
-    // 現在のブラウザの画面が最上部以外の場合はそのy座標とし、最上部の場合は0番目の譜面のブロックのDelayが正の場合において
-    // ビート音を再生するまでの時間を遅延する必要があるため、その分だけブラウザの画面のy座標を減算する
+    // Initialize the browser window y-coordinate at the automatic scroll start point
+    // Use the current browser window y-coordinate if it is not at the top;
+    // if it is at the top and Delay of the first chart block is positive, subtract the time needed to delay beat sound playback
     let top: number =
       document.documentElement.scrollTop > 0
         ? document.documentElement.scrollTop
@@ -145,8 +145,8 @@ function usePlaying() {
             60000
           : 0;
 
-    // ビート音を再生するタイミング・下へスクロールする速度(px/ms)が変化するタイミングでのブラウザの画面のy座標、
-    // および、現在のブラウザの画面のy座標に応じた自動スクロール経過時間(秒)を計算
+    // Calculate the browser window y-coordinate when beat sound playback timing or downward scroll speed (px/ms) changes,
+    // and the elapsed automatic scroll time (seconds) according to the current browser window y-coordinate
     let verocity: number = -1;
     let border: number = 0;
     type ScrollParam = {
@@ -156,11 +156,11 @@ function usePlaying() {
     };
     const scrollParam: ScrollParam = blocks.reduce(
       (prev: ScrollParam, block: Block, blockIdx: number) => {
-        // 各譜面のブロックの1行あたりの高さ(px)を計算
+        // Calculate the height (px) per row of each chart block
         const unitRowHeight: number =
           (2.0 * noteSize * ZOOM_VALUES[zoom.idx]) / block.split;
 
-        // 列ごとに単ノート/ホールドの始点において、譜面全体での行のインデックスをそれぞれ抽出
+        // Extract row indexes in the entire chart for each column at single note or starting point of hold
         const filteredStarts: number[][] = notes.map((notes: Note[]) =>
           notes
             .filter(
@@ -171,19 +171,19 @@ function usePlaying() {
             )
             .map((note: Note) => note.rowIdx),
         );
-        // ビート音を再生するタイミングでのブラウザの画面のy座標をまとめて追加
+        // Add browser window y-coordinates when beat sound plays
         const tops: number[] = [
-          ...new Set<number>(filteredStarts.flat()), // 平滑化して重複排除
+          ...new Set<number>(filteredStarts.flat()), // Flatten and remove duplicates
         ]
-          .sort((a: number, b: number) => a - b) // 譜面全体での行のインデックスを昇順にソート
+          .sort((a: number, b: number) => a - b) // Sort row indexes in the entire chart in ascending order
           .map(
             (rowIdx: number) =>
               border + unitRowHeight * (rowIdx - block.accumulatedRows),
           );
         prev.beatTops = prev.beatTops.concat(tops);
 
-        // 開始地点からの下へスクロールする速度(px/ms)を計算し、
-        // その速度が変化するブラウザの画面のy座標を追加
+        // Calculate the downward scroll speed (px/ms) from the start point
+        // and add the browser window y-coordinate where that speed changes
         const blockVerocity: number =
           (2.0 * noteSize * ZOOM_VALUES[zoom.idx] * block.bpm) / 60000;
         if (blockVerocity !== verocity) {
@@ -193,7 +193,7 @@ function usePlaying() {
           verocity = blockVerocity;
         }
 
-        //自動スクロール経過時間(秒)を現在のブラウザの画面のy座標に応じて追加
+        // Add elapsed automatic scroll time (seconds) according to the current browser window y-coordinate
         if (
           border + unitRowHeight * block.rows <
           document.documentElement.scrollTop
@@ -206,10 +206,10 @@ function usePlaying() {
             (blockVerocity * 1000);
         }
 
-        // 譜面のブロックの1行あたりの高さ(px)をインクリメント
+        // Increment by the chart block height (px)
         border += unitRowHeight * block.rows;
 
-        // 最後の譜面のブロックの下へスクロールする速度(px/ms)が変化するブラウザの画面のy座標を追加
+        // Add the browser window y-coordinate where the downward scroll speed (px/ms) changes for the last chart block
         if (blockIdx === blocks.length - 1) {
           prev.verocities.push({ verocity, border });
         }
@@ -219,8 +219,8 @@ function usePlaying() {
       { elapsedMusicTime: 0, beatTops: [], verocities: [] },
     );
 
-    // ビート音を再生するタイミング・下へスクロールする速度(px/ms)が変化するタイミングでの
-    // 自動スクロール開始時のインデックスを計算
+    // Calculate the automatic scroll start index for when beat sound plays
+    // and when downward scroll speed (px/ms) changes
     let beatTopIdx: number = scrollParam.beatTops.findIndex(
       (value: number) => value > document.documentElement.scrollTop,
     );
@@ -235,20 +235,21 @@ function usePlaying() {
       verocityIdx = scrollParam.verocities.length;
     }
 
-    // MP3ファイルの音楽を再生
+    // Play MP3 file music
     if (audioContext.current && musicGainNode.current) {
       musicSourceNode.current = audioContext.current.createBufferSource();
       musicSourceNode.current.buffer = musicAudioBuffer.current;
       musicSourceNode.current.connect(musicGainNode.current);
       musicGainNode.current.connect(audioContext.current.destination);
       musicSourceNode.current.start(
-        // 0番目の譜面のブロックのDelayが負の場合は、現在のブラウザの画面のy座標に応じた自動スクロール経過時間(秒)に応じて、
-        // MP3ファイルの音楽を再生するまでの時間を遅延する
+        // If Delay of the first chart block is negative, delay the time until MP3 file music plays
+        // according to the elapsed automatic scroll time (seconds) for the current browser window y-coordinate
         blocks[0].delay < 0 &&
           blocks[0].delay / 1000 + scrollParam.elapsedMusicTime < 0
           ? (-1 * blocks[0].delay) / 1000 - scrollParam.elapsedMusicTime
           : 0,
-        // 現在のブラウザの画面のy座標に応じた自動スクロール経過時間(秒)に応じて、MP3ファイルの音楽を再生するオフセットを設定する
+        // Set the offset to play MP3 file music according to the elapsed automatic scroll time (seconds)
+        // for the current browser window y-coordinate
         scrollParam.elapsedMusicTime > 0 &&
           blocks[0].delay / 1000 + scrollParam.elapsedMusicTime > 0
           ? blocks[0].delay / 1000 + scrollParam.elapsedMusicTime
@@ -256,22 +257,22 @@ function usePlaying() {
       );
     }
 
-    // 60fpsで自動スクロールを開始
+    // Start automatic scrolling at 60 FPS
     const FPS: number = 60;
     previousScrollTime.current = Date.now();
     const scrollIntervalId: ReturnType<typeof setInterval> = setInterval(() => {
       if (verocityIdx === scrollParam.verocities.length) {
-        // 最後の譜面のブロックをスクロールし終えたら停止
+        // Stop after scrolling through the last chart block
         stop();
       } else {
-        // 最後にスクロールした時刻から現在時刻までのスクロール間の時間(ms)elapsedTimeを計算
-        // この時間は理論上は1000 / FPSと一致するが、実動作上は必ずしも一致しない
+        // Calculate elapsedScrollTime, the time (ms) between the last scroll time and the current time
+        // This time theoretically matches 1000 / FPS, but does not always match in actual behavior
         currentScrollTime.current = Date.now();
         let elapsedScrollTime: number =
           currentScrollTime.current - previousScrollTime.current;
         previousScrollTime.current = currentScrollTime.current;
 
-        // スクロール後のブラウザの画面のy座標(px)を計算し、スクロール速度を変更しながら下へスクロール
+        // Calculate the browser window y-coordinate (px) after scrolling and scroll downward while changing scroll speed
         while (verocityIdx < scrollParam.verocities.length) {
           if (
             top +
@@ -279,12 +280,12 @@ function usePlaying() {
                 elapsedScrollTime <=
             scrollParam.verocities[verocityIdx].border
           ) {
-            // スクロール前後で譜面のブロックを跨がらない場合は、スクロール後のブラウザの画面のy座標(px)の計算をして終了
+            // If scrolling does not cross a chart block, calculate the browser window y-coordinate (px) after scrolling and finish
             top +=
               scrollParam.verocities[verocityIdx].verocity * elapsedScrollTime;
             break;
           } else {
-            // スクロール前後で譜面のブロックを跨ぐ場合は、スクロール速度を変更しながらスクロール後のブラウザの画面のy座標(px)を再計算
+            // If scrolling crosses a chart block, recalculate the browser window y-coordinate (px) after scrolling while changing scroll speed
             elapsedScrollTime -=
               (scrollParam.verocities[verocityIdx].border - top) /
               scrollParam.verocities[verocityIdx].verocity;
@@ -294,7 +295,7 @@ function usePlaying() {
         }
         window.scrollTo({ top, behavior: "instant" });
 
-        // ブラウザの画面のy座標に応じてビート音を再生
+        // Play beat sound according to the browser window y-coordinate
         if (
           beatTopIdx < scrollParam.beatTops.length &&
           scrollParam.beatTops[beatTopIdx] <= top &&
@@ -312,10 +313,10 @@ function usePlaying() {
     }, 1000 / FPS);
 
     return () => {
-      // 自動スクロールを停止
+      // Stop automatic scrolling
       clearInterval(scrollIntervalId);
 
-      // ビート音の再生を中断
+      // Stop beat sound playback
       if (beatSourceNode.current) {
         beatSourceNode.current.stop();
         beatSourceNode.current.disconnect();
@@ -324,7 +325,7 @@ function usePlaying() {
         beatGainNode.current.disconnect();
       }
 
-      // MP3ファイルの音楽の再生を中断
+      // Stop MP3 file music playback
       if (musicSourceNode.current) {
         musicSourceNode.current.stop();
         musicSourceNode.current.disconnect();

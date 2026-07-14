@@ -35,7 +35,7 @@ function Chart() {
 
   const verticalBorderSize = useVerticalBorderSize();
 
-  // 各譜面のブロックを設置するトップバーからのy座標の距離(px)を計算
+  // Calculate distances (px) of y-coordinate between NavigationBar and each chart block
   const blockYDists: number[] = useMemo(
     () =>
       [...Array(blocks.length)].reduce(
@@ -58,29 +58,28 @@ function Chart() {
 
   const handleMouseMove = useCallback(
     (event: React.MouseEvent<HTMLSpanElement, MouseEvent>, column: number) => {
-      // ChartIndicatorMenu表示中/再生中の場合はNOP
+      // NOP if ChartIndicatorMenu is visible or the chart is playing
       if (!!chartIndicatorMenuPosition || isPlaying) return;
 
-      // マウスホバーしたy座標を取得
+      // Get mouse hover y-coordinate
       const y: number = Math.floor(
         event.clientY - event.currentTarget.getBoundingClientRect().top
       );
 
-      // マウスホバーした譜面全体の行インデックスの場所から、マウスのブラウザの画面のy座標、
-      // 行インデックス、譜面のブロックのインデックスをすべて取得
-      // 譜面のブロックのマウスホバーが外れた場合、前者2つはともにnullとする
+      // Get top, row index in the entire chart, and chart block index at the mouse hover location
+      // Set the first two to null if mouse hover is out of the chart block
       let top: number | null = null;
       let rowIdx: number | null = null;
       const blockIdx: number = blocks.findIndex((block: Block, idx: number) => {
-        // 譜面のブロックの1行あたりの高さ(px)
+        // Height (px) per row of chart block
         const unitRowHeight: number =
           (2.0 * noteSize * ZOOM_VALUES[zoom.idx]) / block.split;
-        // 譜面のブロックの高さ(px)
+        // Height (px) of chart block
         const blockHeight: number = unitRowHeight * block.rows;
         if (y < blockYDists[idx] + blockHeight) {
           top = y - ((y - blockYDists[idx]) % unitRowHeight);
-          // (top - blockYDists[idx])はunitRowHeightの倍数であるため、((top - blockYDists[idx]) / unitRowHeight)は理論上整数値となるが、
-          // 除算時の丸め誤差を取り除くべくMath.round関数を実行することで、整数値として計算することを必ず保証する
+          // (top - blockYDists[idx]) is a multiple of unitRowHeight, so ((top - blockYDists[idx]) / unitRowHeight) is theoretically an integer
+          // Run Math.round to remove division rounding error and ensure calculation as an integer
           rowIdx =
             block.accumulatedRows +
             Math.round((top - blockYDists[idx]) / unitRowHeight);
@@ -89,8 +88,8 @@ function Chart() {
         return false;
       });
 
-      // 無駄な再レンダリングを避けるため、マウスホバーした場所の列インデックス・譜面全体での行のインデックスが
-      // 現在のインディケーターの列インデックス・譜面全体での行のインデックスとすべて同じである場合、indicatorの状態を更新しない
+      // Do not update indicator state if column index and row index in the entire chart at the mouse hover location
+      // are all the same as the current indicator values, to avoid unnecessary re-rendering
       if (
         (indicator !== null || (top !== null && rowIdx !== null)) &&
         (indicator === null ||
@@ -117,7 +116,7 @@ function Chart() {
         (column !== selector.setting.mouseUpColumn ||
           rowIdx !== selector.setting.mouseUpRowIdx)
       ) {
-        // 選択領域入力時の場合は、入力時の選択領域のみパラメーターを更新
+        // Update only coordinates during input of the selection area
         setSelector({
           completed: null,
           isSettingByMenu: selector.isSettingByMenu,
@@ -132,7 +131,7 @@ function Chart() {
         selector.setting !== null &&
         !selector.isSettingByMenu
       ) {
-        // Shift未入力、かつ、「Start Selecting」を選択せずに入力時の選択領域を表示している場合は、選択領域を非表示
+        // Hide selection area if Shift is not inputted and it is displayed during input without selecting "Start Selecting"
         hideSelector();
       }
     },
@@ -155,14 +154,14 @@ function Chart() {
 
   const onMouseLeave = useCallback(
     (event: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
-      // ChartIndicatorMenu表示中/再生中/の場合はNOP
+      // NOP if ChartIndicatorMenu is visible or the chart is playing
       if (!!chartIndicatorMenuPosition || isPlaying) return;
 
-      // インディケーターを非表示
+      // Hide indicator
       resetIndicator();
 
-      // 選択領域入力時の場合は、入力時の選択領域のみパラメーターを更新
-      // ただし、Shift未入力、かつ、「Start Selecting」を選択せずに入力時の選択領域を表示している場合は、選択領域を非表示
+      // Update only coordinates during input of the selection area
+      // However, hide selection area if Shift is not inputted and it is displayed during input without selecting "Start Selecting"
       if (selector.setting !== null) {
         setSelector({
           completed: null,
@@ -193,7 +192,7 @@ function Chart() {
 
   const onMouseDown = useCallback(
     (event: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
-      // 左クリック以外/ChartIndicatorMenu表示中/再生中/押下した瞬間にインディケーターが非表示の場合はNOP
+      // NOP if not left click, ChartIndicatorMenu is visible, the chart is playing, or indicator is hidden when pressing
       if (
         event.button !== 0 ||
         !!chartIndicatorMenuPosition ||
@@ -202,7 +201,7 @@ function Chart() {
       )
         return;
 
-      // Shift未入力の場合のみ、ホールド設置中の表示パラメーターを更新
+      // Update display parameter when setting a hold only if Shift is not inputted
       if (!event.shiftKey && holdSetter === null) {
         setHoldSetter({
           column: indicator.column,
@@ -213,7 +212,7 @@ function Chart() {
       }
 
       if (event.shiftKey && selector.setting === null) {
-        // Shift入力時、かつ、選択領域入力時ではない場合は、入力時の選択領域のみパラメーターを設定
+        // Set only coordinates during input of the selection area if Shift is inputted and not inputting the selection area
         setSelector({
           completed: null,
           isSettingByMenu: false,
@@ -229,7 +228,7 @@ function Chart() {
         ((selector.setting !== null && !selector.isSettingByMenu) ||
           selector.completed !== null)
       ) {
-        // Shift未入力、かつ、「Start Selecting」を選択せずに選択領域を表示している場合は、選択領域を非表示
+        // Hide selection area if Shift is not inputted and it is displayed without selecting "Start Selecting"
         hideSelector();
       }
     },
@@ -247,39 +246,39 @@ function Chart() {
 
   const onMouseUp = useCallback(
     (event: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
-      // 左クリック以外/ChartIndicatorMenu表示中/再生中/別々の列を跨いだマウス操作の場合はNOP
+      // NOP if not left click, ChartIndicatorMenu is visible, the chart is playing, or mouse operation crosses different columns
       if (event.button !== 0 || !!chartIndicatorMenuPosition || isPlaying)
         return;
 
-      // 親コンポーネントのWorkspaceに設定したonMouseUpへ伝搬しない
+      // Do not propagate to onMouseUp set in parent WorkSpace component
       event.stopPropagation();
 
-      // 同一列内でのクリック操作時、かつ、選択領域入力時でない場合のみ、単ノート/ホールドの設置・削除を行う
+      // Add or delete single note/hold only when clicking in the same column and not inputting the selection area
       if (
         indicator !== null &&
         holdSetter !== null &&
         indicator.column === holdSetter.column &&
         selector.setting === null
       ) {
-        // 単ノート/ホールドの始点start、終点goalの譜面全体での行インデックスを取得
+        // Get row index in the entire chart for start and goal of a single note/hold
         const start: number = Math.min(indicator.rowIdx, holdSetter.rowIdx);
         const goal: number = Math.max(indicator.rowIdx, holdSetter.rowIdx);
 
-        // 譜面全体での行インデックスmouseDown.rowIdxで押下した後に
-        // 譜面全体での行インデックスindicator.rowIdxで押下を離した際の
-        // 列インデックスindicator.columnにて、単ノート/ホールドの追加・削除を行う
+        // After mouse down at row index in the entire chart mouseDown.rowIdx
+        // and mouse up at row index in the entire chart indicator.rowIdx,
+        // add or delete single note/hold at column index indicator.column
         let updatedNotes: Note[];
         if (start === goal) {
           const foundNote: Note | undefined = notes[indicator.column].find(
             (note: Note) => note.rowIdx === start
           );
           if (foundNote && foundNote.type === "X") {
-            // startの場所に存在する単ノートを削除(単ノートは新規追加しない)
+            // Delete existing single note at start without adding a new single note
             updatedNotes = notes[indicator.column].filter(
               (note: Note) => note.rowIdx !== start
             );
           } else if (foundNote) {
-            // startの場所に属するホールド(M/H/W)を削除(単ノートは新規追加しない)
+            // Delete hold (M/H/W) including start without adding a new single note
             let beforeNotes: Note[] = notes[indicator.column].filter(
               (note: Note) => note.rowIdx < start
             );
@@ -310,7 +309,7 @@ function Chart() {
 
             updatedNotes = [...beforeNotes, ...afterNotes];
           } else {
-            // startの場所に単ノートを新規追加
+            // Add a new single note at start
             updatedNotes = [
               ...notes[indicator.column].filter(
                 (note: Note) => note.rowIdx < start
@@ -337,8 +336,8 @@ function Chart() {
               (note: Note) => note.rowIdx >= start && note.rowIdx <= goal
             ).length > 0
           ) {
-            // startとgoalとの間に属するホールド(M/H/W)を削除してから
-            // startとgoalとの間にホールドを新規追加
+            // Delete hold (M/H/W) between start and goal,
+            // then add a new hold between start and goal
             let beforeNotes: Note[] = notes[indicator.column].filter(
               (note: Note) => note.rowIdx < start
             );
@@ -369,7 +368,7 @@ function Chart() {
 
             updatedNotes = [...beforeNotes, ...hold, ...afterNotes];
           } else {
-            // startとgoalとの間にホールドを新規追加
+            // Add a new hold between start and goal
             updatedNotes = [
               ...notes[indicator.column].filter(
                 (note: Note) => note.rowIdx < start
@@ -382,13 +381,13 @@ function Chart() {
           }
         }
 
-        // 元に戻す/やり直すスナップショットの集合を更新
+        // Update undo/redo snapshots
         pushUndoSnapshot({ blocks: null, notes });
         resetRedoSnapshots();
 
         setIsProtected(true);
 
-        // 単ノート/ホールドの追加・削除を行った譜面に更新
+        // Update notes after adding or deleting single note/hold
         setNotes(
           notes.map((notes: Note[], column: number) =>
             column === indicator.column ? updatedNotes : notes
@@ -396,14 +395,14 @@ function Chart() {
         );
       }
 
-      // ホールド設置中の表示パラメーターを初期化
+      // Reset display parameter when setting a hold
       if (holdSetter !== null) {
         resetHoldSetter();
       }
 
       if (selector.setting !== null) {
-        // 選択領域入力時の場合は選択領域を入力時→入力後に更新
-        // ただし、選択領域の入力時にマウスの座標が譜面から外れた場合はnullに更新
+        // Update selection area from during input to after input when inputting the selection area
+        // However, set to null if mouse coordinate is out of the chart during input of the selection area
         if (
           selector.setting.mouseUpColumn !== null &&
           selector.setting.mouseUpRowIdx !== null

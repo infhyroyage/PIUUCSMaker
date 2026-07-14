@@ -10,24 +10,24 @@ function WorkSpace() {
     useStore();
 
   useEffect(() => {
-    // ウィンドウサイズから、正方形である単ノートの1辺のサイズ(noteSize)を以下で計算
-    // noteSize := min(ウィンドウサイズの横幅, ウィンドウサイズの高さ) / 15
-    // ただし、noteSizeは小数点以下を切り捨てとし、最小値が20とする
+    // Resize noteSize as follows with window size update
+    // noteSize := min(window width, window height) / 15
+    // However, noteSize is rounded down to the nearest integer, with a minimum value of 20
     const handleWindowResize = () => resizeNoteSizeWithWindow();
     const handleKeyDown = (event: KeyboardEvent) => {
-      // ESCキー押下時に、ホールド設置中・選択領域の表示パラメーターをすべて初期化
+      // Reset display parameter when setting a hold and display parameter of the selection area when pressing ESC
       if (event.key === "Escape") {
         resetHoldSetter();
         hideSelector();
       }
     };
 
-    // 初回レンダリング時にnoteSizeを初期設定
+    // Initialize noteSize at first rendering
     handleWindowResize();
 
-    // イベントリスナーを登録し、アンマウント時にすべて解除
-    window.addEventListener("resize", handleWindowResize); // noteSize変更
-    window.addEventListener("keydown", handleKeyDown); // キー入力
+    // Register event listeners and unregister on unmount
+    window.addEventListener("resize", handleWindowResize); // noteSize update
+    window.addEventListener("keydown", handleKeyDown); // Key input
     return () => {
       window.removeEventListener("resize", handleWindowResize);
       window.removeEventListener("keydown", handleKeyDown);
@@ -37,7 +37,7 @@ function WorkSpace() {
   return (
     <div
       onMouseUp={(event: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
-        // 左クリック時のみ、選択領域・マウス押下した場合の表示パラメーターをすべて初期化
+        // Reset selection area and display parameter when setting a hold only for left click
         if (event.button === 0) {
           resetHoldSetter();
           hideSelector();

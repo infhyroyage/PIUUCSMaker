@@ -21,15 +21,15 @@ function ChartVerticalNoteImages({
 
   const verticalBorderSize = useVerticalBorderSize();
 
-  // 単ノート/ホールドの始点/ホールドの中間/ホールドの終点が属する
-  // 譜面のブロックの1行あたりの高さ(px)を計算
+  // Calculate height (px) per row of chart block included this single note,
+  // starting point of hold, setting point of hold or end point of hold
   const unitRowHeight = useMemo(
     () => (2.0 * noteSize * ZOOM_VALUES[zoom.idx]) / split,
     [noteSize, split, zoom.idx]
   );
 
-  // 単ノート/ホールドの始点/ホールドの中間/ホールドの終点の譜面全体での行インデックスでの
-  // ブラウザの画面のy座標(px)を計算
+  // Calculate y-coordinate of the browser screen (px) at row index in the entire chart of this single note,
+  // starting point of hold, setting point of hold or end point of hold
   const top = useMemo(
     () => blockYDist + unitRowHeight * (rowIdx - accumulatedRows),
     [accumulatedRows, blockYDist, rowIdx, unitRowHeight]

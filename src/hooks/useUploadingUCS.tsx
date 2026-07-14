@@ -6,7 +6,7 @@ import { useStore } from "./useStore";
 const validate = (content: string): UploadingUCSValidation => {
   const blocks: Block[] = [];
 
-  // ucsファイルの改行コードがCRLF形式かのチェック
+  // Check whether the UCS file line break code is CRLF
   if (content.indexOf("\r\n") === -1) {
     return {
       blocks,
@@ -20,7 +20,7 @@ const validate = (content: string): UploadingUCSValidation => {
   let fileLinesNum: number = 0;
   let line: string | undefined;
 
-  // 1行目のチェック
+  // Check line 1
   fileLinesNum++;
   line = lines.shift();
   if (!line) {
@@ -39,7 +39,7 @@ const validate = (content: string): UploadingUCSValidation => {
     };
   }
 
-  // 譜面形式(2行目)のチェック・取得
+  // Check and get the chart format (line 2)
   fileLinesNum++;
   line = lines.shift();
   if (!line) {
@@ -77,18 +77,18 @@ const validate = (content: string): UploadingUCSValidation => {
     .map<Note[]>(() => []);
 
   /*
-   * 各列の以下の一時変数を初期化
-   * * 譜面のブロック
-   * * 譜面のブロックの行数
-   * * 以前までの譜面のブロックの行数の総和
-   * * 譜面全体での行インデックス
+   * Initialize the following temporary variables for each column
+   * * Chart block
+   * * Number of rows in the chart block
+   * * Total numbers of rows in each chart block before this one
+   * * Row index in the entire chart
    */
   let block: Block | null = null;
   let rows: number = 0;
   let accumulatedRows: number = 0;
   let rowIdx: number = 0;
 
-  // 2行しか記載していないかのチェック
+  // Check whether only two lines are written
   fileLinesNum++;
   line = lines.shift();
   if (!line) {
@@ -101,10 +101,10 @@ const validate = (content: string): UploadingUCSValidation => {
   }
 
   while (line) {
-    // 譜面のブロックのヘッダー部のチェック・取得
+    // Check and get the chart block header
     if (line[0] === ":") {
       if (block !== null) {
-        // 直前の譜面のブロックの行数が0になっていないかどうかチェック
+        // Check whether the previous chart block has zero rows
         if (rows === 0) {
           return {
             blocks,
@@ -114,14 +114,14 @@ const validate = (content: string): UploadingUCSValidation => {
           };
         }
 
-        // 譜面のブロックの行数を更新して格納
+        // Update and store the number of rows in the chart block
         block.rows = rows;
         blocks.push(block);
         accumulatedRows += rows;
         rows = 0;
       }
 
-      // 譜面のブロックのBPM値のチェック・取得
+      // Check and get the BPM of this chart block
       if (line.substring(0, 5) !== ":BPM=") {
         return {
           blocks,
@@ -140,7 +140,7 @@ const validate = (content: string): UploadingUCSValidation => {
         };
       }
 
-      // 譜面のブロックのDelay値のチェック・取得
+      // Check and get the Delay of this chart block
       fileLinesNum++;
       line = lines.shift();
       if (!line) {
@@ -168,7 +168,7 @@ const validate = (content: string): UploadingUCSValidation => {
         };
       }
 
-      // 譜面のブロックのBeat値のチェック・取得
+      // Check and get the Beat of this chart block
       fileLinesNum++;
       line = lines.shift();
       if (!line) {
@@ -196,7 +196,7 @@ const validate = (content: string): UploadingUCSValidation => {
         };
       }
 
-      // 譜面のブロックのSplit値のチェック・取得
+      // Check and get the Split of this chart block
       fileLinesNum++;
       line = lines.shift();
       if (!line) {
@@ -224,7 +224,7 @@ const validate = (content: string): UploadingUCSValidation => {
         };
       }
 
-      // 新たな譜面のブロックの解析開始
+      // Start parsing a new chart block
       block = {
         bpm,
         delay,
@@ -239,7 +239,7 @@ const validate = (content: string): UploadingUCSValidation => {
       continue;
     }
 
-    // 1個目の譜面のブロックのヘッダー部のチェック
+    // Check the header of the first chart block
     if (block === null) {
       return {
         blocks,
@@ -249,7 +249,7 @@ const validate = (content: string): UploadingUCSValidation => {
       };
     }
 
-    // 譜面のブロックのヘッダー部以外の列数をチェック
+    // Check the number of columns outside the chart block header
     if (line.length !== columns) {
       return {
         blocks,
@@ -259,23 +259,23 @@ const validate = (content: string): UploadingUCSValidation => {
       };
     }
 
-    // 単ノート/ホールドの情報を解析し、そのインスタンスを追加
+    // Parse single note or hold information and add its instance
     for (let column: number = 0; column < columns; column++) {
       switch (line[column]) {
         case "X":
-          // 単ノート追加
+          // Add single note
           notes[column].push({ rowIdx, type: "X" });
           break;
         case "M":
-          // ホールドの始点追加
+          // Add starting point of hold
           notes[column].push({ rowIdx, type: "M" });
           break;
         case "H":
-          // ホールドの中間追加
+          // Add setting point of hold
           notes[column].push({ rowIdx, type: "H" });
           break;
         case "W":
-          // ホールドの終点追加
+          // Add end point of hold
           notes[column].push({ rowIdx, type: "W" });
           break;
         case ".":
@@ -296,7 +296,7 @@ const validate = (content: string): UploadingUCSValidation => {
     line = lines.shift();
   }
 
-  // 最後のブロックをリストに格納
+  // Store the last chart block in the list
   if (block === null) {
     return {
       blocks,
@@ -326,11 +326,11 @@ function useUploadingUCS() {
 
   const onUploadUCS = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      // UCSファイルを何もアップロードしなかった場合はNOP
+      // NOP if no UCS file was uploaded
       const fileList: FileList | null = event.target.files;
       if (!fileList || fileList.length === 0) return;
 
-      // 拡張子チェック
+      // Check the extension
       if (fileList[0].name.split(".").pop() !== "ucs") {
         setUserErrorMessage("Extension is not ucs");
         return;
@@ -353,7 +353,7 @@ function useUploadingUCS() {
             setUserErrorMessage(result.errMsg);
           }
 
-          // 同じUCSファイルを再アップロードできるように初期化
+          // Initialize to allow the same UCS file to be uploaded again
           event.target.value = "";
         })
         .finally(() => setIsUploadingUCS(false));

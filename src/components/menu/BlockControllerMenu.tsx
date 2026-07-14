@@ -51,13 +51,13 @@ function BlockControllerMenu() {
 
   const onClickAdd = useCallback(() => {
     if (blockControllerMenuBlockIdx !== null) {
-      // 元に戻す/やり直すスナップショットの集合を更新
+      // Update undo/redo snapshots
       pushUndoSnapshot({ blocks, notes: null });
       resetRedoSnapshots();
 
       setIsProtected(true);
 
-      // 押下した譜面のブロックのコピーを末尾に追加
+      // Add a copy of the clicked chart block at bottom
       setBlocks([
         ...blocks,
         {
@@ -83,13 +83,13 @@ function BlockControllerMenu() {
 
   const onClickInsert = useCallback(() => {
     if (blockControllerMenuBlockIdx !== null) {
-      // 元に戻す/やり直すスナップショットの集合を更新
+      // Update undo/redo snapshots
       pushUndoSnapshot({ blocks, notes });
       resetRedoSnapshots();
 
       setIsProtected(true);
 
-      // 押下したblockControllerMenuBlockIdx番目の譜面のブロックのコピーを(blockControllerMenuBlockIdx + 1)番目に挿入
+      // Insert a copy of the chart block at blockControllerMenuBlockIdx into the next index
       setBlocks([
         ...blocks.slice(0, blockControllerMenuBlockIdx + 1),
         {
@@ -108,7 +108,7 @@ function BlockControllerMenu() {
         }),
       ]);
 
-      // 挿入した譜面のブロックの行数分、単ノート/ホールドの始点/ホールドの中間/ホールドの終点を移動
+      // Move single note, starting point of hold, setting point of hold or end point of hold by rows of the inserted chart block
       setNotes(
         notes.map((ns: Note[]) =>
           ns.map((note: Note) =>
@@ -141,13 +141,13 @@ function BlockControllerMenu() {
 
   const onClickMergeAbove = useCallback(() => {
     if (blockControllerMenuBlockIdx !== null) {
-      // 元に戻す/やり直すスナップショットの集合を更新
+      // Update undo/redo snapshots
       pushUndoSnapshot({ blocks, notes: null });
       resetRedoSnapshots();
 
       setIsProtected(true);
 
-      // 1つ前の譜面のブロックの行数を吸収
+      // Absorb rows of the previous chart block
       setBlocks([
         ...blocks.slice(0, blockControllerMenuBlockIdx - 1),
         {
@@ -175,13 +175,13 @@ function BlockControllerMenu() {
 
   const onClickMergeBelow = useCallback(() => {
     if (blockControllerMenuBlockIdx !== null) {
-      // 元に戻す/やり直すスナップショットの集合を更新
+      // Update undo/redo snapshots
       pushUndoSnapshot({ blocks, notes: null });
       resetRedoSnapshots();
 
       setIsProtected(true);
 
-      // 1つ後の譜面のブロックの行数を吸収
+      // Absorb rows of the next chart block
       setBlocks([
         ...blocks.slice(0, blockControllerMenuBlockIdx),
         {
@@ -207,13 +207,13 @@ function BlockControllerMenu() {
 
   const onClickDelete = useCallback(() => {
     if (blockControllerMenuBlockIdx !== null) {
-      // 元に戻す/やり直すスナップショットの集合を更新
+      // Update undo/redo snapshots
       pushUndoSnapshot({ blocks, notes });
       resetRedoSnapshots();
 
       setIsProtected(true);
 
-      // 削除する譜面のブロックに該当する単ノート/ホールドの始点/ホールドの中間/ホールドの終点を削除
+      // Delete single note, starting point of hold, setting point of hold or end point of hold included in the chart block to delete
       setNotes(
         notes.map((ns: Note[]) =>
           ns.filter(
@@ -227,7 +227,7 @@ function BlockControllerMenu() {
         )
       );
 
-      // 譜面のブロックの削除
+      // Delete the chart block
       setBlocks(
         blocks.filter((_, idx: number) => idx !== blockControllerMenuBlockIdx)
       );
@@ -246,7 +246,7 @@ function BlockControllerMenu() {
     pushUndoSnapshot,
   ]);
 
-  // 表示中は上下手動スクロールを抑止
+  // Prevent manual vertical scrolling while displayed
   useEffect(() => {
     document.body.style.overflowY = blockControllerMenuPosition
       ? "hidden"

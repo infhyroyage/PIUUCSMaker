@@ -12,14 +12,14 @@ function ChartVerticalRectangles({
 }: ChartVerticalRectanglesProps) {
   const { noteSize, zoom } = useStore();
 
-  // 譜面のブロックの1行あたりの高さ(px)を計算
+  // Calculate height (px) per row of chart block
   const unitRowHeight = useMemo(
     () => (2.0 * noteSize * ZOOM_VALUES[zoom.idx]) / split,
     [noteSize, split, zoom.idx]
   );
 
-  // 横の枠線のサイズ(px)をnoteSizeの0.05倍(偶数に丸めるように切り捨て、最小値は2)として計算
-  // ただし、譜面のブロックの高さが横の枠線のサイズより小さい場合、例外的に譜面のブロックの高さと同一とする
+  // Calculate horizontal border size (px) as 0.05 times noteSize, rounded down to even, with a minimum value of 2
+  // However, use the same value as chart block height if chart block height is smaller than horizontal border size
   const horizontalBorderSize = useMemo(
     () =>
       Math.min(
@@ -29,7 +29,7 @@ function ChartVerticalRectangles({
     [rows, noteSize, unitRowHeight]
   );
 
-  // 譜面のブロック内の1拍単位に分割する各枠線のtop値を(px)計算
+  // Calculate top (px) of each border that separates by one beat in chart block
   const beatBorderLineTops = useMemo(
     () =>
       [...Array(Math.floor(rows / split))].map(
@@ -47,7 +47,7 @@ function ChartVerticalRectangles({
         backgroundColor: isEven ? "rgb(255, 255, 170)" : "rgb(170, 255, 255)",
       }}
     >
-      {/* 1拍ごとに分割する枠線 */}
+      {/* Border that separates by one beat */}
       {beatBorderLineTops.map((top: number, idx: number) => (
         <BorderLine
           key={idx}
@@ -59,7 +59,7 @@ function ChartVerticalRectangles({
           }}
         />
       ))}
-      {/* 譜面のブロックごとに分割する枠線 */}
+      {/* Border that separates each chart block */}
       {!isLastBlock && (
         <BorderLine
           style={{

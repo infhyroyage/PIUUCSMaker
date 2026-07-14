@@ -18,7 +18,7 @@ function useClipBoard() {
     pushUndoSnapshot,
   } = useStore();
 
-  // 全譜面のブロックの行数の総和を計算
+  // Calculate total numbers of rows in all chart blocks
   const totalRows = useMemo(
     () =>
       blocks[blocks.length - 1].accumulatedRows +
@@ -27,7 +27,7 @@ function useClipBoard() {
   );
 
   const handleCopy = useCallback(() => {
-    // 選択領域が非表示/入力中の場合はNOP
+    // NOP if the selection area is not displayed or inputting
     if (selector.completed === null) return;
 
     const completedCords: SelectorCompletedCords = selector.completed;
@@ -57,18 +57,18 @@ function useClipBoard() {
   }, [notes, selector.completed, setClipBoard]);
 
   const handleCut = useCallback(() => {
-    // 選択領域が非表示/入力中の場合はNOP
+    // NOP if the selection area is not displayed or inputting
     if (selector.completed === null) return;
 
     handleCopy();
 
-    // 元に戻す/やり直すスナップショットの集合を更新
+    // Update a set of undo/redo snapshots
     pushUndoSnapshot({ blocks: null, notes });
     resetRedoSnapshots();
 
     setIsProtected(true);
 
-    // 選択領域に含まれる領域のみ、単ノート/ホールドの始点/ホールドの中間/ホールドの終点のカット対象とする
+    // Cut only single note, starting point of hold, setting point of hold or end point of hold included in the selection area
     const completedCords: SelectorCompletedCords = selector.completed;
     setNotes(
       notes.map((ns: Note[], column: number) =>
@@ -95,18 +95,18 @@ function useClipBoard() {
   ]);
 
   const handlePaste = useCallback(() => {
-    // インディケーターが非表示である/1度もコピーしていない場合はNOP
+    // NOP if the indicator is not displayed or nothing has been copied
     if (indicator === null || clipBoard === null) return;
 
-    // 元に戻す/やり直すスナップショットの集合を更新
+    // Update a set of undo/redo snapshots
     pushUndoSnapshot({ blocks: null, notes });
     resetRedoSnapshots();
 
     setIsProtected(true);
 
-    // インディケーターの位置を左上としたコピー時の選択領域に含まれる領域と、
-    // 各譜面のブロックで構成した譜面の領域との共通領域のみ、
-    // 単ノート/ホールドの始点/ホールドの中間/ホールドの終点のペースト対象とする
+    // Paste only single note, starting point of hold, setting point of hold or end point of hold
+    // in the common area between the copied selection area with the indicator at the top left
+    // and the chart area composed of each chart block
     setNotes(
       notes.map((ns: Note[], column: number) =>
         column < indicator.column ||
@@ -134,7 +134,7 @@ function useClipBoard() {
       )
     );
 
-    // ペースト対象の領域を選択領域として設定
+    // Set the pasted area as the selection area
     setSelector({
       completed: {
         startColumn: indicator.column,

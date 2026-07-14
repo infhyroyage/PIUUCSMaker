@@ -39,7 +39,7 @@ function Drawer() {
     if (zoom.top !== null) scrollTo({ top: zoom.top, behavior: "instant" });
   }, [zoom]);
 
-  // キー入力のイベントリスナーを登録し、アンマウント時に解除
+  // Set keyboard shortcuts and unregister on unmount
   const isMac: boolean = useMemo(
     () => window.navigator.userAgent.indexOf("Mac") !== -1,
     []
