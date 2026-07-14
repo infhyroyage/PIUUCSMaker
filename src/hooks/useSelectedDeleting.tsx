@@ -14,14 +14,14 @@ function useSelectedDeleting() {
   } = useStore();
 
   /**
-   * 選択領域入力済に該当する単ノート/ホールドの始点/ホールドの中間/ホールドの終点をすべて削除する
+   * Delete all single note, starting point of hold, setting point of hold or end point of hold in the inputted selection area
    * @returns
    */
   const handleDelete = useCallback(() => {
-    // 選択領域が非表示/入力中の場合はNOP
+    // NOP if the selection area is not displayed or inputting
     if (selector.completed === null) return;
 
-    // 元に戻す/やり直すスナップショットの集合を更新
+    // Update a set of undo/redo snapshots
     pushUndoSnapshot({ blocks: null, notes });
     resetRedoSnapshots();
 
@@ -32,10 +32,10 @@ function useSelectedDeleting() {
       notes.map((ns: Note[], column: number) =>
         column < completedCords.startColumn ||
         column > completedCords.goalColumn
-          ? // 選択領域外の列インデックスの場合はそのまま
+          ? // Keep as-is if the column index is outside the selection area
             ns
           : [
-              // 選択領域外の譜面全体での行インデックスのみ抽出
+              // Extract only row indexes in the entire chart outside the selection area
               ...ns.filter(
                 (note: Note) => note.rowIdx < completedCords.startRowIdx
               ),

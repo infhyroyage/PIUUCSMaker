@@ -14,35 +14,35 @@ function useSelectedFlipping() {
   } = useStore();
 
   /**
-   * 選択領域入力済に該当する単ノート/ホールドの始点/ホールドの中間/ホールドの終点を、すべて左右反転/上下反転する
-   * @param isHorizontal 左右反転/Mirrorする場合はtrue、そうでない場合はfalse
-   * @param isVertical 上下反転/Mirrorする場合はtrue、そうでない場合はfalse
+   * Flip all single note, starting point of hold, setting point of hold or end point of hold in the inputted selection area horizontally or vertically
+   * @param isHorizontal true for horizontal flip/Mirror, otherwise false
+   * @param isVertical true for vertical flip/Mirror, otherwise false
    * @returns
    */
   const handleFlip = useCallback(
     (isHorizontal: boolean, isVertical: boolean) => {
-      // 選択領域が非表示/入力中の場合はNOP
+      // NOP if the selection area is not displayed or inputting
       if (selector.completed === null) return;
 
-      // 元に戻す/やり直すスナップショットの集合を更新
+      // Update a set of undo/redo snapshots
       pushUndoSnapshot({ blocks: null, notes });
       resetRedoSnapshots();
 
       setIsProtected(true);
 
-      // 選択領域内の各列インデックスに対し、上下反転・左右反転の反転元(from)と反転先(to)をすべて計算
+      // Calculate all flip sources (from) and destinations (to) for each column index in the selection area
       const completedCords: SelectorCompletedCords = selector.completed;
       const flippedParams: { from: number; to: number }[] = Array.from(
         { length: completedCords.goalColumn - completedCords.startColumn + 1 },
         (_, i) => completedCords.startColumn + i
       ).reduce((prev: { from: number; to: number }[], from: number) => {
-        // 2重反転の抑止
+        // Prevent double flip
         if (
           prev.find((param: { from: number; to: number }) => param.to === from)
         )
           return prev;
 
-        // 列インデックスの上下反転・左右反転先を計算
+        // Calculate the vertical or horizontal flip destination of the column index
         let to: number = from;
         if (isVertical) {
           to =
@@ -58,8 +58,8 @@ function useSelectedFlipping() {
         return [...prev, { from, to }];
       }, []);
 
-      // 選択領域内の譜面全体の行インデックスでの単ノート/ホールドの始点/ホールドの中間/ホールドの終点を対象に、
-      // 上下反転・左右反転を実行
+      // Flip vertically or horizontally for single note, starting point of hold,
+      // setting point of hold or end point of hold at row indexes in the entire chart in the selection area
       const flippedNotes: Note[][] = [...Array(notes.length)].reduce(
         (prev: Note[][], _, column: number) => {
           const foundParam: { from: number; to: number } | undefined =

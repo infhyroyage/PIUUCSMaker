@@ -27,7 +27,7 @@ function useChartSnapshot() {
   const { isOpenedEditBlockDialog } = useEditBlockDialog();
 
   const handleRedo = useCallback(() => {
-    // やり直すスナップショットが存在しない/ダイアログが開いている場合はNOP
+    // NOP if no redo snapshots exist or a dialog is open
     if (
       redoSnapshots.length === 0 ||
       isOpenedNewUCSDialog ||
@@ -37,20 +37,20 @@ function useChartSnapshot() {
 
     setIsProtected(true);
 
-    // 元に戻す/やり直すスナップショットの集合を更新
+    // Update a set of undo/redo snapshots
     const snapshot: ChartSnapshot = popRedoSnapshot();
     pushUndoSnapshot({
       blocks: snapshot.blocks && blocks,
       notes: snapshot.notes && notes,
     });
 
-    // インディケーター・選択領域・メニューをすべて非表示
+    // Hide the indicator, selection area and menus
     resetIndicator();
     hideSelector();
     resetBlockControllerMenuPosition();
     resetChartIndicatorMenuPosition();
 
-    // 譜面のブロック、および、単ノート/ホールドの始点/ホールドの中間/ホールドの終点をやり直す
+    // Redo the chart block and single note, starting point of hold, setting point of hold or end point of hold
     if (snapshot.blocks !== null) setBlocks(snapshot.blocks);
     if (snapshot.notes !== null) setNotes(snapshot.notes);
   }, [
@@ -71,7 +71,7 @@ function useChartSnapshot() {
   ]);
 
   const handleUndo = useCallback(() => {
-    // 元に直すスナップショットが存在しない/ダイアログが開いている場合はNOP
+    // NOP if no undo snapshots exist or a dialog is open
     if (
       undoSnapshots.length === 0 ||
       isOpenedNewUCSDialog ||
@@ -79,23 +79,23 @@ function useChartSnapshot() {
     )
       return;
 
-    // これ以上元に戻せられなくなる場合のみ編集中の離脱を抑止しない
+    // Do not prevent exit during editing only when undo becomes unavailable after this
     setIsProtected(undoSnapshots.length !== 1);
 
-    // やり直すスナップショットの集合、元に戻すスナップショットの集合を更新
+    // Update a set of redo snapshots and a set of undo snapshots
     const snapshot: ChartSnapshot = popUndoSnapshot();
     pushRedoSnapshot({
       blocks: snapshot.blocks && blocks,
       notes: snapshot.notes && notes,
     });
 
-    // インディケーター・選択領域・メニューをすべて非表示
+    // Hide the indicator, selection area and menus
     resetIndicator();
     hideSelector();
     resetBlockControllerMenuPosition();
     resetChartIndicatorMenuPosition();
 
-    // 譜面のブロック、および、単ノート/ホールドの始点/ホールドの中間/ホールドの終点を元に戻す
+    // Undo the chart block and single note, starting point of hold, setting point of hold or end point of hold
     if (snapshot.blocks !== null) setBlocks(snapshot.blocks);
     if (snapshot.notes !== null) setNotes(snapshot.notes);
   }, [
