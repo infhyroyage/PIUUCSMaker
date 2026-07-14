@@ -38,7 +38,7 @@ function NewUCSDialog() {
 
   const onCreate = () =>
     startTransition(() => {
-      // バリデーションチェック
+      // Validation check
       const beat: number | null = validateBeat(form.beat);
       const bpm: number | null = validateBpm(form.bpm);
       const delay: number | null = validateDelay(form.delay);
@@ -67,7 +67,7 @@ function NewUCSDialog() {
         resetUndoSnapshots();
         closeNewUcsDialog();
       } else {
-        // バリデーションエラーのテキストフィールドをすべて表示
+        // Display every text field with validation error
         const errors: NewUCSDialogError[] = [];
         if (beat === null) errors.push("Beat");
         if (bpm === null) errors.push("BPM");

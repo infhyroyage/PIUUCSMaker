@@ -11,31 +11,31 @@ function Identifier() {
   return (
     <div style={{ userSelect: "none", width: `${IDENTIFIER_WIDTH}px` }}>
       {blocks.map((block: Block, blockIdx: number) => {
-        // 譜面のブロックの1行あたりの高さ(px)
+        // Height (px) per row of chart block
         const unitRowHeight: number =
           (2.0 * noteSize * ZOOM_VALUES[zoom.idx]) / block.split;
 
-        // 横の枠線のサイズ(px)
-        // noteSizeの0.05倍(偶数に丸めるように切り捨て、最小値は2)とする
-        // ただし、譜面のブロックの高さが横の枠線のサイズより小さい場合、例外的に譜面のブロックの高さと同一とする
+        // Horizontal border size (px)
+        // Use 0.05 times noteSize, rounded down to even, with a minimum value of 2
+        // However, use the same value as chart block height if chart block height is smaller than horizontal border size
         const horizontalBorderSize: number = Math.min(
           Math.max(Math.floor(noteSize * 0.025) * 2, 2),
           unitRowHeight * block.rows
         );
 
-        // 譜面のブロック内の節のブロックの個数
+        // Number of measure blocks in chart block
         const rectangleLength: number = Math.ceil(
           block.rows / (block.beat * block.split)
         );
 
-        // 譜面のブロック内の各節のブロックの高さ(px)
+        // Height (px) of each measure block in chart block
         let blockHeight: number =
           unitRowHeight * block.rows -
           (blockIdx === blocks.length - 1 ? 0 : horizontalBorderSize);
         const rectangleHeights = [...Array(rectangleLength)].reduce(
           (prev: number[], _, rectangleIdx: number) => {
             if (blockHeight > 0) {
-              // 譜面のブロック内の節ごとに分割する枠線を配置するため、その枠線の高さ分をあらかじめ減算しておく
+              // Subtract horizontal border height in advance to place borders that separate each measure in chart block
               const rectangleHeight: number =
                 unitRowHeight * block.beat * block.split -
                 (rectangleIdx === rectangleLength - 1
@@ -63,7 +63,7 @@ function Identifier() {
                       {`${blockIdx + 1}: ${rectangleIdx + 1}`}
                     </p>
                   </span>
-                  {/* 譜面のブロック内の節ごとに分割する枠線 */}
+                  {/* Border that separates each measure in chart block */}
                   {rectangleIdx < rectangleHeights.length - 1 && (
                     <BorderLine
                       style={{
@@ -75,7 +75,7 @@ function Identifier() {
                 </React.Fragment>
               )
             )}
-            {/* 譜面のブロックごとに分割する枠線 */}
+            {/* Border that separates each chart block */}
             {blockIdx < blocks.length - 1 && (
               <BorderLine
                 style={{ height: `${horizontalBorderSize}px`, width: "100%" }}

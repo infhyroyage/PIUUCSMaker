@@ -50,19 +50,19 @@ function AdjustBlockDialog() {
   );
 
   const onUpdate = useCallback(() => {
-    // BlockControllerMenuのメニューを開いていない場合はNOP
+    // NOP if no chart block is opening BlockControllerMenu
     if (blockControllerMenuBlockIdx === null) return;
 
-    // blockControllerMenuBlockIdx番目の譜面のブロックの行数の差分
+    // Difference of a number of rows of chart block at blockControllerMenuBlockIdx
     const deltaRows: number =
       Number(adjustBlockDialogForm.rows) -
       blocks[blockControllerMenuBlockIdx].rows;
 
-    // 元に戻す/やり直すスナップショットの集合を更新
+    // Update undo/redo snapshots
     pushUndoSnapshot({ blocks, notes: deltaRows === 0 ? null : notes });
     resetRedoSnapshots();
 
-    // blockControllerMenuBlockIdx番目以降の譜面のブロックをすべて更新
+    // Update every chart block at or after blockControllerMenuBlockIdx
     const updatedBlocks: Block[] = [...Array(blocks.length)].map(
       (_, blockIdx: number) =>
         blockIdx === blockControllerMenuBlockIdx
@@ -86,21 +86,21 @@ function AdjustBlockDialog() {
             : blocks[blockIdx],
     );
 
-    // 行数を変更した場合のみ、blockControllerMenuBlockIdx番目以降の譜面のブロックに該当する
-    // 単ノート/ホールドの始点/ホールドの中間/ホールドの終点をすべて更新
+    // Update every single note, starting point of hold, setting point of hold or end point of hold
+    // included in chart blocks at or after blockControllerMenuBlockIdx only if a number of rows changed
     let updatedNotes: Note[][] = [...notes];
     if (deltaRows !== 0) {
-      // 以下の譜面のブロックに該当する単ノート/ホールドの始点/ホールドの中間/ホールドの終点をすべて更新
-      // * (blockControllerMenuBlockIdx - 1)番目以前: 更新しない
-      // * blockControllerMenuBlockIdx番目          : 譜面全体の行インデックスをスケーリング(空白 < X < H < M < W)
-      // * (blockControllerMenuBlockIdx + 1)番目以降: 譜面全体の行インデックスを譜面のブロックの行数の差分ズラす
+      // Update every single note, starting point of hold, setting point of hold or end point of hold included in following chart blocks
+      // * Before blockControllerMenuBlockIdx: Do not update
+      // * At blockControllerMenuBlockIdx: Scale row index in the entire chart (blank < X < H < M < W)
+      // * After blockControllerMenuBlockIdx: Shift row index in the entire chart by the difference of a number of rows
       updatedNotes = [...notes].map((ns: Note[]) => [
-        // (blockControllerMenuBlockIdx - 1)番目以前の譜面のブロック
+        // Chart blocks before blockControllerMenuBlockIdx
         ...ns.filter(
           (note: Note) =>
             note.rowIdx < blocks[blockControllerMenuBlockIdx].accumulatedRows,
         ),
-        // blockControllerMenuBlockIdx番目の譜面のブロック
+        // Chart block at blockControllerMenuBlockIdx
         ...ns
           .filter(
             (note: Note) =>
@@ -139,7 +139,7 @@ function AdjustBlockDialog() {
                 ]
               : [...prev, { rowIdx: scaledRowIdx, type: note.type }];
           }, []),
-        // (blockControllerMenuBlockIdx + 1)番目以降の譜面のブロック
+        // Chart blocks after blockControllerMenuBlockIdx
         ...ns
           .filter(
             (note: Note) =>

@@ -9,7 +9,7 @@ function SuccessSnackbar() {
 
   useEffect(() => {
     if (successMessage.length > 0) {
-      // 表示してから5秒後に自動的に非表示にする
+      // Automatically hide 5 seconds after displaying
       const timer = setTimeout(() => {
         setSuccessMessage("");
       }, 5000);
