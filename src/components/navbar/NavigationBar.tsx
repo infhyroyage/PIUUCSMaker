@@ -20,7 +20,7 @@ function NavigationBar() {
 
   const onChangeSelect = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
-      // formを送信せず、ページ遷移を行わないようにする
+      // Prevent form submission and page transition
       event.preventDefault();
 
       updateZoomFromIdx(Number(event.target.value));
@@ -30,7 +30,7 @@ function NavigationBar() {
 
   const onClickVolumeButton = useCallback(
     (event: React.MouseEvent<HTMLButtonElement>) => {
-      // formを送信せず、ページ遷移を行わないようにする
+      // Prevent form submission and page transition
       event.preventDefault();
 
       if (muteVolBuf === null) {
@@ -44,7 +44,7 @@ function NavigationBar() {
     [muteVolBuf, setMuteVolBuf, setVolumeValue, volumeValue]
   );
 
-  // 編集中に離脱した場合、その離脱を抑止する組込みダイアログを表示
+  // Show the built-in dialog to prevent exit during editing
   useEffect(() => {
     const handleBeforeunload = (event: BeforeUnloadEvent) =>
       event.preventDefault();

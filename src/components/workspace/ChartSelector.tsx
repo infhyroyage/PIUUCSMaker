@@ -13,7 +13,7 @@ function ChartSelector() {
 
   const verticalBorderSize = useVerticalBorderSize();
 
-  // 選択領域の左上の列インデックスを計算(選択領域を表示しない場合はnull)
+  // Calculate column index at the top left of the selection area (null if not displayed)
   const startColumn = useMemo(
     () =>
       selector.completed !== null
@@ -29,16 +29,16 @@ function ChartSelector() {
     [selector.completed, selector.setting]
   );
 
-  // 選択領域のleft値(px)を計算(選択領域を表示しない場合はnull)
+  // Calculate left (px) of the selection area (null if not displayed)
   const left = useMemo(() => {
     if (startColumn === null) return null;
 
     return IDENTIFIER_WIDTH + verticalBorderSize * 0.5 + noteSize * startColumn;
   }, [noteSize, startColumn, verticalBorderSize]);
 
-  // 選択領域のtop値(px)を計算(選択領域を表示しない場合はnull)
+  // Calculate top (px) of the selection area (null if not displayed)
   const top = useMemo(() => {
-    // 選択領域の左上の譜面全体での行インデックスを計算
+    // Calculate row index in the entire chart at the top left of the selection area
     const startRowIdx: number | null =
       selector.completed !== null
         ? selector.completed.startRowIdx
@@ -54,7 +54,7 @@ function ChartSelector() {
 
     let top: number = 0;
     blocks.some((block: Block) => {
-      // 譜面のブロックの1行あたりの高さ(px)
+      // Height (px) per row of the chart block
       const unitRowHeight: number =
         (2.0 * noteSize * ZOOM_VALUES[zoom.idx]) / block.split;
 
@@ -69,11 +69,11 @@ function ChartSelector() {
     return top;
   }, [blocks, noteSize, selector.completed, selector.setting, zoom.idx]);
 
-  // 選択領域の幅(px)を計算(選択領域を表示しない場合はnull)
+  // Calculate width (px) of the selection area (null if not displayed)
   const width = useMemo(() => {
     if (startColumn === null) return null;
 
-    // 選択領域の右下の列インデックスを計算(選択領域を表示しない場合はnull)
+    // Calculate column index at the bottom right of the selection area (null if not displayed)
     const goalColumn: number | null =
       selector.completed !== null
         ? selector.completed.goalColumn
@@ -90,11 +90,11 @@ function ChartSelector() {
     return noteSize * (goalColumn + 1 - startColumn);
   }, [noteSize, selector.completed, selector.setting, startColumn]);
 
-  // 選択領域の高さ(px)を計算(選択領域を表示しない場合はnull)
+  // Calculate height (px) of the selection area (null if not displayed)
   const height = useMemo(() => {
     if (top === null) return null;
 
-    // 選択領域の右下の譜面全体での行インデックスを計算
+    // Calculate row index in the entire chart at the bottom right of the selection area
     const goalRowIdx: number | null =
       selector.completed !== null
         ? selector.completed.goalRowIdx
@@ -108,10 +108,10 @@ function ChartSelector() {
         : null;
     if (goalRowIdx === null) return null;
 
-    // 選択領域の下端のtop値(px)を計算
+    // Calculate top (px) at the bottom of the selection area
     let goalTop: number = 0;
     blocks.some((block: Block) => {
-      // 譜面のブロックの1行あたりの高さ(px)
+      // Height (px) per row of the chart block
       const unitRowHeight: number =
         (2.0 * noteSize * ZOOM_VALUES[zoom.idx]) / block.split;
 

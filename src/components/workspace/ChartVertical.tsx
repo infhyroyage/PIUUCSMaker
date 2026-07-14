@@ -26,8 +26,8 @@ function ChartVertical({ blockYDists, column, notes }: ChartVerticalProps) {
     <>
       {allChartVerticalRectangles}
       {notes.map((note: Note, i: number) => {
-        // noteが属する譜面のブロックのインデックスを取得
-        // どの譜面のブロックにも属さない場合はChartVerticalNoteImagesのレンダリング対象外とする
+        // Get the index of the chart block including this note
+        // Do not render ChartVerticalNoteImages if this note is not included in any chart block
         const blockIdx: number = blocks.findIndex(
           (block: Block) => note.rowIdx < block.accumulatedRows + block.rows
         );

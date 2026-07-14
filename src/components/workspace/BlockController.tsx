@@ -28,7 +28,7 @@ function BlockController() {
     [notes.length, noteSize, verticalBorderSize]
   );
 
-  // 押下したマウスの座標にBlockControllerMenuを表示
+  // Display BlockControllerMenu at the clicked mouse coordinate
   const handleClickBlockControllerButton = useCallback(
     (
       event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>,
