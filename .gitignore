@@ -1,3 +1,26 @@
-coverage
-dist
-node_modules
+# OS
+.DS_Store
+Thumbs.db
+
+# Dependencies
+node_modules/
+
+# Vite production build (`npm run build` uses default outDir)
+dist/
+
+# Vitest coverage (`vitest.config.ts`; CI writes json-summary here)
+coverage/
+
+# TypeScript incremental cache (`tsconfig.node.json` has composite: true)
+*.tsbuildinfo
+
+# Vite local env overrides (`.env.local`, `.env.[mode].local`)
+*.local
+
+# npm
+npm-debug.log*
+
+# Editors (`.cursor/` is project config and is tracked)
+.idea/
+.vscode/*
+!.vscode/extensions.json
