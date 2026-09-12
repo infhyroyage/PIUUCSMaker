@@ -13,7 +13,7 @@ on:
       - package*.json
       - tsconfig*.json
       - vite.config.ts
-      - vitest.config.json
+      - vitest.config.ts
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:

@@ -11,6 +11,9 @@ dist/
 # Vitest coverage (`vitest.config.ts`; CI writes json-summary here)
 coverage/
 
+# Vitest 5 artifact root (html/json/junit reporters, attachments, blob reports)
+.vitest/
+
 # TypeScript incremental cache (`tsconfig.node.json` has composite: true)
 *.tsbuildinfo
 
