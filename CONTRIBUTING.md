@@ -5,7 +5,7 @@
 | Name       | Ver.    |
 | ---------- | ------- |
 | Node.js    | 24.13.0 |
-| React      | 19.2.5  |
+| React      | 19.3.1  |
 | Typescript | 6.0.3   |
 
 > [!NOTE]

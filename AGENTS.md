@@ -10,12 +10,12 @@ PIU UCS Maker is a client-side-only React SPA for creating and playing Pump It U
 
 All commands are defined in `package.json` scripts:
 
-| Command | Purpose |
-|---|---|
-| `npm run dev` | Start Vite dev server (default port 5173) |
-| `npm run lint` | Run ESLint |
-| `npm run test` | Run Vitest (jsdom, coverage enabled, watch disabled) |
-| `npm run build` | TypeScript check + Vite production build |
+| Command         | Purpose                                              |
+| --------------- | ---------------------------------------------------- |
+| `npm run dev`   | Start Vite dev server (default port 5173)            |
+| `npm run lint`  | Run ESLint                                           |
+| `npm run test`  | Run Vitest (jsdom, coverage enabled, watch disabled) |
+| `npm run build` | TypeScript check + Vite production build             |
 
 ### Non-obvious notes
 
